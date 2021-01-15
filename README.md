@@ -22,4 +22,4 @@ Pumpkin.py is mantained by [Czechbol](https://github.com/Czechbol) and
 
 ## License
 
-This project is licensed under the GNU GPL v.3 License.
+This project is licensed under the GNU GPL v3 License.

@@ -15,7 +15,7 @@ services:
     env_file: .env
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - ./:/Amadeus/
+      - ./:/Pumpkin/
     command: python pumpkin.py
     depends_on:
       - db
