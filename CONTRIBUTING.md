@@ -15,4 +15,14 @@ The code is currently in heavy development and will change a lot.
 - Install bot packages: `pip3 install -r requirements.txt`
 - Install dev packages: `pip3 install -r requirements-dev.txt`
 - Enable pre-commit: `pre-commit install`
-- Fill and load `.env` file: `set -o allexport; source .env; set +o allexport`
+- Create and fill `.env` file
+
+| Key | Description |
+|-----|-------------|
+| DB_STRING | Database connection string |
+| TOKEN | Token obtained from [Discord Developers page](https://discord.com/developers) |
+| BOT_PREFIX | Prefix character (`!`, `?` or something similar) |
+| BOT_MENTIONPREFIX | Whether to react to mentions: `0` or `1`  |
+| BOT_GENDER | How the bot should address itself: `f` or `m`.   |
+
+- Load `.env` file: `set -o allexport; source .env; set +o allexport`
