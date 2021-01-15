@@ -1,0 +1,1 @@
+Cogs folder, Each cog should probably have its own folder, with database files python files and subfolders if needed.

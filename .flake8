@@ -1,0 +1,8 @@
+[flake8]
+select = C,E,F,W,B
+ignore = E128,E203,E501,W503
+count = True
+max-complexity = 25
+max-line-length = 110
+format=%(code)s %(path)s (%(row)d:%(col)d): %(text)s
+statistics = True

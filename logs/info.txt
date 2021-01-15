@@ -1,0 +1,1 @@
+Log folder, logs separated into subfolders like so: Year/Month/Day.log (or .json whichever is chosen)

@@ -1,0 +1,7 @@
+bandit>=1.6.2
+black>=20.8b1
+flake8>=3.8.3
+flake8-black>=0.2.1
+flake8-print>=3.1.4
+flake8-todo>=0.7
+pre-commit>=2.7.1

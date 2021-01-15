@@ -1,0 +1,25 @@
+version: "3.6"
+
+services:
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_LOG_MIN_LEVEL: "fatal"
+    command: ["postgres", "-c", "log_min_messages=fatal"]
+    restart: unless-stopped
+  bot:
+    build: .
+    env_file: .env
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./:/Amadeus/
+    command: python pumpkin.py
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
