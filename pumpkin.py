@@ -16,9 +16,6 @@ def test_dotenv() -> None:
     if type(os.getenv("TOKEN")) != str:
         print("TOKEN is not set.", file=sys.stderr)
         sys.exit(1)
-    if type(os.getenv("BOT_NAME")) != str:
-        print("BOT_NAME is not set.", file=sys.stderr)
-        sys.exit(1)
     if type(os.getenv("BOT_PREFIX")) != str:
         print("BOT_PREFIX is not set.", file=sys.stderr)
         sys.exit(1)
@@ -37,6 +34,7 @@ test_dotenv()
 
 
 def get_prefix() -> str:
+	"""Get bot prefix with optional mention function"""
     if os.getenv("BOT_MENTIONPREFIX") == "1":
         return commands.when_mentioned_or(os.getenv("BOT_PREFIX"))
     return os.getenv("BOT_PREFIX")
@@ -59,7 +57,7 @@ bot = commands.Bot(
 @bot.event
 async def on_ready():
     """If bot is ready."""
-    print(f"{os.getenv('BOT_NAME')} is ready.")
+    print(f"The pie is ready to serve.")
 
 
 @bot.event
@@ -68,7 +66,19 @@ async def on_error(event, *args, **kwargs):
     print(output)
 
 
+# Add required modules
+
+modules = (
+    "base.base",
+    "base.errors",
+)
+
+for module in modules:
+    bot.load_extension("modules." + module)
+    print("Loaded " + module)
+
+
 # Run the bot
 
 
-bot.run(os.environ["TOKEN"])
+bot.run(os.getenv("TOKEN"))
