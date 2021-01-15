@@ -15,3 +15,4 @@ The code is currently in heavy development and will change a lot.
 - Install bot packages: `pip3 install -r requirements.txt`
 - Install dev packages: `pip3 install -r requirements-dev.txt`
 - Enable pre-commit: `pre-commit install`
+- Fill and load `.env` file: `set -o allexport; source .env; set +o allexport`
