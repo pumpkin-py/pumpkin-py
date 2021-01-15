@@ -27,4 +27,4 @@ async def on_error(event, *args, **kwargs):
     print(output)
 
 
-bot.run(os.environ['TOKEN'])
+bot.run(os.environ["TOKEN"])
