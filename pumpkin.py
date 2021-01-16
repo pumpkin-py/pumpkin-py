@@ -22,6 +22,9 @@ def test_dotenv() -> None:
     if os.getenv("BOT_MENTIONPREFIX") not in ("0", "1"):
         print("BOT_MENTIONPREFIX has to be '0' or '1'.", file=stderr)
         sys.exit(1)
+    if type(os.getenv("BOT_LANGUAGE")) != str:
+        print("BOT_LANGUAGE is not set.", file=sys.stderr)
+        sys.exit(1)
     if os.getenv("BOT_GENDER") not in ("m", "f"):
         print("BOT_GENDER has to be 'm' or 'f'.", file=sys.stderr)
         sys.exit(1)
@@ -34,7 +37,7 @@ test_dotenv()
 
 
 def get_prefix() -> str:
-	"""Get bot prefix with optional mention function"""
+    """Get bot prefix with optional mention function"""
     if os.getenv("BOT_MENTIONPREFIX") == "1":
         return commands.when_mentioned_or(os.getenv("BOT_PREFIX"))
     return os.getenv("BOT_PREFIX")
@@ -67,6 +70,7 @@ async def on_error(event, *args, **kwargs):
 
 
 # Add required modules
+
 
 modules = (
     "base.base",
