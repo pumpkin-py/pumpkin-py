@@ -38,6 +38,24 @@ class Time:
         """Convert timestamp to date and time."""
         return timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
+    def seconds(time: int) -> str:
+        """Convert seconds to time."""
+        time = int(time)
+        D = 3600 * 24
+        H = 3600
+        M = 60
+
+        d = int((time - (time % D)) / D)
+        h = int((time - (time % H)) / H)
+        m = int((time - (time % M)) / M)
+        s = time % 60
+
+        if d > 0:
+            return f"{d} d, {h:02}:{m:02}:{s:02}"
+        if h > 0:
+            return f"{h}:{m:02}:{s:02}"
+        return f"{m:02}:{s:02}"
+
 
 class Discord:
     """Discord object utils"""
