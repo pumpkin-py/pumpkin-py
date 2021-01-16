@@ -3,6 +3,11 @@ import datetime
 import discord
 from discord.ext import commands
 
+import core.text
+
+
+tr = core.text.Translator(__file__).translate
+
 
 class Base(commands.Cog):
     def __init__(self, bot):
@@ -12,7 +17,7 @@ class Base(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx):
-        await ctx.send("pong: **{:.2f} s**".format(self.bot.latency))
+        await ctx.send(tr("ping", "reply", time="{:.2f}".format(self.bot.latency)))
 
     @commands.command()
     async def uptime(self, ctx):
