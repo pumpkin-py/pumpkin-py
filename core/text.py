@@ -8,9 +8,13 @@ class Translator:
         self._language = os.getenv("BOT_LANGUAGE")
         self._gender = os.getenv("BOT_GENDER")
 
-        # TODO Check if file exists
-        # TODO Default language fallback
         self._filename = os.path.join(self._directory, "lang." + self._language + ".ini")
+        # Set 'cs' as a fallback language
+        if self._language != "cs" and not os.path.isfile(self._filename):
+            self._filename = os.path.join(self._directory, "lang.cs.ini")
+        # Verify file existence
+        if not os.path.isfile(self._filename):
+            raise ValueError(f"Translation file '{self._filename}' does not exist.")
 
         self.data = configparser.ConfigParser()
         self.data.read(self._filename)
