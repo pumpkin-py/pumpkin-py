@@ -1,12 +1,10 @@
 import datetime
 
-import discord
 from discord.ext import commands
 
-import core.text
+from core import text, utils
 
-
-tr = core.text.Translator(__file__).translate
+tr = text.Translator(__file__).translate
 
 
 class Base(commands.Cog):
@@ -24,7 +22,22 @@ class Base(commands.Cog):
         now = datetime.datetime.now().replace(microsecond=0)
         delta = now - self.boot
 
-        await ctx.send(str(delta))
+        embed = utils.Discord.create_embed(
+            author=ctx.author,
+            title=tr("uptime", "title"),
+        )
+        embed.add_field(
+            name=tr("uptime", "time_since"),
+            value=utils.Time.datetime(self.boot),
+            inline=False,
+        )
+        embed.add_field(
+            name=tr("uptime", "time_delta"),
+            value=str(delta),
+            inline=False,
+        )
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot) -> None:
