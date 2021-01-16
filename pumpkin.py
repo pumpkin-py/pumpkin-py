@@ -20,7 +20,7 @@ def test_dotenv() -> None:
         print("BOT_PREFIX is not set.", file=sys.stderr)
         sys.exit(1)
     if os.getenv("BOT_MENTIONPREFIX") not in ("0", "1"):
-        print("BOT_MENTIONPREFIX has to be '0' or '1'.", file=stderr)
+        print("BOT_MENTIONPREFIX has to be '0' or '1'.", file=sys.stderr)
         sys.exit(1)
     if type(os.getenv("BOT_LANGUAGE")) != str:
         print("BOT_LANGUAGE is not set.", file=sys.stderr)
@@ -60,7 +60,7 @@ bot = commands.Bot(
 @bot.event
 async def on_ready():
     """If bot is ready."""
-    print(f"The pie is ready to serve.")
+    print("The pie is ready.")
 
 
 @bot.event
