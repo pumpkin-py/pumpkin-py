@@ -75,6 +75,7 @@ async def on_error(event, *args, **kwargs):
 modules = (
     "base.base",
     "base.errors",
+    "base.admin",
 )
 
 for module in modules:

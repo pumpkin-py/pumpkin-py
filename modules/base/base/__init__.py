@@ -13,11 +13,11 @@ class Base(commands.Cog):
 
         self.boot = datetime.datetime.now().replace(microsecond=0)
 
-    @commands.command()
+    @commands.command(help=tr("ping", "help"))
     async def ping(self, ctx):
         await ctx.send(tr("ping", "reply", time="{:.2f}".format(self.bot.latency)))
 
-    @commands.command()
+    @commands.command(help=tr("uptime", "help"))
     async def uptime(self, ctx):
         now = datetime.datetime.now().replace(microsecond=0)
         delta = now - self.boot
