@@ -93,8 +93,8 @@ class ArchivingRotatingFileHandler(TimedRotatingFileHandler):
 # Custom formatter
 class CustomStdoutFormatter(logging.Formatter):
 
-    default_fmt = "%(levelname)s: %(message)s ~ %(pathname)s - %(funcName)s | %(asctime)s"
-    info_fmt = "%(levelname)s: %(message)s | %(asctime)s"
+    default_fmt = "%(asctime)s %(levelname)s: %(message)s ~ %(pathname)s:%(funcName)s:%(lineno)d"
+    info_fmt = "%(asctime)s %(levelname)s: %(message)s"
 
     def format(self, record):
         """

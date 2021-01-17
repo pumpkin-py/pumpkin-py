@@ -1,3 +1,4 @@
+import logging
 import traceback
 from typing import Tuple
 
@@ -5,6 +6,10 @@ import discord
 from discord.ext import commands
 
 from core import text, utils
+
+
+logging.config.fileConfig("core/log.conf")
+logger = logging.getLogger("pumpkin_log")
 
 tr = text.Translator(__file__).translate
 
@@ -15,7 +20,7 @@ class Errors(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        # FIXME What is this doing?
+        # FIXME What is this doing? Preventing the recursion?
         if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
             return
 
@@ -27,31 +32,39 @@ class Errors(commands.Cog):
             return
 
         # Get information
-        title, content, do_traceback, inform = self._get_error_message(ctx, error)
+        title, content, show_traceback, inform = Errors.__get_error_message(ctx, error)
         embed = utils.Discord.create_embed(
             author=ctx.author, error=True, title=title, description=content
         )
-        tb = None
-        if do_traceback or inform:
-            tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
-            embed.add_field(name="Traceback", value="```" + tb[-256:] + "```", inline=False)
 
+        tb: str = None
+        if show_traceback or inform:
+            tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
+
+        if show_traceback:
+            embed.add_field(name="Traceback", value="```" + tb[-256:] + "```", inline=False)
         await ctx.send(embed=embed)
 
+        # Send to error logging channel
         if inform:
-            # TODO Send to error channel
+            # TODO Complete when we know what channel we have to send the content to
             pass
 
-    def _get_error_message(
-        self, ctx: commands.Context, error: Exception
-    ) -> Tuple[str, str, bool, bool]:
+        # Log the error
+        if show_traceback or inform:
+            logger.error(
+                "Ignoring unhandled exception",
+                exc_info=(type(error), error, error.__traceback__),
+            )
+
+    def __get_error_message(ctx: commands.Context, error: Exception) -> Tuple[str, str, bool, bool]:
         """Get message for the error.
 
         Returns
         -------
         title: The error name
         content: The error description
-        traceback: Whether to display traceback.
+        show_traceback: Whether to display traceback.
         inform: Whether to send the error for further inspection
         """
 
@@ -174,7 +187,7 @@ class Errors(commands.Cog):
                 tr(type(error).__name__, "name"),
                 tr(type(error).__name__, "value"),
                 False,
-                False,
+                True,
             )
 
         # non-critical discord.py exceptions
