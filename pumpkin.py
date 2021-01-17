@@ -1,7 +1,6 @@
 import os
 import sys
 import logging
-import traceback
 import logging.config
 
 import discord
@@ -15,22 +14,21 @@ logger = logging.getLogger("pumpkin_log")
 
 def test_dotenv() -> None:
     if type(os.getenv("DB_STRING")) != str:
-        print("DB_STRING is not set.", file=sys.stderr)
         sys.exit(1)
     if type(os.getenv("TOKEN")) != str:
-        print("TOKEN is not set.", file=sys.stderr)
+        logger.warn("TOKEN is not set.")
         sys.exit(1)
     if type(os.getenv("BOT_PREFIX")) != str:
-        print("BOT_PREFIX is not set.", file=sys.stderr)
+        logger.warn("BOT_PREFIX is not set.")
         sys.exit(1)
     if os.getenv("BOT_MENTIONPREFIX") not in ("0", "1"):
-        print("BOT_MENTIONPREFIX has to be '0' or '1'.", file=sys.stderr)
+        logger.warn("BOT_MENTIONPREFIX has to be '0' or '1'.")
         sys.exit(1)
     if type(os.getenv("BOT_LANGUAGE")) != str:
-        print("BOT_LANGUAGE is not set.", file=sys.stderr)
+        logger.warn("BOT_LANGUAGE is not set.")
         sys.exit(1)
     if os.getenv("BOT_GENDER") not in ("m", "f"):
-        print("BOT_GENDER has to be 'm' or 'f'.", file=sys.stderr)
+        logger.warn("BOT_GENDER has to be 'm' or 'f'.")
         sys.exit(1)
 
 
@@ -64,13 +62,12 @@ bot = commands.Bot(
 @bot.event
 async def on_ready():
     """If bot is ready."""
-    print("The pie is ready.")
+    logger.info("The pie is ready.")
 
 
 @bot.event
 async def on_error(event, *args, **kwargs):
-    output = traceback.format_exc()
-    print(output)
+    logger.exception("Unhandled exception")
 
 
 # Add required modules
@@ -84,7 +81,7 @@ modules = (
 
 for module in modules:
     bot.load_extension("modules." + module)
-    print("Loaded " + module)
+    logger.info("Loaded " + module)
 
 
 # Run the bot
