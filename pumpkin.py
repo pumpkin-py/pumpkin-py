@@ -14,21 +14,22 @@ logger = logging.getLogger("pumpkin_log")
 
 def test_dotenv() -> None:
     if type(os.getenv("DB_STRING")) != str:
+        logger.critical("DB_STRING is not set.")
         sys.exit(1)
     if type(os.getenv("TOKEN")) != str:
-        logger.warn("TOKEN is not set.")
+        logger.critical("TOKEN is not set.")
         sys.exit(1)
     if type(os.getenv("BOT_PREFIX")) != str:
-        logger.warn("BOT_PREFIX is not set.")
+        logger.critical("BOT_PREFIX is not set.")
         sys.exit(1)
     if os.getenv("BOT_MENTIONPREFIX") not in ("0", "1"):
-        logger.warn("BOT_MENTIONPREFIX has to be '0' or '1'.")
+        logger.critical("BOT_MENTIONPREFIX has to be '0' or '1'.")
         sys.exit(1)
     if type(os.getenv("BOT_LANGUAGE")) != str:
-        logger.warn("BOT_LANGUAGE is not set.")
+        logger.critical("BOT_LANGUAGE is not set.")
         sys.exit(1)
     if os.getenv("BOT_GENDER") not in ("m", "f"):
-        logger.warn("BOT_GENDER has to be 'm' or 'f'.")
+        logger.critical("BOT_GENDER has to be 'm' or 'f'.")
         sys.exit(1)
 
 
