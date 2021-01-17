@@ -6,8 +6,16 @@ import logging.config
 import discord
 from discord.ext import commands
 
+
+# Setup logging
+
+
+if not os.path.exists("logs/"):
+    os.mkdir("logs/")
+
 logging.config.fileConfig("core/log.conf")
 logger = logging.getLogger("pumpkin_log")
+
 
 # Setup checks
 
