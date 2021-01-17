@@ -1,6 +1,7 @@
 import os
 import json
 import zipfile
+import logging
 from datetime import datetime
 from datetime import timedelta
 from logging.handlers import TimedRotatingFileHandler
@@ -9,7 +10,7 @@ from logging.handlers import TimedRotatingFileHandler
 class ArchivingRotatingFileHandler(TimedRotatingFileHandler):
     def doRollover(self):
         """
-        Do a log rollover.
+        Do a log rollover. Overriding default method to enable archiving to a zip file.
         """
         filename = os.path.basename(self.baseFilename)
         if not os.path.exists(f"logs/{filename}"):
@@ -50,9 +51,12 @@ class ArchivingRotatingFileHandler(TimedRotatingFileHandler):
         self.rotate(self.baseFilename, archive)
         if not self.delay:
             self.stream = self._open()
-        self.archive()
+        self.archiver()
 
-    def archive(self):
+    def archiver(self):
+        """
+        Log archiving method.
+        """
         today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         files = self.scan_log_dir("logs/")
         for entry in files:
@@ -69,6 +73,9 @@ class ArchivingRotatingFileHandler(TimedRotatingFileHandler):
                         os.remove(entry.path)
 
     def scan_log_dir(self, dir):
+        """
+        File scanning method for archiver
+        """
         files = []
         with os.scandir(dir) as entries:
             for entry in entries:
@@ -81,3 +88,35 @@ class ArchivingRotatingFileHandler(TimedRotatingFileHandler):
                     else:
                         files.extend(self.scan_log_dir(entry.path))
         return files
+
+
+# Custom formatter
+class CustomStdoutFormatter(logging.Formatter):
+
+    default_fmt = "%(levelname)s: %(message)s ~ %(pathname)s - %(funcName)s | %(asctime)s"
+    info_fmt = "%(levelname)s: %(message)s | %(asctime)s"
+
+    def format(self, record):
+        """
+        Custom formatter for different outputs depending on log level.
+        Currently only INFO behaves differently, with less information than other errors.
+        """
+
+        # Save the original format configured by the user
+        # when the logger formatter was instantiated
+        format_orig = self._style._fmt
+
+        # Replace the original format with one customized by logging level
+        if record.levelno == logging.INFO:
+            self._style._fmt = CustomStdoutFormatter.info_fmt
+
+        else:
+            self._style._fmt = CustomStdoutFormatter.default_fmt
+
+        # Call the original formatter class to do the grunt work
+        result = logging.Formatter.format(self, record)
+
+        # Restore the original format configured by the user
+        self._style._fmt = format_orig
+
+        return result
