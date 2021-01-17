@@ -45,10 +45,11 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
 
+    - name: Check the code formatting
+      run: |
+        black . --diff
+
     - name: Check the code for errors
       run: |
         flake8 . --count --statistics
-
-    - name: Run Black
-      run: |
-        black . --diff
+        flake8 . --select=T --show-source --exit-zero
