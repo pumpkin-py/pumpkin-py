@@ -1,8 +1,10 @@
+import logging
 from discord.ext import commands
 
 from core import text
 
 tr = text.Translator(__file__).translate
+logger = logging.getLogger("pumpkin_log")
 
 
 class Admin(commands.Cog):
@@ -29,19 +31,19 @@ class Admin(commands.Cog):
     async def module_load(self, ctx, name: str):
         self.bot.load_extension("modules." + name)
         await ctx.send(tr("module load", "reply", name=name))
-        print("Loaded " + name)
+        logger.info("Loaded " + name)
 
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
         self.bot.unload_extension("modules." + name)
         await ctx.send(tr("module unload", "reply", name=name))
-        print("Unloaded " + name)
+        logger.info("Unloaded " + name)
 
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
         self.bot.reload_extension("modules." + name)
         await ctx.send(tr("module reload", "reply", name=name))
-        print("Reloaded " + name)
+        logger.info("Reloaded " + name)
 
     @commands.group(name="command")
     async def command(self, ctx):
