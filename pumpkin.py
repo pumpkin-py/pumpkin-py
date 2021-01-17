@@ -1,10 +1,14 @@
 import os
 import sys
+import logging
 import traceback
+import logging.config
 
 import discord
 from discord.ext import commands
 
+logging.config.fileConfig("core/log.conf")
+logger = logging.getLogger("pumpkin_log")
 
 # Setup checks
 
