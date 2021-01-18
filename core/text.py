@@ -9,9 +9,9 @@ class Translator:
         self._gender = os.getenv("BOT_GENDER")
 
         self._filename = os.path.join(self._directory, "lang." + self._language + ".ini")
-        # Set 'cs' as a fallback language
-        if self._language != "cs" and not os.path.isfile(self._filename):
-            self._filename = os.path.join(self._directory, "lang.cs.ini")
+        # Set 'en' as a fallback language
+        if self._language != "en" and not os.path.isfile(self._filename):
+            self._filename = os.path.join(self._directory, "lang.en.ini")
         # Verify file existence
         if not os.path.isfile(self._filename):
             raise ValueError(f"Translation file '{self._filename}' does not exist.")

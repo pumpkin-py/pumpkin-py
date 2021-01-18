@@ -6,6 +6,7 @@ import logging.config
 import discord
 from discord.ext import commands
 
+from core.help import Help
 
 # Setup logging
 
@@ -59,8 +60,9 @@ intents.members = True
 
 
 bot = commands.Bot(
-    command_prefix=get_prefix(),
     allowed_mentions=discord.AllowedMentions(roles=False, everyone=False, users=True),
+    command_prefix=get_prefix(),
+    help_command=Help(),
     intents=intents,
 )
 
