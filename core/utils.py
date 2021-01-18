@@ -70,6 +70,10 @@ class Discord:
         error: Whether the embed reports an error.
         author: Event author.
         kwargs: Additional parameters.
+
+        Returns
+        -------
+        The created embed.
         """
         embed = discord.Embed(
             title=kwargs.get("title", None),
@@ -92,20 +96,44 @@ class Discord:
 
         return embed
 
-    async def delete_message(message: discord.Message, delay: float = 0.0) -> None:
+    async def send_help(ctx: commands.Context) -> bool:
+        """Send help if no subcommand has been invoked.
+
+        Arguments
+        ---------
+        ctx: The command context
+
+        Returns
+        -------
+        True if the help was sent, else False.
+        """
+        if not hasattr(ctx, "command") or not hasattr(ctx.command, "qualified_name"):
+            return False
+        if ctx.invoked_subcommand is not None:
+            return False
+
+        await ctx.send_help(ctx.command.qualified_name)
+        return True
+
+    async def delete_message(message: discord.Message, delay: float = 0.0) -> bool:
         """Try to remove message.
 
         Arguments
         ---------
         message: The message to be deleted.
         delay: How long to wait, in seconds.
+
+        Returns
+        -------
+        True if the action was successful, else False.
         """
         try:
             await message.delete(delay=delay)
         except discord.HTTPException:
-            pass
+            return False
+        return True
 
-    async def remove_reaction(message: discord.Message, emoji, member: discord.Member):
+    async def remove_reaction(message: discord.Message, emoji, member: discord.Member) -> bool:
         """Try to remove reaction.
 
         Arguments
@@ -113,11 +141,16 @@ class Discord:
         message: The message of the reaction.
         emoji: Emoji, Reaction, PartialEmoji or string.
         member: The author of the reaction.
+
+        Returns
+        -------
+        True if the action was successful, else False.
         """
         try:
             await message.remove_reaction(emoji, member)
         except discord.HTTPException:
-            pass
+            return False
+        return True
 
 
 class Utils:
