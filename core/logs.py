@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import zipfile
 import logging
 from datetime import datetime
@@ -10,8 +11,9 @@ from logging.handlers import TimedRotatingFileHandler
 class ArchivingRotatingFileHandler(TimedRotatingFileHandler):
     def doRollover(self):
         """
-        Do a log rollover. Overriding default method to enable archiving to a zip file.
+        Do a log rollover: Overriding default method to enable archiving to a zip file.
         """
+
         filename = os.path.basename(self.baseFilename)
         if not os.path.exists(f"logs/{filename}"):
             return
@@ -20,6 +22,10 @@ class ArchivingRotatingFileHandler(TimedRotatingFileHandler):
         if self.stream:
             self.stream.close()
             self.stream = None
+
+        # get the time that this sequence started at and make it a TimeTuple
+        currentTime = int(time.time())
+        dstNow = time.localtime(currentTime)[-1]
 
         year = datetime.now().strftime("%Y")
         month = datetime.now().strftime("%Y-%m")
@@ -53,6 +59,20 @@ class ArchivingRotatingFileHandler(TimedRotatingFileHandler):
             self.stream = self._open()
         self.archiver()
 
+        newRolloverAt = self.computeRollover(currentTime)
+        while newRolloverAt <= currentTime:
+            newRolloverAt = newRolloverAt + self.interval
+        # If DST changes and midnight or weekly rollover, adjust for this.
+        if (self.when == "MIDNIGHT" or self.when.startswith("W")) and not self.utc:
+            dstAtRollover = time.localtime(newRolloverAt)[-1]
+            if dstNow != dstAtRollover:
+                if not dstNow:  # DST kicks in before next rollover, so we need to deduct an hour
+                    addend = -3600
+                else:  # DST bows out before next rollover, so we need to add an hour
+                    addend = 3600
+                newRolloverAt += addend
+        self.rolloverAt = newRolloverAt
+
     def archiver(self):
         """
         Log archiving method.
@@ -66,7 +86,7 @@ class ArchivingRotatingFileHandler(TimedRotatingFileHandler):
                 else:
                     name = entry.name.replace(".json", "")
                 entry_date = datetime.strptime(name, "%Y-%m-%d")
-                if entry_date < today - timedelta(seconds=10):
+                if entry_date < today - timedelta(days=30):
                     filepath = "logs/log_archive.zip"
                     with zipfile.ZipFile(filepath, "a") as zipf:
                         zipf.write(entry.path)
