@@ -8,7 +8,7 @@ from discord.ext import commands
 class Text:
     """Text manipulation functions"""
 
-    @classmethod
+    @staticmethod
     def sanitise(string: str, *, limit: int = 512, escape: bool = True) -> str:
         """Sanitise string.
 
@@ -26,18 +26,22 @@ class Text:
 class Time:
     """Time manipulation functions"""
 
+    @staticmethod
     def id_to_datetime(snowflake_id: int) -> datetime.datetime:
         """Convert snowflake ID to timestamp."""
         return datetime.fromtimestamp(((snowflake_id >> 22) + 1420070400000) / 1000)
 
+    @staticmethod
     def date(timestamp: datetime.datetime) -> str:
         """Convert timestamp to date."""
         return timestamp.strftime("%Y-%m-%d")
 
+    @staticmethod
     def datetime(timestamp: datetime.datetime) -> str:
         """Convert timestamp to date and time."""
         return timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
+    @staticmethod
     def seconds(time: int) -> str:
         """Convert seconds to time."""
         time = int(time)
@@ -60,6 +64,7 @@ class Time:
 class Discord:
     """Discord object utils"""
 
+    @staticmethod
     def create_embed(
         *, error: bool = False, author: Union[discord.Member, discord.User] = None, **kwargs
     ) -> discord.Embed:
@@ -96,6 +101,7 @@ class Discord:
 
         return embed
 
+    @staticmethod
     async def send_help(ctx: commands.Context) -> bool:
         """Send help if no subcommand has been invoked.
 
@@ -115,6 +121,7 @@ class Discord:
         await ctx.send_help(ctx.command.qualified_name)
         return True
 
+    @staticmethod
     async def delete_message(message: discord.Message, delay: float = 0.0) -> bool:
         """Try to remove message.
 
@@ -133,6 +140,7 @@ class Discord:
             return False
         return True
 
+    @staticmethod
     async def remove_reaction(message: discord.Message, emoji, member: discord.Member) -> bool:
         """Try to remove reaction.
 
@@ -151,23 +159,3 @@ class Discord:
         except discord.HTTPException:
             return False
         return True
-
-
-class Utils:
-    """
-    Useful utility methods.
-    """
-
-    # Embeds
-    async def throwError(self, ctx: commands.Context, err):
-        """Show an embed and log the error"""
-
-    async def throwNotification(self, ctx: commands.Context, msg: str, pin: bool = False):
-        """Show an embed with a message."""
-
-    async def sendLong(self, ctx: commands.Context, message: str, code: bool = False):
-        """Send messages that may exceed the 2000-char limit
-
-        message: The text to be sent
-        code: Whether to format the output as a code
-        """
