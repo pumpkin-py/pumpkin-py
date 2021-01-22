@@ -1,8 +1,10 @@
 import logging
+import requests
+
+import discord
 from discord.ext import commands
 
-from core import text
-from core import utils
+from core import text, utils
 
 tr = text.Translator(__file__).translate
 logger = logging.getLogger("pumpkin_log")
@@ -62,6 +64,49 @@ class Admin(commands.Cog):
     async def command_disable(self, ctx, *, name: str):
         pass
         # TODO Save state to database
+
+    @commands.group(name="pumpkin")
+    async def pumpkin(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @pumpkin.command(name="name")
+    async def pumpkin_name(self, ctx, *, name: str):
+        try:
+            await self.bot.user.edit(username=name)
+        except discord.HTTPException:
+            await ctx.send(tr("pumpkin name", "cooldown"))
+            logger.debug("Could not change the nickname because of API cooldown.")
+            return
+
+        await ctx.send(tr("pumpkin name", "ok", name=utils.Text.sanitise(name)))
+        logger.info("Name changed to " + name + ".")
+
+    @pumpkin.command(name="avatar")
+    async def pumpkin_avatar(self, ctx, *, url: str = ""):
+        if not len(url) and not len(ctx.message.attachments):
+            await ctx.send("pumpkin avatar", "no argument")
+            return
+
+        with ctx.typing():
+            if len(url):
+                payload = requests.get(url)
+                if payload.response_code != "200":
+                    await ctx.send("pumpkin avatar", "download error", code=payload.response_code)
+                    return
+                image_binary = payload.content
+            else:
+                image_binary = await ctx.message.attachments[0].read()
+                url = ctx.message.attachments[0].proxy_url
+
+            try:
+                await self.bot.user.edit(avatar=image_binary)
+            except discord.HTTPException:
+                await ctx.send(tr("pumpkin avatar", "cooldown"))
+                logger.debug("Could not change the avatar because of API cooldown.")
+                return
+
+        await ctx.send(tr("pumpkin avatar", "ok"))
+        logger.info("Avatar changed, the URL was " + url + ".")
 
 
 def setup(bot) -> None:
