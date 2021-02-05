@@ -8,6 +8,7 @@ from discord.ext import commands
 
 from core.help import Help
 
+
 # Setup logging
 
 
@@ -43,6 +44,13 @@ def test_dotenv() -> None:
 
 
 test_dotenv()
+
+
+# Move to the script's home directory
+
+root_path = os.path.dirname(os.path.abspath(__file__))
+os.chdir(root_path)
+del root_path
 
 
 # Setup discord.py
