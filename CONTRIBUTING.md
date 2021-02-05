@@ -21,8 +21,9 @@ The code is currently in heavy development and will change a lot.
 
 ## Bot setup
 
-- Install bot packages: `pip3 install -r requirements.txt`
-- Install dev packages: `pip3 install -r requirements-dev.txt`
+- Download, create and enable **venv** environment: `python3 -m pip install venv; python3 -m pip venv venv; source venv/bin/activate`
+- Install bot packages: `python3 -m pip install -r requirements.txt`
+- Install dev packages: `python3 -m pip install -r requirements-dev.txt`
 - Enable pre-commit: `pre-commit install`
 - Create and fill `.env` file
 

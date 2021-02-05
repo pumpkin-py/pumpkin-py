@@ -4,6 +4,10 @@ from typing import Union
 import discord
 from discord.ext import commands
 
+import text
+
+tr = text.Translator(__file__).translate
+
 
 class Text:
     """Text manipulation functions"""
@@ -90,7 +94,7 @@ class Discord:
         )
 
         # footer
-        footer = author.display_name
+        footer = tr("create_embed", "footer") + " " + author.display_name
         if kwargs.get("footer", None):
             footer += " | " + kwargs.get("footer")
         embed.set_footer(
