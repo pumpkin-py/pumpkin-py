@@ -65,15 +65,15 @@ class Time:
         M = 60
 
         d = int((time - (time % D)) / D)
-        h = int((time - (time % H)) / H)
-        m = int((time - (time % M)) / M)
+        h = int((time - (time % H)) / H) % 24
+        m = int((time - (time % M)) / M) % 60
         s = time % 60
 
         if d > 0:
             return f"{d} d, {h:02}:{m:02}:{s:02}"
         if h > 0:
             return f"{h}:{m:02}:{s:02}"
-        return f"{m:02}:{s:02}"
+        return f"{m}:{s:02}"
 
 
 class Discord:
