@@ -2,6 +2,7 @@
 
 import git
 import os
+import pytest
 import tempfile
 
 from modules.base.admin import Admin
@@ -41,13 +42,14 @@ def _update_requirements(path: str, *, lines: list):
         handle.write("\n".join(lines))
 
 
+@pytest.mark.skip
 def test_module_download():
     """Valid repo clone"""
     # TODO Add when additional repositories are available
     pass
 
 
-def test_module_install():
+def test_module_check():
     tempdir = tempfile.TemporaryDirectory()
     _create_repo(tempdir.name)
 
@@ -63,43 +65,46 @@ def test_module_install():
         modules=info["all"],
     )
 
-    result = Admin._verify_module_repo(path=tempdir.name)
-    assert result[0] is True
-    assert result[1] == "ok"
-    assert result[2]["all"] == info["all"]
-    assert result[2]["name"] == info["name"]
-    assert result[2]["version"] == info["version"]
+    result = Admin._get_repository(path=tempdir.name)
+    assert result.valid is True
+    assert result.message == "reply"
+    assert result.modules == info["all"]
+    assert result.name == info["name"]
+    assert result.version == info["version"]
 
     tempdir.cleanup()
 
 
-def test_module_install_failures():
+def test_module_check_failures():
     tempdir = tempfile.TemporaryDirectory()
     _create_repo(tempdir.name)
 
     _update_init(tempdir.name, name="CAPITALS")
-    result = Admin._verify_module_repo(path=tempdir.name)
-    assert result[0] is False
-    assert result[1] == "invalid name"
+    result = Admin._get_repository(path=tempdir.name)
+    assert result.valid is False
+    assert result.message == "invalid name"
 
     _update_init(tempdir.name, name="")
-    result = Admin._verify_module_repo(path=tempdir.name)
-    assert result[0] is False
-    assert result[1] == "invalid name"
+    result = Admin._get_repository(path=tempdir.name)
+    assert result.valid is False
+    assert result.message == "invalid name"
 
     _update_init(tempdir.name, modules=("CAPITALS",))
-    result = Admin._verify_module_repo(path=tempdir.name)
-    assert result[0] is False
-    assert result[1] == "invalid module name"
+    result = Admin._get_repository(path=tempdir.name)
+    assert result.valid is False
+    assert result.message == "invalid module name"
 
     _update_init(tempdir.name, modules=("missing",), create_modules=False)
-    result = Admin._verify_module_repo(path=tempdir.name)
-    assert result[0] is False
-    assert result[1] == "missing module"
+    result = Admin._get_repository(path=tempdir.name)
+    assert result.valid is False
+    assert result.message == "missing module"
 
     tempdir.cleanup()
 
 
+# TODO How to trigger this test with environment variable/parameter?
+# https://docs.pytest.org/en/latest/skipping.html?highlight=skipping#id1
+@pytest.mark.skip
 def test_requirements_install():
     tempdir = tempfile.TemporaryDirectory()
     _create_repo(tempdir.name)

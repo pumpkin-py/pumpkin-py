@@ -1,5 +1,5 @@
 import datetime
-from typing import Union
+from typing import List, Union
 
 import discord
 from discord.ext import commands
@@ -25,6 +25,17 @@ class Text:
         if escape:
             string = discord.utils.escape_markdown(string)
         return string.replace("@", "@\u200b")[:limit]
+
+    @staticmethod
+    def split(string: str, limit: int = 1990) -> List[str]:
+        """Split text into multiple smaller ones.
+
+        Arguments
+        ---------
+        string: A text string to split.
+        limit: How long the strings should be.
+        """
+        return list(string[0 + i : limit + i] for i in range(0, len(string), limit))
 
 
 class Time:

@@ -7,8 +7,7 @@ import shutil
 import subprocess  # nosec: B404
 import sys
 import tempfile
-from collections import namedtuple
-from typing import Optional
+from typing import Optional, List
 
 import discord
 from discord.ext import commands
@@ -18,97 +17,221 @@ from core import text, utils
 tr = text.Translator(__file__).translate
 logger = logging.getLogger("pumpkin_log")
 
-ModuleVerifyResult = namedtuple("ModuleVerifyResult", ["valid", "text", "kwargs"])
+
+class Repository:
+    def __init__(
+        self,
+        valid: bool,
+        message: str,
+        message_vars: dict = None,
+        *,
+        name: str = None,
+        modules: list = None,
+        version: str = None,
+    ):
+        self.valid: bool = valid
+        self.message: str = message
+        self.message_vars: dict = message_vars
+        self.name: str = name
+        self.modules: tuple = modules
+        self.version: str = version
+
+    def __str__(self):
+        if self.valid:
+            return (
+                f"Repository {self.name} version {self.version} "
+                f"with modules " + ", ".join(self.modules) + "."
+            )
+        return f"Invalid repository: {self.message}"
+
+    def __repr__(self):
+        if self.valid:
+            return (
+                f'<Repository valid={self.valid} message="{self.message}" '
+                f'name="{self.name}" modules={self.modules} version="{self.version}>"'
+            )
+        return (
+            f"<Repository valid={self.valid} "
+            f'message="{self.message}" message_vars={self.message_vars}>'
+        )
 
 
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
-    @commands.group(name="module")
-    async def module(self, ctx):
+    @commands.group(name="repository", aliases=["repo"])
+    async def repository(self, ctx):
         await utils.Discord.send_help(ctx)
 
+    @repository.command(name="list")
+    async def repository_list(self, ctx, query: str = ""):
+        repository_names = Admin._get_repository_list(query=query)
+
+        repositories = []
+        for repository_name in repository_names:
+            repository_path = os.path.join(os.getcwd(), "modules", repository_name)
+            repository = Admin._get_repository(path=repository_path)
+            if repository.valid:
+                repositories.append(repository)
+
+        if not len(repositories):
+            return await ctx.send(
+                tr(
+                    "repository list",
+                    "nothing",
+                    filter=utils.Text.sanitise(query, limit=64),
+                )
+            )
+
+        result = ">>> "
+        for repository in repositories:
+            result += f"**{repository.name}**\n"
+            loaded_cogs = [c.lower() for c in sorted(self.bot.cogs.keys())]
+            modules = []
+            for module in repository.modules:
+                modules.append(module if module in loaded_cogs else f"*{module}*")
+            result += ", ".join(modules) + "\n"
+        await ctx.send(result)
+
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
-    @module.command(name="install")
-    async def module_install(self, ctx, url: str):
+    @repository.command(name="install")
+    async def repository_install(self, ctx, url: str):
         tempdir = tempfile.TemporaryDirectory()
-        workdir = os.path.join(tempdir, "newmodule")
+        workdir = os.path.join(tempdir.name, "newmodule")
 
         # download to temporary directory
-        download_stderr = Admin._download_module_repo(url=url, path=tempdir.name)
+        download_stderr = Admin._download_repository(url=url, path=tempdir.name)
         if download_stderr is not None:
             tempdir.cleanup()
             if "does not exist" in download_stderr:
-                return await ctx.send(tr("module install", "bad url"))
+                return await ctx.send(tr("repository install", "bad url"))
             embed = utils.Discord.create_embed(
                 error=True,
                 author=ctx.author,
-                title=tr("module install", "git error"),
+                title=tr("repository install", "git error"),
             )
             embed.add_field(
-                name=tr("module install", "stderr"),
+                name=tr("repository install", "stderr"),
                 value="```" + download_stderr[:1010] + "```",
                 inline=False,
             )
             return await ctx.send(embed=embed)
 
         # verify metadata validity
-        repo_check = Admin._verify_module_repo(path=workdir)
-        if not repo_check.valid:
+        repository = Admin._get_repository(path=workdir)
+        if not repository.valid:
             tempdir.cleanup()
-            return await ctx.send(tr("verify_module_repo", repo_check.text, **repo_check.kwargs))
+            return await ctx.send(tr("verify_module_repo", repository.text, **repository.kwargs))
 
         # check if the repo isn't already installed
-        currpath = os.path.dirname(os.path.abspath(__file__))
-        repo_name = repo_check.kwargs["__name__"]
-        if os.path.exists(currpath, "modules", repo_name):
+        if os.path.exists(os.path.join(os.getcwd(), "modules", repository.name)):
             tempdir.cleanup()
-            return await ctx.send(tr("module install", "exists", name=repo_name))
+            return await ctx.send(tr("repository install", "exists", name=repository.name))
 
         # install requirements
         repo_deps = Admin._install_module_requirements(path=workdir)
-        if repo_deps.returncode != 0:
+        if repo_deps is not None and repo_deps.returncode != 0:
             tempdir.cleanup()
             embed = utils.Discord.create_embed(
                 error=True,
                 author=ctx.author,
-                title=tr("module install", "requirements error"),
+                title=tr("repository install", "requirements error"),
             )
             embed.add_field(
-                name=tr("module install", "stderr"),
+                name=tr("repository install", "stderr"),
                 value="```" + repo_deps.stderr.decode("utf-8").strip()[:1010] + "```",
                 inline=False,
             )
             return await ctx.send(embed=repo_deps)
 
         # move to modules/
-        module_location = shutil.copy2(
+        module_location = shutil.move(
             workdir,
-            os.path.join(currpath, "modules", repo_name),
-            follow_symlinks=False,
+            os.path.join(os.getcwd(), "modules", repository.name),
         )
-        anon_module_location = module_location.replace(currpath, "")
         await ctx.send(
             tr(
-                "module install",
-                "ok",
-                path=anon_module_location,
-                modules=", ".join(repo_check.kwargs["__all__"]),
+                "repository install",
+                "reply",
+                path=module_location,
+                modules=", ".join(f"**{m}**" for m in repository.modules),
             )
         )
         tempdir.cleanup()
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
-    @module.command(name="update")
-    async def module_update(self, ctx, name: str):
-        pass
+    @repository.command(name="update", aliases=["fetch", "pull"])
+    async def repository_update(self, ctx, name: str):
+        repo_path = os.path.join(os.getcwd(), "modules", name)
+        if not os.path.isdir(repo_path):
+            return await ctx.send(
+                tr(
+                    "repository update",
+                    "not found",
+                    name=utils.Text.sanitise(name, limit=64),
+                )
+            )
+
+        repository = Admin._get_repository(path=repo_path)
+        if not repository.valid:
+            return await ctx.send(
+                tr(
+                    "repository update",
+                    "not repository",
+                    name=utils.Text.sanitise(name, limit=64),
+                )
+            )
+
+        repo = git.repo.base.Repo(repo_path, search_parent_directories=(name == "base"))
+        async with ctx.typing():
+            result = repo.git.pull()
+
+        result = utils.Text.split(result, 1990)
+        for r in result:
+            await ctx.send("```" + r + "```")
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
-    @module.command(name="uninstall")
-    async def module_uninstall(self, ctx, name: str):
-        pass
+    @repository.command(name="uninstall")
+    async def repository_uninstall(self, ctx, name: str):
+        if name == "base":
+            return await ctx.send(
+                tr(
+                    "repository uninstall",
+                    "protected",
+                    name=utils.Text.sanitise(name, limit=64),
+                )
+            )
+        repo_path = os.path.join(os.getcwd(), "modules", name)
+        if not os.path.isdir(repo_path):
+            return await ctx.send(
+                tr(
+                    "repository uninstall",
+                    "not found",
+                    name=utils.Text.sanitise(name, limit=64),
+                )
+            )
+        repository = Admin._get_repository(path=repo_path)
+        if not repository.valid:
+            return await ctx.send(
+                tr(
+                    "repository uninstall",
+                    "not repository",
+                    name=utils.Text.sanitise(name, limit=64),
+                )
+            )
+        shutil.rmtree(repo_path)
+        await ctx.send(
+            tr(
+                "repository uninstall",
+                "reply",
+                name=utils.Text.sanitise(name, limit=64),
+            )
+        )
+
+    @commands.group(name="module")
+    async def module(self, ctx):
+        await utils.Discord.send_help(ctx)
 
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
@@ -158,7 +281,7 @@ class Admin(commands.Cog):
             logger.debug("Could not change the nickname because of API cooldown.")
             return
 
-        await ctx.send(tr("pumpkin name", "ok", name=utils.Text.sanitise(name)))
+        await ctx.send(tr("pumpkin name", "reply", name=utils.Text.sanitise(name)))
         logger.info("Name changed to " + name + ".")
 
     @pumpkin.command(name="avatar")
@@ -185,17 +308,19 @@ class Admin(commands.Cog):
                 logger.debug("Could not change the avatar because of API cooldown.")
                 return
 
-        await ctx.send(tr("pumpkin avatar", "ok"))
+        await ctx.send(tr("pumpkin avatar", "reply"))
         logger.info("Avatar changed, the URL was " + url + ".")
 
+    #
+
     @staticmethod
-    def _download_module_repo(*, url: str, dir: str) -> Optional[str]:
+    def _download_repository(*, url: str, path: str) -> Optional[str]:
         """Download repository to given directory.
 
         Arguments
         ---------
-        url: A link to valid git repository containing the supermodule.
-        dir: Path for git to download the repository.
+        url: A link to valid git repository.
+        path: Path for git to download the repository.
 
         Returns
         -------
@@ -203,17 +328,39 @@ class Admin(commands.Cog):
         - None: Download was succesfull.
         """
         try:
-            git.repo.base.Repo.clone_from(url, os.path.join("dir", "newmodule"))
+            git.repo.base.Repo.clone_from(url, os.path.join(path, "newmodule"))
         except git.exc.GitError as exc:
             if type(exc) == git.exc.GitCommandError and "does not exist" in str(exc):
-                return tr("_download_module_repo", "bad url")
+                return tr("_download_repository", "bad url")
 
             stderr: str = str(exc)[str(exc).find("stderr: ") + 8 :]
             return stderr
         return None
 
     @staticmethod
-    def _verify_module_repo(*, path: str) -> ModuleVerifyResult:
+    def _get_repository_list(*, query: str = "") -> List[str]:
+        """Get list of repositories
+
+        Arguments
+        ---------
+        query: A string that has to be part of the module name.
+
+        Returns
+        -------
+        list: List of found module names.
+        """
+        files = os.listdir(os.path.join(os.getcwd(), "modules"))
+        repositories = []
+        for file in files:
+            if len(query) and query not in file:
+                continue
+            if os.path.isdir(os.path.join(os.getcwd(), "modules", file)):
+                repositories.append(file)
+        repositories.sort()
+        return repositories
+
+    @staticmethod
+    def _get_repository(*, path: str) -> Repository:
         """Verify the module repository.
 
         The file ``__init__.py`` has to have variables ``__name__``,
@@ -231,47 +378,51 @@ class Admin(commands.Cog):
 
         Returns
         -------
-        ModuleVerifyResult
+        Repository
         """
         # check the __init__.py file
         if not os.path.isfile(os.path.join(path, "__init__.py")):
-            return ModuleVerifyResult(False, "no init", {})
+            return Repository(False, "no init", {})
 
-        info = {}
-        with open(os.path.join(path, "__init__.py")) as handle:
+        name: str = None
+        version: str = None
+        modules: List[str] = []
+
+        init: dict = {}
+        with open(os.path.join(path, "__init__.py"), "r") as handle:
             # read the first 2048 bytes -- the file should be much smaller anyways
             lines = handle.readlines(2048)
             for key, value in [line.split("=") for line in lines if "=" in line]:
-                info[key.strip()] = value.strip()
-        for key in ("__all__", "__name__", "__version__"):
-            if key not in info.keys():
-                return ModuleVerifyResult(
-                    False, "missing value", {"value": utils.Text.sanitise(key)}
-                )
-        # supermodule version
-        info["version"] = info["__version__"].strip("\"'")
-        # supermodule name
-        info["name"] = info["__name__"].strip("\"'")
-        if re.fullmatch(r"[a-z-]+", info["name"]) is None:
-            return ModuleVerifyResult(
-                False, "invalid name", {"__name__": utils.Text.sanitise(info["name"])}
-            )
-        # supermodule list
-        modules = []
-        for key in info["__all__"].strip("()[]").split(","):
-            module = key.strip().replace('"', "")
-            if re.fullmatch(r"[a-z-]+", module) is None:
-                return ModuleVerifyResult(
-                    False, "invalid module name", {"__name__": utils.Text.sanitise(module)}
-                )
-            if not os.path.isdir(os.path.join(path, module)):
-                return ModuleVerifyResult(
-                    False, "missing module", {"__name__": utils.Text.sanitise(module)}
-                )
-            modules.append(module)
-        info["all"] = tuple(modules)
+                init[key.strip()] = value.strip("\n ").replace("'", "").replace('"', "")
 
-        return (True, "ok", info)
+        for key in ("__all__", "__name__", "__version__"):
+            if key not in init.keys():
+                return Repository(False, "missing value", {"value": utils.Text.sanitise(key)})
+
+        # repository version
+        version = init["__version__"]
+
+        # repository name
+        name = init["__name__"]
+        if re.fullmatch(r"[a-z-]+", name) is None:
+            return Repository(False, "invalid name", {"name": utils.Text.sanitise(name)})
+
+        # repository modules
+        for key in init["__all__"].strip("()[]").split(","):
+            module = key.strip()
+            if not len(module):
+                continue
+
+            if re.fullmatch(r"[a-z-]+", module) is None:
+                return Repository(
+                    False, "invalid module name", {"name": utils.Text.sanitise(module)}
+                )
+
+            if not os.path.isdir(os.path.join(path, module)):
+                return Repository(False, "missing module", {"name": utils.Text.sanitise(module)})
+            modules.append(module)
+
+        return Repository(True, "reply", name=name, modules=tuple(modules), version=version)
 
     @staticmethod
     def _install_module_requirements(*, path: str) -> Optional[subprocess.CompletedProcess]:
