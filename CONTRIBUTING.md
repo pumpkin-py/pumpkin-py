@@ -21,11 +21,26 @@ The code is currently in heavy development and will change a lot.
 
 ## Bot setup
 
-- Download, create and enable **venv** environment: `python3 -m pip install venv; python3 -m pip venv venv; source venv/bin/activate`
-- Install bot packages: `python3 -m pip install -r requirements.txt`
-- Install dev packages: `python3 -m pip install -r requirements-dev.txt`
-- Enable pre-commit: `pre-commit install`
-- Create and fill `.env` file
+```bash
+# Download, create and enable venv environment
+sudo apt install python3-venv
+python3 -m pip install venv
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install bot packages
+python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements-dev.txt
+
+# Enable pre-commit
+pre-commit install
+
+# Create and fill .env file (see the table below and the default.env file)
+nano .env
+
+# Load .env file
+set -o allexport; source .env; set +o allexport
+```
 
 | Key | Description |
 |-----|-------------|
@@ -34,8 +49,6 @@ The code is currently in heavy development and will change a lot.
 | BOT_PREFIX | Prefix character (`!`, `?` or something similar) |
 | BOT_MENTIONPREFIX | Whether to react to mentions: `0` or `1`  |
 | BOT_GENDER | How the bot should address itself: `f` or `m`    |
-
-- Load `.env` file: `set -o allexport; source .env; set +o allexport`
 
 
 ## File structure
