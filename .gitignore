@@ -3,9 +3,10 @@
 .vscode/settings.json
 # Development
 .venv/
-venv/
 .env
 __pycache__
 .cache/
 # Bot data
 logs/*
+modules/*/
+!modules/base
