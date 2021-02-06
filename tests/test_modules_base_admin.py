@@ -1,5 +1,3 @@
-# nosec: B101
-
 import git
 import os
 import pytest
