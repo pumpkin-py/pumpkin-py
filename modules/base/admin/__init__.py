@@ -8,6 +8,7 @@ import subprocess  # nosec: B404
 import sys
 import tempfile
 from collections import namedtuple
+from typing import Optional
 
 import discord
 from discord.ext import commands
@@ -24,37 +25,37 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.group(name="module")
     async def module(self, ctx):
         await utils.Discord.send_help(ctx)
 
+    @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @module.command(name="install")
     async def module_install(self, ctx, url: str):
-        # download to temp directory
         tempdir = tempfile.TemporaryDirectory()
-        try:
-            repo = git.repo.base.Repo.clone_from(url, os.path.join(tempdir.name, "newmodule"))
-        except git.exc.GitError as exc:
-            if type(exc) == git.exc.GitCommandError and "does not exist" in str(exc):
-                tempdir.cleanup()
-                return await ctx.send(tr("module install", "bad url"))
+        workdir = os.path.join(tempdir, "newmodule")
 
-            stderr = str(exc)[str(exc).find("stderr: ") + 8 :]
+        # download to temporary directory
+        download_stderr = Admin._download_module_repo(url=url, path=tempdir.name)
+        if download_stderr is not None:
+            tempdir.cleanup()
+            if "does not exist" in download_stderr:
+                return await ctx.send(tr("module install", "bad url"))
             embed = utils.Discord.create_embed(
                 error=True,
                 author=ctx.author,
                 title=tr("module install", "git error"),
             )
             embed.add_field(
-                name=tr("module install", tr("module install", "stderr")),
-                value="```" + stderr + "```",
+                name=tr("module install", "stderr"),
+                value="```" + download_stderr[:1010] + "```",
                 inline=False,
             )
-            tempdir.cleanup()
             return await ctx.send(embed=embed)
 
         # verify metadata validity
-        repo_check = Admin.verify_module_repo(repo.working_dir)
+        repo_check = Admin._verify_module_repo(path=workdir)
         if not repo_check.valid:
             tempdir.cleanup()
             return await ctx.send(tr("verify_module_repo", repo_check.text, **repo_check.kwargs))
@@ -67,20 +68,24 @@ class Admin(commands.Cog):
             return await ctx.send(tr("module install", "exists", name=repo_name))
 
         # install requirements
-        if os.path.isfile(os.path.join(repo.working_dir, "requirements.txt")):
-            # This should even work for the `venv` environment
-            subprocess.check_call[
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "-r",
-                os.path.join(repo.working_dir, "requirements.txt"),
-            ]
+        repo_deps = Admin._install_module_requirements(path=workdir)
+        if repo_deps.returncode != 0:
+            tempdir.cleanup()
+            embed = utils.Discord.create_embed(
+                error=True,
+                author=ctx.author,
+                title=tr("module install", "requirements error"),
+            )
+            embed.add_field(
+                name=tr("module install", "stderr"),
+                value="```" + repo_deps.stderr.decode("utf-8").strip()[:1010] + "```",
+                inline=False,
+            )
+            return await ctx.send(embed=repo_deps)
 
         # move to modules/
         module_location = shutil.copy2(
-            repo.working_dir,
+            workdir,
             os.path.join(currpath, "modules", repo_name),
             follow_symlinks=False,
         )
@@ -95,10 +100,12 @@ class Admin(commands.Cog):
         )
         tempdir.cleanup()
 
+    @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @module.command(name="update")
     async def module_update(self, ctx, name: str):
         pass
 
+    @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @module.command(name="uninstall")
     async def module_uninstall(self, ctx, name: str):
         pass
@@ -182,7 +189,31 @@ class Admin(commands.Cog):
         logger.info("Avatar changed, the URL was " + url + ".")
 
     @staticmethod
-    def verify_module_repo(*, path: str) -> ModuleVerifyResult:
+    def _download_module_repo(*, url: str, dir: str) -> Optional[str]:
+        """Download repository to given directory.
+
+        Arguments
+        ---------
+        url: A link to valid git repository containing the supermodule.
+        dir: Path for git to download the repository.
+
+        Returns
+        -------
+        - str: An error that occured.
+        - None: Download was succesfull.
+        """
+        try:
+            git.repo.base.Repo.clone_from(url, os.path.join("dir", "newmodule"))
+        except git.exc.GitError as exc:
+            if type(exc) == git.exc.GitCommandError and "does not exist" in str(exc):
+                return tr("_download_module_repo", "bad url")
+
+            stderr: str = str(exc)[str(exc).find("stderr: ") + 8 :]
+            return stderr
+        return None
+
+    @staticmethod
+    def _verify_module_repo(*, path: str) -> ModuleVerifyResult:
         """Verify the module repository.
 
         The file ``__init__.py`` has to have variables ``__name__``,
@@ -196,7 +227,7 @@ class Admin(commands.Cog):
 
         Arguments
         ---------
-        path: Path to cloned repository
+        path: A path to cloned repository.
 
         Returns
         -------
@@ -213,26 +244,65 @@ class Admin(commands.Cog):
             for key, value in [line.split("=") for line in lines if "=" in line]:
                 info[key.strip()] = value.strip()
         for key in ("__all__", "__name__", "__version__"):
-            key = utils.Discord.sanitise(key)
-            if key not in info:
-                return ModuleVerifyResult(False, "missing value", {"value": key})
+            if key not in info.keys():
+                return ModuleVerifyResult(
+                    False, "missing value", {"value": utils.Text.sanitise(key)}
+                )
+        # supermodule version
+        info["version"] = info["__version__"].strip("\"'")
         # supermodule name
-        if re.fullmatch(r"[a-z-]", info["__name__"]) is None:
-            name = utils.Discord.sanitise(info["__name__"])
-            return ModuleVerifyResult(False, "invalid name", {"name": name})
+        info["name"] = info["__name__"].strip("\"'")
+        if re.fullmatch(r"[a-z-]+", info["name"]) is None:
+            return ModuleVerifyResult(
+                False, "invalid name", {"__name__": utils.Text.sanitise(info["name"])}
+            )
         # supermodule list
         modules = []
         for key in info["__all__"].strip("()[]").split(","):
             module = key.strip().replace('"', "")
-            module = utils.Discord.sanitise(module)
-            if re.fullmatch(r"[a-z]", module) is None:
-                return ModuleVerifyResult(False, "invalid module", {"name": module})
+            if re.fullmatch(r"[a-z-]+", module) is None:
+                return ModuleVerifyResult(
+                    False, "invalid module name", {"__name__": utils.Text.sanitise(module)}
+                )
             if not os.path.isdir(os.path.join(path, module)):
-                return ModuleVerifyResult(False, "missing module", {"name": module})
+                return ModuleVerifyResult(
+                    False, "missing module", {"__name__": utils.Text.sanitise(module)}
+                )
             modules.append(module)
-        info["__all__"] = modules
+        info["all"] = tuple(modules)
 
         return (True, "ok", info)
+
+    @staticmethod
+    def _install_module_requirements(*, path: str) -> Optional[subprocess.CompletedProcess]:
+        """Install new packages from requirements.txt file.
+
+        Arguments
+        ---------
+        path: A Path to the repository.
+
+        Returns
+        -------
+        - subprocess.CompletedProcess: Succesfull installation result
+        - discord.Embed: Installation fail result
+        - None: The file was not found
+        """
+        filepath = os.path.join(path, "requirements.txt")
+        if os.path.isfile(filepath):
+            # This should work even in the `venv` environment
+            result = subprocess.run(  # nosec: B603
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "-r",
+                    os.path.join(path, "requirements.txt"),
+                ],
+                capture_output=True,
+            )
+            return result
+        return None
 
 
 def setup(bot) -> None:
