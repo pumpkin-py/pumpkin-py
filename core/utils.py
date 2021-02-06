@@ -4,7 +4,7 @@ from typing import Union
 import discord
 from discord.ext import commands
 
-import text
+from core import text
 
 tr = text.Translator(__file__).translate
 
@@ -13,7 +13,7 @@ class Text:
     """Text manipulation functions"""
 
     @staticmethod
-    def sanitise(string: str, *, limit: int = 512, escape: bool = True) -> str:
+    def sanitise(string: str, *, limit: int = 2000, escape: bool = True) -> str:
         """Sanitise string.
 
         Arguments

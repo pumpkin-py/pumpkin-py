@@ -6,5 +6,6 @@
 venv/
 .env
 __pycache__
+.cache/
 # Bot data
 logs/*
