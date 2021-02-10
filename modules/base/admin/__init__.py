@@ -194,7 +194,7 @@ class Admin(commands.Cog):
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @repository.command(name="uninstall")
     async def repository_uninstall(self, ctx, name: str):
-        if name == "base":
+        if name in ("core", "base"):
             return await ctx.send(
                 tr(
                     "repository uninstall",
@@ -405,6 +405,8 @@ class Admin(commands.Cog):
         # repository name
         name = init["__name__"]
         if re.fullmatch(r"[a-z-]+", name) is None:
+            return Repository(False, "invalid name", {"name": utils.Text.sanitise(name)})
+        if name in ("core", "base"):
             return Repository(False, "invalid name", {"name": utils.Text.sanitise(name)})
 
         # repository modules
