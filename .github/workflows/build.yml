@@ -37,8 +37,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install wheel
+        python3 -m pip install --upgrade pip wheel
         python3 -m pip install --upgrade --upgrade-strategy eager -r requirements.txt
         python3 -m pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt
 
