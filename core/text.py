@@ -1,12 +1,17 @@
 import configparser
 import os
 
+from core import config as configfile
+
+
+config = configfile.get_config()
+
 
 class Translator:
     def __init__(self, file: str):
         self._directory = os.path.dirname(os.path.realpath(file))
-        self._language = os.getenv("BOT_LANGUAGE", "en")
-        self._gender = os.getenv("BOT_GENDER", "m")
+        self._language = config.language
+        self._gender = config.gender
 
         self._filename = os.path.join(self._directory, "lang." + self._language + ".ini")
         # Set 'en' as a fallback language

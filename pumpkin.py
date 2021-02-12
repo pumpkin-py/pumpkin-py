@@ -7,6 +7,9 @@ import discord
 from discord.ext import commands
 
 from core.help import Help
+from core import config as configfile
+from database import session
+from database import database
 
 
 # Setup logging
@@ -29,18 +32,6 @@ def test_dotenv() -> None:
     if type(os.getenv("TOKEN")) != str:
         logger.critical("TOKEN is not set.")
         sys.exit(1)
-    if type(os.getenv("BOT_PREFIX")) != str:
-        logger.critical("BOT_PREFIX is not set.")
-        sys.exit(1)
-    if os.getenv("BOT_MENTIONPREFIX") not in ("0", "1"):
-        logger.critical("BOT_MENTIONPREFIX has to be '0' or '1'.")
-        sys.exit(1)
-    if type(os.getenv("BOT_LANGUAGE")) != str:
-        logger.critical("BOT_LANGUAGE is not set.")
-        sys.exit(1)
-    if os.getenv("BOT_GENDER") not in ("m", "f"):
-        logger.critical("BOT_GENDER has to be 'm' or 'f'.")
-        sys.exit(1)
 
 
 test_dotenv()
@@ -53,14 +44,25 @@ os.chdir(root_path)
 del root_path
 
 
+# Setup core database tables
+
+
+database.base.metadata.drop_all(database.db)
+database.base.metadata.create_all(database.db)
+session.commit()  # Making sure
+
+
+# Setup config object
+config = configfile.get_config()
+
 # Setup discord.py
 
 
 def get_prefix() -> str:
     """Get bot prefix with optional mention function"""
-    if os.getenv("BOT_MENTIONPREFIX") == "1":
-        return commands.when_mentioned_or(os.getenv("BOT_PREFIX"))
-    return os.getenv("BOT_PREFIX")
+    if config.mention_as_prefix is True:
+        return commands.when_mentioned_or(config.prefix)
+    return config.prefix
 
 
 intents = discord.Intents.default()
