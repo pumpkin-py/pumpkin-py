@@ -2,13 +2,13 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-    - "**/*.py"
-    - "**/*.json"
-    - "**/*.yml"
+      - "**/*.py"
+      - "**/*.json"
+      - "**/*.yml"
   pull_request:
-    types: [ opened, reopened, synchronize ]
+    types: [opened, reopened, synchronize]
 
 jobs:
   build:
@@ -19,40 +19,45 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Restore cache
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('requirements*') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ matrix.python-version }}-
-          ${{ runner.os }}-
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('requirements*') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.python-version }}-
+            ${{ runner.os }}-
 
-    - name: Install dependencies
-      run: |
-        python3 -m pip install --upgrade pip wheel
-        python3 -m pip install --upgrade --upgrade-strategy eager -r requirements.txt
-        python3 -m pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt
+      - name: Setup environment
+        run: |
+          export DB_STRING="sqlite://pumpkin.py"
+          export TOKEN=0
 
-    - name: Check the code formatting
-      run: |
-        black . --diff
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip wheel
+          python3 -m pip install --upgrade --upgrade-strategy eager -r requirements.txt
+          python3 -m pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt
 
-    - name: Check the code for errors
-      run: |
-        flake8 . --count --statistics
+      - name: Check the code formatting
+        run: |
+          black . --diff
 
-    - name: Check TODOs
-      run: |
-        flake8 . --select=T --show-source --exit-zero
+      - name: Check the code for errors
+        run: |
+          flake8 . --count --statistics
 
-    - name: Run pytest
-      run: |
-        pytest -v tests/
+      - name: Check TODOs
+        run: |
+          flake8 . --select=T --show-source --exit-zero
+
+      - name: Run pytest
+        run: |
+          pytest -v tests/
