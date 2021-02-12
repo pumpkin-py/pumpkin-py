@@ -58,6 +58,6 @@ jobs:
         run: |
           flake8 . --select=T --show-source --exit-zero
 
-      - name: Run pytest
-        run: |
-          pytest -v tests/
+      #- name: Run pytest
+      #  run: |
+      #    pytest -v tests/
