@@ -10,3 +10,4 @@ __pycache__
 logs/*
 modules/*/
 !modules/base
+pumpkin.db

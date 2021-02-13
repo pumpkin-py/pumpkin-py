@@ -6,20 +6,8 @@ import logging.config
 import discord
 from discord.ext import commands
 
-from core.help import Help
-from core import config as configfile
-from database import session
-from database import database
-
-
-# Setup logging
-
-
-if not os.path.exists("logs/"):
-    os.mkdir("logs/")
-
-logging.config.fileConfig("core/log.conf")
-logger = logging.getLogger("pumpkin_log")
+import database
+import database.config
 
 
 # Setup checks
@@ -27,10 +15,10 @@ logger = logging.getLogger("pumpkin_log")
 
 def test_dotenv() -> None:
     if type(os.getenv("DB_STRING")) != str:
-        logger.critical("DB_STRING is not set.")
+        print("DB_STRING is not set.", file=sys.stderr)
         sys.exit(1)
     if type(os.getenv("TOKEN")) != str:
-        logger.critical("TOKEN is not set.")
+        print("TOKEN is not set.", file=sys.stderr)
         sys.exit(1)
 
 
@@ -38,6 +26,7 @@ test_dotenv()
 
 
 # Move to the script's home directory
+
 
 root_path = os.path.dirname(os.path.abspath(__file__))
 os.chdir(root_path)
@@ -47,13 +36,30 @@ del root_path
 # Setup core database tables
 
 
-database.base.metadata.drop_all(database.db)
-database.base.metadata.create_all(database.db)
-session.commit()  # Making sure
+def database_init(drop: bool = None) -> None:
+    if drop:
+        database.database.base.metadata.drop_all(database.database.db)
+    database.database.base.metadata.create_all(database.database.db)
+    database.session.commit()
+
+
+database_init()
+
+
+# Stop the execution if we're doing something else
+
+
+if __name__ != "__init__":
+    sys.exit(0)
 
 
 # Setup config object
+
+
+from core import config as configfile
+
 config = configfile.get_config()
+
 
 # Setup discord.py
 
@@ -69,12 +75,24 @@ intents = discord.Intents.default()
 intents.members = True
 
 
+from core.help import Help
+
 bot = commands.Bot(
     allowed_mentions=discord.AllowedMentions(roles=False, everyone=False, users=True),
     command_prefix=get_prefix(),
     help_command=Help(),
     intents=intents,
 )
+
+
+# Setup logging
+
+
+if not os.path.exists("logs/"):
+    os.mkdir("logs/")
+
+logging.config.fileConfig("core/log.conf")
+logger = logging.getLogger("pumpkin_log")
 
 
 # Setup listeners
@@ -106,6 +124,5 @@ for module in modules:
 
 
 # Run the bot
-
 
 bot.run(os.getenv("TOKEN"))
