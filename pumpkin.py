@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 import logging
@@ -33,24 +34,34 @@ os.chdir(root_path)
 del root_path
 
 
-# Setup core database tables
-
-
-def database_init(drop: bool = None) -> None:
-    if drop:
-        database.database.base.metadata.drop_all(database.database.db)
-    database.database.base.metadata.create_all(database.database.db)
-    database.session.commit()
-
-
-database_init()
-
-
 # Stop the execution if we're doing something else
 
 
 if __name__ != "__main__":
     sys.exit(0)
+
+
+# Setup core database tables
+
+
+def database_init(drop: bool = None) -> None:
+    if drop:
+        print("Wiping database...")
+        database.database.base.metadata.drop_all(database.database.db)
+    database.database.base.metadata.create_all(database.database.db)
+    database.session.commit()
+
+
+# parse arguments
+argparser = argparse.ArgumentParser(prog="pumpkin.py")
+argparser.add_argument(
+    "--wipe",
+    help="drop the database tables",
+    action="store_true",
+)
+args = argparser.parse_args()
+
+database_init(drop=args.wipe)
 
 
 # Setup config object
@@ -68,8 +79,10 @@ def _prefix_callable(bot, message) -> str:
     """Get bot prefix with optional mention function"""
     # TODO This should be extended for per-guild prefixes as dict
     # See https://github.com/Rapptz/RoboDanny/blob/rewrite/bot.py:_prefix_callable()
-    user_id = bot.user.id
-    base = [f"<@!{user_id}> ", f"<@{user_id}> "]
+    base = []
+    if config.mention_as_prefix:
+        user_id = bot.user.id
+        base += [f"<@!{user_id}> ", f"<@{user_id}> "]
     # TODO guild condition
     base.append(config.prefix)
     return base

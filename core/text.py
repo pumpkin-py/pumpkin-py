@@ -1,10 +1,9 @@
 import configparser
 import os
 
-from core import config as configfile
+from database.config import Config
 
-
-config = configfile.get_config()
+config = Config.get()
 
 
 class Translator:
