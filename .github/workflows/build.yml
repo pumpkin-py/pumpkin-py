@@ -35,11 +35,6 @@ jobs:
             ${{ runner.os }}-${{ matrix.python-version }}-
             ${{ runner.os }}-
 
-      - name: Setup environment
-        run: |
-          export DB_STRING="sqlite://pumpkin.py"
-          export TOKEN=0
-
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip wheel
@@ -58,6 +53,9 @@ jobs:
         run: |
           flake8 . --select=T --show-source --exit-zero
 
-      #- name: Run pytest
-      #  run: |
-      #    pytest -v tests/
+      - name: Run pytest
+        run: |
+          export DB_STRING=sqlite:///pumpkin.db
+          export TOKEN=0
+          python3 -c "import pumpkin; pumpkin.database_init()"
+          pytest -v tests/

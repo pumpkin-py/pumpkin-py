@@ -1,6 +1,9 @@
 [flake8]
 select = C,E,F,W,B
 ignore = E128,E203,E501,W503
+per-file-ignores =
+	# module level import not at top of file
+	pumpkin.py:E402
 exclude = .git,.venv
 count = True
 max-complexity = 25
