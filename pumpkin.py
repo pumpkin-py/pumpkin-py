@@ -34,14 +34,7 @@ os.chdir(root_path)
 del root_path
 
 
-# Stop the execution if we're doing something else
-
-
-if __name__ != "__main__":
-    sys.exit(0)
-
-
-# Setup core database tables
+# Parser arguments
 
 
 def database_init(drop: bool = None) -> None:
@@ -52,24 +45,33 @@ def database_init(drop: bool = None) -> None:
     database.session.commit()
 
 
-# parse arguments
 argparser = argparse.ArgumentParser(prog="pumpkin.py")
 argparser.add_argument(
-    "--wipe",
+    "--wipe-database",
     help="drop the database tables",
+    action="store_true",
+)
+argparser.add_argument(
+    "--create-database",
+    help="create the database and exit",
     action="store_true",
 )
 args = argparser.parse_args()
 
-database_init(drop=args.wipe)
+database_init(drop=args.wipe_database)
 
 
-# Setup config object
+# Load or create config object
 
 
-from database.config import Config
+config = database.config.Config.get()
 
-config = Config.get()
+
+# Stop the execution if we're doing something else
+
+
+if __name__ != "__main__" or args.create_database:
+    sys.exit(0)
 
 
 # Setup discord.py

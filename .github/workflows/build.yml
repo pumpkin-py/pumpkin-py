@@ -57,5 +57,5 @@ jobs:
         run: |
           export DB_STRING=sqlite:///pumpkin.db
           export TOKEN=0
-          python3 -c "import pumpkin; pumpkin.database_init()"
+          python3 pumpkin.py --create-database
           pytest -v tests/
