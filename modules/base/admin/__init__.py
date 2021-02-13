@@ -327,6 +327,7 @@ class Admin(commands.Cog):
             name=tr("config get", "prefix"),
             value=str(config.prefix)
             + ((" " + tr("config get", "mention")) if config.mention_as_prefix else ""),
+            inline=False,
         )
         embed.add_field(
             name=tr("config get", "language"),
@@ -336,26 +337,41 @@ class Admin(commands.Cog):
             name=tr("config get", "gender"),
             value=config.gender,
         )
+        embed.add_field(
+            name=tr("config get", "status"),
+            value=config.status,
+        )
         await ctx.send(embed=embed)
 
     @config_.command(name="set")
     async def config_set(self, ctx, key: str, value: str):
-        keys = ("prefix", "mention_as_prefix", "language", "gender")
+        keys = ("prefix", "mention_as_prefix", "language", "gender", "status")
         if key not in keys:
             return await ctx.send(
                 tr(
                     "config set",
                     "bad key",
-                    keys=", ".join([f"`{k}`" for k in keys]),
+                    keys=", ".join(f"`{k}`" for k in keys),
                 )
             )
         if key == "mention_as_prefix":
             value = utils.Text.parse_bool(value)
         if value is None or not len(str(value)):
             return await ctx.send(tr("config set", "invalid value"))
+
         languages = ("en", "cs")
         if key == "language" and value not in languages:
             return await ctx.send(tr("config set", "invalid language"))
+        genders = ("m", "f")
+        if key == "gender" and value not in genders:
+            return await ctx.send(
+                tr("config set", "bad gender", genders=", ".join(f"`{g}`" for g in genders))
+            )
+        states = ("online", "idle", "dnd", "invisible")
+        if key == "status" and value not in states:
+            return await ctx.send(
+                tr("config set", "bad status", states=", ".join(f"`{s}`" for s in states))
+            )
 
         if key == "prefix":
             config.prefix = value
@@ -364,9 +380,15 @@ class Admin(commands.Cog):
         elif key == "language":
             config.language = value
         elif key == "gender":
-            config.language = value
+            config.gender = value
+        elif key == "status":
+            config.status = value
+            await self.bot.change_presence(status=getattr(discord.Status, value))
 
+        config.save()
         await self.config_get(ctx)
+        if key in ("language", "gender"):
+            await ctx.send(tr("config set", "reload"))
 
     #
 
