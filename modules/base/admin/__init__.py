@@ -346,7 +346,7 @@ class Admin(commands.Cog):
                 tr(
                     "config set",
                     "bad key",
-                    keys=" ".join([f"`{utils.Text.sanitise(k)}`" for k in keys]),
+                    keys=", ".join([f"`{k}`" for k in keys]),
                 )
             )
         if key == "mention_as_prefix":
@@ -358,11 +358,8 @@ class Admin(commands.Cog):
             return await ctx.send(tr("config set", "invalid language"))
 
         if key == "prefix":
-            self.bot.prefix = value
             config.prefix = value
         elif key == "mention_as_prefix":
-            prefix = commands.when_mentioned_or(config.prefix) if value else config.prefix
-            self.bot.command_prefix = prefix
             config.mention_as_prefix = value
         elif key == "language":
             config.language = value
