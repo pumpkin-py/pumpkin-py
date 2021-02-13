@@ -19,7 +19,7 @@ class Translator:
             self._filename = os.path.join(self._directory, "lang.en.ini")
         # Verify file existence
         if not os.path.isfile(self._filename):
-            raise ValueError(f"Translation file '{self._filename}' does not exist.")
+            raise ValueError(f'Translation file "{self._filename}" does not exist.')
 
         self.data = configparser.ConfigParser()
         self.data.read(self._filename)
@@ -44,7 +44,7 @@ class Translator:
         # get key
         if command not in self.data:
             raise ValueError(
-                f"Translation file '{self._filename}' does not have command '{command}'.",
+                f'Translation file "{self._filename}" does not have command "{command}".',
             )
 
         if string + "." + self._gender in self.data[command]:
@@ -55,8 +55,8 @@ class Translator:
             pass
         else:
             raise ValueError(
-                f"Translation file '{self._filename}' "
-                f"does not have key '{string}' for command '{command}'.",
+                f'Translation file "{self._filename}" '
+                f'does not have key "{string}" for command "{command}".',
             )
 
         result = self.data[command][string]
@@ -65,8 +65,8 @@ class Translator:
         for key, value in values.items():
             if "((" + key + "))" not in result:
                 raise ValueError(
-                    f"String '{string}' in command '{command}' in translation file "
-                    f"'{self._filename}' does not have substitution key '{key}'.",
+                    f'String "{string}" in command "{command}" in translation file '
+                    f'"{self._filename}" does not have substitution key "{key}".',
                 )
             result = result.replace("((" + key + "))", str(value))
 

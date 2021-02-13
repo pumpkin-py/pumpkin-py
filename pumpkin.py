@@ -49,26 +49,30 @@ database_init()
 # Stop the execution if we're doing something else
 
 
-if __name__ != "__init__":
+if __name__ != "__main__":
     sys.exit(0)
 
 
 # Setup config object
 
 
-from core import config as configfile
+from database.config import Config
 
-config = configfile.get_config()
+config = Config.get()
 
 
 # Setup discord.py
 
 
-def get_prefix() -> str:
+def _prefix_callable(bot, message) -> str:
     """Get bot prefix with optional mention function"""
-    if config.mention_as_prefix is True:
-        return commands.when_mentioned_or(config.prefix)
-    return config.prefix
+    # TODO This should be extended for per-guild prefixes as dict
+    # See https://github.com/Rapptz/RoboDanny/blob/rewrite/bot.py:_prefix_callable()
+    user_id = bot.user.id
+    base = [f"<@!{user_id}> ", f"<@{user_id}> "]
+    # TODO guild condition
+    base.append(config.prefix)
+    return base
 
 
 intents = discord.Intents.default()
@@ -79,7 +83,7 @@ from core.help import Help
 
 bot = commands.Bot(
     allowed_mentions=discord.AllowedMentions(roles=False, everyone=False, users=True),
-    command_prefix=get_prefix(),
+    command_prefix=_prefix_callable,
     help_command=Help(),
     intents=intents,
 )

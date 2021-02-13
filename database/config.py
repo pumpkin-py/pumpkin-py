@@ -14,6 +14,13 @@ class Config(database.base):
     language = Column(String, default="en")
     gender = Column(String, default="m")
 
+    @staticmethod
+    def get():
+        result = session.query(Config).one_or_none()
+        if result is None:
+            result = session.add(Config())
+        return result
+
     def save(self):
         # Checks if there is one Config row in the table
         try:
@@ -35,3 +42,9 @@ class Config(database.base):
             print("updating")
             session.add(self)
             session.commit()
+
+    def __repr__(self):
+        return (
+            f'<Config prefix="{self.prefix}" mention_as_prefix="{self.mention_as_prefix}" '
+            f'language="{self.language}" gender="{self.gender}"'
+        )
