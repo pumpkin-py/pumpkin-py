@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Union
+from typing import List, Union, Optional
 
 import discord
 from discord.ext import commands
@@ -36,6 +36,24 @@ class Text:
         limit: How long the strings should be.
         """
         return list(string[0 + i : limit + i] for i in range(0, len(string), limit))
+
+    @staticmethod
+    def parse_bool(string: str) -> Optional[bool]:
+        """Parse string into a boolean.
+
+        Pass "1", "True", "true" for True.
+        Pass "0", "False", "false" for False.
+        Other keywords return None.
+
+        Arguments
+        ---------
+        string: Text to be parsed.
+        """
+        if string in (1, "1", "True", "true"):
+            return True
+        if string in (0, "0", "False", "false"):
+            return False
+        return None
 
 
 class Time:

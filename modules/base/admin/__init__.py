@@ -13,8 +13,10 @@ import discord
 from discord.ext import commands
 
 from core import text, utils
+from database import config as configfile
 
 tr = text.Translator(__file__).translate
+config = configfile.Config.get()
 logger = logging.getLogger("pumpkin_log")
 
 
@@ -310,6 +312,64 @@ class Admin(commands.Cog):
 
         await ctx.send(tr("pumpkin avatar", "reply"))
         logger.info("Avatar changed, the URL was " + url + ".")
+
+    @commands.group(name="config")
+    async def config_(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @config_.command(name="get")
+    async def config_get(self, ctx):
+        embed = utils.Discord.create_embed(
+            author=ctx.author,
+            title=tr("config get", "title"),
+        )
+        embed.add_field(
+            name=tr("config get", "prefix"),
+            value=str(config.prefix)
+            + ((" " + tr("config get", "mention")) if config.mention_as_prefix else ""),
+        )
+        embed.add_field(
+            name=tr("config get", "language"),
+            value=config.language,
+        )
+        embed.add_field(
+            name=tr("config get", "gender"),
+            value=config.gender,
+        )
+        await ctx.send(embed=embed)
+
+    @config_.command(name="set")
+    async def config_set(self, ctx, key: str, value: str):
+        keys = ("prefix", "mention_as_prefix", "language", "gender")
+        if key not in keys:
+            return await ctx.send(
+                tr(
+                    "config set",
+                    "bad key",
+                    keys=" ".join([f"`{utils.Text.sanitise(k)}`" for k in keys]),
+                )
+            )
+        if key == "mention_as_prefix":
+            value = utils.Text.parse_bool(value)
+        if value is None or not len(str(value)):
+            return await ctx.send(tr("config set", "invalid value"))
+        languages = ("en", "cs")
+        if key == "language" and value not in languages:
+            return await ctx.send(tr("config set", "invalid language"))
+
+        if key == "prefix":
+            self.bot.prefix = value
+            config.prefix = value
+        elif key == "mention_as_prefix":
+            prefix = commands.when_mentioned_or(config.prefix) if value else config.prefix
+            self.bot.command_prefix = prefix
+            config.mention_as_prefix = value
+        elif key == "language":
+            config.language = value
+        elif key == "gender":
+            config.language = value
+
+        await self.config_get(ctx)
 
     #
 
