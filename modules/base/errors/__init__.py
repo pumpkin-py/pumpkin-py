@@ -5,6 +5,7 @@ from typing import Tuple
 import discord
 from discord.ext import commands
 
+import core.exceptions
 from core import text, utils
 
 
@@ -67,6 +68,15 @@ class Errors(commands.Cog):
         show_traceback: Whether to display traceback.
         inform: Whether to send the error for further inspection
         """
+
+        # pumpkin.py own exceptions
+        if type(error) == core.exceptions.BadTranslation:
+            return (
+                tr("pumpkin.py", type(error).__name__),
+                str(error),
+                False,
+                True,
+            )
 
         # interactions
         if type(error) == commands.MissingRequiredArgument:

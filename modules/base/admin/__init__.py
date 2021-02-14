@@ -390,9 +390,6 @@ class Admin(commands.Cog):
         if key in ("prefix", "status"):
             await utils.Discord.update_presence(self.bot)
 
-        if key in ("language", "gender"):
-            await ctx.send(tr("config set", "reload"))
-
     #
 
     @staticmethod
