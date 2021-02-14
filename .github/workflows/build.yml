@@ -55,7 +55,5 @@ jobs:
 
       - name: Run pytest
         run: |
-          export DB_STRING=sqlite:///pumpkin.db
-          export TOKEN=0
-          python3 pumpkin.py --create-database
-          pytest -v tests/
+          DB_STRING=sqlite:///test.db TOKEN=0 python3 pumpkin.py --create-database
+          DB_STRING=sqlite:///test.db pytest -v tests/

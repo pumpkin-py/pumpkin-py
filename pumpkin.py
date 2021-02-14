@@ -9,7 +9,6 @@ from discord.ext import commands
 
 import database
 import database.config
-from core import utils
 
 
 # Setup checks
@@ -94,7 +93,7 @@ def _prefix_callable(bot, message) -> str:
 intents = discord.Intents.default()
 intents.members = True
 
-
+from core import utils
 from core.help import Help
 
 bot = commands.Bot(
