@@ -9,6 +9,7 @@ from discord.ext import commands
 
 import database
 import database.config
+from core import utils
 
 
 # Setup checks
@@ -121,6 +122,7 @@ logger = logging.getLogger("pumpkin_log")
 async def on_ready():
     """If bot is ready."""
     logger.info("The pie is ready.")
+    await utils.Discord.update_presence(bot)
 
 
 @bot.event
