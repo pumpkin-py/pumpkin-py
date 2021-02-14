@@ -5,8 +5,10 @@ import discord
 from discord.ext import commands
 
 from core import text
+from database.config import Config
 
 tr = text.Translator(__file__).translate
+config = Config.get()
 
 
 class Text:
@@ -192,3 +194,14 @@ class Discord:
         except discord.HTTPException:
             return False
         return True
+
+    @staticmethod
+    async def update_presence(bot: commands.Bot) -> None:
+        """Update the bot presence.
+
+        The Activity is always set to <prefix>help.
+        The Status is loaded from the database.
+        """
+        status = getattr(discord.Status, config.status)
+        activity = discord.Game(start=datetime.datetime.utcnow(), name=config.prefix + "help")
+        await bot.change_presence(status=status, activity=activity)

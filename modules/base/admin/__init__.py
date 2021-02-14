@@ -383,10 +383,13 @@ class Admin(commands.Cog):
             config.gender = value
         elif key == "status":
             config.status = value
-            await self.bot.change_presence(status=getattr(discord.Status, value))
 
         config.save()
         await self.config_get(ctx)
+
+        if key in ("prefix", "status"):
+            await utils.Discord.update_presence(self.bot)
+
         if key in ("language", "gender"):
             await ctx.send(tr("config set", "reload"))
 
