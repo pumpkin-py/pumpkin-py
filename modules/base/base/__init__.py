@@ -1,10 +1,17 @@
 import datetime
+import logging
 
+import discord
 from discord.ext import commands
 
 from core import text, utils
 
+from .database import BaseBasePin as Pin
+
 tr = text.Translator(__file__).translate
+
+logging.config.fileConfig("core/log.conf")
+logger = logging.getLogger("pumpkin")
 
 
 class Base(commands.Cog):
@@ -38,6 +45,47 @@ class Base(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+        """Handle message pinning."""
+        emoji = getattr(payload.emoji, "name", None)
+        if emoji != "📌":
+            return
+
+        channel = self.bot.get_channel(payload.channel_id)
+        if type(channel) != discord.TextChannel:
+            return
+
+        try:
+            message: discord.Message = await channel.fetch_message(payload.message_id)
+        except discord.errors.HTTPException as exc:
+            logger.error(f"Could not find message while pinnig: {exc}.")
+            return
+
+        for reaction in message.reactions:
+            if reaction.emoji != "📌":
+                continue
+
+            # remove if the message is pinned or is in unpinnable channel
+            # TODO Unpinnable channels
+            if message.pinned or False:
+                await reaction.clear()
+                return
+
+            # stop if there is not enough pins
+            if reaction.count < Pin().get(payload.guild_id).limit:
+                return
+
+            # TODO Log members that pinned the message
+            try:
+                await message.pin()
+            except discord.errors.HTTPException as exc:
+                logger.error(f"Could not pin message: {exc}.")
+                return
+
+            await reaction.clear()
+            await message.add_reaction("📍")
 
 
 def setup(bot) -> None:
