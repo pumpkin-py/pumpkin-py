@@ -55,5 +55,5 @@ jobs:
 
       - name: Run pytest
         run: |
-          DB_STRING=sqlite:///test.db TOKEN=0 python3 pumpkin.py --create-database
+          DB_STRING=sqlite:///test.db python3 -c "import database; database.init_core(); database.init_modules();"
           DB_STRING=sqlite:///test.db pytest -v tests/
