@@ -76,7 +76,7 @@ from core import text, utils
 
 
 logging.config.fileConfig("core/log.conf")
-logger = logging.getLogger("pumpkin_log")
+logger = logging.getLogger("pumpkin")
 
 tr = text.Translator(__file__).translate
 

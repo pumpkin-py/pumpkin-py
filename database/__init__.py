@@ -7,7 +7,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-logger = logging.getLogger("pumpkin_log")
+logging.config.fileConfig("core/log.conf")
+logger = logging.getLogger("pumpkin")
 
 
 class Database:
