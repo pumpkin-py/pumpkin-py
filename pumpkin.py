@@ -36,7 +36,8 @@ del root_path
 # Database
 
 
-database.initiate()
+database.init_core()
+database.init_modules()
 
 
 # Load or create config object
