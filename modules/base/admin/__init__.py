@@ -17,7 +17,9 @@ from database import config as configfile
 
 tr = text.Translator(__file__).translate
 config = configfile.Config.get()
-logger = logging.getLogger("pumpkin_log")
+
+logging.config.fileConfig("core/log.conf")
+logger = logging.getLogger("pumpkin")
 
 
 class Repository:

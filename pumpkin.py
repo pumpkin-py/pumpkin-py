@@ -81,7 +81,7 @@ if not os.path.exists("logs/"):
     os.mkdir("logs/")
 
 logging.config.fileConfig("core/log.conf")
-logger = logging.getLogger("pumpkin_log")
+logger = logging.getLogger("pumpkin")
 
 
 # Setup listeners

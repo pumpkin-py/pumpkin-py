@@ -5,6 +5,8 @@ from database import session
 
 
 class Config(database.base):
+    """Global bot configuration."""
+
     __tablename__ = "config"
 
     idx = Column(Integer, primary_key=True, autoincrement=True)
@@ -16,6 +18,7 @@ class Config(database.base):
 
     @staticmethod
     def get():
+        """Get instance of global bot settings. If there is none, it will be created."""
         query = session.query(Config).one_or_none()
         if query is None:
             query = Config()
@@ -24,6 +27,7 @@ class Config(database.base):
         return query
 
     def save(self):
+        """Save global settings."""
         session.merge(self)
         session.commit()
         return
