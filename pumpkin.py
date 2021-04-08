@@ -1,4 +1,3 @@
-import argparse
 import os
 import sys
 import logging
@@ -34,44 +33,16 @@ os.chdir(root_path)
 del root_path
 
 
-# Parser arguments
+# Database
 
 
-def database_init(drop: bool = None) -> None:
-    if drop:
-        print("Wiping database...")
-        database.database.base.metadata.drop_all(database.database.db)
-    database.database.base.metadata.create_all(database.database.db)
-    database.session.commit()
-
-
-argparser = argparse.ArgumentParser(prog="pumpkin.py")
-argparser.add_argument(
-    "--wipe-database",
-    help="drop the database tables",
-    action="store_true",
-)
-argparser.add_argument(
-    "--create-database",
-    help="create the database and exit",
-    action="store_true",
-)
-args = argparser.parse_args()
-
-database_init(drop=args.wipe_database)
+database.initiate()
 
 
 # Load or create config object
 
 
 config = database.config.Config.get()
-
-
-# Stop the execution if we're doing something else
-
-
-if __name__ != "__main__" or args.create_database:
-    sys.exit(0)
 
 
 # Setup discord.py
@@ -90,8 +61,7 @@ def _prefix_callable(bot, message) -> str:
     return base
 
 
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents.all()
 
 from core import utils
 from core.help import Help
