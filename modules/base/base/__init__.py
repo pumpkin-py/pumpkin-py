@@ -10,7 +10,6 @@ from .database import BaseBasePin as Pin
 
 tr = text.Translator(__file__).translate
 
-logging.config.fileConfig("core/log.conf")
 logger = logging.getLogger("pumpkin")
 
 
@@ -70,6 +69,7 @@ class Base(commands.Cog):
             # remove if the message is pinned or is in unpinnable channel
             # TODO Unpinnable channels
             if message.pinned or False:
+                logger.debug(f"Removing {payload.user_id}'s pin: Message is already pinned.")
                 await reaction.clear()
                 return
 
@@ -80,6 +80,13 @@ class Base(commands.Cog):
             # TODO Log members that pinned the message
             try:
                 await message.pin()
+                logger.info(
+                    "Pinning message {0.id} in #{1.name} ({1.id}) in {2.name} ({2.id}).".format(
+                        message,
+                        message.channel,
+                        message.guild,
+                    )
+                )
             except discord.errors.HTTPException as exc:
                 logger.error(f"Could not pin message: {exc}.")
                 return

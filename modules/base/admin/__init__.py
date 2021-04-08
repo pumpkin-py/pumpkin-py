@@ -18,7 +18,6 @@ from database import config as configfile
 tr = text.Translator(__file__).translate
 config = configfile.Config.get()
 
-logging.config.fileConfig("core/log.conf")
 logger = logging.getLogger("pumpkin")
 
 
