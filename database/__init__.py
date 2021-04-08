@@ -41,9 +41,6 @@ def _list_directory_directories(directory: str) -> List[str]:
 
 def _import_database_tables():
     """Import database tables from the "modules/" directory."""
-    # Guarantee all finders will notice new modules.
-    importlib.invalidate_caches()
-
     repositories: List[str] = _list_directory_directories("modules")
     for repository in repositories:
         modules: List[str] = _list_directory_directories(repository)
@@ -67,8 +64,18 @@ def _import_database_tables():
                 logger.error(f"Could not import database models in {import_stub}: {exc}.")
 
 
-def initiate():
+def init_core():
+    """Load core models and create their tables."""
+    # Import core tables
+    importlib.import_module("database.config")
+
+    database.base.metadata.create_all(database.db)
+    session.commit()
+
+
+def init_modules():
     """Load all database models and create their tables."""
+    # Find and import module tables
     _import_database_tables()
 
     database.base.metadata.create_all(database.db)
