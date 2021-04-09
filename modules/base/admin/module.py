@@ -238,21 +238,21 @@ class Admin(commands.Cog):
 
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
-        self.bot.load_extension("modules." + name)
+        self.bot.load_extension("modules." + name + ".module")
         await ctx.send(tr("module load", "reply", name=name))
         # TODO Save state to database
         logger.info("Loaded " + name)
 
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
-        self.bot.unload_extension("modules." + name)
+        self.bot.unload_extension("modules." + name + ".module")
         await ctx.send(tr("module unload", "reply", name=name))
         # TODO Save state to database
         logger.info("Unloaded " + name)
 
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
-        self.bot.reload_extension("modules." + name)
+        self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(tr("module reload", "reply", name=name))
         # TODO Save state to database
         logger.info("Reloaded " + name)
