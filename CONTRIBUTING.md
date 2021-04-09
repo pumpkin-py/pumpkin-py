@@ -1,12 +1,15 @@
 # Contributing
 
-The code is currently in heavy development and will change a lot.
+The bot is currently in beta and has no stable API. Things may change.
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT",  "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://tools.ietf.org/html/rfc2119).
 
 **Table of contents**
 
 - [Repository setup](#repository-setup): How to get started with the project
 - [Bot setup](#bot-setup): What is needed in order to run the bot in development mode
 - [File structure](#file-structure): How the newly created modules should be structured
+- [Database](#database): How to create and name module databases
 - [Code quality](#code-quality): How to run automatic code tests
 
 
@@ -73,18 +76,47 @@ import discord
 from discord.ext import commands
 
 from core import text, utils
-
-
-logger = logging.getLogger("pumpkin")
+from .database import RepoModuleTable as Table
 
 tr = text.Translator(__file__).translate
+
+logger = logging.getLogger("pumpkin")
 
 
 class MyModule(commands.Cog):
 ```
 
-Eg. **Python** libraries, **3rd party** libraries, **discord.py** imports and **pumpkin.py** imports, separated by one line of space. Then two empty lines, logging setup, one empty line, translation initialisation, two empty lines and then the class definition. The `setup` function for **discord.py** should be the last thing to be declared in the file.
+Eg. **Python** libraries, **3rd party** libraries, **discord.py** imports and **pumpkin.py** imports, separated by one line of space. Then two empty lines, translation initialisation, one empty line, logging setup, two empty lines and then the class definition. The `setup` function for **discord.py** should be the last thing to be declared in the file.
 
+## Database
+
+All tables defined in `repository/module/database.py` are automatically loaded and created. You SHOULD follow the naming conventions of RepoModuleTable (class) and repo_module_table (table) unless you have really good reason not to do that. For example:
+
+```py
+# FILE: economy/bank/database.py
+from sqlalchemy import Column, Integer, BigInteger
+
+from database import database, session
+
+class EconomyBankAccounts(database.base):
+    __tablename__ = "economy_bank_accounts"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    guild_id = Column(BigInteger)
+    user_id = Column(BigInteger)
+    balance = Column(Integer)
+
+    def __repr__(self):
+    	return (
+    		f'<EconomyBankAccounts guild_id="{self.guild_id}" '
+    		f'user_id="{self.user_id}" balance="{self.balance}">'
+    	)
+```
+
+```py
+# FILE: economy/bank/module.py
+from .database import EconomyBankAccounts as Accounts
+```
 
 ## Code quality
 
