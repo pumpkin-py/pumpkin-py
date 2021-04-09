@@ -169,16 +169,20 @@ class Errors(commands.Cog):
 
         # extensions
         if type(error) == commands.ExtensionFailed:
+            # return friendly name, e.g. strip "modules.{module}.module"
+            name = error.name[8:-7]
             return (
                 tr("ExtensionFailed", "name"),
-                tr("ExtensionFailed", "value", extension=f"{error.name!r}"),
+                tr("ExtensionFailed", "value", extension=name),
                 True,
                 True,
             )
         if isinstance(error, commands.ExtensionError):
+            # return friendly name, e.g. strip "modules.{module}.module"
+            name = error.name[8:-7]
             return (
                 tr(type(error).__name__, "name"),
-                tr(type(error).__name__, "value", extension=f"{error.name!r}"),
+                tr(type(error).__name__, "value", extension=name),
                 False,
                 False,
             )

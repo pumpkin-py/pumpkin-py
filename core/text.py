@@ -19,12 +19,10 @@ config = Config.get()
 
 class Translator:
     def __init__(self, file: str):
-        self._dirpath = os.path.dirname(os.path.realpath(file))
+        self._dirpath = os.path.join(os.path.dirname(os.path.realpath(file)), "lang")
         self._dirname = self._dirpath.replace(os.path.dirname(os.path.dirname(self._dirpath)), "")
 
-        self._language_files = (
-            f for f in os.listdir(self._dirpath) if re.match(r"lang.[a-z]+.ini", f)
-        )
+        self._language_files = (f for f in os.listdir(self._dirpath) if re.match(r"[a-z]+.ini", f))
         self.data = dict()
 
         for langfile in self._language_files:
@@ -33,7 +31,7 @@ class Translator:
             langdata.optionxform = lambda option: option
             langdata.read(os.path.join(self._dirpath, langfile))
 
-            langcode = langfile.split(".")[1]
+            langcode = langfile.split(".")[0]
             self.data[langcode] = langdata._sections
 
     def __repr__(self):
@@ -61,7 +59,7 @@ class Translator:
         """
         # get language preference
         langcode: str = self.get_language_preference(ctx)
-        langfile: str = os.path.join(self._dirname, "lang." + langcode + ".ini")
+        langfile: str = os.path.join(self._dirname, "lang", langcode + ".ini")
 
         data = self.data[langcode]
 

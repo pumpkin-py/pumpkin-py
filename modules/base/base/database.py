@@ -5,7 +5,6 @@ from database import database, session
 
 class BaseBasePin(database.base):
     __tablename__ = "base_base_pin"
-    __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger, unique=True)

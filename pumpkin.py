@@ -110,7 +110,7 @@ modules = (
 )
 
 for module in modules:
-    bot.load_extension("modules." + module)
+    bot.load_extension(f"modules.{module}.module")
     logger.info("Loaded " + module)
 
 
