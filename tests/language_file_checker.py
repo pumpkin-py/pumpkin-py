@@ -14,20 +14,20 @@ class Module:
         self.result = None
 
         # get languages
-        self.language_files = [f for f in os.listdir(path) if re.match(r"lang.[a-z_]+.ini", f)]
-        if "lang.en.ini" not in self.language_files:
+        self.language_files = [f for f in os.listdir(path) if re.match(r"[a-z_]+.ini", f)]
+        if "en.ini" not in self.language_files:
             self.result = f'Module "{self.path}" has to have english language file.'
             return
 
         # compare english to all others
-        reference = Module.get_language_data(os.path.join(self.path, "lang.en.ini"))
+        reference = Module.get_language_data(os.path.join(self.path, "en.ini"))
         for lang in self.language_files:
-            if lang == "lang.en.ini":
+            if lang == "en.ini":
                 continue
 
             self.result = Module.compare_languages(
                 (
-                    os.path.join(self.path, "lang.en.ini"),
+                    os.path.join(self.path, "en.ini"),
                     reference,
                 ),
                 (
