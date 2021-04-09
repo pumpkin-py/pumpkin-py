@@ -11,3 +11,4 @@ logs/*
 modules/*/
 !modules/base
 pumpkin.db
+test.db
