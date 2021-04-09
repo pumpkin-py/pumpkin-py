@@ -2,7 +2,7 @@
 
 The bot is currently in beta and has no stable API. Things may change.
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT",  "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://tools.ietf.org/html/rfc2119).
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://tools.ietf.org/html/rfc2119).
 
 **Table of contents**
 
@@ -10,6 +10,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - [Bot setup](#bot-setup): What is needed in order to run the bot in development mode
 - [File structure](#file-structure): How the newly created modules should be structured
 - [Database](#database): How to create and name module databases
+- [Languages](#languages): How to create language files
 - [Code quality](#code-quality): How to run automatic code tests
 
 
@@ -54,7 +55,7 @@ set -o allexport; source .env; set +o allexport
 | BOT_GENDER | How the bot should address itself: `f` or `m`    |
 
 
-## File structure
+## Import structure
 
 Every file has to be formatted as UTF-8.
 
@@ -84,6 +85,7 @@ logger = logging.getLogger("pumpkin")
 
 
 class MyModule(commands.Cog):
+    ...
 ```
 
 Eg. **Python** libraries, **3rd party** libraries, **discord.py** imports and **pumpkin.py** imports, separated by one line of space. Then two empty lines, translation initialisation, one empty line, logging setup, two empty lines and then the class definition. The `setup` function for **discord.py** should be the last thing to be declared in the file.
@@ -116,6 +118,26 @@ class EconomyBankAccounts(database.base):
 ```py
 # FILE: economy/bank/module.py
 from .database import EconomyBankAccounts as Accounts
+```
+
+## Languages
+
+If the module returns some text, it MUST NOT be hardcoded. Instead, use the `tr =` import:
+```py
+tr = text.Translator(__file__).translate
+
+...
+    def send(self, ctx, *, text: str):
+        await ctx.send(tr("send", "reply", text=text))
+```
+
+Language INI files should be placed in `lang/` directory inside the module:
+```ini
+[send]
+help = Send the text back
+reply =
+    You just said:
+    > ((text))
 ```
 
 ## Code quality
