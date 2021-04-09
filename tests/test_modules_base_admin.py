@@ -3,7 +3,7 @@ import os
 import pytest
 import tempfile
 
-from modules.base.admin import Admin
+from modules.base.admin.module import Admin
 
 
 def _create_repo(path: str):
@@ -52,7 +52,7 @@ def test_module_check():
     _create_repo(tempdir.name)
 
     info = {
-        "all": ("test", "test-test"),
+        "all": ("test", "test_test"),
         "name": "test",
         "version": "0.1.2",
     }
