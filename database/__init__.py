@@ -3,9 +3,8 @@ import importlib
 import logging
 from typing import List
 
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 logger = logging.getLogger("pumpkin")
 
@@ -13,7 +12,11 @@ logger = logging.getLogger("pumpkin")
 class Database:
     def __init__(self):
         self.base = declarative_base()
-        self.db = create_engine(os.getenv("DB_STRING"))
+        self.db = create_engine(
+            os.getenv("DB_STRING"),
+            # This forces the SQLAlchemy 1.4 to use the 2.0 syntax
+            future=True,
+        )
 
 
 database = Database()
