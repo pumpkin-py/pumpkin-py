@@ -8,6 +8,7 @@ from discord.ext import commands
 
 import database
 import database.config
+from modules.base.admin.database import BaseAdminModule
 
 
 # Setup checks
@@ -103,15 +104,27 @@ async def on_error(event, *args, **kwargs):
 # Add required modules
 
 
-modules = (
+modules = {
     "base.base",
     "base.errors",
     "base.admin",
-)
+}
+db_modules = BaseAdminModule.get_all()
+db_module_names = [m.name for m in db_modules]
 
 for module in modules:
+    if module in db_module_names:
+        # This module is managed by database
+        continue
     bot.load_extension(f"modules.{module}.module")
     logger.info("Loaded " + module)
+
+for module in db_modules:
+    if not module.enabled:
+        logger.debug("Skipping " + module.name)
+        continue
+    bot.load_extension(f"modules.{module.name}.module")
+    logger.info("Loaded " + module.name)
 
 
 # Run the bot
