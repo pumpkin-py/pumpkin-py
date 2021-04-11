@@ -13,7 +13,7 @@ class BaseBasePin(database.base):
     @staticmethod
     def get(guild_id: int):
         """Get userpin preferences for the guild."""
-        query = session.query(BaseBasePin).filter(BaseBasePin.guild_id == guild_id).one_or_none()
+        query = session.query(BaseBasePin).filter_by(guild_id=guild_id).one_or_none()
         if query is None:
             query = BaseBasePin(guild_id=guild_id)
             session.add(query)
