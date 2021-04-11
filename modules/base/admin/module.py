@@ -14,6 +14,7 @@ from discord.ext import commands
 
 from core import text, utils
 from database import config as configfile
+from .database import BaseAdminModule as Module
 
 tr = text.Translator(__file__).translate
 config = configfile.Config.get()
@@ -240,21 +241,23 @@ class Admin(commands.Cog):
     async def module_load(self, ctx, name: str):
         self.bot.load_extension("modules." + name + ".module")
         await ctx.send(tr("module load", "reply", name=name))
-        # TODO Save state to database
+        Module.add(name, enabled=True)
         logger.info("Loaded " + name)
 
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
+        if name in ("base.admin",):
+            await ctx.send(tr("module unload", "forbidden", name=name))
+            return
         self.bot.unload_extension("modules." + name + ".module")
         await ctx.send(tr("module unload", "reply", name=name))
-        # TODO Save state to database
+        Module.add(name, enabled=False)
         logger.info("Unloaded " + name)
 
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
         self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(tr("module reload", "reply", name=name))
-        # TODO Save state to database
         logger.info("Reloaded " + name)
 
     @commands.group(name="command")
@@ -485,8 +488,6 @@ class Admin(commands.Cog):
         # repository name
         name = init["__name__"]
         if re.fullmatch(r"[a-z_]+", name) is None:
-            return Repository(False, "invalid name", {"name": utils.Text.sanitise(name)})
-        if name in ("core", "base"):
             return Repository(False, "invalid name", {"name": utils.Text.sanitise(name)})
 
         # repository modules
