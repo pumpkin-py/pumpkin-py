@@ -93,7 +93,9 @@ logger = logging.getLogger("pumpkin")
 async def on_ready():
     """If bot is ready."""
     logger.info("The pie is ready.")
-    await utils.Discord.update_presence(bot)
+    # If the status is set to auto, let the loop in Admin take care of it
+    status = "invisible" if config.status == "auto" else config.status
+    await utils.Discord.update_presence(bot, status=status)
 
 
 @bot.event

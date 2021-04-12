@@ -116,8 +116,8 @@ class Discord:
         The created embed.
         """
         embed = discord.Embed(
-            title=kwargs.get("title", None),
-            description=kwargs.get("description", None),
+            title=kwargs.get("title", discord.Embed.Empty),
+            description=kwargs.get("description", discord.Embed.Empty),
             color=kwargs.get(
                 "color",
                 discord.Color.red() if error else discord.Color.green(),
@@ -196,12 +196,18 @@ class Discord:
         return True
 
     @staticmethod
-    async def update_presence(bot: commands.Bot) -> None:
+    async def update_presence(bot: commands.Bot, *, status: str = None) -> None:
         """Update the bot presence.
 
-        The Activity is always set to <prefix>help.
-        The Status is loaded from the database.
+        The Activity is always set to <prefix>help. The Status is loaded from the
+        database, unless it is specified as parameter.
+
+        :param status: Overwrite presence status.
         """
-        status = getattr(discord.Status, config.status)
-        activity = discord.Game(start=datetime.datetime.utcnow(), name=config.prefix + "help")
-        await bot.change_presence(status=status, activity=activity)
+        await bot.change_presence(
+            status=getattr(discord.Status, config.status if status is None else status),
+            activity=discord.Game(
+                start=datetime.datetime.utcnow(),
+                name=config.prefix + "help",
+            ),
+        )
