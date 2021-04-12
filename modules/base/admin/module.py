@@ -10,7 +10,7 @@ import tempfile
 from typing import Optional, List
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from core import text, utils
 from database import config as configfile
@@ -63,6 +63,42 @@ class Repository:
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+        self.status = ""
+        if config.status == "auto":
+            self.status_loop.start()
+
+    def cog_unload(self):
+        self.status_loop.cancel()
+
+    # Loops
+
+    @tasks.loop(minutes=1)
+    async def status_loop(self):
+        """Observe latency to the Discord API and switch status automatically.
+
+        Online: <0s, 0.25s>
+        Idle: (0.25s, 0.5s>
+        DND: (0.5s, inf)
+        """
+        if self.bot.latency <= 0.25:
+            status = "online"
+        elif self.bot.latency <= 0.5:
+            status = "idle"
+        else:
+            status = "dnd"
+
+        if self.status != status:
+            self.status = status
+            logger.debug(f"Latency is {self.bot.latency:.2f}, setting status to {status}.")
+            await utils.Discord.update_presence(self.bot, status=status)
+
+    @status_loop.before_loop
+    async def before_status_loop(self):
+        if not self.bot.is_ready():
+            await self.bot.wait_until_ready()
+
+    # Commands
 
     @commands.group(name="repository", aliases=["repo"])
     async def repository(self, ctx):
@@ -371,7 +407,7 @@ class Admin(commands.Cog):
             return await ctx.send(
                 tr("config set", "bad gender", genders=", ".join(f"`{g}`" for g in genders))
             )
-        states = ("online", "idle", "dnd", "invisible")
+        states = ("online", "idle", "dnd", "invisible", "auto")
         if key == "status" and value not in states:
             return await ctx.send(
                 tr("config set", "bad status", states=", ".join(f"`{s}`" for s in states))
@@ -387,9 +423,16 @@ class Admin(commands.Cog):
             config.gender = value
         elif key == "status":
             config.status = value
+        logger.debug(f"Updating config: {key}={value}.")
 
         config.save()
         await self.config_get(ctx)
+
+        if key == "status":
+            if value == "auto":
+                self.status_loop.start()
+                return
+            self.status_loop.cancel()
 
         if key in ("prefix", "status"):
             await utils.Discord.update_presence(self.bot)
