@@ -1,5 +1,5 @@
 import datetime
-import logging
+from loguru import logger
 
 import discord
 from discord.ext import commands
@@ -10,14 +10,14 @@ from .database import BaseBasePin as Pin
 
 tr = text.Translator(__file__).translate
 
-logger = logging.getLogger("pumpkin")
-
 
 class Base(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
         self.boot = datetime.datetime.now().replace(microsecond=0)
+
+    #
 
     @commands.command()
     async def ping(self, ctx):
@@ -45,6 +45,8 @@ class Base(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    #
+
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """Handle message pinning."""
@@ -68,7 +70,7 @@ class Base(commands.Cog):
 
             # remove if the message is pinned or is in unpinnable channel
             # TODO Unpinnable channels
-            if message.pinned or False:
+            if message.pinned:
                 logger.debug(f"Removing {payload.user_id}'s pin: Message is already pinned.")
                 await reaction.clear()
                 return
@@ -77,7 +79,7 @@ class Base(commands.Cog):
             if reaction.count < Pin().get(payload.guild_id).limit:
                 return
 
-            # TODO Log members that pinned the message
+            # TODO Log members that pinned the message via event
             try:
                 await message.pin()
                 logger.info(
@@ -87,8 +89,8 @@ class Base(commands.Cog):
                         message.guild,
                     )
                 )
-            except discord.errors.HTTPException as exc:
-                logger.error(f"Could not pin message: {exc}.")
+            except discord.errors.HTTPException:
+                logger.error("Could not pin message.")
                 return
 
             await reaction.clear()
