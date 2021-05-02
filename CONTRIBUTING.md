@@ -62,10 +62,10 @@ Every file has to be formatted as UTF-8.
 All the imports have to be at the top of the `py` file, unles you have **really good** reason to do it differently. For the sake of easy maintenance, the following system should be used:
 
 ```py
-import logging
 import local_library_a
 import local_library_a.submodule_a
 import local_library_b
+from loguru import logger
 from local_library_b import submodule_b
 
 import thirdparty_library_a
@@ -80,8 +80,6 @@ from core import text, utils
 from .database import RepoModuleTable as Table
 
 tr = text.Translator(__file__).translate
-
-logger = logging.getLogger("pumpkin")
 
 
 class MyModule(commands.Cog):
