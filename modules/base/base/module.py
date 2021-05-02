@@ -47,6 +47,7 @@ class Base(commands.Cog):
 
     #
 
+    # TODO Move this to separate module in some optional repo
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """Handle message pinning."""
