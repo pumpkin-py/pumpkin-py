@@ -1,7 +1,7 @@
 import os
 import sys
-import logging
-import logging.config
+from loguru import logger
+from typing import List
 
 import discord
 from discord.ext import commands
@@ -11,15 +11,44 @@ import database.config
 from modules.base.admin.database import BaseAdminModule
 
 
+# Setup logging
+
+
+# remove default logger
+logger.remove(0)
+# add file logger
+logger.add(
+    "logs/file_{time:YYYY-MM-DD}.log",
+    format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level} | {module}:{name}:{line} | {message}",
+    # create new file every midnight
+    rotation="00:00",
+    # use zip compression for rotated files
+    compression="zip",
+    # async logging
+    enqueue=True,
+    # display backtrace
+    backtrace=True,
+    diagnose=True,
+)
+# add terminal logger
+logger.add(
+    sys.stderr,
+    format="{time:HH:mm:ss.SSS} | <level>{module}:{name}:{line}</> | {message}",
+    enqueue=True,
+    backtrace=True,
+    diagnose=True,
+)
+
+
 # Setup checks
 
 
 def test_dotenv() -> None:
     if type(os.getenv("DB_STRING")) != str:
-        print("DB_STRING is not set.", file=sys.stderr)
+        logger.critical("Environment variable DB_STRING is not set.")
         sys.exit(1)
     if type(os.getenv("TOKEN")) != str:
-        print("TOKEN is not set.", file=sys.stderr)
+        logger.critical("Environment variable TOKEN is not set.")
         sys.exit(1)
 
 
@@ -50,7 +79,7 @@ config = database.config.Config.get()
 # Setup discord.py
 
 
-def _prefix_callable(bot, message) -> str:
+def _prefix_callable(bot, message) -> List[str]:
     """Get bot prefix with optional mention function"""
     # TODO This should be extended for per-guild prefixes as dict
     # See https://github.com/Rapptz/RoboDanny/blob/rewrite/bot.py:_prefix_callable()
@@ -76,16 +105,6 @@ bot = commands.Bot(
 )
 
 
-# Setup logging
-
-
-if not os.path.exists("logs/"):
-    os.mkdir("logs/")
-
-logging.config.fileConfig("core/log.conf")
-logger = logging.getLogger("pumpkin")
-
-
 # Setup listeners
 
 
@@ -93,14 +112,14 @@ logger = logging.getLogger("pumpkin")
 async def on_ready():
     """If bot is ready."""
     logger.info("The pie is ready.")
-    # If the status is set to auto, let the loop in Admin take care of it
+    # If the status is set to "auto", let the loop in Admin module take care of it
     status = "invisible" if config.status == "auto" else config.status
     await utils.Discord.update_presence(bot, status=status)
 
 
 @bot.event
 async def on_error(event, *args, **kwargs):
-    logger.exception("Unhandled exception")
+    logger.error("Unhandled exception.", *args, **kwargs)
 
 
 # Add required modules
@@ -119,14 +138,14 @@ for module in modules:
         # This module is managed by database
         continue
     bot.load_extension(f"modules.{module}.module")
-    logger.info("Loaded " + module)
+    logger.info("Loaded module " + module)
 
 for module in db_modules:
     if not module.enabled:
-        logger.debug("Skipping " + module.name)
+        logger.debug("Skipping module " + module.name)
         continue
     bot.load_extension(f"modules.{module.name}.module")
-    logger.info("Loaded " + module.name)
+    logger.info("Loaded module " + module.name)
 
 
 # Run the bot
