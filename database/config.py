@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Boolean
+from sqlalchemy import BigInteger, Boolean, Column, String, Integer
 
 from database import database
 from database import session
@@ -15,6 +15,8 @@ class Config(database.base):
     language = Column(String, default="en")
     gender = Column(String, default="m")
     status = Column(String, default="online")
+    guild_id = Column(BigInteger, default=0)
+    channel_id = Column(BigInteger, default=0)
 
     @staticmethod
     def get():
@@ -36,5 +38,6 @@ class Config(database.base):
         return (
             f'<Config status="{self.status}" '
             f'prefix="{self.prefix}" mention_as_prefix="{self.mention_as_prefix}" '
-            f'language="{self.language}" gender="{self.gender}"'
+            f'language="{self.language}" gender="{self.gender}" '
+            f'guild_id="{self.guild_id}" channel_id="{self.channel_id}">'
         )

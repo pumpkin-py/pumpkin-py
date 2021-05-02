@@ -8,10 +8,11 @@ from discord.ext import commands
 
 import database
 import database.config
+from core.logcache import LogCache
 from modules.base.admin.database import BaseAdminModule
 
 
-# Setup logging
+# Setup loguru logging
 
 
 # remove default logger
@@ -19,7 +20,7 @@ logger.remove(0)
 # add file logger
 logger.add(
     "logs/file_{time:YYYY-MM-DD}.log",
-    format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level} | {module}:{name}:{line} | {message}",
+    format="{time:YYYY-MM-DD HH:mm:ss.S} | {level} | {name}:{line} | {message}",
     # create new file every midnight
     rotation="00:00",
     # use zip compression for rotated files
@@ -33,7 +34,14 @@ logger.add(
 # add terminal logger
 logger.add(
     sys.stderr,
-    format="{time:HH:mm:ss.SSS} | <level>{module}:{name}:{line}</> | {message}",
+    format="{time:HH:mm:ss.S} | <level>{name}:{line}</> | {message}",
+    enqueue=True,
+    backtrace=True,
+    diagnose=True,
+)
+logger.add(
+    LogCache.cache().add,
+    format="{level} | {name}:{line} | {message}",
     enqueue=True,
     backtrace=True,
     diagnose=True,
@@ -107,19 +115,23 @@ bot = commands.Bot(
 
 # Setup listeners
 
+already_loaded: bool = False
+
 
 @bot.event
 async def on_ready():
-    """If bot is ready."""
-    logger.info("The pie is ready.")
+    """This is run on login and on reconnect."""
+    global already_loaded
+
     # If the status is set to "auto", let the loop in Admin module take care of it
     status = "invisible" if config.status == "auto" else config.status
     await utils.Discord.update_presence(bot, status=status)
 
-
-@bot.event
-async def on_error(event, *args, **kwargs):
-    logger.error("Unhandled exception.", *args, **kwargs)
+    if already_loaded:
+        logger.info("Reconnected.")
+    else:
+        logger.info("The pie is ready.")
+        already_loaded = True
 
 
 # Add required modules

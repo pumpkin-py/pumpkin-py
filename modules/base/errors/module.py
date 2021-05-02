@@ -1,7 +1,7 @@
 import re
-import logging
 import traceback
 from typing import Tuple
+from loguru import logger
 
 import discord
 from discord.ext import commands
@@ -9,8 +9,6 @@ from discord.ext import commands
 import core.exceptions
 from core import text, utils
 
-
-logger = logging.getLogger("pumpkin")
 
 tr = text.Translator(__file__).translate
 
@@ -20,8 +18,13 @@ class Errors(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
+    async def on_error(event, *args, **kwargs):
+        tb = traceback.format_exc()
+        logger.error(traceback=tb)
+
+    @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        # FIXME What is this doing? Preventing the recursion?
+        # Recursion prevention
         if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
             return
 

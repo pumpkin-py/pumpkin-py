@@ -1,5 +1,4 @@
 import git
-import logging
 import os
 import re
 import requests
@@ -8,18 +7,18 @@ import subprocess  # nosec: B404
 import sys
 import tempfile
 from typing import Optional, List
+from loguru import logger
 
 import discord
 from discord.ext import commands, tasks
 
 from core import text, utils
 from database import config as configfile
+from core.logcache import LogCache
 from .database import BaseAdminModule as Module
 
 tr = text.Translator(__file__).translate
 config = configfile.Config.get()
-
-logger = logging.getLogger("pumpkin")
 
 
 class Repository:
@@ -64,14 +63,36 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+        self.logging_loop.start()
         self.status = ""
         if config.status == "auto":
             self.status_loop.start()
 
     def cog_unload(self):
+        self.logging_loop.cancel()
         self.status_loop.cancel()
 
     # Loops
+
+    @tasks.loop(seconds=10)
+    async def logging_loop(self):
+        """Send messages to the logging channel"""
+        messages = LogCache.cache().get_all()
+        if not len(messages):
+            return
+
+        try:
+            channel = self.bot.get_guild(config.guild_id).get_channel(config.channel_id)
+        except Exception:
+            return
+
+        for stub in utils.Text.split("\n".join(messages)):
+            await channel.send(f"```{stub}```")
+
+    @logging_loop.before_loop
+    async def before_logging_loop(self):
+        if not self.bot.is_ready():
+            await self.bot.wait_until_ready()
 
     @tasks.loop(minutes=1)
     async def status_loop(self):
@@ -436,6 +457,44 @@ class Admin(commands.Cog):
 
         if key in ("prefix", "status"):
             await utils.Discord.update_presence(self.bot)
+
+    @commands.group(name="logging")
+    async def logging_(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @logging_.command(name="get")
+    async def logging_get(self, ctx):
+        try:
+            channel = self.bot.get_guild(config.guild_id).get_channel(config.channel_id)
+            channel_string = f"{channel.name}\n{channel.id}"
+            guild_string = f"{channel.guild.name}\n{channel.guild.id}"
+        except Exception:
+            logger.error("Could not find the guild or channel.")
+            channel_string = str(config.channel_id)
+            guild_string = str(config.guild_id)
+
+        embed = utils.Discord.create_embed(
+            author=ctx.author,
+            title=tr("logging get", "title"),
+        )
+        embed.add_field(
+            name=tr("logging get", "guild"),
+            value=guild_string,
+        )
+        embed.add_field(
+            name=tr("logging get", "channel"),
+            value=channel_string,
+        )
+        await ctx.send(embed=embed)
+
+    @commands.guild_only()
+    @logging_.command(name="set")
+    async def logging_set(self, ctx):
+        config.guild_id = ctx.guild.id
+        config.channel_id = ctx.channel.id
+        config.save()
+        logger.debug(f"Logging channel location updated: {ctx.channel.id} in {ctx.guild.id}.")
+        await ctx.send(tr("logging set", "reply", channel=utils.Text.sanitise(ctx.channel.name)))
 
     #
 
