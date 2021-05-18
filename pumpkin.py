@@ -1,6 +1,5 @@
 import os
 import sys
-from loguru import logger
 from typing import List
 
 import discord
@@ -8,44 +7,8 @@ from discord.ext import commands
 
 import database
 import database.config
-from core.logcache import LogCache
+from core import logging
 from modules.base.admin.database import BaseAdminModule
-
-
-# Setup loguru logging
-
-
-# remove default logger
-logger.remove(0)
-# add file logger
-logger.add(
-    "logs/file_{time:YYYY-MM-DD}.log",
-    format="{time:YYYY-MM-DD HH:mm:ss.S} | {level} | {name}:{line} | {message}",
-    # create new file every midnight
-    rotation="00:00",
-    # use zip compression for rotated files
-    compression="zip",
-    # async logging
-    enqueue=True,
-    # display backtrace
-    backtrace=True,
-    diagnose=True,
-)
-# add terminal logger
-logger.add(
-    sys.stderr,
-    format="{time:HH:mm:ss.S} | <level>{name}:{line}</> | {message}",
-    enqueue=True,
-    backtrace=True,
-    diagnose=True,
-)
-logger.add(
-    LogCache.cache().add,
-    format="{level} | {name}:{line} | {message}",
-    enqueue=True,
-    backtrace=True,
-    diagnose=True,
-)
 
 
 # Setup checks
@@ -113,6 +76,12 @@ bot = commands.Bot(
 )
 
 
+# Setup logging
+
+
+logger = logging.Bot.logger(bot)
+
+
 # Setup listeners
 
 already_loaded: bool = False
@@ -128,9 +97,9 @@ async def on_ready():
     await utils.Discord.update_presence(bot, status=status)
 
     if already_loaded:
-        logger.info("Reconnected.")
+        logger.info(None, None, "Reconnected")
     else:
-        logger.info("The pie is ready.")
+        logger.info(None, None, "The pie is ready.")
         already_loaded = True
 
 
@@ -150,14 +119,14 @@ for module in modules:
         # This module is managed by database
         continue
     bot.load_extension(f"modules.{module}.module")
-    logger.info("Loaded module " + module)
+    logger.info(None, None, "Loaded module " + module)
 
 for module in db_modules:
     if not module.enabled:
-        logger.debug("Skipping module " + module.name)
+        logger.debug(None, None, "Skipping module " + module.name)
         continue
     bot.load_extension(f"modules.{module.name}.module")
-    logger.info("Loaded module " + module.name)
+    logger.info(None, None, "Loaded module " + module.name)
 
 
 # Run the bot

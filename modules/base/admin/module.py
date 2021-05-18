@@ -14,7 +14,6 @@ from discord.ext import commands, tasks
 
 from core import text, utils
 from database import config as configfile
-from core.logcache import LogCache
 from .database import BaseAdminModule as Module
 
 tr = text.Translator(__file__).translate
@@ -63,36 +62,14 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.logging_loop.start()
         self.status = ""
         if config.status == "auto":
             self.status_loop.start()
 
     def cog_unload(self):
-        self.logging_loop.cancel()
         self.status_loop.cancel()
 
     # Loops
-
-    @tasks.loop(seconds=10)
-    async def logging_loop(self):
-        """Send messages to the logging channel"""
-        messages = LogCache.cache().get_all()
-        if not len(messages):
-            return
-
-        try:
-            channel = self.bot.get_guild(config.guild_id).get_channel(config.channel_id)
-        except Exception:
-            return
-
-        for stub in utils.Text.split("\n".join(messages)):
-            await channel.send(f"```{stub}```")
-
-    @logging_loop.before_loop
-    async def before_logging_loop(self):
-        if not self.bot.is_ready():
-            await self.bot.wait_until_ready()
 
     @tasks.loop(minutes=1)
     async def status_loop(self):
