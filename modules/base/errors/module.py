@@ -1,16 +1,17 @@
 import re
 import traceback
 from typing import Tuple
-from loguru import logger
 
 import discord
 from discord.ext import commands
 
 import core.exceptions
-from core import text, utils
+from core import text, logging, utils
 
 
 tr = text.Translator(__file__).translate
+bot_log = logging.Bot.logger()
+guild_log = logging.Guild.logger()
 
 
 class Errors(commands.Cog):
@@ -20,7 +21,7 @@ class Errors(commands.Cog):
     @commands.Cog.listener()
     async def on_error(event, *args, **kwargs):
         tb = traceback.format_exc()
-        logger.error(traceback=tb)
+        await bot_log.error(None, None, extra={"traceback": tb})
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
@@ -56,9 +57,11 @@ class Errors(commands.Cog):
 
         # Log the error
         if show_traceback or inform:
-            logger.error(
+            await guild_log.error(
+                ctx.author,
+                ctx.channel,
                 "Ignoring unhandled exception",
-                exc_info=(type(error), error, error.__traceback__),
+                extra={"exception": (type(error), error, error.__traceback__)},
             )
 
     def __get_error_message(ctx: commands.Context, error: Exception) -> Tuple[str, str, bool, bool]:

@@ -1,50 +1,15 @@
 import datetime
-import sys
+import json
 import os
+import sys
 import re
 import traceback
 from typing import Optional, List, Union
-
-# from loguru import logger as loguru_logger
 
 import discord
 
 from core import utils
 from database.logging import Logging
-
-
-# # Setup loguru logging
-# loguru_logger.remove(0)
-# # add file logger
-# loguru_logger.add(
-#     "logs/file_{time:YYYY-MM-DD}.log",
-#     format="{time:YYYY-MM-DD HH:mm:ss.S} | {level} | {name}:{line} | {message}",
-#     # TODO The serialization is adding more information than we need.
-#     # There should be way to make the output cleaner. Reference:
-#     # https://loguru.readthedocs.io/en/stable/resources/recipes.html
-#     # #serializing-log-messages-using-a-custom-function
-#     #
-#     # This plain setup isn't logging the authors or locations of events,
-#     # which *slightly* defeats the point of flexible and powerful logging.
-#     serialize=True,
-#     # create new file every midnight
-#     rotation="00:00",
-#     # use zip compression for rotated files
-#     compression="zip",
-#     # async logging
-#     enqueue=True,
-#     # display backtrace
-#     backtrace=True,
-#     diagnose=True,
-# )
-# add terminal logger
-# loguru_logger.add(
-#     sys.stderr,
-#     format="{time:HH:mm:ss.S} | <level>{name}:{line}</> | {message}",
-#     enqueue=True,
-#     backtrace=True,
-#     diagnose=True,
-# )
 
 
 # Setup logging helpers
@@ -71,6 +36,13 @@ def translate_log_level(level: Union[str, int]):
         return levels[level]
     # invert to map from value to name
     return {v: k for k, v in levels.items()}[level]
+
+
+def write_log(entry):
+    filename = f"file_{entry.timestamp.strftime('%Y-%m-%d')}.log"
+    with open(f"logs/{filename}", "a+") as handle:
+        json.dump(entry.__dict__(), handle)
+        handle.write("\n")
 
 
 # Setup typing aliases
@@ -101,7 +73,7 @@ class LogEntry:
         actor: LogActor,
         source: LogSource,
         message: str,
-        kwargs: dict = dict(),
+        extra: dict = dict(),
     ):
         self.timestamp = datetime.datetime.now()
         self.scope = scope
@@ -111,7 +83,7 @@ class LogEntry:
         self.guild = getattr(source, "guild", None)
         self.channel = source
         self.message = message
-        self.kwargs = kwargs
+        self.extra = extra
 
     def __str__(self):
         return (
@@ -220,7 +192,7 @@ class LogEntry:
             "guild_id": self.guild_id,
             "channel_id": self.channel_id,
             "message": self.message,
-            "kwargs": self.kwargs,
+            "extra": self.extra,
             "timestamp": self.timestamp.strftime("%Y-%m-%dT%H:%M:%S"),
         }
 
@@ -251,10 +223,12 @@ class Logger:
         actor: LogActor,
         source: LogSource,
         message: str,
-        kwargs: dict = dict(),
+        extra: dict = dict(),
     ):
-        """Log event via loguru, prepare for discord-side logging."""
-        # loguru_logger.opt(depth=2).log(level, message, actor=actor, source=source, **kwargs)
+        """Log event on server, prepare for discord-side logging."""
+
+        # TODO We may want to add "keep_traceback" parameter here
+        # so we can have backups of exceptions
 
         entry = LogEntry(
             traceback.extract_stack()[:-2],
@@ -263,10 +237,11 @@ class Logger:
             actor,
             source,
             message,
-            kwargs,
+            extra,
         )
 
         print(entry.format_stderr(), file=sys.stderr)
+        write_log(entry)
 
         if entry.scope == "bot":
             await self._maybe_send_bot(entry)
@@ -311,50 +286,50 @@ class Logger:
         actor: LogActor,
         source: LogSource,
         message: str,
-        kwargs: dict = dict(),
+        extra: dict = dict(),
     ):
         """Log event with DEBUG level."""
-        await self._log("DEBUG", actor, source, message, **kwargs)
+        await self._log("DEBUG", actor, source, message, **extra)
 
     async def info(
         self,
         actor: LogActor,
         source: LogSource,
         message: str,
-        kwargs: dict = dict(),
+        extra: dict = dict(),
     ):
         """Log event with INFO level."""
-        await self._log("INFO", actor, source, message, **kwargs)
+        await self._log("INFO", actor, source, message, **extra)
 
     async def warning(
         self,
         actor: LogActor,
         source: LogSource,
         message: str,
-        kwargs: dict = dict(),
+        extra: dict = dict(),
     ):
         """Log event with WARNING level."""
-        await self._log("WARNING", actor, source, message, **kwargs)
+        await self._log("WARNING", actor, source, message, **extra)
 
     async def error(
         self,
         actor: LogActor,
         source: LogSource,
         message: str,
-        kwargs: dict = dict(),
+        extra: dict = dict(),
     ):
         """Log event with ERROR level."""
-        await self._log("ERROR", actor, source, message, **kwargs)
+        await self._log("ERROR", actor, source, message, **extra)
 
     async def critical(
         self,
         actor: LogActor,
         source: LogSource,
         message: str,
-        kwargs: dict = dict(),
+        extra: dict = dict(),
     ):
         """Log event with CRITICAL level."""
-        await self._log("CRITICAL", actor, source, message, **kwargs)
+        await self._log("CRITICAL", actor, source, message, **extra)
 
 
 class Bot(Logger):
