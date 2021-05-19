@@ -62,7 +62,7 @@ class Help(commands.MinimalHelpCommand):
 
         This override disables the help information.
         """
-        return
+        return ""
 
     # Override
     def get_ending_note(self) -> str:
