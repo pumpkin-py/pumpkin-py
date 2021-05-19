@@ -224,7 +224,7 @@ class Logger:
         actor: LogActor,
         source: LogSource,
         message: str,
-        extra: dict = dict(),
+        **extra: dict,
     ):
         """Log event on server, prepare for discord-side logging."""
 
@@ -287,7 +287,7 @@ class Logger:
         actor: LogActor,
         source: LogSource,
         message: str,
-        extra: dict = dict(),
+        **extra: dict,
     ):
         """Log event with DEBUG level."""
         await self._log("DEBUG", actor, source, message, **extra)
@@ -297,7 +297,7 @@ class Logger:
         actor: LogActor,
         source: LogSource,
         message: str,
-        extra: dict = dict(),
+        **extra: dict,
     ):
         """Log event with INFO level."""
         await self._log("INFO", actor, source, message, **extra)
@@ -307,7 +307,7 @@ class Logger:
         actor: LogActor,
         source: LogSource,
         message: str,
-        extra: dict = dict(),
+        **extra: dict,
     ):
         """Log event with WARNING level."""
         await self._log("WARNING", actor, source, message, **extra)
@@ -317,7 +317,7 @@ class Logger:
         actor: LogActor,
         source: LogSource,
         message: str,
-        extra: dict = dict(),
+        **extra: dict,
     ):
         """Log event with ERROR level."""
         await self._log("ERROR", actor, source, message, **extra)
@@ -327,7 +327,7 @@ class Logger:
         actor: LogActor,
         source: LogSource,
         message: str,
-        extra: dict = dict(),
+        **extra: dict,
     ):
         """Log event with CRITICAL level."""
         await self._log("CRITICAL", actor, source, message, **extra)

@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 
 import database
+import database.acl
 import database.config
 import database.logging
 from core import logging
@@ -109,9 +110,11 @@ async def on_ready():
 
 
 modules = {
+    "base.acl",
+    "base.admin",
     "base.base",
     "base.errors",
-    "base.admin",
+    "base.logging",
 }
 db_modules = BaseAdminModule.get_all()
 db_module_names = [m.name for m in db_modules]

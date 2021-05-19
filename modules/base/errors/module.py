@@ -60,8 +60,8 @@ class Errors(commands.Cog):
             await guild_log.error(
                 ctx.author,
                 ctx.channel,
-                "Ignoring unhandled exception",
-                extra={"exception": (type(error), error, error.__traceback__)},
+                f"{type(error).__name__}: {str(error)}",
+                extra={"traceback": (traceback.format_tb(error.__traceback__),)},
             )
 
     def __get_error_message(ctx: commands.Context, error: Exception) -> Tuple[str, str, bool, bool]:

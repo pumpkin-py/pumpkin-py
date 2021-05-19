@@ -20,6 +20,7 @@ class Logging(database.base):
 
     @staticmethod
     def add_bot(guild_id: int, channel_id: int, level: int):
+        # TODO This can probably be solved by adding "__eq__()"
         query = session.query(Logging).filter_by(scope="bot", guild_id=guild_id).one_or_none()
         if query is not None:
             query.channel_id = channel_id
