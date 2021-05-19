@@ -7,6 +7,7 @@ from discord.ext import commands
 
 import database
 import database.config
+import database.logging
 from core import logging
 from modules.base.admin.database import BaseAdminModule
 
@@ -16,10 +17,10 @@ from modules.base.admin.database import BaseAdminModule
 
 def test_dotenv() -> None:
     if type(os.getenv("DB_STRING")) != str:
-        logger.critical("Environment variable DB_STRING is not set.")
+        print("Environment variable DB_STRING is not set.", file=sys.stderr)
         sys.exit(1)
     if type(os.getenv("TOKEN")) != str:
-        logger.critical("Environment variable TOKEN is not set.")
+        print("Environment variable TOKEN is not set.", file=sys.stderr)
         sys.exit(1)
 
 
@@ -79,7 +80,8 @@ bot = commands.Bot(
 # Setup logging
 
 
-logger = logging.Bot.logger(bot)
+bot_logger = logging.Bot.logger(bot)
+guild_logger = logging.Guild.logger(bot)
 
 
 # Setup listeners
@@ -97,9 +99,9 @@ async def on_ready():
     await utils.Discord.update_presence(bot, status=status)
 
     if already_loaded:
-        logger.info(None, None, "Reconnected")
+        bot_logger.info(None, None, "Reconnected")
     else:
-        logger.info(None, None, "The pie is ready.")
+        bot_logger.info(None, None, "The pie is ready.")
         already_loaded = True
 
 
@@ -119,14 +121,14 @@ for module in modules:
         # This module is managed by database
         continue
     bot.load_extension(f"modules.{module}.module")
-    logger.info(None, None, "Loaded module " + module)
+    bot_logger.info(None, None, "Loaded module " + module)
 
 for module in db_modules:
     if not module.enabled:
-        logger.debug(None, None, "Skipping module " + module.name)
+        bot_logger.debug(None, None, "Skipping module " + module.name)
         continue
     bot.load_extension(f"modules.{module.name}.module")
-    logger.info(None, None, "Loaded module " + module.name)
+    bot_logger.info(None, None, "Loaded module " + module.name)
 
 
 # Run the bot

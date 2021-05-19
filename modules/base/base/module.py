@@ -1,14 +1,15 @@
 import datetime
-from loguru import logger
 
 import discord
 from discord.ext import commands
 
-from core import text, utils
+from core import text, logging, utils
 
 from .database import BaseBasePin as Pin
 
 tr = text.Translator(__file__).translate
+bot_log = logging.Bot.logger()
+guild_log = logging.Guild.logger()
 
 
 class Base(commands.Cog):
@@ -18,6 +19,11 @@ class Base(commands.Cog):
         self.boot = datetime.datetime.now().replace(microsecond=0)
 
     #
+
+    @commands.command()
+    async def debug(self, ctx, *, message: str = None):
+        bot_log.debug(ctx.author, ctx.channel, message)
+        guild_log.debug(ctx.author, ctx.channel, message)
 
     @commands.command()
     async def ping(self, ctx):
@@ -62,7 +68,7 @@ class Base(commands.Cog):
         try:
             message: discord.Message = await channel.fetch_message(payload.message_id)
         except discord.errors.HTTPException as exc:
-            logger.error(f"Could not find message while pinnig: {exc}.")
+            guild_log.error(None, channel, f"Could not find message while pinnig: {exc}.")
             return
 
         for reaction in message.reactions:
@@ -72,7 +78,11 @@ class Base(commands.Cog):
             # remove if the message is pinned or is in unpinnable channel
             # TODO Unpinnable channels
             if message.pinned:
-                logger.debug(f"Removing {payload.user_id}'s pin: Message is already pinned.")
+                guild_log.debug(
+                    None,
+                    channel,
+                    f"Removing {payload.user_id}'s pin: Message is already pinned.",
+                )
                 await reaction.clear()
                 return
 
@@ -83,15 +93,17 @@ class Base(commands.Cog):
             # TODO Log members that pinned the message via event
             try:
                 await message.pin()
-                logger.info(
+                guild_log.info(
+                    None,
+                    channel,
                     "Pinning message {0.id} in #{1.name} ({1.id}) in {2.name} ({2.id}).".format(
                         message,
                         message.channel,
                         message.guild,
-                    )
+                    ),
                 )
             except discord.errors.HTTPException:
-                logger.error("Could not pin message.")
+                guild_log.error(None, channel, "Could not pin message.")
                 return
 
             await reaction.clear()
