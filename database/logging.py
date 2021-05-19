@@ -42,7 +42,6 @@ class Logging(database.base):
         guild_id: int,
         channel_id: int,
         level: int,
-        scope: Optional[str] = None,
         module: Optional[str] = None,
     ):
         """Add logging preference."""
@@ -50,7 +49,7 @@ class Logging(database.base):
             guild_id=guild_id,
             channel_id=channel_id,
             level=level,
-            scope=scope,
+            scope="guild",
             module=module,
         )
         session.merge(query)
@@ -64,10 +63,23 @@ class Logging(database.base):
             .filter(
                 Logging.guild_id == guild_id,
                 Logging.level <= level,
+                Logging.scope == "guild",
                 Logging.module == module,
             )
             .one_or_none()
         )
+        # If the module was supplied but no result was found, lookup defaults
+        if query is None:
+            query = (
+                session.query(Logging)
+                .filter(
+                    Logging.guild_id == guild_id,
+                    Logging.level <= level,
+                    Logging.scope == "guild",
+                    Logging.module is None,
+                )
+                .one_or_none()
+            )
         return query
 
     def __repr__(self):

@@ -11,14 +11,14 @@ from typing import Optional, List
 import discord
 from discord.ext import commands, tasks
 
+import database.config
 from core import text, logging, utils
-from database import config as configfile
 from .database import BaseAdminModule as Module
 
 tr = text.Translator(__file__).translate
 bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
-config = configfile.Config.get()
+config = database.config.Config.get()
 
 
 class Repository:
@@ -89,7 +89,7 @@ class Admin(commands.Cog):
 
         if self.status != status:
             self.status = status
-            bot_log.debug(
+            await bot_log.debug(
                 None,
                 None,
                 f"Latency is {self.bot.latency:.2f}, setting status to {status}.",
@@ -281,7 +281,7 @@ class Admin(commands.Cog):
         self.bot.load_extension("modules." + name + ".module")
         await ctx.send(tr("module load", "reply", name=name))
         Module.add(name, enabled=True)
-        bot_log.info("Loaded " + name)
+        await bot_log.info("Loaded " + name)
 
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
@@ -291,13 +291,13 @@ class Admin(commands.Cog):
         self.bot.unload_extension("modules." + name + ".module")
         await ctx.send(tr("module unload", "reply", name=name))
         Module.add(name, enabled=False)
-        bot_log.info("Unloaded " + name)
+        await bot_log.info("Unloaded " + name)
 
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
         self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(tr("module reload", "reply", name=name))
-        bot_log.info("Reloaded " + name)
+        await bot_log.info("Reloaded " + name)
 
     @commands.group(name="command")
     async def command(self, ctx):
@@ -323,11 +323,11 @@ class Admin(commands.Cog):
             await self.bot.user.edit(username=name)
         except discord.HTTPException:
             await ctx.send(tr("pumpkin name", "cooldown"))
-            bot_log.debug("Could not change the nickname because of API cooldown.")
+            await bot_log.debug("Could not change the nickname because of API cooldown.")
             return
 
         await ctx.send(tr("pumpkin name", "reply", name=utils.Text.sanitise(name)))
-        bot_log.info("Name changed to " + name + ".")
+        await bot_log.info("Name changed to " + name + ".")
 
     @pumpkin.command(name="avatar")
     async def pumpkin_avatar(self, ctx, *, url: str = ""):
@@ -350,11 +350,11 @@ class Admin(commands.Cog):
                 await self.bot.user.edit(avatar=image_binary)
             except discord.HTTPException:
                 await ctx.send(tr("pumpkin avatar", "cooldown"))
-                bot_log.debug("Could not change the avatar because of API cooldown.")
+                await bot_log.debug("Could not change the avatar because of API cooldown.")
                 return
 
         await ctx.send(tr("pumpkin avatar", "reply"))
-        bot_log.info("Avatar changed, the URL was " + url + ".")
+        await bot_log.info("Avatar changed, the URL was " + url + ".")
 
     @commands.group(name="config")
     async def config_(self, ctx):
@@ -426,7 +426,7 @@ class Admin(commands.Cog):
             config.gender = value
         elif key == "status":
             config.status = value
-        bot_log.debug(f"Updating config: {key}={value}.")
+        await bot_log.debug(f"Updating config: {key}={value}.")
 
         config.save()
         await self.config_get(ctx)
@@ -586,9 +586,4 @@ class Admin(commands.Cog):
 
 
 def setup(bot) -> None:
-    global bot_log
-    global guild_log
-    bot_log = logging.Bot.logger(bot)
-    guild_log = logging.Guild.logger(bot)
-
     bot.add_cog(Admin(bot))
