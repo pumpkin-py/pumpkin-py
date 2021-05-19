@@ -1,12 +1,10 @@
-import os
 import importlib
-import logging
+import os
+import sys
 from typing import List
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-
-logger = logging.getLogger("pumpkin")
 
 
 class Database:
@@ -60,10 +58,10 @@ def _import_database_tables():
             try:
                 import_stub: str = database_stub.replace("/", ".")
                 importlib.import_module(import_stub)
-                logger.debug(f"Imported database models in {import_stub}.")
+                print(f"Imported database models in {import_stub}.", file=sys.stderr)
             except ModuleNotFoundError as exc:
                 # TODO How to properly log errors?
-                logger.error(f"Could not import database models in {import_stub}: {exc}.")
+                print(f"Could not import database models in {import_stub}: {exc}.", file=sys.stderr)
 
 
 def init_core():

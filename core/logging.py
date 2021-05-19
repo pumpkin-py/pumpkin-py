@@ -23,7 +23,7 @@ def get_main_directory():
 main_directory = get_main_directory()
 
 
-def translate_log_level(level: Union[str, int]):
+def translate_log_level(level: Union[str, int]) -> Union[str, int]:
     levels = {
         "DEBUG": 10,
         "INFO": 20,
@@ -33,9 +33,9 @@ def translate_log_level(level: Union[str, int]):
         "NONE": 100,
     }
     if type(level) is str:
-        return levels[level]
+        return levels[level]  # type: ignore
     # invert to map from value to name
-    return {v: k for k, v in levels.items()}[level]
+    return {v: k for k, v in levels.items()}[level]  # type: ignore
 
 
 def write_log(entry):
@@ -200,6 +200,7 @@ class LogEntry:
 class Logger:
     """Logger base. Not meant to be used by itself."""
 
+    bot = None
     scope: str = NotImplemented
 
     def __init__(self, bot: discord.ext.commands.bot):
@@ -342,10 +343,10 @@ class Bot(Logger):
     """
 
     __instance = None
-    bot: Optional = None
+    bot = None
     scope: str = "bot"
 
-    def __init__(self, bot: Optional = None):
+    def __init__(self, bot=None):
         if Bot.__instance is not None:
             raise Exception('Bot logger has to be a singleton, use ".logger()" instead.')
         Bot.__instance = self
@@ -353,7 +354,7 @@ class Bot(Logger):
             self.bot = bot
 
     @staticmethod
-    def logger(bot: Optional = None):
+    def logger(bot=None):
         if Bot.__instance is None:
             Bot(bot)
         return Bot.__instance
@@ -369,10 +370,10 @@ class Guild(Logger):
     """
 
     __instance = None
-    bot: Optional = None
+    bot = None
     scope: str = "guild"
 
-    def __init__(self, bot: Optional = None):
+    def __init__(self, bot=None):
         if Guild.__instance is not None:
             raise Exception('Guild logger has to be a singleton, use ".logger()" instead.')
         Guild.__instance = self
@@ -380,7 +381,7 @@ class Guild(Logger):
             self.bot = bot
 
     @staticmethod
-    def logger(bot: Optional = None):
+    def logger(bot=None):
         if Guild.__instance is None:
             Guild(bot)
         return Guild.__instance

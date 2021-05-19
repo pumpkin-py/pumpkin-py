@@ -64,7 +64,7 @@ class Time:
     @staticmethod
     def id_to_datetime(snowflake_id: int) -> datetime.datetime:
         """Convert snowflake ID to timestamp."""
-        return datetime.fromtimestamp(((snowflake_id >> 22) + 1420070400000) / 1000)
+        return datetime.datetime.fromtimestamp(((snowflake_id >> 22) + 1420070400000) / 1000)
 
     @staticmethod
     def date(timestamp: datetime.datetime) -> str:
@@ -129,7 +129,7 @@ class Discord:
         if kwargs.get("footer", None):
             footer += " | " + kwargs.get("footer")
         embed.set_footer(
-            icon_url=author.avatar_url,
+            icon_url=getattr(author, "avatar_url", discord.Embed.Empty),
             text=footer,
         )
         embed.timestamp = datetime.datetime.now(tz=datetime.timezone.utc)
