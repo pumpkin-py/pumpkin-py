@@ -58,14 +58,19 @@ def get_main_directory():
 main_directory = get_main_directory()
 
 
-log_levels = {
-    "DEBUG": 10,
-    "INFO": 20,
-    "WARNING": 30,
-    "ERROR": 40,
-    "CRITICAL": 50,
-    "NONE": 100,
-}
+def translate_log_level(level: Union[str, int]):
+    levels = {
+        "DEBUG": 10,
+        "INFO": 20,
+        "WARNING": 30,
+        "ERROR": 40,
+        "CRITICAL": 50,
+        "NONE": 100,
+    }
+    if type(level) is str:
+        return levels[level]
+    # invert to map from value to name
+    return {v: k for k, v in levels.items()}[level]
 
 
 # Setup typing aliases
@@ -178,7 +183,7 @@ class LogEntry:
 
     @property
     def levelno(self):
-        return log_levels[self.level]
+        return translate_log_level(self.level)
 
     # TODO When the required Python version is bumped to 3.8, use @cached_property
     # https://docs.python.org/3/library/functools.html#functools.cached_property
@@ -241,7 +246,12 @@ class Logger:
         raise NotImplementedError("This function has to be subclassed.")
 
     async def _log(
-        self, level: str, actor: LogActor, source: LogSource, message: str, kwargs: dict = dict()
+        self,
+        level: str,
+        actor: LogActor,
+        source: LogSource,
+        message: str,
+        kwargs: dict = dict(),
     ):
         """Log event via loguru, prepare for discord-side logging."""
         # loguru_logger.opt(depth=2).log(level, message, actor=actor, source=source, **kwargs)
@@ -267,7 +277,7 @@ class Logger:
 
     async def _maybe_send_bot(self, entry: LogEntry):
         """Distribute the log entry, if the guild is subscribed for this level."""
-        log_info: List[Logging] = Logging.get_bot(entry.levelno)
+        log_info: List[Logging] = Logging.get_bots(entry.levelno)
         if not len(log_info):
             return
 
