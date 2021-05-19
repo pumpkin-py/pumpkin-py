@@ -116,17 +116,69 @@ class LogEntry:
             f"{self.message}"
         )
 
+    def format_discord(self):
+        stubs: List[str] = list()
+
+        stubs.append(self.level)
+        if self.actor_name != "None":
+            stubs.append(self.actor_name)
+        if self.channel_name != "None":
+            stubs.append(f"#{self.channel_name}")
+        if self.guild_name != "None":
+            stubs.append(f"({self.guild_name})")
+
+        return " ".join(stubs) + f": {self.message}"
+
+    def format_stderr(self):
+        stubs: List[str] = list()
+
+        stubs.append(utils.Time.datetime(self.timestamp))
+        stubs.append(self.level)
+        stubs.append(f"{self.filename}:{self.function}:{self.lineno}")
+        if self.actor_name != "None":
+            stubs.append(self.actor_name)
+        if self.channel_name != "None":
+            stubs.append(f"#{self.channel_name}")
+        if self.guild_name != "None":
+            stubs.append(f"({self.guild_name})")
+
+        return " ".join(stubs) + f": {self.message}"
+
+    @property
+    def function(self):
+        return self.stack[-1].name
+
+    @property
+    def lineno(self):
+        return self.stack[-1].lineno
+
     @property
     def actor_id(self):
         return getattr(self.actor, "id", None)
+
+    @property
+    def actor_name(self):
+        return getattr(self.actor, "name", str(self.actor_id))
 
     @property
     def guild_id(self):
         return getattr(self.guild, "id", None)
 
     @property
+    def guild_name(self):
+        return getattr(self.guild, "name", str(self.guild_id))
+
+    @property
     def channel_id(self):
         return getattr(self.channel, "id", None)
+
+    @property
+    def channel_name(self):
+        return getattr(self.channel, "name", str(self.channel_id))
+
+    @property
+    def levelno(self):
+        return log_levels[self.level]
 
     # TODO When the required Python version is bumped to 3.8, use @cached_property
     # https://docs.python.org/3/library/functools.html#functools.cached_property
@@ -153,11 +205,12 @@ class LogEntry:
     def __dict__(self):
         return {
             "file": self.filename,
-            "function": self.stack[-1].name,
-            "lineno": self.stack[-1].lineno,
+            "function": self.function,
+            "lineno": self.lineno,
             "scope": self.scope,
             "module": self.module,
             "level": self.level,
+            "levelno": self.levelno,
             "actor_id": self.actor_id,
             "guild_id": self.guild_id,
             "channel_id": self.channel_id,
@@ -187,15 +240,12 @@ class Logger:
         """
         raise NotImplementedError("This function has to be subclassed.")
 
-    def _log(
+    async def _log(
         self, level: str, actor: LogActor, source: LogSource, message: str, kwargs: dict = dict()
     ):
         """Log event via loguru, prepare for discord-side logging."""
-        # TODO Send to stdout, save to file
-
-        # Send to file and stderr, managed by loguru
         # loguru_logger.opt(depth=2).log(level, message, actor=actor, source=source, **kwargs)
-        # Create an log entry and, optinally, send it to log channel
+
         entry = LogEntry(
             traceback.extract_stack()[:-2],
             self.scope,
@@ -206,46 +256,95 @@ class Logger:
             kwargs,
         )
 
-        if not self.bot.is_ready():
-            print(f'Bot not ready, throwing out log message "{entry.message}".')
-            return
+        print(entry.format_stderr(), file=sys.stderr)
 
         if entry.scope == "bot":
-            self._maybe_send_bot(entry)
+            await self._maybe_send_bot(entry)
         elif entry.scope == "guild":
-            self._maybe_send_guild(entry)
+            await self._maybe_send_guild(entry)
         else:
             raise ValueError(f'Unsupported entry scope: "{entry.scope}".')
 
-    def _maybe_send_bot(self, entry: LogEntry):
+    async def _maybe_send_bot(self, entry: LogEntry):
         """Distribute the log entry, if the guild is subscribed for this level."""
-        log_info = Logging.get_bot(entry.level)
-        print("B:", log_info)
+        log_info: List[Logging] = Logging.get_bot(entry.levelno)
+        if not len(log_info):
+            return
 
-    def _maybe_send_guild(self, entry: LogEntry):
+        await self._send(entry, log_info)
+
+    async def _maybe_send_guild(self, entry: LogEntry):
         """Send the log entry to guild's channel, if the guild is subscribed for this level."""
-        log_info = Logging.get_guild(entry.guild_id, entry.level, entry.module)
-        print("G:", log_info)
+        log_info: Optional[Logging] = Logging.get_guild(entry.guild_id, entry.levelno, entry.module)
+        if log_info is None:
+            return
 
-    def debug(self, actor: LogActor, source: LogSource, message: str, kwargs: dict = dict()):
+        await self._send(entry, [log_info])
+
+    async def _send(self, entry: LogEntry, channels: List[Logging]):
+        text = utils.Text.split(entry.format_discord())
+
+        # TODO This should probably be done in parallel
+        for target in channels:
+            try:
+                channel = self.bot.get_guild(target.guild_id).get_channel(target.channel_id)
+            except AttributeError:
+                # Guild or channel is not accesible
+                print(f"Skipping log target {target.guild_id} #{target.channel_id}.")
+                continue
+
+            for stub in text:
+                await channel.send(f"```{stub}```")
+
+    async def debug(
+        self,
+        actor: LogActor,
+        source: LogSource,
+        message: str,
+        kwargs: dict = dict(),
+    ):
         """Log event with DEBUG level."""
-        self._log("DEBUG", actor, source, message, **kwargs)
+        await self._log("DEBUG", actor, source, message, **kwargs)
 
-    def info(self, actor: LogActor, source: LogSource, message: str, kwargs: dict = dict()):
+    async def info(
+        self,
+        actor: LogActor,
+        source: LogSource,
+        message: str,
+        kwargs: dict = dict(),
+    ):
         """Log event with INFO level."""
-        self._log("INFO", actor, source, message, **kwargs)
+        await self._log("INFO", actor, source, message, **kwargs)
 
-    def warning(self, actor: LogActor, source: LogSource, message: str, kwargs: dict = dict()):
+    async def warning(
+        self,
+        actor: LogActor,
+        source: LogSource,
+        message: str,
+        kwargs: dict = dict(),
+    ):
         """Log event with WARNING level."""
-        self._log("WARNING", actor, source, message, **kwargs)
+        await self._log("WARNING", actor, source, message, **kwargs)
 
-    def error(self, actor: LogActor, source: LogSource, message: str, kwargs: dict = dict()):
+    async def error(
+        self,
+        actor: LogActor,
+        source: LogSource,
+        message: str,
+        kwargs: dict = dict(),
+    ):
         """Log event with ERROR level."""
-        self._log("ERROR", actor, source, message, **kwargs)
+        await self._log("ERROR", actor, source, message, **kwargs)
 
-    def critical(self, actor: LogActor, source: LogSource, message: str, kwargs: dict = dict()):
+    async def critical(
+        self,
+        actor: LogActor,
+        source: LogSource,
+        message: str,
+        kwargs: dict = dict(),
+    ):
         """Log event with CRITICAL level."""
-        self._log("CRITICAL", actor, source, message, **kwargs)
+        await self._log("CRITICAL", actor, source, message, **kwargs)
 
 
 class Bot(Logger):

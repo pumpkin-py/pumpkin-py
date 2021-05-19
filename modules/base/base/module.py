@@ -21,11 +21,6 @@ class Base(commands.Cog):
     #
 
     @commands.command()
-    async def debug(self, ctx, *, message: str = None):
-        bot_log.debug(ctx.author, ctx.channel, message)
-        guild_log.debug(ctx.author, ctx.channel, message)
-
-    @commands.command()
     async def ping(self, ctx):
         await ctx.send(tr("ping", "reply", time="{:.2f}".format(self.bot.latency)))
 
@@ -68,7 +63,7 @@ class Base(commands.Cog):
         try:
             message: discord.Message = await channel.fetch_message(payload.message_id)
         except discord.errors.HTTPException as exc:
-            guild_log.error(None, channel, f"Could not find message while pinnig: {exc}.")
+            await guild_log.error(None, channel, f"Could not find message while pinnig: {exc}.")
             return
 
         for reaction in message.reactions:
@@ -78,7 +73,7 @@ class Base(commands.Cog):
             # remove if the message is pinned or is in unpinnable channel
             # TODO Unpinnable channels
             if message.pinned:
-                guild_log.debug(
+                await guild_log.debug(
                     None,
                     channel,
                     f"Removing {payload.user_id}'s pin: Message is already pinned.",
@@ -90,10 +85,9 @@ class Base(commands.Cog):
             if reaction.count < Pin().get(payload.guild_id).limit:
                 return
 
-            # TODO Log members that pinned the message via event
             try:
                 await message.pin()
-                guild_log.info(
+                await guild_log.info(
                     None,
                     channel,
                     "Pinning message {0.id} in #{1.name} ({1.id}) in {2.name} ({2.id}).".format(
@@ -103,7 +97,7 @@ class Base(commands.Cog):
                     ),
                 )
             except discord.errors.HTTPException:
-                guild_log.error(None, channel, "Could not pin message.")
+                await guild_log.error(None, channel, "Could not pin message.")
                 return
 
             await reaction.clear()

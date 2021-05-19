@@ -80,8 +80,8 @@ bot = commands.Bot(
 # Setup logging
 
 
-bot_logger = logging.Bot.logger(bot)
-guild_logger = logging.Guild.logger(bot)
+bot_log = logging.Bot.logger(bot)
+guild_log = logging.Guild.logger(bot)
 
 
 # Setup listeners
@@ -99,9 +99,9 @@ async def on_ready():
     await utils.Discord.update_presence(bot, status=status)
 
     if already_loaded:
-        bot_logger.info(None, None, "Reconnected")
+        await bot_log.info(None, None, "Reconnected")
     else:
-        bot_logger.info(None, None, "The pie is ready.")
+        await bot_log.info(None, None, "The pie is ready.")
         already_loaded = True
 
 
@@ -121,14 +121,14 @@ for module in modules:
         # This module is managed by database
         continue
     bot.load_extension(f"modules.{module}.module")
-    bot_logger.info(None, None, "Loaded module " + module)
+    print("Loaded module " + module, file=sys.stdout)
 
 for module in db_modules:
     if not module.enabled:
-        bot_logger.debug(None, None, "Skipping module " + module.name)
+        print("Skipping module " + module.name, file=sys.stdout)
         continue
     bot.load_extension(f"modules.{module.name}.module")
-    bot_logger.info(None, None, "Loaded module " + module.name)
+    print("Loaded module " + module.name, file=sys.stdout)
 
 
 # Run the bot
