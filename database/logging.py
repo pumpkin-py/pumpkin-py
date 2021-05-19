@@ -19,14 +19,19 @@ class Logging(database.base):
     module = Column(String, default=None)
 
     @staticmethod
-    def add_bot(guild_id: int, level: int):
-        query = Logging(guild_id=guild_id, level=level, scope="bot")
+    def add_bot(guild_id: int, channel_id: int, level: int):
+        query = session.query(Logging).filter_by(scope="bot", guild_id=guild_id).one_or_none()
+        if query is not None:
+            query.channel_id = channel_id
+            query.level = level
+        else:
+            query = Logging(guild_id=guild_id, channel_id=channel_id, level=level, scope="bot")
         session.merge(query)
         session.commit()
         return query
 
     @staticmethod
-    def get_bot(level: int):
+    def get_bots(level: int):
         query = (
             session.query(Logging)
             .filter(
@@ -38,6 +43,11 @@ class Logging(database.base):
         return query
 
     @staticmethod
+    def remove_bot(guild_id: int):
+        query = session.query(Logging).filter_by(scope="bot", guild_id=guild_id).delete()
+        return query
+
+    @staticmethod
     def add_guild(
         guild_id: int,
         channel_id: int,
@@ -45,13 +55,22 @@ class Logging(database.base):
         module: Optional[str] = None,
     ):
         """Add logging preference."""
-        query = Logging(
-            guild_id=guild_id,
-            channel_id=channel_id,
-            level=level,
-            scope="guild",
-            module=module,
+        query = (
+            session.query(Logging)
+            .filter_by(guild_id=guild_id, module=module, scope="guild")
+            .one_or_none()
         )
+        if query is not None:
+            query.channel_id = channel_id
+            query.level = level
+        else:
+            query = Logging(
+                guild_id=guild_id,
+                channel_id=channel_id,
+                level=level,
+                scope="guild",
+                module=module,
+            )
         session.merge(query)
         session.commit()
         return query
@@ -80,6 +99,20 @@ class Logging(database.base):
                 )
                 .one_or_none()
             )
+        return query
+
+    @staticmethod
+    def remove_guild(guild_id: int, module: Optional[str] = None):
+        query = (
+            session.query(Logging)
+            .filter_by(guild_id=guild_id, scope="guild", module=module)
+            .delete()
+        )
+        return query
+
+    @staticmethod
+    def get_all(guild_id: int):
+        query = session.query(Logging).filter_by(guild_id=guild_id).all()
         return query
 
     def __repr__(self):

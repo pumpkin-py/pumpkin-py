@@ -281,7 +281,7 @@ class Admin(commands.Cog):
         self.bot.load_extension("modules." + name + ".module")
         await ctx.send(tr("module load", "reply", name=name))
         Module.add(name, enabled=True)
-        await bot_log.info("Loaded " + name)
+        await bot_log.info(ctx.author, ctx.channel, "Loaded " + name)
 
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
@@ -291,13 +291,13 @@ class Admin(commands.Cog):
         self.bot.unload_extension("modules." + name + ".module")
         await ctx.send(tr("module unload", "reply", name=name))
         Module.add(name, enabled=False)
-        await bot_log.info("Unloaded " + name)
+        await bot_log.info(ctx.author, ctx.channel, "Unloaded " + name)
 
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
         self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(tr("module reload", "reply", name=name))
-        await bot_log.info("Reloaded " + name)
+        await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
 
     @commands.group(name="command")
     async def command(self, ctx):
@@ -323,11 +323,15 @@ class Admin(commands.Cog):
             await self.bot.user.edit(username=name)
         except discord.HTTPException:
             await ctx.send(tr("pumpkin name", "cooldown"))
-            await bot_log.debug("Could not change the nickname because of API cooldown.")
+            await bot_log.debug(
+                ctx.author,
+                ctx.channel,
+                "Could not change the nickname because of API cooldown.",
+            )
             return
 
         await ctx.send(tr("pumpkin name", "reply", name=utils.Text.sanitise(name)))
-        await bot_log.info("Name changed to " + name + ".")
+        await bot_log.info(ctx.author, ctx.channel, "Name changed to " + name + ".")
 
     @pumpkin.command(name="avatar")
     async def pumpkin_avatar(self, ctx, *, url: str = ""):
@@ -350,11 +354,15 @@ class Admin(commands.Cog):
                 await self.bot.user.edit(avatar=image_binary)
             except discord.HTTPException:
                 await ctx.send(tr("pumpkin avatar", "cooldown"))
-                await bot_log.debug("Could not change the avatar because of API cooldown.")
+                await bot_log.debug(
+                    ctx.author,
+                    ctx.channel,
+                    "Could not change the avatar because of API cooldown.",
+                )
                 return
 
         await ctx.send(tr("pumpkin avatar", "reply"))
-        await bot_log.info("Avatar changed, the URL was " + url + ".")
+        await bot_log.info(ctx.author, ctx.channel, "Avatar changed, the URL was " + url + ".")
 
     @commands.group(name="config")
     async def config_(self, ctx):
@@ -426,7 +434,7 @@ class Admin(commands.Cog):
             config.gender = value
         elif key == "status":
             config.status = value
-        await bot_log.debug(f"Updating config: {key}={value}.")
+        await bot_log.info(ctx.author, ctx.channel, f"Updating config: {key}={value}.")
 
         config.save()
         await self.config_get(ctx)
