@@ -41,7 +41,7 @@ def translate_log_level(level: Union[str, int]) -> Union[str, int]:
 def write_log(entry):
     filename = f"file_{entry.timestamp.strftime('%Y-%m-%d')}.log"
     with open(f"logs/{filename}", "a+") as handle:
-        json.dump(entry.__dict__(), handle)
+        json.dump(entry.to_dict(), handle)
         handle.write("\n")
 
 
@@ -93,6 +93,23 @@ class LogEntry:
             f"{self.message}"
         )
 
+    def to_dict(self):
+        return {
+            "file": self.filename,
+            "function": self.function,
+            "lineno": self.lineno,
+            "scope": self.scope,
+            "module": self.module,
+            "level": self.level,
+            "levelno": self.levelno,
+            "actor_id": self.actor_id,
+            "guild_id": self.guild_id,
+            "channel_id": self.channel_id,
+            "message": self.message,
+            "extra": self.extra,
+            "timestamp": self.timestamp.strftime("%Y-%m-%dT%H:%M:%S"),
+        }
+
     def format_discord(self):
         stubs: List[str] = list()
 
@@ -111,7 +128,6 @@ class LogEntry:
 
         stubs.append(utils.Time.datetime(self.timestamp))
         stubs.append(self.level)
-        stubs.append(f"{self.filename}:{self.function}:{self.lineno}")
         if self.actor_name != "None":
             stubs.append(self.actor_name)
         if self.channel_name != "None":
@@ -178,23 +194,6 @@ class LogEntry:
         repo = stubs.groups()[0]
         module = stubs.groups()[1]
         return f"{repo}.{module}"
-
-    def __dict__(self):
-        return {
-            "file": self.filename,
-            "function": self.function,
-            "lineno": self.lineno,
-            "scope": self.scope,
-            "module": self.module,
-            "level": self.level,
-            "levelno": self.levelno,
-            "actor_id": self.actor_id,
-            "guild_id": self.guild_id,
-            "channel_id": self.channel_id,
-            "message": self.message,
-            "extra": self.extra,
-            "timestamp": self.timestamp.strftime("%Y-%m-%dT%H:%M:%S"),
-        }
 
 
 class Logger:
