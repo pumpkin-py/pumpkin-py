@@ -1,11 +1,14 @@
+import datetime
+import json
 import re
-from typing import Dict, List
+import tempfile
+from typing import Dict, List, Set, Tuple
 
 import discord
 from discord.ext import commands
 
 from core import text, logging, utils
-from database.acl import ACL_group
+from database.acl import ACL_group, ACL_rule
 
 tr = text.Translator(__file__).translate
 bot_log = logging.Bot.logger()
@@ -107,7 +110,7 @@ class ACL(commands.Cog):
 
         group = ACL_group.add(ctx.guild.id, name, parent, role_id)
         await ctx.reply(embed=self.get_group_embed(ctx, group))
-        await guild_log.info(
+        await guild_log.warning(
             ctx.author,
             ctx.channel,
             f'New ACL group "{name}".',
@@ -149,7 +152,7 @@ class ACL(commands.Cog):
 
         group.save()
         await ctx.reply(embed=self.get_group_embed(ctx, group))
-        await guild_log.info(
+        await guild_log.warning(
             ctx.author,
             ctx.channel,
             f'ACL group "{group.name}" updated.',
@@ -165,7 +168,112 @@ class ACL(commands.Cog):
             return
 
         await ctx.reply(tr("acl group remove", "reply"))
-        await guild_log.info(ctx.author, ctx.channel, f'ACL group "{name}" removed.')
+        await guild_log.warning(ctx.author, ctx.channel, f'ACL group "{name}" removed.')
+
+    #
+
+    @acl_.group(name="rule")
+    async def acl_rule(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @acl_rule.command(name="export")
+    async def acl_rule_export(self, ctx):
+        """Export command rules."""
+        timestamp: str = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
+        filename: str = f"acl_{ctx.guild.id}_{timestamp}.json"
+
+        rules: list = ACL_rule.get_all(ctx.guild.id)
+        export: Dict[str, dict] = dict()
+
+        for rule in rules:
+            rule_dict = rule.to_dict()
+            del rule_dict["id"]
+            del rule_dict["command"]
+            del rule_dict["guild_id"]
+            export["command"] = rule_dict
+
+        file = tempfile.TemporaryFile(mode="w+")
+        json.dump(export, file, indent="\t", sort_keys=True)
+
+        file.seek(0)
+        await ctx.reply(
+            tr("acl rule export", "reply", count=len(rules)),
+            file=discord.File(fp=file, filename=filename),
+        )
+        file.close()
+        await guild_log.info(ctx.author, ctx.channel, "ACL rules exported.")
+
+    @acl_rule.command(name="remove")
+    async def acl_rule_remove(self, ctx, *, command: str):
+        """Remove command."""
+        count = ACL_rule.remove(ctx.guild.id, command)
+        if count < 1:
+            await ctx.reply(tr("acl rule remove", "none"))
+            return
+
+        await ctx.reply(tr("acl rule remove", "reply"))
+        await guild_log.warning(ctx.author, ctx.channel, f"ACL rule {command} removed.")
+
+    @acl_rule.command(name="flush")
+    async def acl_rule_flush(self, ctx):
+        """Flush all the command rules."""
+
+        # export the rules, just to make sure
+        await self.acl_rule_export(ctx)
+
+        # delete all
+        count = ACL_rule.remove_all(ctx.guild.id)
+        await ctx.send(tr("acl rule flush", "reply", count=count))
+        await guild_log.info(ctx.author, ctx.channel, "ACL rules flushed.")
+
+    @acl_rule.command(name="import")
+    async def acl_rule_import(self, ctx, mode: str):
+        """Add new rules from JSON file.
+
+        Existing rules are skipped, unless you pass "replace" as mode parameter.
+        """
+        if len(ctx.message.attachments) != 1:
+            await ctx.reply(tr("acl rule import", "wrong file"))
+            return
+        if not ctx.message.attachments[0].filename.lower().endswith("json"):
+            await ctx.reply(tr("acl rule import", "wrong json"))
+            return
+
+        # download the file
+        data_file = tempfile.TemporaryFile()
+        await ctx.message.attachments[0].save(data_file)
+        data_file.seek(0)
+        try:
+            json_data = json.load(data_file)
+        except json.decoder.JSONDecodeError as exc:
+            await ctx.reply(tr("acl rule import", "bad json") + f"\n> `{str(exc)}`")
+            return
+
+        new, updated, rejected = await self.import_rules(
+            ctx, json_data, replace=(mode == "replace")
+        )
+        data_file.close()
+
+        await ctx.reply(
+            tr(
+                "acl rule import",
+                "reply",
+                new=len(new),
+                updated=len(updated),
+            )
+        )
+
+        result = tr("acl rule import", "skip") + ":\n> "
+        result += ", ".join([f"{command} ({reason})" for (command, reason) in rejected])
+        if len(result):
+            for stub in utils.Text.split(result):
+                await ctx.send(stub)
+
+        await guild_log.warning(
+            ctx.author,
+            ctx.channel,
+            f"ACL rule import: {len(new)} added, {len(updated)} updated.",
+        )
 
     #
 
@@ -193,6 +301,66 @@ class ACL(commands.Cog):
             )
 
         return embed
+
+    def import_rules(
+        self, guild_id: int, data: dict, mode: str = "add"
+    ) -> Tuple[List[str], List[str], List[Tuple[str, str]]]:
+        """Import JSON rules.
+
+        Returns
+        -------
+        list: New commands
+        list: Updated commands
+        list: Rejected commands as (command, reason) tuples
+        """
+        result_new: list = list()
+        result_upd: list = list()
+        result_rej: Dict[str, Set[str]] = dict()
+        for reason in ("not bool", "not list", "not group", "not user id", "duplicate"):
+            result_rej[reason]: Set[str] = set()
+
+        acl_groups: List[str] = [g.name for g in ACL_group.get_all(guild_id)]
+
+        for command, attributes in data.items():
+            bad: bool = False
+
+            # booleans
+            if getattr(attributes, "default", False) not in (True, False):
+                result_rej["not bool"].add(command)
+                bad = True
+
+            # lists
+            for keyword in ("users_allow", "users_deny", "groups_allow", "groups_deny"):
+                if type(getattr(attributes, keyword, [])) != list:
+                    result_rej["not list"].add(command)
+                    bad = True
+
+            # groups
+            for keyword in ("groups_allow", "groups_deny"):
+                for group in getattr(attributes, keyword, []):
+                    if group not in acl_groups:
+                        result_rej["not group"].add(command)
+                        bad = True
+
+            # users
+            for keyword in ("users_allow", "users_deny"):
+                for user_id in getattr(attributes, keyword, []):
+                    if type(user_id) != int:
+                        result_rej["not user id"].add(command)
+                        bad = True
+
+            if bad:
+                continue
+
+            # add new rule
+            if ACL_rule.get(guild_id, command) is not None and mode != "replace":
+                result_rej["duplicate"].add(command)
+                continue
+
+            rule: ACL_rule = ACL_rule.add(guild_id, command, getattr(attributes, "default", False))
+            # add rule groups
+            for group in getattr(attributes, "groups_allow", []):
+                pass
 
 
 def setup(bot) -> None:
