@@ -87,15 +87,53 @@ class ACL_rule(database.base):
         )
 
     def __eq__(self, obj):
-        return type(self) == type(obj) and self.id == obj.id
+        return (
+            type(self) == type(obj)
+            and self.guild_id == obj.guild_id
+            and self.command == obj.command
+        )
 
     def to_dict(self):
         return {
             "id": self.id,
-            "guild_id": self.id,
+            "guild_id": self.guild_id,
             "command": self.command,
             "default": self.default,
+            "users_allow": [u.user_id for u in self.users if u.allow],
+            "users_deny": [u.user_id for u in self.users if not u.allow],
+            "groups_allow": [g.group.name for g in self.groups if g.allow],
+            "groups_deny": [g.group.name for g in self.groups if not g.allow],
         }
+
+    @staticmethod
+    def get(guild_id: int, command: str):
+        query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).one_or_none()
+        return query
+
+    @staticmethod
+    def get_all(guild_id: int):
+        query = session.query(ACL_rule).filter_by(guild_id=guild_id).all()
+        return query
+
+    @staticmethod
+    def add(guild_id: int, command: str, default: bool):
+        query = ACL_rule(guild_id, command, default)
+        session.merge(query)
+        session.commit()
+        return query
+
+    def save(self):
+        session.commit()
+
+    @staticmethod
+    def remove(guild_id: int, command: str):
+        query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).delete()
+        return query
+
+    @staticmethod
+    def remove_all(guild_id: int):
+        query = session.query(ACL_rule).filter_by(guild_id=guild_id).delete()
+        return query
 
 
 class ACL_rule_user(database.base):
