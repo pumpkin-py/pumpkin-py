@@ -190,7 +190,7 @@ class ACL(commands.Cog):
             del rule_dict["id"]
             del rule_dict["command"]
             del rule_dict["guild_id"]
-            export["command"] = rule_dict
+            export[rule.command] = rule_dict
 
         file = tempfile.TemporaryFile(mode="w+")
         json.dump(export, file, indent="\t", sort_keys=True)
@@ -227,7 +227,7 @@ class ACL(commands.Cog):
         await guild_log.info(ctx.author, ctx.channel, "ACL rules flushed.")
 
     @acl_rule.command(name="import")
-    async def acl_rule_import(self, ctx, mode: str):
+    async def acl_rule_import(self, ctx, mode: str = "add"):
         """Add new rules from JSON file.
 
         Existing rules are skipped, unless you pass "replace" as mode parameter.
@@ -249,9 +249,7 @@ class ACL(commands.Cog):
             await ctx.reply(tr("acl rule import", "bad json") + f"\n> `{str(exc)}`")
             return
 
-        new, updated, rejected = await self.import_rules(
-            ctx, json_data, replace=(mode == "replace")
-        )
+        new, updated, rejected = self.import_rules(ctx.guild.id, json_data, mode=mode)
         data_file.close()
 
         await ctx.reply(
@@ -263,17 +261,32 @@ class ACL(commands.Cog):
             )
         )
 
-        result = tr("acl rule import", "skip") + ":\n> "
-        result += ", ".join([f"{command} ({reason})" for (command, reason) in rejected])
-        if len(result):
+        result = tr("acl rule import", "skip")
+        send_errors: bool = False
+        for reason in rejected.keys():
+            commands = rejected[reason]
+
+            if not len(commands):
+                continue
+
+            send_errors = True
+
+            result += "\n> **" + tr("import check", reason) + "**: "
+            if reason in ("not group", "duplicate"):
+                result += ", ".join(command for command, _ in commands)
+            else:
+                result += ", ".join(f"{command} (`{value}`)" for command, value in commands)
+
+        if send_errors:
             for stub in utils.Text.split(result):
                 await ctx.send(stub)
 
-        await guild_log.warning(
-            ctx.author,
-            ctx.channel,
-            f"ACL rule import: {len(new)} added, {len(updated)} updated.",
-        )
+        if len(new) > 0 or len(updated) > 0:
+            await guild_log.warning(
+                ctx.author,
+                ctx.channel,
+                f"ACL rule import: {len(new)} added, {len(updated)} updated.",
+            )
 
     #
 
@@ -311,12 +324,12 @@ class ACL(commands.Cog):
         -------
         list: New commands
         list: Updated commands
-        list: Rejected commands as (command, reason) tuples
+        list: Rejected commands as (resaon, (command, value)) tuples
         """
-        result_new: list = list()
-        result_upd: list = list()
-        result_rej: Dict[str, Set[str]] = dict()
-        for reason in ("not bool", "not list", "not group", "not user id", "duplicate"):
+        result_new: Set[str] = set()
+        result_upd: Set[str] = set()
+        result_rej: Dict[str, Set[Tuple[str, str]]] = dict()
+        for reason in ("not bool", "not list", "not group", "not int", "duplicate"):
             result_rej[reason]: Set[str] = set()
 
         acl_groups: List[str] = [g.name for g in ACL_group.get_all(guild_id)]
@@ -325,42 +338,60 @@ class ACL(commands.Cog):
             bad: bool = False
 
             # booleans
-            if getattr(attributes, "default", False) not in (True, False):
-                result_rej["not bool"].add(command)
+            if attributes.get("default", False) not in (True, False):
+                result_rej["not bool"].add((command, type(attributes["default"]).__name__))
                 bad = True
 
             # lists
             for keyword in ("users_allow", "users_deny", "groups_allow", "groups_deny"):
-                if type(getattr(attributes, keyword, [])) != list:
-                    result_rej["not list"].add(command)
+                if type(attributes.get(keyword, [])) != list:
+                    result_rej["not list"].add((command, type(attributes[keyword]).__name__))
                     bad = True
 
             # groups
             for keyword in ("groups_allow", "groups_deny"):
-                for group in getattr(attributes, keyword, []):
+                for group in attributes.get(keyword, []):
                     if group not in acl_groups:
-                        result_rej["not group"].add(command)
+                        result_rej["not group"].add((command, None))
                         bad = True
 
             # users
             for keyword in ("users_allow", "users_deny"):
-                for user_id in getattr(attributes, keyword, []):
+                for user_id in attributes.get(keyword, []):
                     if type(user_id) != int:
-                        result_rej["not user id"].add(command)
+                        result_rej["not int"].add((command, type(attributes[keyword]).__name__))
                         bad = True
 
             if bad:
                 continue
 
             # add new rule
-            if ACL_rule.get(guild_id, command) is not None and mode != "replace":
-                result_rej["duplicate"].add(command)
+            replaced: int = 0
+            if mode == "replace":
+                replaced = ACL_rule.remove(guild_id, command)
+            elif ACL_rule.get(guild_id, command) is not None:
+                result_rej["duplicate"].add((command, None))
                 continue
 
-            rule: ACL_rule = ACL_rule.add(guild_id, command, getattr(attributes, "default", False))
-            # add rule groups
-            for group in getattr(attributes, "groups_allow", []):
-                pass
+            if replaced == 0:
+                result_new.add(command)
+            else:
+                result_upd.add(command)
+
+            ACL_rule.add(guild_id, command, attributes.get("default", False))
+            rule: ACL_rule = ACL_rule.get(guild_id, command)
+            # add group overwrites
+            for group_name in attributes.get("groups_allow", []):
+                rule.add_group(group_name, allow=True)
+            for group_name in attributes.get("groups_deny", []):
+                rule.add_group(group_name, allow=False)
+            # add user overwrites
+            for user_id in attributes.get("users_allow", []):
+                rule.add_user(user_id, allow=True)
+            for user_id in attributes.get("users_deny", []):
+                rule.add_user(user_id, allow=False)
+
+        return (result_new, result_upd, result_rej)
 
 
 def setup(bot) -> None:

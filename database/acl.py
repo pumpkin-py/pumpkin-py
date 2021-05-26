@@ -19,7 +19,7 @@ class ACL_group(database.base):
 
     def __repr__(self):
         return (
-            f'<ACL_group id="{self.id}" name="{self.name}" parent="{self.parent}"'
+            f'<ACL_group id="{self.id}" name="{self.name}" parent="{self.parent}" '
             f'guild_id="{self.guild_id}" role_id="{self.role_id}">'
         )
 
@@ -35,6 +35,21 @@ class ACL_group(database.base):
         }
 
     @staticmethod
+    def add(guild_id: int, name: str, parent: Optional[str], role_id: Optional[int]):
+        # check that the parent exists
+        if parent is not None and ACL_group.get(guild_id, parent) is None:
+            raise ValueError(f"Invalid ACL parent: {parent}.")
+
+        group = ACL_group(guild_id=guild_id, name=name, parent=parent, role_id=role_id)
+
+        session.merge(group)
+        session.commit()
+        return group
+
+    def save(self):
+        session.commit()
+
+    @staticmethod
     def get(guild_id: int, name: str):
         query = session.query(ACL_group).filter_by(guild_id=guild_id, name=name).one_or_none()
         return query
@@ -48,21 +63,6 @@ class ACL_group(database.base):
     def get_all(guild_id: int):
         query = session.query(ACL_group).all()
         return query
-
-    @staticmethod
-    def add(guild_id: int, name: str, parent: Optional[str], role_id: Optional[int]):
-        # check that the parent exists
-        if parent is not None and ACL_group.get(guild_id, parent) is None:
-            raise ValueError("Invalid ACL parent group.")
-
-        group = ACL_group(guild_id=guild_id, name=name, parent=parent, role_id=role_id)
-
-        session.merge(group)
-        session.commit()
-        return group
-
-    def save(self):
-        session.commit()
 
     @staticmethod
     def remove(guild_id: int, name: str):
@@ -106,6 +106,15 @@ class ACL_rule(database.base):
         }
 
     @staticmethod
+    def add(guild_id: int, command: str, default: bool):
+        query = ACL_rule(guild_id=guild_id, command=command, default=default)
+        session.add(query)
+        session.commit()
+
+    def save(self):
+        session.commit()
+
+    @staticmethod
     def get(guild_id: int, command: str):
         query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).one_or_none()
         return query
@@ -116,16 +125,6 @@ class ACL_rule(database.base):
         return query
 
     @staticmethod
-    def add(guild_id: int, command: str, default: bool):
-        query = ACL_rule(guild_id, command, default)
-        session.merge(query)
-        session.commit()
-        return query
-
-    def save(self):
-        session.commit()
-
-    @staticmethod
     def remove(guild_id: int, command: str):
         query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).delete()
         return query
@@ -133,6 +132,42 @@ class ACL_rule(database.base):
     @staticmethod
     def remove_all(guild_id: int):
         query = session.query(ACL_rule).filter_by(guild_id=guild_id).delete()
+        return query
+
+    def add_group(self, group_name: str, allow: bool):
+        group = ACL_group.get(self.guild_id, group_name)
+        if group is None:
+            raise ValueError(f'group_name="{group_name}" cannot be mapped to group.')
+
+        self.groups.append(ACL_rule_group(group_id=group.id, allow=allow))
+        session.commit()
+
+    def remove_group(self, group: str):
+        query = (
+            session.query(ACL_rule_group)
+            .filter(
+                ACL_rule_group.rule.command == self.command,
+                ACL_rule_group.group.name == group,
+            )
+            .delete()
+        )
+        session.commit()
+        return query
+
+    def add_user(self, user_id: int, allow: bool):
+        self.users.append(ACL_rule_user(rule_id=self.id, user_id=user_id, allow=allow))
+        session.commit()
+
+    def remove_user(self, user_id: int):
+        query = (
+            session.query(ACL_rule_user)
+            .filter(
+                ACL_rule_user.rule.command == self.command,
+                ACL_rule_user.user_id == user_id,
+            )
+            .delete()
+        )
+        session.commit()
         return query
 
 
@@ -153,7 +188,9 @@ class ACL_rule_user(database.base):
         )
 
     def __eq__(self, obj):
-        return type(self) == type(obj) and self.id == obj.id
+        return (
+            type(self) == type(obj) and self.rule_id == obj.rule_id and self.user_id == obj.user_id
+        )
 
     def to_dict(self):
         return {
@@ -182,7 +219,11 @@ class ACL_rule_group(database.base):
         )
 
     def __eq__(self, obj):
-        return type(self) == type(obj) and self.id == obj.id
+        return (
+            type(self) == type(obj)
+            and self.rule_id == obj.rule_id
+            and self.group_id == obj.group_id
+        )
 
     def to_dict(self):
         return {
