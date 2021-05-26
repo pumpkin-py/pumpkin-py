@@ -2,7 +2,7 @@ import datetime
 import json
 import re
 import tempfile
-from typing import Dict, List, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
 import discord
 from discord.ext import commands
@@ -176,6 +176,32 @@ class ACL(commands.Cog):
     async def acl_rule(self, ctx):
         await utils.Discord.send_help(ctx)
 
+    @acl_rule.command(name="default")
+    async def acl_rule_default(self, ctx):
+        """Generate rule template."""
+        filename: str = f"acl_{ctx.guild.id}_template.json"
+
+        export: Dict[str, Dict[str, Any]] = dict()
+        for command in self.get_all_commands():
+            export[command] = {
+                "default": False,
+                "groups_allow": [],
+                "groups_deny": [],
+                "users_allow": [],
+                "users_deny": [],
+            }
+
+        file = tempfile.TemporaryFile(mode="w+")
+        json.dump(export, file, indent="\t", sort_keys=True)
+
+        file.seek(0)
+        await ctx.reply(
+            tr("acl rule default", "reply", count=len(export)),
+            file=discord.File(fp=file, filename=filename),
+        )
+        file.close()
+        await guild_log.debug(ctx.author, ctx.channel, "ACL rules defaults exported.")
+
     @acl_rule.command(name="export")
     async def acl_rule_export(self, ctx):
         """Export command rules."""
@@ -314,6 +340,13 @@ class ACL(commands.Cog):
             )
 
         return embed
+
+    def get_all_commands(self) -> List[str]:
+        """Return list of registered commands"""
+        result = []
+        for command in self.bot.walk_commands():
+            result.append(command.qualified_name)
+        return result
 
     def import_rules(
         self, guild_id: int, data: dict, mode: str = "add"
