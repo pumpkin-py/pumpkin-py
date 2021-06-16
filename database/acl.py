@@ -10,6 +10,11 @@ from database import session
 class ACL_group(database.base):
     __tablename__ = "acl_groups"
 
+    # TODO We may want to change the 'parent' column here,
+    # if we want to have direct access to the parent without calling the 'get()'
+    # function. In this case we should use 'parent_name'/'parent_id' and the
+    # 'parent' attribute should be the parent object.
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
     name = Column(String)
@@ -25,6 +30,9 @@ class ACL_group(database.base):
 
     def __eq__(self, obj):
         return type(self) == type(obj) and self.guild_id == obj.guild_id and self.name == obj.name
+
+    # TODO Should this function be called 'to_dict', or rather 'dump'?
+    # This applies to all database objects, not just this one.
 
     def to_dict(self):
         return {
