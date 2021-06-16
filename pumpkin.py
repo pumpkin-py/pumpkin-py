@@ -90,10 +90,22 @@ guild_log = logging.Guild.logger(bot)
 already_loaded: bool = False
 
 
+async def update_app_info(bot: commands.Bot):
+    # Update bot information
+    app: discord.AppInfo = await bot.application_info()
+    if app.team:
+        bot.owner_ids = {m.id for m in app.team.members}
+    else:
+        bot.owner_id = app.owner.id
+
+
 @bot.event
 async def on_ready():
     """This is run on login and on reconnect."""
     global already_loaded
+
+    # Update information about user's owners
+    await update_app_info(bot)
 
     # If the status is set to "auto", let the loop in Admin module take care of it
     status = "invisible" if config.status == "auto" else config.status

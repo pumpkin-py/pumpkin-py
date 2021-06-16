@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Set, Tuple
 import discord
 from discord.ext import commands
 
-from core import text, logging, utils
+from core import acl, text, logging, utils
 from database.acl import ACL_group, ACL_rule
 
 tr = text.Translator(__file__).translate
@@ -22,16 +22,19 @@ class ACL(commands.Cog):
     #
 
     @commands.guild_only()
+    @commands.check(acl.check)
     @commands.group(name="acl")
     async def acl_(self, ctx):
-        """Permission controll."""
+        """Permission control."""
         await utils.Discord.send_help(ctx)
 
+    @commands.check(acl.check)
     @acl_.group(name="group")
     async def acl_group(self, ctx):
-        """Permission group controll."""
+        """Permission group control."""
         await utils.Discord.send_help(ctx)
 
+    @commands.check(acl.check)
     @acl_group.command(name="list")
     async def acl_group_list(self, ctx):
         """List permission groups."""
@@ -79,6 +82,7 @@ class ACL(commands.Cog):
 
         await ctx.reply(f"```{result}```")
 
+    @commands.check(acl.check)
     @acl_group.command(name="get")
     async def acl_group_get(self, ctx, name: str):
         """Get ACL group."""
@@ -89,6 +93,7 @@ class ACL(commands.Cog):
 
         await ctx.reply(embed=self.get_group_embed(ctx, group))
 
+    @commands.check(acl.check)
     @acl_group.command(name="add")
     async def acl_group_add(self, ctx, name: str, parent: str, role_id: int):
         """Add ACL group.
@@ -117,6 +122,7 @@ class ACL(commands.Cog):
             group=group.to_dict(),
         )
 
+    @commands.check(acl.check)
     @acl_group.command(name="update")
     async def acl_group_update(self, ctx, name: str, param: str, value):
         """Update ACL group.
@@ -159,6 +165,7 @@ class ACL(commands.Cog):
             group=group.to_dict(),
         )
 
+    @commands.check(acl.check)
     @acl_group.command(name="remove")
     async def acl_group_remove(self, ctx, name: str):
         """Remove ACL group."""
@@ -172,12 +179,15 @@ class ACL(commands.Cog):
 
     #
 
+    @commands.check(acl.check)
     @acl_.group(name="rule")
     async def acl_rule(self, ctx):
+        """Permission rules."""
         await utils.Discord.send_help(ctx)
 
-    @acl_rule.command(name="default")
-    async def acl_rule_default(self, ctx):
+    @commands.check(acl.check)
+    @acl_rule.command(name="generate")
+    async def acl_rule_generate(self, ctx):
         """Generate rule template."""
         filename: str = f"acl_{ctx.guild.id}_template.json"
 
@@ -196,12 +206,13 @@ class ACL(commands.Cog):
 
         file.seek(0)
         await ctx.reply(
-            tr("acl rule default", "reply", count=len(export)),
+            tr("acl rule generate", "reply", count=len(export)),
             file=discord.File(fp=file, filename=filename),
         )
         file.close()
         await guild_log.debug(ctx.author, ctx.channel, "ACL rules defaults exported.")
 
+    @commands.check(acl.check)
     @acl_rule.command(name="export")
     async def acl_rule_export(self, ctx):
         """Export command rules."""
@@ -229,6 +240,7 @@ class ACL(commands.Cog):
         file.close()
         await guild_log.info(ctx.author, ctx.channel, "ACL rules exported.")
 
+    @commands.check(acl.check)
     @acl_rule.command(name="remove")
     async def acl_rule_remove(self, ctx, *, command: str):
         """Remove command."""
@@ -240,6 +252,7 @@ class ACL(commands.Cog):
         await ctx.reply(tr("acl rule remove", "reply"))
         await guild_log.warning(ctx.author, ctx.channel, f"ACL rule {command} removed.")
 
+    @commands.check(acl.check)
     @acl_rule.command(name="flush")
     async def acl_rule_flush(self, ctx):
         """Flush all the command rules."""
@@ -252,6 +265,7 @@ class ACL(commands.Cog):
         await ctx.send(tr("acl rule flush", "reply", count=count))
         await guild_log.info(ctx.author, ctx.channel, "ACL rules flushed.")
 
+    @commands.check(acl.check)
     @acl_rule.command(name="import")
     async def acl_rule_import(self, ctx, mode: str = "add"):
         """Add new rules from JSON file.
