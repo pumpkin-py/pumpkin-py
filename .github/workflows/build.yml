@@ -51,7 +51,7 @@ jobs:
 
       - name: Check TODOs
         run: |
-          flake8 . --select=T --show-source --exit-zero
+          flake8 . --select=T --exit-zero
 
       - name: Run pytest
         run: |
