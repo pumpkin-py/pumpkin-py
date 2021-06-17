@@ -13,7 +13,10 @@ class GuildLanguage(database.base):
     language = Column(String)
 
     def __repr__(self):
-        return f"<GuildLanguage {self.id=} {self.guild_id=} {self.language=}>"
+        return (
+            f'<GuildLanguage id="{self.id}" '
+            f'guild_id="{self.guild_id}" language="{self.language}">'
+        )
 
     def __eq__(self, obj):
         return type(self) == type(obj) and self.guild_id == obj.guild_id
@@ -54,7 +57,10 @@ class MemberLanguage(database.base):
     language = Column(String)
 
     def __repr__(self):
-        return f"<MemberLanguage {self.id=} {self.guild_id=} {self.member_id=} {self.language=}>"
+        return (
+            f'<MemberLanguage id="{self.id}" guild_id="{self.guild_id}" '
+            f'member_id="{self.member_id}" language="{self.language}">'
+        )
 
     def __eq__(self, obj):
         return type(self) == type(obj) and self.guild_id == obj.guild_id
