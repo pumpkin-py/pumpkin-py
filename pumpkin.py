@@ -6,10 +6,7 @@ import discord
 from discord.ext import commands
 
 import database
-import database.acl
 import database.config
-import database.language
-import database.logging
 from core import logging
 from modules.base.admin.database import BaseAdminModule
 
@@ -19,10 +16,10 @@ from modules.base.admin.database import BaseAdminModule
 
 def test_dotenv() -> None:
     if type(os.getenv("DB_STRING")) != str:
-        print("Environment variable DB_STRING is not set.", file=sys.stderr)
+        print("Environment variable DB_STRING is not set.", file=sys.stderr)  # noqa: T001
         sys.exit(1)
     if type(os.getenv("TOKEN")) != str:
-        print("Environment variable TOKEN is not set.", file=sys.stderr)
+        print("Environment variable TOKEN is not set.", file=sys.stderr)  # noqa: T001
         sys.exit(1)
 
 
@@ -137,14 +134,14 @@ for module in modules:
         # This module is managed by database
         continue
     bot.load_extension(f"modules.{module}.module")
-    print("Loaded module " + module, file=sys.stdout)
+    print("Loaded module " + module, file=sys.stdout)  # noqa: T001
 
 for module in db_modules:
     if not module.enabled:
-        print("Skipping module " + module.name, file=sys.stdout)
+        print("Skipping module " + module.name, file=sys.stdout)  # noqa: T001
         continue
     bot.load_extension(f"modules.{module.name}.module")
-    print("Loaded module " + module.name, file=sys.stdout)
+    print("Loaded module " + module.name, file=sys.stdout)  # noqa: T001
 
 
 # Run the bot

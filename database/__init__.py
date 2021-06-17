@@ -18,7 +18,7 @@ class Database:
 
 
 database = Database()
-session = sessionmaker(database.db)()
+session = sessionmaker(database.db, future=True)()
 
 
 def _list_directory_directories(directory: str) -> List[str]:
@@ -58,16 +58,22 @@ def _import_database_tables():
             try:
                 import_stub: str = database_stub.replace("/", ".")
                 importlib.import_module(import_stub)
-                print(f"Imported database models in {import_stub}.", file=sys.stderr)
+                print(f"Imported database models in {import_stub}.", file=sys.stderr)  # noqa: T001
             except ModuleNotFoundError as exc:
                 # TODO How to properly log errors?
-                print(f"Could not import database models in {import_stub}: {exc}.", file=sys.stderr)
+                print(  # noqa: T001
+                    f"Could not import database models in {import_stub}: {exc}.",
+                    file=sys.stderr,
+                )
 
 
 def init_core():
     """Load core models and create their tables."""
     # Import core tables
     importlib.import_module("database.config")
+    importlib.import_module("database.acl")
+    importlib.import_module("database.language")
+    importlib.import_module("database.logging")
 
     database.base.metadata.create_all(database.db)
     session.commit()

@@ -92,5 +92,5 @@ if __name__ == "__main__":
 
     m = Module(args.directory)
     if m.result is not None:
-        print(m.result, file=sys.stderr)
+        print(m.result, file=sys.stderr)  # noqa: T001
         sys.exit(1)
