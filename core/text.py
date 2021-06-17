@@ -6,6 +6,7 @@ import discord
 
 from core.exceptions import BadTranslation
 from database.config import Config
+from database.language import GuildLanguage, MemberLanguage
 
 config = Config.get()
 
@@ -94,12 +95,11 @@ class Translator:
         - Try to get guild information: if it has language preference, return it.
         - Return the bot default.
         """
-        # TODO Complete when the database contains information about users.
-        # user = database.user.User.get(ctx.author.id)
-        # if getattr(user, "language", None) is not None:
-        #     return user.language
-        # TODO Complete when the database contains information about the guilds.
-        # guild = database.guild.Guild.get(ctx.guild.id)
-        # if getattr(guild, "language", None) is not None:
-        #     return guild.language
+        if ctx is not None:
+            user = MemberLanguage.get(ctx.guild.id, ctx.author.id)
+            if getattr(user, "language", None) is not None:
+                return user.language
+            guild = GuildLanguage.get(ctx.guild.id)
+            if getattr(guild, "language", None) is not None:
+                return guild.language
         return Config.get().language
