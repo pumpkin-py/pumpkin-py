@@ -8,6 +8,7 @@ from discord.ext import commands
 import database
 import database.acl
 import database.config
+import database.language
 import database.logging
 from core import logging
 from modules.base.admin.database import BaseAdminModule
