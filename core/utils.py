@@ -35,9 +35,33 @@ class Text:
         Arguments
         ---------
         string: A text string to split.
-        limit: How long the strings should be.
+        limit: How long the output strings should be.
         """
         return list(string[0 + i : limit + i] for i in range(0, len(string), limit))
+
+    @staticmethod
+    def split_lines(lines: List[str], limit: int = 1990) -> List[str]:
+        """Split list of lines to bigger blocks.
+
+        This works just as `split()` does; the only difference is that this
+        guarantees that the line won't be split at half, instead of calling
+        the `split()` on `'\n'.join(lines)`.
+
+        Arguments
+        ---------
+        lines: List of lines to split.
+        limit: How long the output strings should be.
+        """
+        pages: List[str] = list()
+        page: str = ""
+
+        for line in lines:
+            if len(page) >= limit:
+                pages.append(page.strip("\n"))
+                page = ""
+            page += line + "\n"
+        pages.append(page.strip("\n"))
+        return pages
 
     @staticmethod
     def parse_bool(string: str) -> Optional[bool]:

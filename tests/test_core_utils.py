@@ -11,6 +11,11 @@ def test_text_split():
     assert ["abcd", "efgh"] == utils.Text.split("abcdefgh", limit=4)
 
 
+def test_text_split_lines():
+    assert ["ab\ncd", "ef\ng"] == utils.Text.split_lines(["ab", "cd", "ef", "g"], limit=5)
+    assert ["abc\ndef", "g"] == utils.Text.split_lines(["abc", "def", "g"], limit=7)
+
+
 def test_time_seconds():
     assert "0:32" == utils.Time.seconds(32)
     assert "12:34" == utils.Time.seconds(12 * 60 + 34)
