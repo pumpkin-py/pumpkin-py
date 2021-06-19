@@ -24,7 +24,7 @@ class Help(commands.MinimalHelpCommand):
         self.paginator = Paginator()
 
         super().__init__(
-            no_category="PUMPKIN_NO_CATEGORY",
+            no_category="",
             commands_heading="PUMPKIN_COMMANDS_HEADING",
             **options,
         )
@@ -80,6 +80,7 @@ class Help(commands.MinimalHelpCommand):
         This override changes the presentation.
         """
         if commands:
+            self.paginator.add_line("**" + heading + "**")
             command_list = ", ".join(command.name for command in commands)
             self.paginator.add_line(command_list)
 
@@ -125,22 +126,6 @@ class Help(commands.MinimalHelpCommand):
 
         self.paginator.add_line(fmt)
 
-    def _get_command_translator(self, command: commands.Command):
-        """Get translation function for current command."""
-        py_main: str = os.path.dirname(os.path.realpath(sys.modules["__main__"].__file__))
-        py_module: str = command.module.replace(".", "/")
-        module_path: str = os.path.join(py_main, py_module + ".py")
-        return self._get_module_translator(module_path)
-
-    @lru_cache(maxsize=10)
-    def _get_module_translator(self, module_path: str):
-        """Get translation function for module path.
-
-        This function is wrapped around the `_get_command_translator`
-        so we can use the `@lru_cache`.
-        """
-        return text.Translator(module_path).translate
-
     async def send_group_help(self, group: commands.Group):
         """Format command group output."""
         self.add_command_formatting(group)
@@ -162,6 +147,24 @@ class Help(commands.MinimalHelpCommand):
 
         await self.send_pages()
 
+    async def send_cog_help(self, cog: commands.Cog):
+        """Format cog output."""
+        # module_tr = self._get_cog_translator(cog)
+        # self.paginator.add_line(module_tr("_", "help"), empty=True)
+
+        filtered = await self.filter_commands(cog.get_commands(), sort=self.sort_commands)
+        if filtered:
+            self.paginator.add_line(f"{tr('help', 'module')} **__{cog.qualified_name}__**")
+            for command in filtered:
+                self.add_subcommand_formatting(command)
+
+            note = self.get_ending_note()
+            if note:
+                self.paginator.add_line()
+                self.paginator.add_line(note)
+
+        await self.send_pages()
+
     async def send_pages(self):
         """Send the help.
 
@@ -170,3 +173,34 @@ class Help(commands.MinimalHelpCommand):
         destination = self.get_destination()
         for page in self.paginator.pages:
             await destination.send(">>> " + page)
+
+    def _get_command_translator(self, command: commands.Command):
+        """Get translation function for current command."""
+        py_main: str = os.path.dirname(os.path.realpath(sys.modules["__main__"].__file__))
+        py_module: str = command.module.replace(".", "/")
+        module_path: str = os.path.join(py_main, py_module + ".py")
+        return self._get_module_translator(module_path)
+
+    def _get_cog_translator(self, cog: commands.Cog):
+        """Get translation function for current command."""
+        from pprint import pprint
+
+        pprint(cog.__dict__)
+
+        py_main: str = os.path.dirname(os.path.realpath(sys.modules["__main__"].__file__))
+        print(py_main)
+        py_module: str = cog.__cog_commands__[0].module.replace(".", "/")
+        print(py_module)
+        module_path: str = os.path.join(py_main, py_module + ".py")
+        print(module_path)
+
+        return self._get_module_translator(module_path)
+
+    @lru_cache(maxsize=10)
+    def _get_module_translator(self, module_path: str):
+        """Get translation function for module path.
+
+        This function is wrapped around the `_get_command_translator`
+        so we can use the `@lru_cache`.
+        """
+        return text.Translator(module_path).translate
