@@ -31,7 +31,10 @@ class GuildLanguage(database.base):
     def add(guild_id: int, language: str):
         preference = GuildLanguage(guild_id=guild_id, language=language)
 
-        session.merge(preference)
+        # remove old language preference
+        session.remove(guild_id)
+
+        session.add(preference)
         session.commit()
         return preference
 
@@ -63,7 +66,11 @@ class MemberLanguage(database.base):
         )
 
     def __eq__(self, obj):
-        return type(self) == type(obj) and self.guild_id == obj.guild_id
+        return (
+            type(self) == type(obj)
+            and self.guild_id == obj.guild_id
+            and self.member_id == obj.member_id
+        )
 
     def to_dict(self):
         return {
@@ -76,7 +83,10 @@ class MemberLanguage(database.base):
     def add(guild_id: int, member_id: int, language: str):
         preference = MemberLanguage(guild_id=guild_id, member_id=member_id, language=language)
 
-        session.merge(preference)
+        # remove old language preference
+        MemberLanguage.remove(guild_id, member_id)
+
+        session.add(preference)
         session.commit()
         return preference
 
