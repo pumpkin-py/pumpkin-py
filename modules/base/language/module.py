@@ -65,7 +65,11 @@ class Language(commands.Cog):
             return
         MemberLanguage.add(guild_id=ctx.guild.id, member_id=ctx.author.id, language=language)
         await guild_log.info(ctx.author, ctx.channel, f"Language preference set to '{language}'.")
-        await ctx.reply(tr("language set", "reply", ctx, language=language))
+        await ctx.reply(
+            tr("language set", "reply", ctx, language=language)
+            + " "
+            + tr("caching", "cooldown", ctx)
+        )
 
     @commands.check(acl.check)
     @language.command(name="unset")
@@ -75,7 +79,7 @@ class Language(commands.Cog):
             await ctx.reply(tr("language unset", "not set", ctx))
             return
         await guild_log.info(ctx.author, ctx.channel, "Language preference unset.")
-        await ctx.reply(tr("language unset", "reply", ctx))
+        await ctx.reply(tr("language unset", "reply", ctx) + " " + tr("caching", "cooldown", ctx))
 
     @commands.check(acl.check)
     @language.group(name="guild")
@@ -94,7 +98,11 @@ class Language(commands.Cog):
             ctx.channel,
             f"Guild language preference set to '{language}'.",
         )
-        await ctx.reply(tr("language guild set", "reply", ctx, language=language))
+        await ctx.reply(
+            tr("language guild set", "reply", ctx, language=language)
+            + " "
+            + tr("caching", "cooldown", ctx)
+        )
 
     @commands.check(acl.check)
     @language_guild.command(name="unset")
@@ -104,7 +112,9 @@ class Language(commands.Cog):
             await ctx.reply(tr("language guild unset", "not set", ctx))
             return
         await guild_log.info(ctx.author, ctx.channel, "Guild language preference unset.")
-        await ctx.reply(tr("language guild unset", "reply", ctx))
+        await ctx.reply(
+            tr("language guild unset", "reply", ctx) + " " + tr("caching", "cooldown", ctx)
+        )
 
 
 def setup(bot) -> None:
