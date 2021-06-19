@@ -1,3 +1,6 @@
+import os
+import sys
+from functools import lru_cache
 from typing import Sequence
 
 from discord.ext import commands
@@ -21,19 +24,18 @@ class Help(commands.MinimalHelpCommand):
         self.paginator = Paginator()
 
         super().__init__(
-            no_category="\n" + tr("help", "no category"),
-            commands_heading=tr("help", "commands"),
+            no_category="PUMPKIN_NO_CATEGORY",
+            commands_heading="PUMPKIN_COMMANDS_HEADING",
+            **options,
         )
 
-    # Override
     def command_not_found(self, string: str) -> str:
         """Command does not exist.
 
         This override changes the language from english to i18d version.
         """
-        return tr("help", "command not found", name=string)
+        return tr("help", "command not found", self.context, name=string)
 
-    # Override
     def subcommand_not_found(self, command: commands.Command, string: str) -> str:
         """Command does not have requested subcommand.
 
@@ -43,20 +45,19 @@ class Help(commands.MinimalHelpCommand):
             return tr(
                 "help",
                 "no named subcommand",
+                self.context,
                 name=command.qualified_name,
                 subcommand=string,
             )
-        return tr("help", "no subcommand", name=command.qualified_name)
+        return tr("help", "no subcommand", self.context, name=command.qualified_name)
 
-    # Override
     def get_command_signature(self, command: commands.Command) -> str:
         """Retrieves the signature portion of the help page.
 
         This Override removes command aliases the library function has.
         """
-        return command.qualified_name + " " + command.signature
+        return (command.qualified_name + " " + command.signature).strip()
 
-    # Override
     def get_opening_note(self) -> str:
         """Get help information.
 
@@ -64,7 +65,6 @@ class Help(commands.MinimalHelpCommand):
         """
         return ""
 
-    # Override
     def get_ending_note(self) -> str:
         """Get ending note.
 
@@ -72,7 +72,6 @@ class Help(commands.MinimalHelpCommand):
         """
         return " "
 
-    # Override
     def add_bot_commands_formatting(
         self, commands: Sequence[commands.Command], heading: str
     ) -> None:
@@ -80,14 +79,10 @@ class Help(commands.MinimalHelpCommand):
 
         This override changes the presentation.
         """
-        # TODO Should we show command groups by appending `*` or something?
-        #
         if commands:
             command_list = ", ".join(command.name for command in commands)
-            self.paginator.add_line("**" + heading + "**")
             self.paginator.add_line(command_list)
 
-    # Override
     def add_aliases_formatting(self, aliases):
         """Set formatting for aliases.
 
@@ -95,7 +90,6 @@ class Help(commands.MinimalHelpCommand):
         """
         return
 
-    # Override
     def add_command_formatting(self, command: commands.Command):
         """Add command.
 
@@ -104,12 +98,12 @@ class Help(commands.MinimalHelpCommand):
         if command.description:
             self.paginator.add_line(command.description)
 
-        signature = self.get_command_signature(command)
+        signature = "**__" + self.get_command_signature(command) + "__**"
         if command.aliases:
             self.paginator.add_line(signature)
             self.add_aliases_formatting(command.aliases)
         else:
-            self.paginator.add_line(signature, empty=True)
+            self.paginator.add_line(signature)
 
         if command.help:
             try:
@@ -119,18 +113,55 @@ class Help(commands.MinimalHelpCommand):
                     self.paginator.add_line(line)
                 self.paginator.add_line()
 
-    # Override
     def add_subcommand_formatting(self, command: commands.Command):
         """Add subcommand.
 
         This override changes the presentation of the line.
         """
         fmt = f"\N{EN DASH} **{command.qualified_name}**"
-        if command.short_doc:
-            fmt += ": " + command.short_doc
+
+        command_tr = self._get_command_translator(command)
+        fmt += ": " + command_tr(command.qualified_name, "help", self.context)
+
         self.paginator.add_line(fmt)
 
-    # Override
+    def _get_command_translator(self, command: commands.Command):
+        """Get translation function for current command."""
+        py_main: str = os.path.dirname(os.path.realpath(sys.modules["__main__"].__file__))
+        py_module: str = command.module.replace(".", "/")
+        module_path: str = os.path.join(py_main, py_module + ".py")
+        return self._get_module_translator(module_path)
+
+    @lru_cache(maxsize=10)
+    def _get_module_translator(self, module_path: str):
+        """Get translation function for module path.
+
+        This function is wrapped around the `_get_command_translator`
+        so we can use the `@lru_cache`.
+        """
+        return text.Translator(module_path).translate
+
+    async def send_group_help(self, group: commands.Group):
+        """Format command group output."""
+        self.add_command_formatting(group)
+
+        filtered = await self.filter_commands(group.commands, sort=self.sort_commands)
+        if filtered:
+            note = self.get_opening_note()
+            if note:
+                self.paginator.add_line(note)
+
+            # skip commands heading
+            for command in filtered:
+                self.add_subcommand_formatting(command)
+
+            note = self.get_ending_note()
+            if note:
+                self.paginator.add_line()
+                self.paginator.add_line(note)
+
+        await self.send_pages()
+
     async def send_pages(self):
         """Send the help.
 

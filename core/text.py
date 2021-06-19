@@ -1,6 +1,9 @@
 import configparser
 import os
 import re
+from typing import Optional
+
+import ring
 
 import discord
 
@@ -38,6 +41,9 @@ class Translator:
     def __repr__(self):
         langs = ", ".join(k + "={...}" for k in self.data.keys())
         return f'<Translator _directory="{self._dirpath}" ' + "data={" + langs + "}>"
+
+    def __str__(self):
+        return self.__repr__()
 
     def translate(
         self, command: str, string: str, ctx: discord.ext.commands.Context = None, **values
@@ -96,10 +102,31 @@ class Translator:
         - Return the bot default.
         """
         if ctx is not None:
-            user = MemberLanguage.get(ctx.guild.id, ctx.author.id)
-            if getattr(user, "language", None) is not None:
-                return user.language
-            guild = GuildLanguage.get(ctx.guild.id)
-            if getattr(guild, "language", None) is not None:
-                return guild.language
+            user_language: Optional[str] = self._get_user_language(ctx.guild.id, ctx.author.id)
+            if user_language is not None:
+                return user_language
+
+        if ctx is not None and ctx.guild is not None:
+            guild_language: Optional[str] = self._get_guild_language(ctx.guild.id)
+            if guild_language is not None:
+                return guild_language
+
         return Config.get().language
+
+    # While we could be using just functools.lru_cache(), using ring
+    # is a better option, because it allows us to add automatic deletion
+    # into the mix. Because the member can change their preferred language
+    # dynamically, invalidation is a preferred behavior.
+    # In case this expiration value gets changed you should also change
+    # the text in the language module under '[caching]' section.
+    @ring.lru(expire=120)
+    def _get_user_language(self, guild_id: int, user_id: int) -> Optional[str]:
+        user = MemberLanguage.get(guild_id, user_id)
+        if getattr(user, "language", None) is not None:
+            return user.language
+
+    @ring.lru(expire=120)
+    def _get_guild_language(self, guild_id: int) -> Optional[str]:
+        guild = GuildLanguage.get(guild_id)
+        if getattr(guild, "language", None) is not None:
+            return guild.language
