@@ -16,6 +16,8 @@ guild_log = logging.Guild.logger()
 
 
 class ACL(commands.Cog):
+    """Access control module."""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -98,12 +100,14 @@ class ACL(commands.Cog):
     async def acl_group_add(self, ctx, name: str, parent: str, role_id: int):
         """Add ACL group.
 
-        name: string matching `[a-zA-Z-]+`
-        parent: ACL parent group name
-        role_id: Discord role ID
+        :param name: string matching ``[a-zA-Z-]+``.
+        :param parent: ACL parent group name.
+        :param role_id: Discord role ID.
 
         To unlink the group from the parent, set it to "".
-        To set up virtual group with no link to Discord roles, set role_id to 0.
+
+        To set up virtual group with no link to Discord roles, set ``role_id``
+        to ``0``.
         """
         RE_NAME = r"[a-zA-Z-]+"
         if re.fullmatch(RE_NAME, name) is None:
@@ -127,15 +131,18 @@ class ACL(commands.Cog):
     async def acl_group_update(self, ctx, name: str, param: str, value):
         """Update ACL group.
 
-        name: name of group
+        :param name: name of group
 
-        Options:
-        name, string matching `[a-zA-Z-]+`
-        parent, parent group name
-        role_id, Discord role ID
+        ``param`` -- ``value`` options:
+
+        * name: string matching ``[a-zA-Z-]+``.
+        * parent: parent group name.
+        * role_id: Discord role ID.
 
         To unlink the group from any parents, set parent to "".
-        To set up virtual group with no link to discord roles, set role_id to 0.
+
+        To set up virtual group with no link to discord roles, set ``role_id``
+        to ``0``.
         """
         group = ACL_group.get(ctx.guild.id, name)
         if group is None:
@@ -331,6 +338,7 @@ class ACL(commands.Cog):
     #
 
     def get_group_embed(self, ctx, group: ACL_group) -> discord.Embed:
+        """Get embed with group information."""
         group_dict: dict = group.to_dict()
 
         embed = utils.Discord.create_embed(
@@ -367,11 +375,10 @@ class ACL(commands.Cog):
     ) -> Tuple[List[str], List[str], List[Tuple[str, str]]]:
         """Import JSON rules.
 
-        Returns
-        -------
-        list: New commands
-        list: Updated commands
-        list: Rejected commands as (resaon, (command, value)) tuples
+        :return:
+            New commands as list,
+            Updated commands as list,
+            Rejected commands as (reason, (command, value)) list of tuples.
         """
         result_new: Set[str] = set()
         result_upd: Set[str] = set()

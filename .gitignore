@@ -14,7 +14,9 @@ logs/*
 modules/*/
 !modules/base
 pumpkin.db
+pumpkin.db-journal
 test.db
+test.db-journal
 
 # Docs
 docs/_build

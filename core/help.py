@@ -14,16 +14,14 @@ tr = text.Translator(__file__).translate
 class Help(commands.MinimalHelpCommand):
     """Class for **help** command construction.
 
-    It inherits from discord.py's ``MinimalHelpCommand`` and tries to alter only
+    It inherits from discord.py's
+    :class:`~discord.ext.commands.MinimalHelpCommand` and tries to alter only
     the minimum of its behavior.
 
     The biggest thing it changes is that it uses INI files for text resources,
     instead of reading docstrings. This allows us to print the help in
     preferred language of the user or server (e.g. localisation, l10n).
     """
-
-    # TODO How to use the intersphinx so we are linking to the discord.py
-    # documentation?
 
     def __init__(self, **options):
         self.paginator = commands.Paginator()

@@ -15,6 +15,8 @@ LANGUAGES = ("en", "cs")
 
 
 class Language(commands.Cog):
+    """Language preference functions."""
+
     def __init__(self, bot):
         self.bot = bot
 

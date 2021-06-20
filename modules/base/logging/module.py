@@ -11,6 +11,8 @@ guild_log = logging.Guild.logger()
 
 
 class Logging(commands.Cog):
+    """Log configuration functions."""
+
     def __init__(self, bot):
         self.bot = bot
 

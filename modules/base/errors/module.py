@@ -15,6 +15,8 @@ guild_log = logging.Guild.logger()
 
 
 class Errors(commands.Cog):
+    """Error handling module."""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -25,6 +27,7 @@ class Errors(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
+        """Handle bot exceptions."""
         # Recursion prevention
         if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
             return
@@ -67,12 +70,13 @@ class Errors(commands.Cog):
     def __get_error_message(ctx: commands.Context, error: Exception) -> Tuple[str, str, bool, bool]:
         """Get message for the error.
 
-        Returns
-        -------
-        title: The error name
-        content: The error description
-        show_traceback: Whether to display traceback.
-        inform: Whether to send the error for further inspection
+        :param ctx: The invocation context.
+        :param error: Detected exception.
+        :return:
+            title (The error name),
+            content (The error description),
+            show_traceback (Whether to display traceback),
+            inform (Whether to send the error for further inspection).
         """
 
         # pumpkin.py own exceptions

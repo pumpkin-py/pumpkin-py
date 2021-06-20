@@ -22,6 +22,11 @@ config = database.config.Config.get()
 
 
 class Repository:
+    """Module repository.
+
+    This object is used when working with the **repo** command.
+    """
+
     def __init__(
         self,
         valid: bool,
@@ -40,6 +45,7 @@ class Repository:
         self.version: str = version
 
     def __str__(self):
+        """Get human-friendly text representation."""
         if self.valid:
             return (
                 f"Repository {self.name} version {self.version} "
@@ -48,6 +54,7 @@ class Repository:
         return f"Invalid repository: {self.message}"
 
     def __repr__(self):
+        """Get text representation."""
         if self.valid:
             return (
                 f'<Repository valid={self.valid} message="{self.message}" '
@@ -60,6 +67,8 @@ class Repository:
 
 
 class Admin(commands.Cog):
+    """Bot administration functions."""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -68,6 +77,7 @@ class Admin(commands.Cog):
             self.status_loop.start()
 
     def cog_unload(self):
+        """Cancel status loop on unload."""
         self.status_loop.cancel()
 
     # Loops
@@ -76,9 +86,9 @@ class Admin(commands.Cog):
     async def status_loop(self):
         """Observe latency to the Discord API and switch status automatically.
 
-        Online: <0s, 0.25s>
-        Idle: (0.25s, 0.5s>
-        DND: (0.5s, inf)
+        * Online: <0s, 0.25s>
+        * Idle: (0.25s, 0.5s>
+        * DND: (0.5s, inf)
         """
         if self.bot.latency <= 0.25:
             status = "online"
@@ -454,15 +464,9 @@ class Admin(commands.Cog):
     def _download_repository(*, url: str, path: str) -> Optional[str]:
         """Download repository to given directory.
 
-        Arguments
-        ---------
-        url: A link to valid git repository.
-        path: Path for git to download the repository.
-
-        Returns
-        -------
-        - str: An error that occured.
-        - None: Download was succesfull.
+        :param url: A link to valid git repository.
+        :param path: Path for git to download the repository.
+        :return: An error that occured or ``None``.
         """
         try:
             git.repo.base.Repo.clone_from(url, os.path.join(path, "newmodule"))
@@ -478,13 +482,8 @@ class Admin(commands.Cog):
     def _get_repository_list(*, query: str = "") -> List[str]:
         """Get list of repositories
 
-        Arguments
-        ---------
-        query: A string that has to be part of the module name.
-
-        Returns
-        -------
-        list: List of found module names.
+        :param query: A string that has to be part of the module name.
+        :return: List of found module names.
         """
         files = os.listdir(os.path.join(os.getcwd(), "modules"))
         repositories = []
@@ -509,13 +508,8 @@ class Admin(commands.Cog):
         directories inside the directory the path points to. All modules must
         be lowercase ascii only.
 
-        Arguments
-        ---------
-        path: A path to cloned repository.
-
-        Returns
-        -------
-        Repository
+        :param path: A path to cloned repository.
+        :return: :class:`Repository` object.
         """
         # check the __init__.py file
         if not os.path.isfile(os.path.join(path, "__init__.py")):
@@ -565,15 +559,11 @@ class Admin(commands.Cog):
     def _install_module_requirements(*, path: str) -> Optional[subprocess.CompletedProcess]:
         """Install new packages from requirements.txt file.
 
-        Arguments
-        ---------
-        path: A Path to the repository.
-
-        Returns
-        -------
-        - subprocess.CompletedProcess: Succesfull installation result
-        - discord.Embed: Installation fail result
-        - None: The file was not found
+        :param path: A Path to the repository.
+        :return:
+            :class:`subprocess.CompletedProcess` in case of succesfull installation,
+            :class:`discord.Embed` if installation fails,
+            ``None`` if the file was not found.
         """
         filepath = os.path.join(path, "requirements.txt")
         if os.path.isfile(filepath):
