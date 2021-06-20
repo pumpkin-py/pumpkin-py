@@ -13,6 +13,8 @@ guild_log = logging.Guild.logger()
 
 
 class Base(commands.Cog):
+    """Basic bot functions."""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -22,10 +24,12 @@ class Base(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx):
+        """Return latency information."""
         await ctx.send(tr("ping", "reply", time="{:.2f}".format(self.bot.latency)))
 
     @commands.command()
     async def uptime(self, ctx):
+        """Return uptime information."""
         now = datetime.datetime.now().replace(microsecond=0)
         delta = now - self.boot
 
