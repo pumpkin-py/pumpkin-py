@@ -15,7 +15,8 @@ from database.logging import Logging
 # Setup logging helpers
 
 
-def get_main_directory():
+def get_main_directory() -> str:
+    """Return path to the directory containing ``pumpkin.py`` script."""
     main_py = sys.modules["__main__"].__file__
     return os.path.abspath(os.path.join(main_py, os.pardir))
 
@@ -23,7 +24,8 @@ def get_main_directory():
 main_directory = get_main_directory()
 
 
-def translate_log_level(level: Union[str, int]) -> Union[str, int]:
+def translate_log_level(level: Union[str, int]) -> Union[int, str]:
+    """Translate log level to its numeric representation and back."""
     levels = {
         "DEBUG": 10,
         "INFO": 20,
@@ -38,7 +40,8 @@ def translate_log_level(level: Union[str, int]) -> Union[str, int]:
     return {v: k for k, v in levels.items()}[level]  # type: ignore
 
 
-def write_log(entry):
+def write_log(entry) -> None:
+    """Write log entry to the log file."""
     filename = f"file_{entry.timestamp.strftime('%Y-%m-%d')}.log"
     with open(f"logs/{filename}", "a+") as handle:
         json.dump(entry.to_dict(), handle)
@@ -65,6 +68,8 @@ LogSource = Optional[
 
 
 class LogEntry:
+    """Representation of the log event."""
+
     def __init__(
         self,
         stack: List[traceback.FrameSummary],
@@ -111,6 +116,11 @@ class LogEntry:
         }
 
     def format_discord(self):
+        """Format entry so it can be sent to discord logging channel.
+
+        This is similar to :meth:`format_discord`, but it doesn't contain time
+        information.
+        """
         stubs: List[str] = list()
 
         stubs.append(self.level)
@@ -124,6 +134,11 @@ class LogEntry:
         return " ".join(stubs) + f": {self.message}"
 
     def format_stderr(self):
+        """Format entry so it can be sent to log file.
+
+        This is similar to :meth:`format_discord`, but it also contains time
+        information.
+        """
         stubs: List[str] = list()
 
         stubs.append(utils.Time.datetime(self.timestamp))
@@ -139,44 +154,54 @@ class LogEntry:
 
     @property
     def function(self):
+        """Get function name."""
         return self.stack[-1].name
 
     @property
     def lineno(self):
+        """Get line number."""
         return self.stack[-1].lineno
 
     @property
     def actor_id(self):
+        """Get actor's discord snowflake ID."""
         return getattr(self.actor, "id", None)
 
     @property
     def actor_name(self):
+        """Get actor's discord name."""
         return getattr(self.actor, "name", str(self.actor_id))
 
     @property
     def guild_id(self):
+        """Get guild's discord snowflake ID."""
         return getattr(self.guild, "id", None)
 
     @property
     def guild_name(self):
+        """Get guild's name."""
         return getattr(self.guild, "name", str(self.guild_id))
 
     @property
     def channel_id(self):
+        """Get channel's discord snowflake ID."""
         return getattr(self.channel, "id", None)
 
     @property
     def channel_name(self):
+        """Get channel's name."""
         return getattr(self.channel, "name", str(self.channel_id))
 
     @property
     def levelno(self):
+        """Get log level in numeric representation."""
         return translate_log_level(self.level)
 
     # TODO When the required Python version is bumped to 3.8, use @cached_property
     # https://docs.python.org/3/library/functools.html#functools.cached_property
     @property
     def filename(self):
+        """Get filename of the source function."""
         filename = self.stack[-1].filename[len(main_directory) :]
         if not len(filename):
             filename = "__main__"
@@ -186,6 +211,7 @@ class LogEntry:
     # https://docs.python.org/3/library/functools.html#functools.cached_property
     @property
     def module(self):
+        """Get module name of the source function."""
         RE_MODULE = r"modules\/([a-z]+)\/([a-z]+)\/(.*)"
         stubs = re.search(RE_MODULE, self.filename)
         if stubs is None:
@@ -251,7 +277,8 @@ class Logger:
             raise ValueError(f'Unsupported entry scope: "{entry.scope}".')
 
     async def _maybe_send_bot(self, entry: LogEntry):
-        """Distribute the log entry, if the guild is subscribed for this level."""
+        """Send the log entry to guild's channel, if the guild is subscribed for
+        bot logs of level."""
         log_info: List[Logging] = Logging.get_bots(entry.levelno)
         if not len(log_info):
             return
@@ -259,7 +286,8 @@ class Logger:
         await self._send(entry, log_info)
 
     async def _maybe_send_guild(self, entry: LogEntry):
-        """Send the log entry to guild's channel, if the guild is subscribed for this level."""
+        """Send the log entry to guild's channel, if the guild is subscribed for
+        guild logs of this level."""
         log_info: Optional[Logging] = Logging.get_guild(entry.guild_id, entry.levelno, entry.module)
         if log_info is None:
             return
@@ -267,6 +295,8 @@ class Logger:
         await self._send(entry, [log_info])
 
     async def _send(self, entry: LogEntry, channels: List[Logging]):
+        """Distribute the log entry to all subscribed discord channels."""
+
         text = utils.Text.split(entry.format_discord())
 
         # TODO This should probably be done in parallel
@@ -354,6 +384,7 @@ class Bot(Logger):
 
     @staticmethod
     def logger(bot=None):
+        """Get singleton instance of Bot logger."""
         if Bot.__instance is None:
             Bot(bot)
         return Bot.__instance
@@ -381,6 +412,7 @@ class Guild(Logger):
 
     @staticmethod
     def logger(bot=None):
+        """Get singleton instance of Guild logger."""
         if Guild.__instance is None:
             Guild(bot)
         return Guild.__instance

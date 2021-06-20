@@ -1,8 +1,14 @@
 class PumpkinException(Exception):
-    pass
+    """Common base for all pumpkin.py exceptions."""
+
+    def __str__(self):
+        """Text representation of the exception."""
+        return super().__str__()
 
 
 class BadTranslation(PumpkinException):
+    """Raised when translation file is not valid or contains errors."""
+
     def __init__(
         self, langfile: str = None, command: str = None, string: str = None, key: str = None
     ):

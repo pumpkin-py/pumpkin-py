@@ -18,11 +18,11 @@ class Text:
     def sanitise(string: str, *, limit: int = 2000, escape: bool = True) -> str:
         """Sanitise string.
 
-        Arguments
-        ---------
-        string: A text string to sanitise.
-        limit: How many characters should be processed.
-        allow_markdown: Whether to escape characters (to prevent unwanted markdown)
+        :param string: A text string to sanitise.
+        :param limit: How many characters should be processed.
+        :param allow_markdown: Whether to escape characters (to prevent unwanted
+            markdown).
+        :return: Sanitised string.
         """
         if escape:
             string = discord.utils.escape_markdown(string)
@@ -32,10 +32,10 @@ class Text:
     def split(string: str, limit: int = 1990) -> List[str]:
         """Split text into multiple smaller ones.
 
-        Arguments
-        ---------
-        string: A text string to split.
-        limit: How long the output strings should be.
+        :param string: A text string to split.
+        :param limit: How long the output strings should be.
+        :return: A string split into a list of smaller lines with maximal length of
+            ``limit``.
         """
         return list(string[0 + i : limit + i] for i in range(0, len(string), limit))
 
@@ -43,14 +43,13 @@ class Text:
     def split_lines(lines: List[str], limit: int = 1990) -> List[str]:
         """Split list of lines to bigger blocks.
 
-        This works just as `split()` does; the only difference is that this
-        guarantees that the line won't be split at half, instead of calling
-        the `split()` on `'\n'.join(lines)`.
+        :param lines: List of lines to split.
+        :param limit: How long the output strings should be.
+        :return: A list of strings constructed from ``lines``.
 
-        Arguments
-        ---------
-        lines: List of lines to split.
-        limit: How long the output strings should be.
+        This works just as :meth:`split()` does; the only difference is that
+        this guarantees that the line won't be split at half, instead of calling
+        the :meth:`split()` on ``lines`` joined with newline character.
         """
         pages: List[str] = list()
         page: str = ""
@@ -67,13 +66,14 @@ class Text:
     def parse_bool(string: str) -> Optional[bool]:
         """Parse string into a boolean.
 
-        Pass "1", "True", "true" for True.
-        Pass "0", "False", "false" for False.
-        Other keywords return None.
+        :param string: Text to be parsed.
+        :return: Boolean result of the conversion.
 
-        Arguments
-        ---------
-        string: Text to be parsed.
+        Pass strings ``1``, ``True``, ``true`` for ``True``.
+
+        Pass strings ``0``, ``False``, ``false`` for ``False``.
+
+        Other keywords return ``None``.
         """
         if string in (1, "1", "True", "true"):
             return True
@@ -102,7 +102,7 @@ class Time:
 
     @staticmethod
     def seconds(time: int) -> str:
-        """Convert seconds to time."""
+        """Convert seconds to human-readable time."""
         time = int(time)
         D = 3600 * 24
         H = 3600
@@ -121,23 +121,21 @@ class Time:
 
 
 class Discord:
-    """Discord object utils"""
+    """Helper functions for (mostly) discord API actions."""
 
     @staticmethod
     def create_embed(
         *, error: bool = False, author: Union[discord.Member, discord.User] = None, **kwargs
     ) -> discord.Embed:
-        """Create discord embed
+        """Create discord embed.
 
-        Arguments
-        ---------
-        error: Whether the embed reports an error.
-        author: Event author.
-        kwargs: Additional parameters.
+        :param error: Whether the embed reports an error.
+        :param author: Event author.
+        :param kwargs: Additional parameters.
+        :return: The created embed.
 
-        Returns
-        -------
-        The created embed.
+        If you supply ``title``, ``description``, ``color`` or ``footer``, they
+        will be included in the embed.
         """
         embed = discord.Embed(
             title=kwargs.get("title", discord.Embed.Empty),
@@ -164,13 +162,8 @@ class Discord:
     async def send_help(ctx: commands.Context) -> bool:
         """Send help if no subcommand has been invoked.
 
-        Arguments
-        ---------
-        ctx: The command context
-
-        Returns
-        -------
-        True if the help was sent, else False.
+        :param ctx: The command context.
+        :return: ``True`` if the help was sent, ``False`` otherwise.
         """
         if not hasattr(ctx, "command") or not hasattr(ctx.command, "qualified_name"):
             return False
@@ -184,14 +177,9 @@ class Discord:
     async def delete_message(message: discord.Message, delay: float = 0.0) -> bool:
         """Try to remove message.
 
-        Arguments
-        ---------
-        message: The message to be deleted.
-        delay: How long to wait, in seconds.
-
-        Returns
-        -------
-        True if the action was successful, else False.
+        :param message: The message to be deleted.
+        :param delay: How long to wait, in seconds.
+        :return: ``True`` if the action was successful, ``False`` otherwise.
         """
         try:
             await message.delete(delay=delay)
@@ -203,15 +191,11 @@ class Discord:
     async def remove_reaction(message: discord.Message, emoji, member: discord.Member) -> bool:
         """Try to remove reaction.
 
-        Arguments
-        ---------
-        message: The message of the reaction.
-        emoji: Emoji, Reaction, PartialEmoji or string.
-        member: The author of the reaction.
 
-        Returns
-        -------
-        True if the action was successful, else False.
+        :param message: The message of the reaction.
+        :param emoji: Emoji, Reaction, PartialEmoji or string.
+        :param member: The author of the reaction.
+        :return: ``True`` if the action was successful, ``False`` otherwise.
         """
         try:
             await message.remove_reaction(emoji, member)
@@ -223,8 +207,8 @@ class Discord:
     async def update_presence(bot: commands.Bot, *, status: str = None) -> None:
         """Update the bot presence.
 
-        The Activity is always set to <prefix>help. The Status is loaded from the
-        database, unless it is specified as parameter.
+        The Activity is always set to ``<prefix>help``. The Status is loaded
+        from the database, unless it is specified as parameter.
 
         :param status: Overwrite presence status.
         """

@@ -32,14 +32,14 @@ class Help(commands.MinimalHelpCommand):
     def command_not_found(self, string: str) -> str:
         """Command does not exist.
 
-        This override changes the language from english to i18d version.
+        This override changes the language from english to l10n version.
         """
         return tr("help", "command not found", self.context, name=string)
 
     def subcommand_not_found(self, command: commands.Command, string: str) -> str:
         """Command does not have requested subcommand.
 
-        This override changes the language from english to i18d version.
+        This override changes the language from english to l10n version.
         """
         if type(command) == commands.Group and len(command.all_commands) > 0:
             return tr(
@@ -54,7 +54,7 @@ class Help(commands.MinimalHelpCommand):
     def get_command_signature(self, command: commands.Command) -> str:
         """Retrieves the signature portion of the help page.
 
-        This Override removes command aliases the library function has.
+        This override removes command aliases the library function has.
         """
         return (command.qualified_name + " " + command.signature).strip()
 
@@ -68,7 +68,7 @@ class Help(commands.MinimalHelpCommand):
     def get_ending_note(self) -> str:
         """Get ending note.
 
-        This override returns the space character instead of `None`.
+        This override returns space instead of :class:`None`.
         """
         return " "
 
@@ -77,7 +77,8 @@ class Help(commands.MinimalHelpCommand):
     ) -> None:
         """Get list of modules and their commands
 
-        This override changes the presentation.
+        This override changes the presentation to bold heading with list of
+        the commands below.
         """
         if commands:
             self.paginator.add_line("**" + heading + "**")
@@ -94,7 +95,7 @@ class Help(commands.MinimalHelpCommand):
     def add_command_formatting(self, command: commands.Command):
         """Add command.
 
-        This override changes the way the command is presented.
+        This override changes the presentation to bold underlined command.
         """
         if command.description:
             self.paginator.add_line(command.description)
@@ -105,6 +106,9 @@ class Help(commands.MinimalHelpCommand):
             self.add_aliases_formatting(command.aliases)
         else:
             self.paginator.add_line(signature)
+
+        # TODO How to deal with long help? Add 'long help' key
+        # to the translation file?
 
         if command.help:
             try:
@@ -117,7 +121,8 @@ class Help(commands.MinimalHelpCommand):
     def add_subcommand_formatting(self, command: commands.Command):
         """Add subcommand.
 
-        This override changes the presentation of the line.
+        This override renders the subcommand as en dash followed by
+        qualified name.
         """
         fmt = f"\N{EN DASH} **{command.qualified_name}**"
 
@@ -168,7 +173,7 @@ class Help(commands.MinimalHelpCommand):
     async def send_pages(self):
         """Send the help.
 
-        This override makes sure the content is sent as a quote.
+        This override makes sure the content is sent as quotes.
         """
         destination = self.get_destination()
         for page in self.paginator.pages:
@@ -200,7 +205,8 @@ class Help(commands.MinimalHelpCommand):
     def _get_module_translator(self, module_path: str):
         """Get translation function for module path.
 
-        This function is wrapped around the `_get_command_translator`
-        so we can use the `@lru_cache`.
+        This function is wrapped inside of :meth:`_get_command_translator`
+        and :meth:`_get_cog_translator` functions so we can use caching
+        via ``@lru_cache``.
         """
         return text.Translator(module_path).translate
