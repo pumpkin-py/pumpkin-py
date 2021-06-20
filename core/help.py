@@ -11,17 +11,22 @@ from core import text
 tr = text.Translator(__file__).translate
 
 
-class Paginator(commands.Paginator):
-    def __init__(self):
-        super().__init__()
-
-    def add_line(self, line: str = "", empty: bool = False):
-        super().add_line(line="> " + line, empty=empty)
-
-
 class Help(commands.MinimalHelpCommand):
+    """Class for **help** command construction.
+
+    It inherits from discord.py's ``MinimalHelpCommand`` and tries to alter only
+    the minimum of its behavior.
+
+    The biggest thing it changes is that it uses INI files for text resources,
+    instead of reading docstrings. This allows us to print the help in
+    preferred language of the user or server (e.g. localisation, l10n).
+    """
+
+    # TODO How to use the intersphinx so we are linking to the discord.py
+    # documentation?
+
     def __init__(self, **options):
-        self.paginator = Paginator()
+        self.paginator = commands.Paginator()
 
         super().__init__(
             no_category="",
@@ -188,16 +193,9 @@ class Help(commands.MinimalHelpCommand):
 
     def _get_cog_translator(self, cog: commands.Cog):
         """Get translation function for current command."""
-        from pprint import pprint
-
-        pprint(cog.__dict__)
-
         py_main: str = os.path.dirname(os.path.realpath(sys.modules["__main__"].__file__))
-        print(py_main)
         py_module: str = cog.__cog_commands__[0].module.replace(".", "/")
-        print(py_module)
         module_path: str = os.path.join(py_main, py_module + ".py")
-        print(module_path)
 
         return self._get_module_translator(module_path)
 
