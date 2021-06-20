@@ -1,15 +1,20 @@
 # IDE
 .idea
 .vscode/settings.json
+
 # Development
 .venv/
 .env
 __pycache__
 .cache/
 .mypy_cache/
+
 # Bot data
 logs/*
 modules/*/
 !modules/base
 pumpkin.db
 test.db
+
+# Docs
+docs/_build

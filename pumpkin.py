@@ -11,6 +11,9 @@ from core import logging
 from modules.base.admin.database import BaseAdminModule
 
 
+__version__ = "0.0.0"
+
+
 # Setup checks
 
 
