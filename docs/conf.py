@@ -65,6 +65,7 @@ todo_include_todos = True
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+    "discord": ("https://discordpy.readthedocs.io/en/latest/", None),
 }
 
 autodoc_default_options = {

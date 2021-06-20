@@ -4,16 +4,46 @@ from database import acl as acldb
 
 
 def check(ctx: commands.Context) -> bool:
-    # Allow all invocations of the bot's owners.
-    #
-    # Because 'is_owner()' is a coroutine, we have to access the data directly.
-    # It is not guaranteed for the value to be there, so we may just have 'None'
-    # instead -- in that case we must continue with the permission resolution.
-    # pumpkin.py refreshes the data with each 'on_ready()' event, so it
-    # shouldn't be frequent.
-    #
-    # To deny DM invocations even to the owners (when the code uses
-    # 'ctx.guild', for example), use '@commands.guild_only()'.
+    """ACL check function.
+
+    :param ctx: The command context.
+
+    :return: The ACL result.
+
+    If the invocating user is bot owner, the access is always allowed.
+    To disallow the invocation in DMs (e.g. the function uses ``ctx.guild``
+    without checking and handling the error state), use
+    ``@commands.guild_only()``.
+
+    .. note::
+        Because discord.py's ``is_owner()`` is a coroutine, we have to access
+        the data directly, instead of loading them dynamically from the API
+        endpoint. The ``bot.owner_id`` argument may be ``None``: that's the
+        reason pumpkin.py refreshes it on each ``on_ready()`` event in the main
+        file.
+
+    If the context is in the DMs, access is always denied, because the ACL is
+    tied to guild IDs.
+
+    Then a database lookup is performed. If the command rule is not found,
+    access is denied.
+
+    If the rule has user override (explicit allow, explicit deny), this override
+    is returned, and no additional checks are performed.
+
+    If the user has no roles, the default permission is returned.
+
+    User's roles are traversed from the top to the bottom. When the first role
+    with mapping to ACL group is found, the search is stopped; if the role isn't
+    mapped to ACL group, the search continues with lower role.
+
+    If the highest ACL-mapped role contains ACL information (e.g. MOD allow),
+    this information is returned. If the group isn't present in this rule,
+    its parent is looked up and used in comparison -- and so on, until decision
+    can be made.
+
+    If none of user's roles are found, the default permission is returned.
+    """
     if getattr(ctx.bot, "owner_id", 0) == ctx.author.id:
         return True
     if ctx.author.id in getattr(ctx.bot, "owner_ids", set()):

@@ -8,6 +8,8 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 
 class Database:
+    """Main database connector."""
+
     def __init__(self):
         self.base = declarative_base()
         self.db = create_engine(
@@ -24,10 +26,10 @@ session = sessionmaker(database.db, future=True)()
 def _list_directory_directories(directory: str) -> List[str]:
     """Return filtered list of directories.
 
-    :param directory: Absolute or relative (from the __main__ file) path to the
-        directory.
-    :returns: List of paths to directories inside the requested directory.
-        Directories starting with underscore (e.g. __pycache__) are not
+    :param directory: Absolute or relative (from the ``__main__`` file) path to
+        the directory.
+    :return: List of paths to directories inside the requested directory.
+        Directories starting with underscore (e.g. ``__pycache__``) are not
         included.
     """
     if not os.path.isdir(directory):
@@ -40,7 +42,7 @@ def _list_directory_directories(directory: str) -> List[str]:
 
 
 def _import_database_tables():
-    """Import database tables from the "modules/" directory."""
+    """Import database tables from the ``modules/`` directory."""
     repositories: List[str] = _list_directory_directories("modules")
     for repository in repositories:
         modules: List[str] = _list_directory_directories(repository)
@@ -69,7 +71,6 @@ def _import_database_tables():
 
 def init_core():
     """Load core models and create their tables."""
-    # Import core tables
     importlib.import_module("database.config")
     importlib.import_module("database.acl")
     importlib.import_module("database.language")
@@ -81,7 +82,6 @@ def init_core():
 
 def init_modules():
     """Load all database models and create their tables."""
-    # Find and import module tables
     _import_database_tables()
 
     database.base.metadata.create_all(database.db)
