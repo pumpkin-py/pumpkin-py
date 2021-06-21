@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from sqlalchemy import Column, Integer, BigInteger
 
 from database import database, session
@@ -11,7 +13,7 @@ class BaseBasePin(database.base):
     limit = Column(Integer, default=5)
 
     @staticmethod
-    def get(guild_id: int):
+    def get(guild_id: int) -> BaseBasePin:
         """Get userpin preferences for the guild."""
         query = session.query(BaseBasePin).filter_by(guild_id=guild_id).one_or_none()
         if query is None:
@@ -20,5 +22,5 @@ class BaseBasePin(database.base):
             session.commit()
         return query
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<BaseBasePin guild_id="{self.guild_id}" limit="{self.limit}">'

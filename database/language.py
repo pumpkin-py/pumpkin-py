@@ -1,4 +1,5 @@
-from typing import Dict, Union
+from __future__ import annotations
+from typing import Dict, Optional, Union
 
 from sqlalchemy import BigInteger, Column, Integer, String
 
@@ -14,13 +15,13 @@ class GuildLanguage(database.base):
     guild_id = Column(BigInteger, unique=True)
     language = Column(String)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'<GuildLanguage id="{self.id}" '
             f'guild_id="{self.guild_id}" language="{self.language}">'
         )
 
-    def __eq__(self, obj):
+    def __eq__(self, obj) -> bool:
         return type(self) == type(obj) and self.guild_id == obj.guild_id
 
     def dump(self) -> Dict[str, Union[int, str]]:
@@ -30,7 +31,7 @@ class GuildLanguage(database.base):
         }
 
     @staticmethod
-    def add(guild_id: int, language: str):
+    def add(guild_id: int, language: str) -> GuildLanguage:
         preference = GuildLanguage(guild_id=guild_id, language=language)
 
         # remove old language preference
@@ -41,7 +42,7 @@ class GuildLanguage(database.base):
         return preference
 
     @staticmethod
-    def get(guild_id: int):
+    def get(guild_id: int) -> Optional[GuildLanguage]:
         query = session.query(GuildLanguage).filter_by(guild_id=guild_id).one_or_none()
         return query
 
@@ -52,7 +53,7 @@ class GuildLanguage(database.base):
 
 
 class MemberLanguage(database.base):
-    """Language preference for the guild."""
+    """Language preference of the user."""
 
     __tablename__ = "language_members"
 
@@ -61,13 +62,13 @@ class MemberLanguage(database.base):
     member_id = Column(BigInteger)
     language = Column(String)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'<MemberLanguage id="{self.id}" guild_id="{self.guild_id}" '
             f'member_id="{self.member_id}" language="{self.language}">'
         )
 
-    def __eq__(self, obj):
+    def __eq__(self, obj) -> bool:
         return (
             type(self) == type(obj)
             and self.guild_id == obj.guild_id
@@ -82,7 +83,7 @@ class MemberLanguage(database.base):
         }
 
     @staticmethod
-    def add(guild_id: int, member_id: int, language: str):
+    def add(guild_id: int, member_id: int, language: str) -> MemberLanguage:
         preference = MemberLanguage(guild_id=guild_id, member_id=member_id, language=language)
 
         # remove old language preference
@@ -93,7 +94,7 @@ class MemberLanguage(database.base):
         return preference
 
     @staticmethod
-    def get(guild_id: int, member_id: int):
+    def get(guild_id: int, member_id: int) -> Optional[MemberLanguage]:
         query = (
             session.query(MemberLanguage)
             .filter_by(guild_id=guild_id, member_id=member_id)

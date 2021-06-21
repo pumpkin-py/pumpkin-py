@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Dict, Union
 
 from sqlalchemy import Boolean, Column, String, Integer
@@ -19,7 +20,7 @@ class Config(database.base):
     status = Column(String, default="online")
 
     @staticmethod
-    def get():
+    def get() -> Config:
         """Get instance of global bot settings. If there is none, it will be created."""
         query = session.query(Config).one_or_none()
         if query is None:
@@ -28,13 +29,12 @@ class Config(database.base):
             session.commit()
         return query
 
-    def save(self):
+    def save(self) -> None:
         """Save global settings."""
         session.merge(self)
         session.commit()
-        return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'<Config status="{self.status}" '
             f'prefix="{self.prefix}" mention_as_prefix="{self.mention_as_prefix}" '

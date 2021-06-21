@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import Optional, List
+
 from sqlalchemy import Column, String, Boolean
 
 from database import database, session
@@ -10,7 +13,7 @@ class BaseAdminModule(database.base):
     enabled = Column(Boolean, default=True)
 
     @staticmethod
-    def add(name: str, enabled: bool):
+    def add(name: str, enabled: bool) -> BaseAdminModule:
         """Add new module entry to database."""
         query = BaseAdminModule(name=name, enabled=enabled)
         session.merge(query)
@@ -18,16 +21,16 @@ class BaseAdminModule(database.base):
         return query
 
     @staticmethod
-    def get(name: str):
+    def get(name: str) -> Optional[BaseAdminModule]:
         """Get module entry."""
         query = session.query(BaseAdminModule).filter_by(name=name).one_or_none()
         return query
 
     @staticmethod
-    def get_all():
+    def get_all() -> List[BaseAdminModule]:
         """Get all modules."""
         query = session.query(BaseAdminModule).all()
         return query
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<BaseAdminModules name="{self.name}" enabled="{self.enabled}">'
