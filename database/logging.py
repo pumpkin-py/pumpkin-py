@@ -1,13 +1,58 @@
-from typing import Optional
+from __future__ import annotations
+from typing import Optional, List
 
 from sqlalchemy import BigInteger, Column, String, Integer
 
 from database import database
 from database import session
 
+# TODO This file would really benefit from some docstrings
+
 
 class Logging(database.base):
-    """Log configuration."""
+    """Log configuration.
+
+    .. note::
+
+        There are two logs. One is a bot log and the second one is a guild log.
+
+        **Bot logs** are events that may concern anyone using the bot -- module
+        unload, for example.
+
+        **Guild logs** are only contained in the guild and cannot be displayed
+        on other servers the bot is in. An example of this may be an ACL
+        configuration change.
+
+    Each :class:`~database.logging.Logging` object has :class:`discord.Guild`
+    (:attr:`guild_id`) and :class:`discord.TextChannel` (:attr:`channel_id`)
+    attributes that determine where the log should be sent, if one is created.
+
+    The :attr:`scope` may only have two values: ``bot`` or ``guild``, and it
+    marks the difference between the two types of logs.
+
+    :attr:`level` attribute specifies the minimal required log level (``INFO``,
+    ``WARNING``, ...) for the log to be considered active.
+
+    :attr:`module` is an optional argument. If ``None``, it determines log level
+    for the whole server: the guild may have general level configured as
+    ``WARNING``, but you want to have more information from that one module
+    that behaves strangely, and set its logging level to ``INFO``, without
+    having to deal with the bot being on ``INFO`` level as a whole.
+
+    Another advantage is the fact that you can direct logs of the module into
+    different channel from the rest.
+
+    The :attr:`module` attribute is only applicable to the ``guild``
+    :attr:`scope`.
+
+    .. note::
+
+        You can think of this object as log subscription, or as *the minimum
+        requirements for the log to be sent to some Discord channel*.
+
+    Command API for this table is in the
+    :class:`~modules.base.logging.module.Logging` module.
+    """
 
     __tablename__ = "logging"
 
@@ -19,8 +64,14 @@ class Logging(database.base):
     module = Column(String, default=None)
 
     @staticmethod
-    def add_bot(guild_id: int, channel_id: int, level: int):
-        # TODO This can probably be solved by adding "__eq__()"
+    def add_bot(guild_id: int, channel_id: int, level: int) -> Logging:
+        """Add log subscription for bot events.
+
+        :param guild_id: Guild ID of subscription channel.
+        :param channel_id: Channel ID of subscription channel.
+        :param level: Minimal logging level to be reported.
+        :return: Created bot log subscription.
+        """
         query = session.query(Logging).filter_by(scope="bot", guild_id=guild_id).one_or_none()
         if query is not None:
             query.channel_id = channel_id
@@ -32,7 +83,22 @@ class Logging(database.base):
         return query
 
     @staticmethod
-    def get_bots(level: int):
+    def get_bot(guild_id: int) -> Optional[Logging]:
+        """Get bot log subscription in given guild.
+
+        :param guild_id: Guild ID of subscription channel.
+        :return: Bot log subscription or ``None``.
+        """
+        query = session.query(Logging).filter_by(guild_id=guild_id).one_or_none()
+        return query
+
+    @staticmethod
+    def get_bots(level: int) -> List[Logging]:
+        """Get all bot log subscriptions for at least given level.
+
+        :param level: Minimal log level.
+        :return: Matching bot log subscriptions.
+        """
         query = (
             session.query(Logging)
             .filter(
@@ -44,7 +110,12 @@ class Logging(database.base):
         return query
 
     @staticmethod
-    def remove_bot(guild_id: int):
+    def remove_bot(guild_id: int) -> int:
+        """Remove bot log subscription in the guild.
+
+        :param guild_id: Guild ID of subscription channel.
+        :return: Number of deleted bot log subscriptions, always ``0`` or ``1``.
+        """
         query = session.query(Logging).filter_by(scope="bot", guild_id=guild_id).delete()
         return query
 
@@ -54,8 +125,15 @@ class Logging(database.base):
         channel_id: int,
         level: int,
         module: Optional[str] = None,
-    ):
-        """Add logging preference."""
+    ) -> Logging:
+        """Add logging preference.
+
+        :param guild_id: Guild ID of subscription channel.
+        :param channel_id: Channel ID of subscription channel.
+        :param level: Minimal logging level to be reported.
+        :param module: Module filter or ``None``.
+        :return: Created guild log subscription.
+        """
         query = (
             session.query(Logging)
             .filter_by(guild_id=guild_id, module=module, scope="guild")
@@ -77,7 +155,18 @@ class Logging(database.base):
         return query
 
     @staticmethod
-    def get_guild(guild_id: int, level: int, module: Optional[str] = None):
+    def get_guild(guild_id: int, level: int, module: Optional[str] = None) -> Optional[Logging]:
+        """Get active guild logger.
+
+        :param guild_id: Guild ID.
+        :param level: Minimal log level.
+        :param module: Get filter overwrite of guild settings.
+        :return: Logging information or ``None``.
+
+        If the module isn't found (i.e. is not set), guild default is used. If
+        the guild doesn't have set log level either, ``None`` is returned and
+        the log won't get processed and/or sent anywhere.
+        """
         query = (
             session.query(Logging)
             .filter(
@@ -88,7 +177,7 @@ class Logging(database.base):
             )
             .one_or_none()
         )
-        # If the module was supplied but no result was found, lookup defaults
+        # Lookup guild defaults if no module overwrite exists
         if query is None:
             query = (
                 session.query(Logging)
@@ -103,7 +192,14 @@ class Logging(database.base):
         return query
 
     @staticmethod
-    def remove_guild(guild_id: int, module: Optional[str] = None):
+    def remove_guild(guild_id: int, module: Optional[str] = None) -> int:
+        """Remove all log subscriptions of the guild.
+
+        :param guild_id: Guild ID of subscription channel.
+        :param module: Module filter or ``None``.
+        :return: Number of deleted guild log subscriptions, always ``0`` or
+            ``1``.
+        """
         query = (
             session.query(Logging)
             .filter_by(guild_id=guild_id, scope="guild", module=module)
@@ -112,11 +208,17 @@ class Logging(database.base):
         return query
 
     @staticmethod
-    def get_all(guild_id: int):
+    def get_all(guild_id: int) -> List[Logging]:
+        """Get all log subscriptions in given guild.
+
+        :param guild_id: Guild ID of subscription channel.
+        :return: All log subscriptions of given guild.
+        """
         query = session.query(Logging).filter_by(guild_id=guild_id).all()
         return query
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Get object representation."""
         return (
             f'<Logging id="{self.id}" '
             f'guild_id="{self.guild_id}" channel_id="{self.channel_id}" '

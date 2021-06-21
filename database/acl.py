@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 from typing import Dict, Optional, List, Union
 
 from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String, Integer
@@ -23,13 +23,13 @@ class ACL_group(database.base):
     role_id = Column(BigInteger, default=None)
     rules = relationship("ACL_rule_group", back_populates="group")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'<ACL_group id="{self.id}" name="{self.name}" parent="{self.parent}" '
             f'guild_id="{self.guild_id}" role_id="{self.role_id}">'
         )
 
-    def __eq__(self, obj):
+    def __eq__(self, obj) -> bool:
         return type(self) == type(obj) and self.guild_id == obj.guild_id and self.name == obj.name
 
     def dump(self) -> Dict[str, Union[int, str]]:
@@ -41,7 +41,7 @@ class ACL_group(database.base):
         }
 
     @staticmethod
-    def add(guild_id: int, name: str, parent: Optional[str], role_id: Optional[int]):
+    def add(guild_id: int, name: str, parent: Optional[str], role_id: Optional[int]) -> ACL_group:
         # check that the parent exists
         if parent is not None and ACL_group.get(guild_id, parent) is None:
             raise ValueError(f"Invalid ACL parent: {parent}.")
@@ -56,22 +56,22 @@ class ACL_group(database.base):
         session.commit()
 
     @staticmethod
-    def get(guild_id: int, name: str):
+    def get(guild_id: int, name: str) -> Optional[ACL_group]:
         query = session.query(ACL_group).filter_by(guild_id=guild_id, name=name).one_or_none()
         return query
 
     @staticmethod
-    def get_by_role(guild_id: int, role_id: int):
+    def get_by_role(guild_id: int, role_id: int) -> Optional[ACL_group]:
         query = session.query(ACL_group).filter_by(guild_id=guild_id, role_id=role_id).one_or_none()
         return query
 
     @staticmethod
-    def get_all(guild_id: int):
+    def get_all(guild_id: int) -> List[ACL_group]:
         query = session.query(ACL_group).all()
         return query
 
     @staticmethod
-    def remove(guild_id: int, name: str):
+    def remove(guild_id: int, name: str) -> int:
         query = session.query(ACL_group).filter_by(guild_id=guild_id, name=name).delete()
         return query
 
@@ -86,13 +86,13 @@ class ACL_rule(database.base):
     users = relationship("ACL_rule_user", back_populates="rule")
     groups = relationship("ACL_rule_group", back_populates="rule")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'<ACL_rule id="{self.id}" guild_id="{self.guild_id}" '
             f'command="{self.command}" default="{self.default}">'
         )
 
-    def __eq__(self, obj):
+    def __eq__(self, obj) -> bool:
         return (
             type(self) == type(obj)
             and self.guild_id == obj.guild_id
@@ -112,43 +112,45 @@ class ACL_rule(database.base):
         }
 
     @staticmethod
-    def add(guild_id: int, command: str, default: bool):
+    def add(guild_id: int, command: str, default: bool) -> ACL_rule:
         query = ACL_rule(guild_id=guild_id, command=command, default=default)
         session.add(query)
         session.commit()
 
-    def save(self):
+    def save(self) -> None:
         session.commit()
 
     @staticmethod
-    def get(guild_id: int, command: str):
+    def get(guild_id: int, command: str) -> Optional[ACL_rule]:
         query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).one_or_none()
         return query
 
     @staticmethod
-    def get_all(guild_id: int):
+    def get_all(guild_id: int) -> List[ACL_rule]:
         query = session.query(ACL_rule).filter_by(guild_id=guild_id).all()
         return query
 
     @staticmethod
-    def remove(guild_id: int, command: str):
+    def remove(guild_id: int, command: str) -> int:
         query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).delete()
         return query
 
     @staticmethod
-    def remove_all(guild_id: int):
+    def remove_all(guild_id: int) -> int:
         query = session.query(ACL_rule).filter_by(guild_id=guild_id).delete()
         return query
 
-    def add_group(self, group_name: str, allow: bool):
+    def add_group(self, group_name: str, allow: bool) -> ACL_rule_group:
         group = ACL_group.get(self.guild_id, group_name)
         if group is None:
             raise ValueError(f'group_name="{group_name}" cannot be mapped to group.')
 
-        self.groups.append(ACL_rule_group(group_id=group.id, allow=allow))
+        rule_group = ACL_rule_group(group_id=group.id, allow=allow)
+        self.groups.append(rule_group)
         session.commit()
+        return rule_group
 
-    def remove_group(self, group: str):
+    def remove_group(self, group: str) -> str:
         query = (
             session.query(ACL_rule_group)
             .filter(
@@ -160,11 +162,13 @@ class ACL_rule(database.base):
         session.commit()
         return query
 
-    def add_user(self, user_id: int, allow: bool):
-        self.users.append(ACL_rule_user(rule_id=self.id, user_id=user_id, allow=allow))
+    def add_user(self, user_id: int, allow: bool) -> ACL_rule_user:
+        rule_user = ACL_rule_user(rule_id=self.id, user_id=user_id, allow=allow)
+        self.users.append(rule_user)
         session.commit()
+        return rule_user
 
-    def remove_user(self, user_id: int):
+    def remove_user(self, user_id: int) -> int:
         query = (
             session.query(ACL_rule_user)
             .filter(
@@ -186,14 +190,14 @@ class ACL_rule_user(database.base):
     user_id = Column(BigInteger)
     allow = Column(Boolean)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'<ACL_rule_user id="{self.id}" '
             f'rule_id="{self.rule_id}" user_id="{self.user_id}" '
             f'allow="{self.allow}">'
         )
 
-    def __eq__(self, obj):
+    def __eq__(self, obj) -> bool:
         return (
             type(self) == type(obj) and self.rule_id == obj.rule_id and self.user_id == obj.user_id
         )
@@ -217,14 +221,14 @@ class ACL_rule_group(database.base):
     group = relationship("ACL_group", back_populates="rules")
     allow = Column(Boolean, default=None)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'<ACL_rule_group id="{self.id}" '
             f'rule_id="{self.rule_id}" group_id="{self.group_id}" '
             f'allow="{self.allow}">'
         )
 
-    def __eq__(self, obj):
+    def __eq__(self, obj) -> bool:
         return (
             type(self) == type(obj)
             and self.rule_id == obj.rule_id
