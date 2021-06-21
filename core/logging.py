@@ -44,7 +44,7 @@ def write_log(entry) -> None:
     """Write log entry to the log file."""
     filename = f"file_{entry.timestamp.strftime('%Y-%m-%d')}.log"
     with open(f"logs/{filename}", "a+") as handle:
-        json.dump(entry.to_dict(), handle)
+        json.dump(entry.dump(), handle)
         handle.write("\n")
 
 
@@ -98,7 +98,7 @@ class LogEntry:
             f"{self.message}"
         )
 
-    def to_dict(self):
+    def dump(self):
         return {
             "file": self.filename,
             "function": self.function,
