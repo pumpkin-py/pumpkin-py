@@ -1,3 +1,5 @@
+from typing import Dict, Union
+
 from sqlalchemy import BigInteger, Column, Integer, String
 
 from database import database, session
@@ -21,7 +23,7 @@ class GuildLanguage(database.base):
     def __eq__(self, obj):
         return type(self) == type(obj) and self.guild_id == obj.guild_id
 
-    def to_dict(self):
+    def dump(self) -> Dict[str, Union[int, str]]:
         return {
             "guild_id": self.guild_id,
             "language": self.language,
@@ -72,7 +74,7 @@ class MemberLanguage(database.base):
             and self.member_id == obj.member_id
         )
 
-    def to_dict(self):
+    def dump(self) -> Dict[str, Union[int, str]]:
         return {
             "guild_id": self.guild_id,
             "member_id": self.member_id,

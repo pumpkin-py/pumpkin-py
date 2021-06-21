@@ -1,4 +1,5 @@
 from typing import Optional
+from typing import Dict, Optional, List, Union
 
 from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String, Integer
 from sqlalchemy.orm import relationship
@@ -31,10 +32,7 @@ class ACL_group(database.base):
     def __eq__(self, obj):
         return type(self) == type(obj) and self.guild_id == obj.guild_id and self.name == obj.name
 
-    # TODO Should this function be called 'to_dict', or rather 'dump'?
-    # This applies to all database objects, not just this one.
-
-    def to_dict(self):
+    def dump(self) -> Dict[str, Union[int, str]]:
         return {
             "guild_id": self.guild_id,
             "name": self.name,
@@ -101,7 +99,7 @@ class ACL_rule(database.base):
             and self.command == obj.command
         )
 
-    def to_dict(self):
+    def dump(self) -> Dict[str, Union[int, str, List[Union[int, str]]]]:
         return {
             "id": self.id,
             "guild_id": self.guild_id,
@@ -200,7 +198,7 @@ class ACL_rule_user(database.base):
             type(self) == type(obj) and self.rule_id == obj.rule_id and self.user_id == obj.user_id
         )
 
-    def to_dict(self):
+    def dump(self) -> Dict[str, Union[bool, int]]:
         return {
             "id": self.id,
             "rule_id": self.rule_id,
@@ -233,7 +231,7 @@ class ACL_rule_group(database.base):
             and self.group_id == obj.group_id
         )
 
-    def to_dict(self):
+    def dump(self) -> Dict[str, Union[bool, int]]:
         return {
             "id": self.id,
             "rule_id": self.rule_id,

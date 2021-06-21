@@ -1,3 +1,5 @@
+from typing import Dict, Union
+
 from sqlalchemy import Boolean, Column, String, Integer
 
 from database import database
@@ -38,3 +40,12 @@ class Config(database.base):
             f'prefix="{self.prefix}" mention_as_prefix="{self.mention_as_prefix}" '
             f'language="{self.language}" gender="{self.gender}">'
         )
+
+    def dump(self) -> Dict[str, Union[bool, str]]:
+        return {
+            "prefix": self.prefix,
+            "mention_as_prefix": self.mention_as_prefix,
+            "language": self.language,
+            "gender": self.gender,
+            "status": self.status,
+        }

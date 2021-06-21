@@ -123,7 +123,7 @@ class ACL(commands.Cog):
             ctx.author,
             ctx.channel,
             f'New ACL group "{name}".',
-            group=group.to_dict(),
+            group=group.dump(),
         )
 
     @commands.check(acl.check)
@@ -169,7 +169,7 @@ class ACL(commands.Cog):
             ctx.author,
             ctx.channel,
             f'ACL group "{group.name}" updated.',
-            group=group.to_dict(),
+            group=group.dump(),
         )
 
     @commands.check(acl.check)
@@ -230,7 +230,7 @@ class ACL(commands.Cog):
         export: Dict[str, dict] = dict()
 
         for rule in rules:
-            rule_dict = rule.to_dict()
+            rule_dict = rule.dump()
             del rule_dict["id"]
             del rule_dict["command"]
             del rule_dict["guild_id"]
@@ -339,7 +339,7 @@ class ACL(commands.Cog):
 
     def get_group_embed(self, ctx, group: ACL_group) -> discord.Embed:
         """Get embed with group information."""
-        group_dict: dict = group.to_dict()
+        group_dict: dict = group.dump()
 
         embed = utils.Discord.create_embed(
             author=ctx.author,
