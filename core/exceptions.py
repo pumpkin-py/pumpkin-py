@@ -7,7 +7,15 @@ class PumpkinException(Exception):
 
 
 class BadTranslation(PumpkinException):
-    """Raised when translation file is not valid or contains errors."""
+    """Raised when translation file is not valid or contains errors.
+
+    Four different states may occur:
+
+    * Language file is not found.
+    * Command is not found.
+    * Command string is not found.
+    * Command string does not have requested key.
+    """
 
     def __init__(
         self, langfile: str = None, command: str = None, string: str = None, key: str = None

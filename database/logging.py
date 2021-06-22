@@ -14,7 +14,7 @@ class Logging(database.base):
 
     .. note::
 
-        There are two logs. One is a bot log and the second one is a guild log.
+        There are two logs: a bot log and a guild log.
 
         **Bot logs** are events that may concern anyone using the bot -- module
         unload, for example.
@@ -23,9 +23,10 @@ class Logging(database.base):
         on other servers the bot is in. An example of this may be an ACL
         configuration change.
 
-    Each :class:`~database.logging.Logging` object has :class:`discord.Guild`
-    (:attr:`guild_id`) and :class:`discord.TextChannel` (:attr:`channel_id`)
-    attributes that determine where the log should be sent, if one is created.
+    Each :class:`~database.logging.Logging` object has attribute
+    :attr:`guild_id` representing :class:`discord.Guild` and :attr:`channel_id`
+    representing :class:`discord.TextChannel`. They determine where the log
+    should be sent, if one is created.
 
     The :attr:`scope` may only have two values: ``bot`` or ``guild``, and it
     marks the difference between the two types of logs.
@@ -40,7 +41,7 @@ class Logging(database.base):
     having to deal with the bot being on ``INFO`` level as a whole.
 
     Another advantage is the fact that you can direct logs of the module into
-    different channel from the rest.
+    different channel from the rest of the application.
 
     The :attr:`module` attribute is only applicable to the ``guild``
     :attr:`scope`.
@@ -50,7 +51,7 @@ class Logging(database.base):
         You can think of this object as log subscription, or as *the minimum
         requirements for the log to be sent to some Discord channel*.
 
-    Command API for this table is in the
+    Command API for this database table is located in the
     :class:`~modules.base.logging.module.Logging` module.
     """
 
@@ -161,7 +162,7 @@ class Logging(database.base):
         :param guild_id: Guild ID.
         :param level: Minimal log level.
         :param module: Get filter overwrite of guild settings.
-        :return: Logging information or ``None``.
+        :return: Guild log subscription or ``None``.
 
         If the module isn't found (i.e. is not set), guild default is used. If
         the guild doesn't have set log level either, ``None`` is returned and

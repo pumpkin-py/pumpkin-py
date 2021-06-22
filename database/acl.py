@@ -9,6 +9,27 @@ from database import session
 
 
 class ACL_group(database.base):
+    """Permission group.
+
+    Groups are the connecting interface between Discord roles and permission
+    rules. They are meant to be organised in a trees:
+
+    .. code-block::
+
+       VERIFIED      <id-of-role>
+         BOOSTER     <id-of-role>
+         MODERATORS
+           MOD       <id-of-role>
+           SUBMOD    <id-of-role>
+       GUEST         <id-of-role>
+
+    .. note::
+
+        See the ACL check function at :meth:`core.acl.check`.
+
+        See the command API at :class:`modules.base.acl.module.ACL`.
+    """
+
     __tablename__ = "acl_groups"
 
     # TODO We may want to change the 'parent' column here,
@@ -33,6 +54,7 @@ class ACL_group(database.base):
         return type(self) == type(obj) and self.guild_id == obj.guild_id and self.name == obj.name
 
     def dump(self) -> Dict[str, Union[int, str]]:
+        """Return object representation as dictionary for easy serialisation."""
         return {
             "guild_id": self.guild_id,
             "name": self.name,
@@ -42,6 +64,15 @@ class ACL_group(database.base):
 
     @staticmethod
     def add(guild_id: int, name: str, parent: Optional[str], role_id: Optional[int]) -> ACL_group:
+        """Add new permission group.
+
+        :param guild_id: Guild ID.
+        :param name: Permission group name.
+        :param parent: Name of parent permission group. May be ``None``.
+        :param role_id: ID for the Discord :class:`~discord.Role`. May be ``None`` to
+            disable mapping from role to the group.
+        :return: New group.
+        """
         # check that the parent exists
         if parent is not None and ACL_group.get(guild_id, parent) is None:
             raise ValueError(f"Invalid ACL parent: {parent}.")
@@ -57,26 +88,66 @@ class ACL_group(database.base):
 
     @staticmethod
     def get(guild_id: int, name: str) -> Optional[ACL_group]:
+        """Get permission group.
+
+        :param guild_id: Guild ID.
+        :param name: Name of the permisson group.
+        :return: Found group or ``None``.
+        """
         query = session.query(ACL_group).filter_by(guild_id=guild_id, name=name).one_or_none()
         return query
 
     @staticmethod
     def get_by_role(guild_id: int, role_id: int) -> Optional[ACL_group]:
+        """Get permission group by role ID.
+
+        :param guild_id: Guild ID.
+        :param role_id: Role ID.
+        :return: Found group or ``None``.
+        """
+        # There may multiple groups not mapped to any role.
+        if role_id is None:
+            return None
+
         query = session.query(ACL_group).filter_by(guild_id=guild_id, role_id=role_id).one_or_none()
         return query
 
     @staticmethod
     def get_all(guild_id: int) -> List[ACL_group]:
+        """Get all permission groups in the guild.
+
+        :param guild_id: Guild ID.
+        :return: List of guild groups.
+        """
         query = session.query(ACL_group).all()
         return query
 
     @staticmethod
     def remove(guild_id: int, name: str) -> int:
+        """Remove existing permission group.
+
+        :param guild_id: Guild ID.
+        :param name: Group name.
+        :return: Number of deleted groups, always ``0`` or ``1``.
+        """
         query = session.query(ACL_group).filter_by(guild_id=guild_id, name=name).delete()
         return query
 
 
 class ACL_rule(database.base):
+    """Permission rule.
+
+    Each rule holds information about the command, defaults (``True`` or
+    ``False``), its guild (as ACL permissions are guild-dependent) and a list
+    of Discord users and ACL groups.
+
+    .. note::
+
+        See the ACL check function at :meth:`core.acl.check`.
+
+        See the command API at :class:`modules.base.acl.module.ACL`.
+    """
+
     __tablename__ = "acl_rules"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -100,6 +171,7 @@ class ACL_rule(database.base):
         )
 
     def dump(self) -> Dict[str, Union[int, str, List[Union[int, str]]]]:
+        """Return object representation as dictionary for easy serialisation."""
         return {
             "id": self.id,
             "guild_id": self.guild_id,
@@ -113,6 +185,15 @@ class ACL_rule(database.base):
 
     @staticmethod
     def add(guild_id: int, command: str, default: bool) -> ACL_rule:
+        """Add new permission rule.
+
+        :param guild_id: Guild ID.
+        :param command: Qualified command name (see
+            :attr:`~discord.ext.commands.Command.qualified_name` attribute).
+        :param default: ``True`` if the command should be usable by anyone by
+            default, ``False`` otherwise.
+        :return: New rule.
+        """
         query = ACL_rule(guild_id=guild_id, command=command, default=default)
         session.add(query)
         session.commit()
@@ -122,25 +203,57 @@ class ACL_rule(database.base):
 
     @staticmethod
     def get(guild_id: int, command: str) -> Optional[ACL_rule]:
+        """Get permission rule.
+
+        :param guild_id: Guild ID.
+        :param command: Qualified command name (see
+            :attr:`~discord.ext.commands.Command.qualified_name` attribute).
+        :return: Found permission rule or ``None``.
+        """
+
         query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).one_or_none()
         return query
 
     @staticmethod
     def get_all(guild_id: int) -> List[ACL_rule]:
+        """Get all guild's rules.
+
+        :param guild_id: Guild ID.
+        :return: List of permission rules.
+        """
         query = session.query(ACL_rule).filter_by(guild_id=guild_id).all()
         return query
 
     @staticmethod
     def remove(guild_id: int, command: str) -> int:
+        """Remove permission rule.
+
+        :param guild_id: Guild ID.
+        :param command: Qualified command name (see
+            :attr:`~discord.ext.commands.Command.qualified_name` attribute).
+        :return: Number of deleted rules, always ``0`` or ``1``.
+        """
         query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).delete()
         return query
 
     @staticmethod
     def remove_all(guild_id: int) -> int:
+        """Remove all permission rules.
+
+        :param guild_id: Guild ID.
+        :return: Number of deleted rules.
+        """
         query = session.query(ACL_rule).filter_by(guild_id=guild_id).delete()
         return query
 
     def add_group(self, group_name: str, allow: bool) -> ACL_rule_group:
+        """Add group constraint to the rule.
+
+        :param group_name: Name of permission group. Must be a group defined in
+            the same guild as the rule.
+        :param allow: Whether to allow or deny the permission to given group.
+        :return: Rule group constraint.
+        """
         group = ACL_group.get(self.guild_id, group_name)
         if group is None:
             raise ValueError(f'group_name="{group_name}" cannot be mapped to group.')
@@ -150,12 +263,18 @@ class ACL_rule(database.base):
         session.commit()
         return rule_group
 
-    def remove_group(self, group: str) -> str:
+    def remove_group(self, group_name: str) -> int:
+        """Remove group constraint from the rule.
+
+        :param group_name: Name of permission group. Must be a group defined in
+            the same guild as the rule.
+        :return: Number of removed group constraints, always ``0`` or ``1``.
+        """
         query = (
             session.query(ACL_rule_group)
             .filter(
                 ACL_rule_group.rule.command == self.command,
-                ACL_rule_group.group.name == group,
+                ACL_rule_group.group.name == group_name,
             )
             .delete()
         )
@@ -163,12 +282,23 @@ class ACL_rule(database.base):
         return query
 
     def add_user(self, user_id: int, allow: bool) -> ACL_rule_user:
+        """Add user constraint to the rule.
+
+        :param user_id: User ID.
+        :param allow: Whether to allow or deny the permission to given user.
+        :return: Rule user constraint.
+        """
         rule_user = ACL_rule_user(rule_id=self.id, user_id=user_id, allow=allow)
         self.users.append(rule_user)
         session.commit()
         return rule_user
 
     def remove_user(self, user_id: int) -> int:
+        """Remove user constraint from the rule.
+
+        :param user_id: User ID.
+        :return: Number of removed user constraints, always ``0`` or ``1``.
+        """
         query = (
             session.query(ACL_rule_user)
             .filter(
@@ -182,6 +312,11 @@ class ACL_rule(database.base):
 
 
 class ACL_rule_user(database.base):
+    """User constraint of the :class:`ACL_rule`.
+
+    See the :meth:`~core.acl.check` function for more details.
+    """
+
     __tablename__ = "acl_rule_users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -203,6 +338,7 @@ class ACL_rule_user(database.base):
         )
 
     def dump(self) -> Dict[str, Union[bool, int]]:
+        """Return object representation as dictionary for easy serialisation."""
         return {
             "id": self.id,
             "rule_id": self.rule_id,
@@ -212,6 +348,11 @@ class ACL_rule_user(database.base):
 
 
 class ACL_rule_group(database.base):
+    """Group constraint of the :class:`ACL_rule`.
+
+    See the :meth:`~core.acl.check` function for more details.
+    """
+
     __tablename__ = "acl_rule_groups"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -236,6 +377,7 @@ class ACL_rule_group(database.base):
         )
 
     def dump(self) -> Dict[str, Union[bool, int]]:
+        """Return object representation as dictionary for easy serialisation."""
         return {
             "id": self.id,
             "rule_id": self.rule_id,

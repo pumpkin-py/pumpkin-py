@@ -23,6 +23,32 @@ database = Database()
 session = sessionmaker(database.db, future=True)()
 
 
+def init_core():
+    """Load core models and create their tables.
+
+    This function is responsible for creation of all core tables (see the
+    sumodules of this class).
+    """
+    importlib.import_module("database.config")
+    importlib.import_module("database.acl")
+    importlib.import_module("database.language")
+    importlib.import_module("database.logging")
+
+    database.base.metadata.create_all(database.db)
+    session.commit()
+
+
+def init_modules():
+    """Load all database models and create their tables.
+
+    This function is responsible for creation of all module tables.
+    """
+    _import_database_tables()
+
+    database.base.metadata.create_all(database.db)
+    session.commit()
+
+
 def _list_directory_directories(directory: str) -> List[str]:
     """Return filtered list of directories.
 
@@ -31,6 +57,9 @@ def _list_directory_directories(directory: str) -> List[str]:
     :return: List of paths to directories inside the requested directory.
         Directories starting with underscore (e.g. ``__pycache__``) are not
         included.
+
+    This function is used for repository & module discovery in
+    :meth:`_import_database_tables` function.
     """
     if not os.path.isdir(directory):
         raise ValueError(f"{directory} is not a directory.")
@@ -42,7 +71,10 @@ def _list_directory_directories(directory: str) -> List[str]:
 
 
 def _import_database_tables():
-    """Import database tables from the ``modules/`` directory."""
+    """Import database tables from the ``modules/`` directory.
+
+    When the tables are imported, :meth:`init_modules` can create their tables.
+    """
     repositories: List[str] = _list_directory_directories("modules")
     for repository in repositories:
         modules: List[str] = _list_directory_directories(repository)
@@ -67,22 +99,3 @@ def _import_database_tables():
                     f"Could not import database models in {import_stub}: {exc}.",
                     file=sys.stderr,
                 )
-
-
-def init_core():
-    """Load core models and create their tables."""
-    importlib.import_module("database.config")
-    importlib.import_module("database.acl")
-    importlib.import_module("database.language")
-    importlib.import_module("database.logging")
-
-    database.base.metadata.create_all(database.db)
-    session.commit()
-
-
-def init_modules():
-    """Load all database models and create their tables."""
-    _import_database_tables()
-
-    database.base.metadata.create_all(database.db)
-    session.commit()
