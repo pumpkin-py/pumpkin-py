@@ -58,7 +58,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # -- Options for extensions --------------------------------------------------
 
 # Change the colors of code snippets
-pygments_style = "sphinx"
+pygments_style = "stata-dark"
+# another pretty options: colorful, vs, igor
 
 # TODO Description
 todo_include_todos = True
@@ -85,6 +86,16 @@ autoapi_type = "python"
 autoapi_generate_api_docs = True
 autoapi_member_order = "bysource"
 autoapi_python_class_content = "class"
+autoapi_options = [
+    "members",
+    # "inherited-members",
+    "undoc-members",
+    "private-members",
+    # "special-members",
+    # "show-inheritance",
+    "show-module-summary",
+    "imported-members",
+]
 
 # -- Options for HTML output -------------------------------------------------
 
