@@ -1,11 +1,11 @@
 import os
 import sys
 from functools import lru_cache
-from typing import Sequence
+from typing import Sequence, Callable
 
 from discord.ext import commands
 
-from core import text
+from core import text, exceptions
 
 
 tr = text.Translator(__file__).translate
@@ -88,14 +88,14 @@ class Help(commands.MinimalHelpCommand):
             command_list = ", ".join(command.name for command in commands)
             self.paginator.add_line(command_list)
 
-    def add_aliases_formatting(self, aliases):
+    def add_aliases_formatting(self, aliases) -> None:
         """Set formatting for aliases.
 
         This override disables aliases.
         """
         return
 
-    def add_command_formatting(self, command: commands.Command):
+    def add_command_formatting(self, command: commands.Command) -> None:
         """Add command.
 
         This override changes the presentation to bold underlined command.
@@ -121,7 +121,7 @@ class Help(commands.MinimalHelpCommand):
                     self.paginator.add_line(line)
                 self.paginator.add_line()
 
-    def add_subcommand_formatting(self, command: commands.Command):
+    def add_subcommand_formatting(self, command: commands.Command) -> None:
         """Add subcommand.
 
         This override renders the subcommand as en dash followed by
@@ -130,11 +130,14 @@ class Help(commands.MinimalHelpCommand):
         fmt = f"\N{EN DASH} **{command.qualified_name}**"
 
         command_tr = self._get_command_translator(command)
-        fmt += ": " + command_tr(command.qualified_name, "help", self.context)
+        try:
+            fmt += ": " + command_tr(command.qualified_name, "help", self.context)
+        except exceptions.BadTranslation:
+            fmt += f". *{command.short_doc}*"
 
         self.paginator.add_line(fmt)
 
-    async def send_group_help(self, group: commands.Group):
+    async def send_group_help(self, group: commands.Group) -> None:
         """Format command group output."""
         self.add_command_formatting(group)
 
@@ -155,7 +158,7 @@ class Help(commands.MinimalHelpCommand):
 
         await self.send_pages()
 
-    async def send_cog_help(self, cog: commands.Cog):
+    async def send_cog_help(self, cog: commands.Cog) -> None:
         """Format cog output."""
         # module_tr = self._get_cog_translator(cog)
         # self.paginator.add_line(module_tr("_", "help"), empty=True)
@@ -173,7 +176,7 @@ class Help(commands.MinimalHelpCommand):
 
         await self.send_pages()
 
-    async def send_pages(self):
+    async def send_pages(self) -> None:
         """Send the help.
 
         This override makes sure the content is sent as quotes.
@@ -182,14 +185,14 @@ class Help(commands.MinimalHelpCommand):
         for page in self.paginator.pages:
             await destination.send(">>> " + page)
 
-    def _get_command_translator(self, command: commands.Command):
+    def _get_command_translator(self, command: commands.Command) -> Callable:
         """Get translation function for current command."""
         py_main: str = os.path.dirname(os.path.realpath(sys.modules["__main__"].__file__))
         py_module: str = command.module.replace(".", "/")
         module_path: str = os.path.join(py_main, py_module + ".py")
         return self._get_module_translator(module_path)
 
-    def _get_cog_translator(self, cog: commands.Cog):
+    def _get_cog_translator(self, cog: commands.Cog) -> Callable:
         """Get translation function for current command."""
         py_main: str = os.path.dirname(os.path.realpath(sys.modules["__main__"].__file__))
         py_module: str = cog.__cog_commands__[0].module.replace(".", "/")
@@ -198,7 +201,7 @@ class Help(commands.MinimalHelpCommand):
         return self._get_module_translator(module_path)
 
     @lru_cache(maxsize=10)
-    def _get_module_translator(self, module_path: str):
+    def _get_module_translator(self, module_path: str) -> Callable:
         """Get translation function for module path.
 
         This function is wrapped inside of :meth:`_get_command_translator`
