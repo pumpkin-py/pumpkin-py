@@ -7,7 +7,13 @@ from database import database, session
 
 
 class GuildLanguage(database.base):
-    """Language preference for the guild."""
+    """Language preference for the guild.
+
+    .. note::
+        See text translation at :class:`core.text.Translator`.
+
+        See command API at :class:`modules.base.language.module`.
+    """
 
     __tablename__ = "language_guilds"
 
@@ -32,6 +38,14 @@ class GuildLanguage(database.base):
 
     @staticmethod
     def add(guild_id: int, language: str) -> GuildLanguage:
+        """Add guild language preference.
+
+        :param guild_id: Guild ID.
+        :param language: One of the supported languages. Please note that this
+            parameter is not checked on database level and it's your
+            responsibility to make sure it has correct value.
+        :return: Created guild language preference.
+        """
         preference = GuildLanguage(guild_id=guild_id, language=language)
 
         # remove old language preference
@@ -43,17 +57,33 @@ class GuildLanguage(database.base):
 
     @staticmethod
     def get(guild_id: int) -> Optional[GuildLanguage]:
+        """Get guild language preference.
+
+        :param guild_id: Guild ID.
+        :return: Guild language preference or ``None``.
+        """
         query = session.query(GuildLanguage).filter_by(guild_id=guild_id).one_or_none()
         return query
 
     @staticmethod
     def remove(guild_id: int) -> int:
+        """Remove guild language preference.
+
+        :param guild_ID: Guild ID.
+        :return: Number of deleted preferences, always ``0`` or ``1``.
+        """
         query = session.query(GuildLanguage).filter_by(guild_id=guild_id).delete()
         return query
 
 
 class MemberLanguage(database.base):
-    """Language preference of the user."""
+    """Language preference of the user.
+
+    .. note::
+        See text translation at :class:`core.text.Translator`.
+
+        See command API at :class:`modules.base.language.module`.
+    """
 
     __tablename__ = "language_members"
 
@@ -84,6 +114,15 @@ class MemberLanguage(database.base):
 
     @staticmethod
     def add(guild_id: int, member_id: int, language: str) -> MemberLanguage:
+        """Add member language preference.
+
+        :param guild_id: Guild ID.
+        :param member_id: Member ID.
+        :param language: One of the supported languages. Please note that this
+            parameter is not checked on database level and it's your
+            responsibility to make sure it has correct value.
+        :return: Created member language preference.
+        """
         preference = MemberLanguage(guild_id=guild_id, member_id=member_id, language=language)
 
         # remove old language preference
@@ -95,6 +134,12 @@ class MemberLanguage(database.base):
 
     @staticmethod
     def get(guild_id: int, member_id: int) -> Optional[MemberLanguage]:
+        """Get member language preference.
+
+        :param guild_id: Guild ID.
+        :param member_id: Member ID.
+        :return: Member language preference or ``None``.
+        """
         query = (
             session.query(MemberLanguage)
             .filter_by(guild_id=guild_id, member_id=member_id)
@@ -104,5 +149,11 @@ class MemberLanguage(database.base):
 
     @staticmethod
     def remove(guild_id: int, member_id: int) -> int:
+        """Remove member language preference.
+
+        :param guild_ID: Guild ID.
+        :param member_id: Member ID.
+        :return: Number of deleted preferences, always ``0`` or ``1``.
+        """
         query = session.query(MemberLanguage).filter_by(guild_id=guild_id).delete()
         return query

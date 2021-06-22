@@ -20,7 +20,7 @@ class Text:
 
         :param string: A text string to sanitise.
         :param limit: How many characters should be processed.
-        :param allow_markdown: Whether to escape characters (to prevent unwanted
+        :param escape: Whether to escape characters (to prevent unwanted
             markdown).
         :return: Sanitised string.
         """

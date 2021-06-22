@@ -203,6 +203,6 @@ class Help(commands.MinimalHelpCommand):
 
         This function is wrapped inside of :meth:`_get_command_translator`
         and :meth:`_get_cog_translator` functions so we can use caching
-        via ``@lru_cache``.
+        via :meth:`functools.lru_cache`.
         """
         return text.Translator(module_path).translate

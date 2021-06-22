@@ -16,11 +16,13 @@ def check(ctx: commands.Context) -> bool:
     ``@commands.guild_only()``.
 
     .. note::
-        Because discord.py's ``is_owner()`` is a coroutine, we have to access
-        the data directly, instead of loading them dynamically from the API
-        endpoint. The ``bot.owner_id`` argument may be ``None``: that's the
-        reason pumpkin.py refreshes it on each ``on_ready()`` event in the main
-        file.
+        Because discord.py's :class:`~discord.ext.commands.Bot` method
+        :meth:`~discord.ext.commands.Bot.is_owner()` is a coroutine, we have to
+        access the data directly, instead of loading them dynamically from the
+        API endpoint. The :attr:`~discord.ext.commands.Bot.owner_id`/
+        :attr:`~discord.ext.commands.Bot.owner_ids` argument may be ``None``:
+        that's the reason pumpkin.py refreshes it on each ``on_ready()`` event
+        in the main file.
 
     If the context is in the DMs, access is always denied, because the ACL is
     tied to guild IDs.
@@ -43,6 +45,26 @@ def check(ctx: commands.Context) -> bool:
     can be made.
 
     If none of user's roles are found, the default permission is returned.
+
+    To use the check function, import it and include it as decorator:
+
+    .. code-block:: python
+        :linenos:
+
+        from core import acl, utils
+
+        ...
+
+        @commands.check(acl.check)
+        @commands.command()
+        async def repeat(self, ctx, *, input: str):
+            await ctx.reply(utils.Text.sanitise(input, escape=False))
+
+    .. note::
+
+        See the ACL database tables at :class:`database.acl`.
+
+        See the command API at :class:`modules.base.acl.module.ACL`.
     """
     if getattr(ctx.bot, "owner_id", 0) == ctx.author.id:
         return True

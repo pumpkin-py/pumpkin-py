@@ -14,13 +14,6 @@ from database.language import GuildLanguage, MemberLanguage
 config = Config.get()
 
 
-# NOTE This may be database-heavy, for bots on large guilds a caching solution sould be made.
-# Some commands result in six and more strings that have to be translated. For each of them
-# the database is queried for the user and for the guild.
-# Redis may solve this as a cache with its self-invalidating mechanisms. It may cache the language
-# as lang.<user or guild id> = <language code>, so the database only has to return the result once.
-
-
 class Translator:
     """Class for getting translations from INI text files.
 
@@ -69,7 +62,26 @@ class Translator:
         :param string: Command key. ``key``
         :param values: Substitution pairs. ``key = value``
         :return: Translated string.
-        :raises BadTranslation: Command, string or some of the values key do not exist.
+        :raises BadTranslation: Command, string or some of the values key do not
+            exist.
+
+        Given the following language file, you can really easily load strings in
+        user preferred language.
+
+        .. code-block:: ini
+            :linenos:
+
+            [_]
+            help = Module help
+
+            [foo]
+            help = Foo command help
+            reply = Bar, ((user))!
+
+        .. code-block:: python
+            :linenos:
+
+            await ctx.reply(tr("foo", "reply", user=ctx.author.name))
         """
         # get language preference
         langcode: str = self.get_language_preference(ctx)
