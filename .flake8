@@ -1,12 +1,12 @@
 [flake8]
-select = C,E,F,W,B
 ignore = E128,E203,E501,W503
+exclude = .git,.venv
 per-file-ignores =
 	# module level import not at top of file
 	pumpkin.py:E402
-exclude = .git,.venv
+
 count = True
-max-complexity = 25
+max-complexity = 10
 max-line-length = 100
 format=%(code)s %(path)s (%(row)d:%(col)d): %(text)s
 statistics = True

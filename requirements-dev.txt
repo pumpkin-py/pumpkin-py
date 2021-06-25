@@ -1,20 +1,13 @@
-wheel
-pre-commit>=2.13.0,<3.0.0
 
-# static analysis
+bandit>=1.7.0,<2.0.0
 black==21.6b0
+discord.py-stubs
 flake8>=3.9.2,<4.0.0
 flake8-black>=0.2.1,<1.0.0
 flake8-print>=4.0.0,<5.0.0
 flake8-todo>=0.7,<1.0
-
-# safety checking
-bandit>=1.7.0,<2.0.0
-
-# type checking
 mypy>=0.902,<1.0
-discord.py-stubs
-sqlalchemy-stubs
-
-# tests
+pre-commit>=2.13.0,<3.0.0
 pytest>=6.2.4,<7.0.0
+sqlalchemy-stubs>=0.4,<1.0.0
+wheel>=0.36.2,<1.0.0
