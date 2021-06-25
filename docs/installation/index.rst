@@ -7,6 +7,6 @@ This chapter will guide you through the setup process.
    :maxdepth: 2
    :caption: Chapter contents:
 
-   01-docker
-   02-direct
-   03-config
+   03-docker
+   04-direct
+   05-config

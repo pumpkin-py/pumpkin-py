@@ -20,3 +20,4 @@ test.db-journal
 
 # Docs
 docs/_build
+docs/build
