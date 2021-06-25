@@ -10,7 +10,7 @@ Intro to pumpkin.py
    :maxdepth: 2
    :caption: Contents:
 
-   installation
+   installation/index
    changelog
    autoapi/index
 
