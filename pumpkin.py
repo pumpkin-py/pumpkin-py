@@ -6,9 +6,6 @@ import discord
 from discord.ext import commands
 
 import database
-import database.config
-from core import logging
-from modules.base.admin.database import BaseAdminModule
 
 
 __version__ = "0.0.0"
@@ -38,6 +35,8 @@ del root_path
 
 
 # Database
+
+import database.config
 
 
 database.init_core()
@@ -81,6 +80,7 @@ bot = commands.Bot(
 
 # Setup logging
 
+from core import logging
 
 bot_log = logging.Bot.logger(bot)
 guild_log = logging.Guild.logger(bot)
@@ -120,6 +120,9 @@ async def on_ready():
 
 
 # Add required modules
+
+
+from modules.base.admin.database import BaseAdminModule
 
 
 modules = {
