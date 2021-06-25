@@ -141,7 +141,7 @@ SQLite requires no installation and no setup and saves its data into a file. It 
 
 	sqlite:///<filename>.db
 
-Copy the ``default.env`` file into ``.env``. It will hold sensitive bot information, so don't let anyone see its content, ever. Open it and paste the connection string into the ``DB`` variable.
+Copy the ``default.env`` file into ``.env``. It will hold sensitive bot information, so don't let anyone see its content, ever. Open it and paste the connection string into the ``DB_STRING`` variable.
 
 See :doc:`Configuration chapter <03-config>` to learn about database backups.
 
@@ -154,7 +154,7 @@ Use ``git`` to download the source:
 
 .. code-block:: bash
 
-	git clone git@github.com/Pumpkin-py/pumpkin.py.git pumpkin
+	git clone git@github.com:Pumpkin-py/pumpkin.py.git pumpkin
 	cd pumpkin
 
 To update the bot later, run
@@ -222,8 +222,8 @@ Systemd service can autostart or restart the application when it crashes. The se
 
 	Requires = postgresql.service
 	After = postgresql.service
-	Requires = network-online.service
-	After = network-online.service
+	Requires = network-online.target
+	After = network-online.target
 
 	[Service]
 	Restart = on-failure
