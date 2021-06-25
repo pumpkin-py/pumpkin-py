@@ -4,7 +4,7 @@ Configuration
 SSH connections
 ---------------
 
-Connecting to remove server by using keys gets annoying really fast. That's why there are SSH keys. You only have to create the key and then tell the SSH to use it when connecting to your server.
+Connecting to remote server by using username and password gets annoying really fast. That's why there are SSH keys. You only have to create the key and then tell the SSH to use it when connecting to your server.
 
 .. code-block:: bash
 
@@ -38,7 +38,7 @@ The following script makes backup of the database and saves it. If it is the fir
 
 	# Database inside of Docker
 	docker exec -it pumpkin_db_1 pg_dump -c -U postgres > dump_`date +%Y-%m-%d"_"%H:%M:%S`.sql
-	# Direct database
+	# Database running directly on the system
 	pg_dump pumpkin > dump_`date +%Y-%m-%d"_"%H:%M:%S`.sql
 
 	today=$(date +%d)

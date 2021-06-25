@@ -91,11 +91,11 @@ Next you'll need to create the user account. You can pick whatever name you want
 	useradd discord
 	passwd discord
 	mkdir /home/discord
-	chowin -R discord:discord /home/discord
+	touch /home/discord/.hushlogin
+	chown -R discord:discord /home/discord
 
 	cd /home/discord
 
-	touch .hushlogin
 	cat << EOF >> .profile
 	alias ls="ls --color=auto --group-directories-first -l"
 	source /etc/bash_completion.d/git-prompt
