@@ -47,7 +47,7 @@ jobs:
 
       - name: Check the code for errors
         run: |
-          flake8 . --count --statistics
+          flake8 . --extend-ignore=T000 --count --statistics
 
       - name: Check TODOs
         run: |
