@@ -1,6 +1,6 @@
 import re
 import traceback
-from typing import Tuple
+from typing import Tuple, Optional
 
 import discord
 from discord.ext import commands
@@ -32,8 +32,13 @@ class Errors(commands.Cog):
         if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
             return
 
-        # Get original error, if exists
-        error = getattr(error, "original", error)
+        # Get original exception
+        while True:
+            new_error = getattr(error, "original", error)
+            if new_error == error:
+                break
+            print(f"Descending {error}")
+            error = new_error
 
         # Prevent some exceptions from being reported
         if type(error) == commands.CommandNotFound:
@@ -45,7 +50,7 @@ class Errors(commands.Cog):
             author=ctx.author, error=True, title=title, description=content
         )
 
-        tb: str = None
+        tb: Optional[str] = None
         if show_traceback or inform:
             tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
 
@@ -80,9 +85,9 @@ class Errors(commands.Cog):
         """
 
         # pumpkin.py own exceptions
-        if type(error) == core.exceptions.BadTranslation:
+        if isinstance(error, core.exceptions.PumpkinException):
             return (
-                tr("pumpkin.py", type(error).__name__),
+                tr("pumpkin.py", type(error).__name__, ctx),
                 str(error),
                 False,
                 True,
@@ -91,89 +96,89 @@ class Errors(commands.Cog):
         # interactions
         if type(error) == commands.MissingRequiredArgument:
             return (
-                tr("MissingRequiredArgument", "name"),
-                tr("MissingRequiredArgument", "value", arg=error.param.name),
+                tr("MissingRequiredArgument", "name", ctx),
+                tr("MissingRequiredArgument", "value", ctx, arg=error.param.name),
                 False,
                 False,
             )
         if type(error) == commands.CommandOnCooldown:
             time = utils.Time.seconds(error.retry_after)
             return (
-                tr("CommandOnCooldown", "name"),
-                tr("CommandOnCooldown", "value", time=time),
+                tr("CommandOnCooldown", "name", ctx),
+                tr("CommandOnCooldown", "value", ctx, time=time),
                 False,
                 False,
             )
         if type(error) == commands.MaxConcurrencyReached:
             return (
-                tr("MaxConcurrencyReached", "name"),
-                tr("MaxConcurrencyReached", "value", num=error.number, per=error.per.name),
+                tr("MaxConcurrencyReached", "name", ctx),
+                tr("MaxConcurrencyReached", "value", ctx, num=error.number, per=error.per.name),
                 False,
                 False,
             )
         if type(error) == commands.MissingRole:
             return (
-                tr("MissingRole", "name"),
-                tr("MissingRole", "value", role=f"`{error.missing_role!r}`"),
+                tr("MissingRole", "name", ctx),
+                tr("MissingRole", "value", ctx, role=f"`{error.missing_role!r}`"),
                 False,
                 False,
             )
         if type(error) == commands.BotMissingRole:
             return (
-                tr("BotMissingRole", "name"),
-                tr("BotMissingRole", "value", role=f"`{error.missing_role!r}`"),
+                tr("BotMissingRole", "name", ctx),
+                tr("BotMissingRole", "value", ctx, role=f"`{error.missing_role!r}`"),
                 False,
                 False,
             )
         if type(error) == commands.MissingAnyRole:
             roles = ", ".join(f"**{r!r}**" for r in error.missing_roles)
             return (
-                tr("MissingAnyRole", "name"),
-                tr("MissingAnyRole", "value", roles=roles),
+                tr("MissingAnyRole", "name", ctx),
+                tr("MissingAnyRole", "value", ctx, roles=roles),
                 False,
                 False,
             )
         if type(error) == commands.BotMissingAnyRole:
             roles = ", ".join(f"**{r!r}**" for r in error.missing_roles)
             return (
-                tr("BotMissingAnyRole", "name"),
-                tr("BotMissingAnyRole", "value", roles=roles),
+                tr("BotMissingAnyRole", "name", ctx),
+                tr("BotMissingAnyRole", "value", ctx, roles=roles),
                 False,
                 False,
             )
         if type(error) == commands.MissingPermissions:
             perms = ", ".join(f"**{p}**" for p in error.missing_perms)
             return (
-                tr("MissingPermissions", "name"),
-                tr("MissingPermissions", "value", perms=perms),
+                tr("MissingPermissions", "name", ctx),
+                tr("MissingPermissions", "value", ctx, perms=perms),
                 False,
                 False,
             )
         if type(error) == commands.BotMissingPermissions:
             perms = ", ".join(f"`{p}`" for p in error.missing_perms)
             return (
-                tr("BotMissingPermissions", "name"),
-                tr("BotMissingPermissions", "value", perms=perms),
+                tr("BotMissingPermissions", "name", ctx),
+                tr("BotMissingPermissions", "value", ctx, perms=perms),
                 False,
             )
         if type(error) == commands.BadUnionArgument:
             return (
-                tr("BadUnionArgument", "name"),
-                tr("BadUnionArgument", "value", param=error.param.name),
+                tr("BadUnionArgument", "name", ctx),
+                tr("BadUnionArgument", "value", ctx, param=error.param.name),
                 False,
                 False,
             )
         if type(error) == commands.BadBoolArgument:
             return (
-                tr("BadBoolArgument", "name"),
-                tr("BadBoolArgument", "value", arg=error.argument),
+                tr("BadBoolArgument", "name", ctx),
+                tr("BadBoolArgument", "value", ctx, arg=error.argument),
                 False,
                 False,
             )
         if type(error) == commands.ConversionError:
             return (
-                tr("ConversionError", "name"),
-                tr("ConversionError", "value", converter=type(error.converter).__name__),
+                tr("ConversionError", "name", ctx),
+                tr("ConversionError", "value", ctx, converter=type(error.converter).__name__),
                 False,
                 False,
             )
@@ -183,8 +188,8 @@ class Errors(commands.Cog):
             # return friendly name, e.g. strip "modules.{module}.module"
             name = error.name[8:-7]
             return (
-                tr("ExtensionFailed", "name"),
-                tr("ExtensionFailed", "value", extension=name),
+                tr("ExtensionFailed", "name", ctx),
+                tr("ExtensionFailed", "value", ctx, extension=name),
                 True,
                 True,
             )
@@ -197,8 +202,8 @@ class Errors(commands.Cog):
             else:
                 key = type(error).__name__
             return (
-                tr(key, "name"),
-                tr(key, "value", extension=name),
+                tr(key, "name", ctx),
+                tr(key, "value", ctx, extension=name),
                 False,
                 False,
             )
@@ -206,15 +211,15 @@ class Errors(commands.Cog):
         # the rest of client exceptions
         if type(error) == commands.CommandRegistrationError:
             return (
-                tr("CommandRegistrationError", "name"),
-                tr("CommandRegistrationError", "value", command=error.name),
+                tr("CommandRegistrationError", "name", ctx),
+                tr("CommandRegistrationError", "value", ctx, command=error.name),
                 False,
                 False,
             )
         if isinstance(error, commands.CommandError) or isinstance(error, discord.ClientException):
             return (
-                tr(type(error).__name__, "name"),
-                tr(type(error).__name__, "value"),
+                tr(type(error).__name__, "name", ctx),
+                tr(type(error).__name__, "value", ctx),
                 False,
                 True,
             )
@@ -222,8 +227,8 @@ class Errors(commands.Cog):
         # non-critical discord.py exceptions
         if type(error) == discord.NoMoreItems or isinstance(error, discord.HTTPException):
             return (
-                tr(type(error).__name__, "name"),
-                tr(type(error).__name__, "value"),
+                tr(type(error).__name__, "name", ctx),
+                tr(type(error).__name__, "value", ctx),
                 False,
                 True,
             )
@@ -231,8 +236,8 @@ class Errors(commands.Cog):
         # critical discord.py exceptions
         if isinstance(error, discord.DiscordException):
             return (
-                tr(type(error).__name__, "name"),
-                tr(type(error).__name__, "value"),
+                tr(type(error).__name__, "name", ctx),
+                tr(type(error).__name__, "value", ctx),
                 True,
                 True,
             )
@@ -240,7 +245,7 @@ class Errors(commands.Cog):
         # other exceptions
         return (
             type(error).__name__,
-            tr("Unknown", "value"),
+            tr("Unknown", "value", ctx),
             True,
             True,
         )
