@@ -43,7 +43,7 @@ class ACL(commands.Cog):
         groups = ACL_group.get_all(ctx.guild.id)
 
         if not len(groups):
-            await ctx.reply(tr("acl group list", "none"))
+            await ctx.reply(tr("acl group list", "none", ctx))
             return
 
         # compute relationships between groups
@@ -90,7 +90,7 @@ class ACL(commands.Cog):
         """Get ACL group."""
         group = ACL_group.get(ctx.guild.id, name)
         if group is None:
-            await ctx.reply(tr("acl group get", "none"))
+            await ctx.reply(tr("acl group get", "none", ctx))
             return
 
         await ctx.reply(embed=self.get_group_embed(ctx, group))
@@ -111,7 +111,7 @@ class ACL(commands.Cog):
         """
         RE_NAME = r"[a-zA-Z-]+"
         if re.fullmatch(RE_NAME, name) is None:
-            await ctx.reply(tr("acl group add", "bad name", regex=RE_NAME))
+            await ctx.reply(tr("acl group add", "bad name", ctx, regex=RE_NAME))
             return
 
         if len(parent) == 0:
@@ -146,13 +146,13 @@ class ACL(commands.Cog):
         """
         group = ACL_group.get(ctx.guild.id, name)
         if group is None:
-            await ctx.reply(tr("acl group update", "none"))
+            await ctx.reply(tr("acl group update", "none", ctx))
             return
 
         if param == "name":
             RE_NAME = r"[a-zA-Z-]+"
             if re.fullmatch(RE_NAME, name) is None:
-                await ctx.reply(tr("acl group update", "bad name", regex=RE_NAME))
+                await ctx.reply(tr("acl group update", "bad name", ctx, regex=RE_NAME))
                 return
             group.name = value
         elif param == "parent":
@@ -160,7 +160,7 @@ class ACL(commands.Cog):
         elif param == "role_id":
             group.role_id = int(value)
         else:
-            await ctx.reply(tr("acl group update", "bad parameter"))
+            await ctx.reply(tr("acl group update", "bad parameter", ctx))
             return
 
         group.save()
@@ -178,10 +178,10 @@ class ACL(commands.Cog):
         """Remove ACL group."""
         result = ACL_group.remove(ctx.guild.id, name)
         if result < 0:
-            await ctx.reply(tr("acl group remove", "none"))
+            await ctx.reply(tr("acl group remove", "none", ctx))
             return
 
-        await ctx.reply(tr("acl group remove", "reply"))
+        await ctx.reply(tr("acl group remove", "reply", ctx))
         await guild_log.warning(ctx.author, ctx.channel, f'ACL group "{name}" removed.')
 
     #
@@ -241,7 +241,7 @@ class ACL(commands.Cog):
 
         file.seek(0)
         await ctx.reply(
-            tr("acl rule export", "reply", count=len(rules)),
+            tr("acl rule export", "reply", ctx, count=len(rules)),
             file=discord.File(fp=file, filename=filename),
         )
         file.close()
@@ -253,10 +253,10 @@ class ACL(commands.Cog):
         """Remove command."""
         count = ACL_rule.remove(ctx.guild.id, command)
         if count < 1:
-            await ctx.reply(tr("acl rule remove", "none"))
+            await ctx.reply(tr("acl rule remove", "none", ctx))
             return
 
-        await ctx.reply(tr("acl rule remove", "reply"))
+        await ctx.reply(tr("acl rule remove", "reply", ctx))
         await guild_log.warning(ctx.author, ctx.channel, f"ACL rule {command} removed.")
 
     @commands.check(acl.check)
@@ -269,7 +269,7 @@ class ACL(commands.Cog):
 
         # delete all
         count = ACL_rule.remove_all(ctx.guild.id)
-        await ctx.send(tr("acl rule flush", "reply", count=count))
+        await ctx.send(tr("acl rule flush", "reply", ctx, count=count))
         await guild_log.info(ctx.author, ctx.channel, "ACL rules flushed.")
 
     @commands.check(acl.check)
@@ -280,10 +280,10 @@ class ACL(commands.Cog):
         Existing rules are skipped, unless you pass "replace" as mode parameter.
         """
         if len(ctx.message.attachments) != 1:
-            await ctx.reply(tr("acl rule import", "wrong file"))
+            await ctx.reply(tr("acl rule import", "wrong file", ctx))
             return
         if not ctx.message.attachments[0].filename.lower().endswith("json"):
-            await ctx.reply(tr("acl rule import", "wrong json"))
+            await ctx.reply(tr("acl rule import", "wrong json", ctx))
             return
 
         # download the file
@@ -293,7 +293,7 @@ class ACL(commands.Cog):
         try:
             json_data = json.load(data_file)
         except json.decoder.JSONDecodeError as exc:
-            await ctx.reply(tr("acl rule import", "bad json") + f"\n> `{str(exc)}`")
+            await ctx.reply(tr("acl rule import", "bad json", ctx) + f"\n> `{str(exc)}`")
             return
 
         new, updated, rejected = self.import_rules(ctx.guild.id, json_data, mode=mode)
@@ -303,12 +303,13 @@ class ACL(commands.Cog):
             tr(
                 "acl rule import",
                 "reply",
+                ctx,
                 new=len(new),
                 updated=len(updated),
             )
         )
 
-        result = tr("acl rule import", "skip")
+        result = tr("acl rule import", "skip", ctx)
         send_errors: bool = False
         for reason in rejected.keys():
             commands = rejected[reason]
@@ -318,7 +319,7 @@ class ACL(commands.Cog):
 
             send_errors = True
 
-            result += "\n> **" + tr("import check", reason) + "**: "
+            result += "\n> **" + tr("import check", reason, ctx) + "**: "
             if reason in ("not group", "duplicate"):
                 result += ", ".join(command for command, _ in commands)
             else:
@@ -343,20 +344,20 @@ class ACL(commands.Cog):
 
         embed = utils.Discord.create_embed(
             author=ctx.author,
-            title=tr("group embed", "title", name=group_dict["name"]),
+            title=tr("group embed", "title", ctx, name=group_dict["name"]),
         )
 
         role = ctx.guild.get_role(group_dict["role_id"])
         if role is not None:
             embed.add_field(
-                name=tr("group embed", "role"),
+                name=tr("group embed", "role", ctx),
                 value=f"{role.name} ({role.id})",
                 inline=False,
             )
 
         if group_dict["parent"] is not None:
             embed.add_field(
-                name=tr("group embed", "parent"),
+                name=tr("group embed", "parent", ctx),
                 value=group_dict["parent"],
                 inline=False,
             )
