@@ -6,7 +6,7 @@ import shutil
 import subprocess  # nosec: B404
 import sys
 import tempfile
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 import discord
 from discord.ext import commands, tasks
@@ -29,6 +29,7 @@ class Repository:
 
     def __init__(
         self,
+        path: str,
         valid: bool,
         message: str,
         message_vars: dict = None,
@@ -37,31 +38,23 @@ class Repository:
         modules: list = None,
         version: str = None,
     ):
+        self.directory: str = os.path.basename(path)
         self.valid: bool = valid
         self.message: str = message
         self.message_vars: dict = message_vars
         self.name: str = name
-        self.modules: tuple = modules
+        self.modules: Tuple[str] = modules
         self.version: str = version
 
-    def __str__(self):
-        """Get human-friendly text representation."""
-        if self.valid:
-            return (
-                f"Repository {self.name} version {self.version} "
-                f"with modules " + ", ".join(self.modules) + "."
-            )
-        return f"Invalid repository: {self.message}"
-
     def __repr__(self):
-        """Get text representation."""
         if self.valid:
             return (
-                f'<Repository valid={self.valid} message="{self.message}" '
-                f'name="{self.name}" modules={self.modules} version="{self.version}>"'
+                f'<Repository directory="{self.directory}" valid="{self.valid}" '
+                f'message="{self.message}" name="{self.name}" '
+                f'modules={self.modules} version="{self.version}>"'
             )
         return (
-            f"<Repository valid={self.valid} "
+            f'<Repository directory="{self.directory}" valid="{self.valid}" '
             f'message="{self.message}" message_vars={self.message_vars}>'
         )
 
@@ -127,6 +120,16 @@ class Admin(commands.Cog):
             repository = Admin._get_repository(path=repository_path)
             if repository.valid:
                 repositories.append(repository)
+            else:
+                # Do not raise warnings if it's just the Python stuff
+                if repository.directory == "__pycache__":
+                    continue
+
+                await bot_log.warning(
+                    ctx.author,
+                    ctx.channel,
+                    f"Found invalid repository: {repository.__repr__()}",
+                )
 
         if not len(repositories):
             return await ctx.send(
@@ -513,7 +516,7 @@ class Admin(commands.Cog):
         """
         # check the __init__.py file
         if not os.path.isfile(os.path.join(path, "__init__.py")):
-            return Repository(False, "no init", {})
+            return Repository(path, False, "no init", {})
 
         name: str = None
         version: str = None
@@ -528,7 +531,7 @@ class Admin(commands.Cog):
 
         for key in ("__all__", "__name__", "__version__"):
             if key not in init.keys():
-                return Repository(False, "missing value", {"value": utils.Text.sanitise(key)})
+                return Repository(path, False, "missing value", {"value": utils.Text.sanitise(key)})
 
         # repository version
         version = init["__version__"]
@@ -536,7 +539,7 @@ class Admin(commands.Cog):
         # repository name
         name = init["__name__"]
         if re.fullmatch(r"[a-z_]+", name) is None:
-            return Repository(False, "invalid name", {"name": utils.Text.sanitise(name)})
+            return Repository(path, False, "invalid name", {"name": utils.Text.sanitise(name)})
 
         # repository modules
         for key in init["__all__"].strip("()[]").split(","):
@@ -546,14 +549,16 @@ class Admin(commands.Cog):
 
             if re.fullmatch(r"[a-z_]+", module) is None:
                 return Repository(
-                    False, "invalid module name", {"name": utils.Text.sanitise(module)}
+                    path, False, "invalid module name", {"name": utils.Text.sanitise(module)}
                 )
 
             if not os.path.isdir(os.path.join(path, module)):
-                return Repository(False, "missing module", {"name": utils.Text.sanitise(module)})
+                return Repository(
+                    path, False, "missing module", {"name": utils.Text.sanitise(module)}
+                )
             modules.append(module)
 
-        return Repository(True, "reply", name=name, modules=tuple(modules), version=version)
+        return Repository(path, True, "reply", name=name, modules=tuple(modules), version=version)
 
     @staticmethod
     def _install_module_requirements(*, path: str) -> Optional[subprocess.CompletedProcess]:
