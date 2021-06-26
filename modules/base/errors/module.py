@@ -37,7 +37,6 @@ class Errors(commands.Cog):
             new_error = getattr(error, "original", error)
             if new_error == error:
                 break
-            print(f"Descending {error}")
             error = new_error
 
         # Prevent some exceptions from being reported
