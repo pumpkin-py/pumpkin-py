@@ -136,6 +136,7 @@ class Admin(commands.Cog):
                 tr(
                     "repository list",
                     "nothing",
+                    ctx,
                     filter=utils.Text.sanitise(query, limit=64),
                 )
             )
@@ -161,14 +162,14 @@ class Admin(commands.Cog):
         if download_stderr is not None:
             tempdir.cleanup()
             if "does not exist" in download_stderr:
-                return await ctx.send(tr("repository install", "bad url"))
+                return await ctx.send(tr("repository install", "bad url", ctx))
             embed = utils.Discord.create_embed(
                 error=True,
                 author=ctx.author,
-                title=tr("repository install", "git error"),
+                title=tr("repository install", "git error", ctx),
             )
             embed.add_field(
-                name=tr("repository install", "stderr"),
+                name=tr("repository install", "stderr", ctx),
                 value="```" + download_stderr[:1010] + "```",
                 inline=False,
             )
@@ -178,12 +179,14 @@ class Admin(commands.Cog):
         repository = Admin._get_repository(path=workdir)
         if not repository.valid:
             tempdir.cleanup()
-            return await ctx.send(tr("verify_module_repo", repository.text, **repository.kwargs))
+            return await ctx.send(
+                tr("verify_module_repo", repository.text, ctx, **repository.kwargs)
+            )
 
         # check if the repo isn't already installed
         if os.path.exists(os.path.join(os.getcwd(), "modules", repository.name)):
             tempdir.cleanup()
-            return await ctx.send(tr("repository install", "exists", name=repository.name))
+            return await ctx.send(tr("repository install", "exists", ctx, name=repository.name))
 
         # install requirements
         repo_deps = Admin._install_module_requirements(path=workdir)
@@ -192,10 +195,10 @@ class Admin(commands.Cog):
             embed = utils.Discord.create_embed(
                 error=True,
                 author=ctx.author,
-                title=tr("repository install", "requirements error"),
+                title=tr("repository install", "requirements error", ctx),
             )
             embed.add_field(
-                name=tr("repository install", "stderr"),
+                name=tr("repository install", "stderr", ctx),
                 value="```" + repo_deps.stderr.decode("utf-8").strip()[:1010] + "```",
                 inline=False,
             )
@@ -210,6 +213,7 @@ class Admin(commands.Cog):
             tr(
                 "repository install",
                 "reply",
+                ctx,
                 path=module_location,
                 modules=", ".join(f"**{m}**" for m in repository.modules),
             )
@@ -225,6 +229,7 @@ class Admin(commands.Cog):
                 tr(
                     "repository update",
                     "not found",
+                    ctx,
                     name=utils.Text.sanitise(name, limit=64),
                 )
             )
@@ -235,6 +240,7 @@ class Admin(commands.Cog):
                 tr(
                     "repository update",
                     "not repository",
+                    ctx,
                     name=utils.Text.sanitise(name, limit=64),
                 )
             )
@@ -255,6 +261,7 @@ class Admin(commands.Cog):
                 tr(
                     "repository uninstall",
                     "protected",
+                    ctx,
                     name=utils.Text.sanitise(name, limit=64),
                 )
             )
@@ -264,6 +271,7 @@ class Admin(commands.Cog):
                 tr(
                     "repository uninstall",
                     "not found",
+                    ctx,
                     name=utils.Text.sanitise(name, limit=64),
                 )
             )
@@ -273,6 +281,7 @@ class Admin(commands.Cog):
                 tr(
                     "repository uninstall",
                     "not repository",
+                    ctx,
                     name=utils.Text.sanitise(name, limit=64),
                 )
             )
@@ -281,6 +290,7 @@ class Admin(commands.Cog):
             tr(
                 "repository uninstall",
                 "reply",
+                ctx,
                 name=utils.Text.sanitise(name, limit=64),
             )
         )
@@ -292,24 +302,24 @@ class Admin(commands.Cog):
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
         self.bot.load_extension("modules." + name + ".module")
-        await ctx.send(tr("module load", "reply", name=name))
+        await ctx.send(tr("module load", "reply", ctx, name=name))
         Module.add(name, enabled=True)
         await bot_log.info(ctx.author, ctx.channel, "Loaded " + name)
 
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
         if name in ("base.admin",):
-            await ctx.send(tr("module unload", "forbidden", name=name))
+            await ctx.send(tr("module unload", "forbidden", ctx, name=name))
             return
         self.bot.unload_extension("modules." + name + ".module")
-        await ctx.send(tr("module unload", "reply", name=name))
+        await ctx.send(tr("module unload", "reply", ctx, name=name))
         Module.add(name, enabled=False)
         await bot_log.info(ctx.author, ctx.channel, "Unloaded " + name)
 
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
         self.bot.reload_extension("modules." + name + ".module")
-        await ctx.send(tr("module reload", "reply", name=name))
+        await ctx.send(tr("module reload", "reply", ctx, name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
 
     @commands.group(name="command")
@@ -335,7 +345,7 @@ class Admin(commands.Cog):
         try:
             await self.bot.user.edit(username=name)
         except discord.HTTPException:
-            await ctx.send(tr("pumpkin name", "cooldown"))
+            await ctx.send(tr("pumpkin name", "cooldown", ctx))
             await bot_log.debug(
                 ctx.author,
                 ctx.channel,
@@ -343,7 +353,7 @@ class Admin(commands.Cog):
             )
             return
 
-        await ctx.send(tr("pumpkin name", "reply", name=utils.Text.sanitise(name)))
+        await ctx.send(tr("pumpkin name", "reply", ctx, name=utils.Text.sanitise(name)))
         await bot_log.info(ctx.author, ctx.channel, "Name changed to " + name + ".")
 
     @pumpkin.command(name="avatar")
@@ -356,7 +366,9 @@ class Admin(commands.Cog):
             if len(url):
                 payload = requests.get(url)
                 if payload.response_code != "200":
-                    await ctx.send("pumpkin avatar", "download error", code=payload.response_code)
+                    await ctx.send(
+                        tr("pumpkin avatar", "download error", ctx, code=payload.response_code)
+                    )
                     return
                 image_binary = payload.content
             else:
@@ -366,7 +378,7 @@ class Admin(commands.Cog):
             try:
                 await self.bot.user.edit(avatar=image_binary)
             except discord.HTTPException:
-                await ctx.send(tr("pumpkin avatar", "cooldown"))
+                await ctx.send(tr("pumpkin avatar", "cooldown", ctx))
                 await bot_log.debug(
                     ctx.author,
                     ctx.channel,
@@ -374,7 +386,7 @@ class Admin(commands.Cog):
                 )
                 return
 
-        await ctx.send(tr("pumpkin avatar", "reply"))
+        await ctx.send(tr("pumpkin avatar", "reply", ctx))
         await bot_log.info(ctx.author, ctx.channel, "Avatar changed, the URL was " + url + ".")
 
     @commands.group(name="config")
@@ -385,24 +397,24 @@ class Admin(commands.Cog):
     async def config_get(self, ctx):
         embed = utils.Discord.create_embed(
             author=ctx.author,
-            title=tr("config get", "title"),
+            title=tr("config get", "title", ctx),
         )
         embed.add_field(
-            name=tr("config get", "prefix"),
+            name=tr("config get", "prefix", ctx),
             value=str(config.prefix)
-            + ((" " + tr("config get", "mention")) if config.mention_as_prefix else ""),
+            + ((" " + tr("config get", "mention", ctx)) if config.mention_as_prefix else ""),
             inline=False,
         )
         embed.add_field(
-            name=tr("config get", "language"),
+            name=tr("config get", "language", ctx),
             value=config.language,
         )
         embed.add_field(
-            name=tr("config get", "gender"),
+            name=tr("config get", "gender", ctx),
             value=config.gender,
         )
         embed.add_field(
-            name=tr("config get", "status"),
+            name=tr("config get", "status", ctx),
             value=config.status,
         )
         await ctx.send(embed=embed)
@@ -415,26 +427,27 @@ class Admin(commands.Cog):
                 tr(
                     "config set",
                     "bad key",
+                    ctx,
                     keys=", ".join(f"`{k}`" for k in keys),
                 )
             )
         if key == "mention_as_prefix":
             value = utils.Text.parse_bool(value)
         if value is None or not len(str(value)):
-            return await ctx.send(tr("config set", "invalid value"))
+            return await ctx.send(tr("config set", "invalid value", ctx))
 
         languages = ("en", "cs")
         if key == "language" and value not in languages:
-            return await ctx.send(tr("config set", "invalid language"))
+            return await ctx.send(tr("config set", "invalid language", ctx))
         genders = ("m", "f")
         if key == "gender" and value not in genders:
             return await ctx.send(
-                tr("config set", "bad gender", genders=", ".join(f"`{g}`" for g in genders))
+                tr("config set", "bad gender", ctx, genders=", ".join(f"`{g}`" for g in genders))
             )
         states = ("online", "idle", "dnd", "invisible", "auto")
         if key == "status" and value not in states:
             return await ctx.send(
-                tr("config set", "bad status", states=", ".join(f"`{s}`" for s in states))
+                tr("config set", "bad status", ctx, states=", ".join(f"`{s}`" for s in states))
             )
 
         if key == "prefix":
