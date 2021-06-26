@@ -43,12 +43,12 @@ class Logging(commands.Cog):
     @logging_.command(name="set")
     async def logging_set(self, ctx, scope: str, level: str, module: Optional[str] = None):
         if scope not in ("bot", "guild"):
-            await ctx.reply(tr("logging set", "invalid scope"))
+            await ctx.reply(tr("logging set", "invalid scope", ctx))
             return
 
         level: str = level.upper()
         if level not in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "NONE"):
-            await ctx.reply(tr("logging set", "invalid level"))
+            await ctx.reply(tr("logging set", "invalid level", ctx))
             return
         levelno: int = logging.translate_log_level(level)
 
@@ -72,7 +72,7 @@ class Logging(commands.Cog):
     @logging_.command(name="unset")
     async def logging_unset(self, ctx, scope: str, module: Optional[str] = None):
         if scope not in ("bot", "guild"):
-            await ctx.reply(tr("logging unset", "invalid scope"))
+            await ctx.reply(tr("logging unset", "invalid scope", ctx))
             return
 
         if scope == "bot":
@@ -81,9 +81,9 @@ class Logging(commands.Cog):
             result = DBLogging.remove_guild(guild_id=ctx.guild.id, module=module)
 
         if result > 0:
-            await ctx.reply(tr("logging unset", "reply"))
+            await ctx.reply(tr("logging unset", "reply", ctx))
         else:
-            await ctx.reply(tr("logging unset", "none"))
+            await ctx.reply(tr("logging unset", "none", ctx))
 
 
 def setup(bot) -> None:
