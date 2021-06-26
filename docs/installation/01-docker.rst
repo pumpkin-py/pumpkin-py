@@ -4,12 +4,12 @@ Docker installation
 Database setup
 --------------
 
-.. include:: 01-database.rst
+.. include:: _database.rst
 
 Discord bot token
 -----------------
 
-.. include:: 02-token.rst
+.. include:: _token.rst
 
 .. _installation:
 
