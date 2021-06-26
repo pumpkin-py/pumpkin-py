@@ -5,8 +5,7 @@ from typing import List
 import discord
 from discord.ext import commands
 
-import database
-
+from core import exceptions
 
 __version__ = "0.0.0"
 
@@ -16,11 +15,9 @@ __version__ = "0.0.0"
 
 def test_dotenv() -> None:
     if type(os.getenv("DB_STRING")) != str:
-        print("Environment variable DB_STRING is not set.", file=sys.stderr)  # noqa: T001
-        sys.exit(1)
+        raise exceptions.DotEnvException("DB_STRING is not set.")
     if type(os.getenv("TOKEN")) != str:
-        print("Environment variable TOKEN is not set.", file=sys.stderr)  # noqa: T001
-        sys.exit(1)
+        raise exceptions.DotEnvException("TOKEN is not set.")
 
 
 test_dotenv()
@@ -36,6 +33,8 @@ del root_path
 
 # Database
 
+
+import database
 import database.config
 
 
