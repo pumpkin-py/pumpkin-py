@@ -6,6 +6,12 @@ class PumpkinException(Exception):
         return super().__str__()
 
 
+class DotEnvException(PumpkinException):
+    """Raised when some module requires missing ``.env`` variable."""
+
+    pass
+
+
 class BadTranslation(PumpkinException):
     """Raised when translation file is not valid or contains errors.
 
