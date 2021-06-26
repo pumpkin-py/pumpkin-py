@@ -25,7 +25,7 @@ class Base(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         """Return latency information."""
-        await ctx.send(tr("ping", "reply", time="{:.2f}".format(self.bot.latency)))
+        await ctx.send(tr("ping", "reply", ctx, time="{:.2f}".format(self.bot.latency)))
 
     @commands.command()
     async def uptime(self, ctx):
@@ -35,15 +35,15 @@ class Base(commands.Cog):
 
         embed = utils.Discord.create_embed(
             author=ctx.author,
-            title=tr("uptime", "title"),
+            title=tr("uptime", "title", ctx),
         )
         embed.add_field(
-            name=tr("uptime", "time_since"),
+            name=tr("uptime", "time_since", ctx),
             value=utils.Time.datetime(self.boot),
             inline=False,
         )
         embed.add_field(
-            name=tr("uptime", "time_delta"),
+            name=tr("uptime", "time_delta", ctx),
             value=str(delta),
             inline=False,
         )
