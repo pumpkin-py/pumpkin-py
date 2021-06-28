@@ -15,6 +15,7 @@ bandit>=1.7.0,<2.0.0
 mypy>=0.910,<1.0
 discord.py-stubs
 sqlalchemy-stubs
+types-requests
 
 # tests
 pytest>=6.2.4,<7.0.0

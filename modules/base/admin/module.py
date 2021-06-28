@@ -20,6 +20,8 @@ bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
 config = database.config.Config.get()
 
+# TODO Whole repository handling logic should be rewritten, this is a mess
+
 
 class Repository:
     """Module repository.
@@ -41,10 +43,10 @@ class Repository:
         self.directory: str = os.path.basename(path)
         self.valid: bool = valid
         self.message: str = message
-        self.message_vars: dict = message_vars
-        self.name: str = name
-        self.modules: Tuple[str] = modules
-        self.version: str = version
+        self.message_vars: Optional[dict] = message_vars
+        self.name: Optional[str] = name
+        self.modules: Optional[Tuple[str]] = modules
+        self.version: Optional[str] = version
 
     def __repr__(self):
         if self.valid:
@@ -180,7 +182,7 @@ class Admin(commands.Cog):
         if not repository.valid:
             tempdir.cleanup()
             return await ctx.send(
-                tr("verify_module_repo", repository.text, ctx, **repository.kwargs)
+                tr("verify_module_repo", repository.message, ctx, **repository.kwargs)
             )
 
         # check if the repo isn't already installed
@@ -365,9 +367,9 @@ class Admin(commands.Cog):
         with ctx.typing():
             if len(url):
                 payload = requests.get(url)
-                if payload.response_code != "200":
+                if payload.status_code != "200":
                     await ctx.send(
-                        tr("pumpkin avatar", "download error", ctx, code=payload.response_code)
+                        tr("pumpkin avatar", "download error", ctx, code=payload.status_code)
                     )
                     return
                 image_binary = payload.content
@@ -432,8 +434,8 @@ class Admin(commands.Cog):
                 )
             )
         if key == "mention_as_prefix":
-            value = utils.Text.parse_bool(value)
-        if value is None or not len(str(value)):
+            bool_value: Optional[bool] = utils.Text.parse_bool(value)
+        if bool_value is None:
             return await ctx.send(tr("config set", "invalid value", ctx))
 
         languages = ("en", "cs")
@@ -453,7 +455,7 @@ class Admin(commands.Cog):
         if key == "prefix":
             config.prefix = value
         elif key == "mention_as_prefix":
-            config.mention_as_prefix = value
+            config.mention_as_prefix = bool_value
         elif key == "language":
             config.language = value
         elif key == "gender":
@@ -531,8 +533,8 @@ class Admin(commands.Cog):
         if not os.path.isfile(os.path.join(path, "__init__.py")):
             return Repository(path, False, "no init", {})
 
-        name: str = None
-        version: str = None
+        name: str
+        version: str
         modules: List[str] = []
 
         init: dict = {}
@@ -571,7 +573,7 @@ class Admin(commands.Cog):
                 )
             modules.append(module)
 
-        return Repository(path, True, "reply", name=name, modules=tuple(modules), version=version)
+        return Repository(path, True, "reply", name=name, modules=modules, version=version)
 
     @staticmethod
     def _install_module_requirements(*, path: str) -> Optional[subprocess.CompletedProcess]:
