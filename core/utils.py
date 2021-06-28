@@ -69,15 +69,15 @@ class Text:
         :param string: Text to be parsed.
         :return: Boolean result of the conversion.
 
-        Pass strings ``1``, ``True``, ``true`` for ``True``.
+        Pass strings ``1``, ``true``, ``yes`` for ``True``.
 
-        Pass strings ``0``, ``False``, ``false`` for ``False``.
+        Pass strings ``0``, ``false``, ``no`` for ``False``.
 
         Other keywords return ``None``.
         """
-        if string in (1, "1", "True", "true"):
+        if string.lower() in ("1", "true", "yes"):
             return True
-        if string in (0, "0", "False", "false"):
+        if string.lower() in ("0", "false", "no"):
             return False
         return None
 
