@@ -4,6 +4,7 @@ import os
 import sys
 import re
 import traceback
+from enum import IntEnum
 from typing import Optional, List, Union
 
 import discord
@@ -24,20 +25,13 @@ def get_main_directory() -> str:
 main_directory = get_main_directory()
 
 
-def translate_log_level(level: Union[str, int]) -> Union[int, str]:
-    """Translate log level to its numeric representation and back."""
-    levels = {
-        "DEBUG": 10,
-        "INFO": 20,
-        "WARNING": 30,
-        "ERROR": 40,
-        "CRITICAL": 50,
-        "NONE": 100,
-    }
-    if type(level) is str:
-        return levels[level]  # type: ignore
-    # invert to map from value to name
-    return {v: k for k, v in levels.items()}[level]  # type: ignore
+class LogLevel(IntEnum):
+    DEBUG = 10
+    INFO = 20
+    WARNING = 30
+    ERROR = 40
+    CRITICAL = 50
+    NONE = 100
 
 
 def write_log(entry) -> None:
@@ -197,10 +191,8 @@ class LogEntry:
     @property
     def levelno(self):
         """Get log level in numeric representation."""
-        return translate_log_level(self.level)
+        return getattr(LogLevel, self.level).value
 
-    # TODO When the required Python version is bumped to 3.8, use @cached_property
-    # https://docs.python.org/3/library/functools.html#functools.cached_property
     @property
     def filename(self):
         """Get filename of the source function."""
@@ -209,8 +201,6 @@ class LogEntry:
             filename = "__main__"
         return filename
 
-    # TODO When the required Python version is bumped to 3.8, use @cached_property
-    # https://docs.python.org/3/library/functools.html#functools.cached_property
     @property
     def module(self):
         """Get module name of the source function."""
