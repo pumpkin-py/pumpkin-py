@@ -28,7 +28,7 @@ class Logging(commands.Cog):
         entries = DBLogging.get_all(ctx.guild.id)
 
         def format_entry(entry: DBLogging):
-            level = logging.translate_log_level(entry.level)
+            level = logging.LogLevel(entry.level).name
             try:
                 channel = self.bot.get_guild(entry.guild_id).get_channel(entry.channel_id).name
             except AttributeError:
@@ -50,7 +50,7 @@ class Logging(commands.Cog):
         if level not in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "NONE"):
             await ctx.reply(tr("logging set", "invalid level", ctx))
             return
-        levelno: int = logging.translate_log_level(level)
+        levelno: int = getattr(logging.LogLevel, level).value
 
         # TODO Test if the module exists
 
