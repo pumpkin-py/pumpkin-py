@@ -197,6 +197,7 @@ class ACL_rule(database.base):
         query = ACL_rule(guild_id=guild_id, command=command, default=default)
         session.add(query)
         session.commit()
+        return query
 
     def save(self) -> None:
         session.commit()

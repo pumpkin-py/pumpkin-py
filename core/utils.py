@@ -147,8 +147,10 @@ class Discord:
         )
 
         # footer
-        footer = tr("create_embed", "footer") + " " + author.display_name
-        if kwargs.get("footer", None):
+        footer = tr("create_embed", "footer")
+        if author is not None:
+            footer += f" {author.display_name}"
+        if kwargs.get("footer", False):
             footer += " | " + kwargs.get("footer")
         embed.set_footer(
             icon_url=getattr(author, "avatar_url", discord.Embed.Empty),

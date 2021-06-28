@@ -60,6 +60,9 @@ class Base(commands.Cog):
         if emoji != "📌":
             return
 
+        if getattr(payload, "guild_id", None) is None:
+            return
+
         channel = self.bot.get_channel(payload.channel_id)
         if type(channel) != discord.TextChannel:
             return
@@ -94,11 +97,7 @@ class Base(commands.Cog):
                 await guild_log.info(
                     None,
                     channel,
-                    "Pinning message {0.id} in #{1.name} ({1.id}) in {2.name} ({2.id}).".format(
-                        message,
-                        message.channel,
-                        message.guild,
-                    ),
+                    f"Pinning message {message.id} by {message.author.name}.",
                 )
             except discord.errors.HTTPException:
                 await guild_log.error(None, channel, "Could not pin message.")

@@ -307,7 +307,9 @@ class Logger:
                 channel = self.bot.get_guild(target.guild_id).get_channel(target.channel_id)
             except AttributeError:
                 # Guild or channel is not accesible
-                print(f"Skipping log target {target.guild_id} #{target.channel_id}.")  # noqa: T001
+                print(
+                    f"Skipping unavailable log target {target.guild_id} #{target.channel_id}."
+                )  # noqa: T001
                 continue
 
             for stub in text:

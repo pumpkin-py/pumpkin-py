@@ -1,6 +1,6 @@
 import re
 import traceback
-from typing import Tuple, Optional
+from typing import Tuple
 
 import discord
 from discord.ext import commands
@@ -49,9 +49,7 @@ class Errors(commands.Cog):
             author=ctx.author, error=True, title=title, description=content
         )
 
-        tb: Optional[str] = None
-        if show_traceback or inform:
-            tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
+        tb: str = "".join(traceback.format_exception(type(error), error, error.__traceback__))
 
         if show_traceback:
             embed.add_field(name="Traceback", value="```" + tb[-256:] + "```", inline=False)
@@ -159,6 +157,7 @@ class Errors(commands.Cog):
                 tr("BotMissingPermissions", "name", ctx),
                 tr("BotMissingPermissions", "value", ctx, perms=perms),
                 False,
+                False,
             )
         if type(error) == commands.BadUnionArgument:
             return (
@@ -211,7 +210,7 @@ class Errors(commands.Cog):
         if type(error) == commands.CommandRegistrationError:
             return (
                 tr("CommandRegistrationError", "name", ctx),
-                tr("CommandRegistrationError", "value", ctx, command=error.name),
+                tr("CommandRegistrationError", "value", ctx, cmd=error.name),
                 False,
                 False,
             )

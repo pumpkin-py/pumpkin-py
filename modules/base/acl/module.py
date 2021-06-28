@@ -373,7 +373,7 @@ class ACL(commands.Cog):
 
     def import_rules(
         self, guild_id: int, data: dict, mode: str = "add"
-    ) -> Tuple[List[str], List[str], List[Tuple[str, str]]]:
+    ) -> Tuple[Set[str], Set[str], Dict[str, Set[Tuple[str, str]]]]:
         """Import JSON rules.
 
         :return:
@@ -385,7 +385,7 @@ class ACL(commands.Cog):
         result_upd: Set[str] = set()
         result_rej: Dict[str, Set[Tuple[str, str]]] = dict()
         for reason in ("not bool", "not list", "not group", "not int", "duplicate"):
-            result_rej[reason]: Set[str] = set()
+            result_rej[reason] = set()
 
         acl_groups: List[str] = [g.name for g in ACL_group.get_all(guild_id)]
 
