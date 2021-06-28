@@ -37,7 +37,7 @@ class Repository:
         message_vars: dict = None,
         *,
         name: str = None,
-        modules: list = None,
+        modules: tuple = None,
         version: str = None,
     ):
         self.directory: str = os.path.basename(path)
@@ -573,7 +573,7 @@ class Admin(commands.Cog):
                 )
             modules.append(module)
 
-        return Repository(path, True, "reply", name=name, modules=modules, version=version)
+        return Repository(path, True, "reply", name=name, modules=tuple(modules), version=version)
 
     @staticmethod
     def _install_module_requirements(*, path: str) -> Optional[subprocess.CompletedProcess]:
