@@ -47,7 +47,7 @@ class Translator:
     def __repr__(self) -> str:
         """Return representation of the class."""
         langs = ", ".join(k + "={...}" for k in self.data.keys())
-        return f'<Translator _directory="{self._dirpath}" ' + "data={" + langs + "}>"
+        return f"<Translator _directory='{self._dirpath}' data=[{langs}]>"
 
     def __str__(self) -> str:
         """Return human-friendly representation of the class."""
