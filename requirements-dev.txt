@@ -12,7 +12,7 @@ flake8-todo>=0.7,<1.0
 bandit>=1.7.0,<2.0.0
 
 # type checking
-mypy>=0.902,<1.0
+mypy>=0.910,<1.0
 discord.py-stubs
 sqlalchemy-stubs
 
