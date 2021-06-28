@@ -133,7 +133,10 @@ class Help(commands.MinimalHelpCommand):
         try:
             fmt += ": " + command_tr(command.qualified_name, "help", self.context)
         except exceptions.BadTranslation:
-            fmt += f". *{command.short_doc}*"
+            if len(command.short_doc):
+                fmt += f". *{command.short_doc}*"
+            else:
+                fmt += "."
 
         self.paginator.add_line(fmt)
 
