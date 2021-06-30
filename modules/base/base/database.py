@@ -29,19 +29,13 @@ class AutoPin(database.base):
     def get(guild_id: int, channel_id: Optional[int]) -> Optional[AutoPin]:
         """Get autopin preferences for the guild."""
         query = (
-            session.query(AutoPin)
-            .filter_by(guild_id=guild_id, channel_id=channel_id)
-            .one_or_none()
+            session.query(AutoPin).filter_by(guild_id=guild_id, channel_id=channel_id).one_or_none()
         )
         return query
 
     @staticmethod
     def remove(guild_id: int, channel_id: Optional[int]) -> int:
-        query = (
-            session.query(AutoPin)
-            .filter_by(guild_id=guild_id, channel_id=channel_id)
-            .delete()
-        )
+        query = session.query(AutoPin).filter_by(guild_id=guild_id, channel_id=channel_id).delete()
         return query
 
     def __repr__(self) -> str:
@@ -61,31 +55,48 @@ class AutoPin(database.base):
 class AutoThread(database.base):
     __tablename__ = "base_base_autothread"
 
-    guild_id = Column(BigInteger, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    guild_id = Column(BigInteger)
+    channel_id = Column(BigInteger, default=None)
     limit = Column(Integer, default=0)
 
     @staticmethod
-    def add(guild_id: int, limit: int = 0) -> AutoThread:
+    def add(guild_id: int, channel_id: Optional[int], limit: int = 0) -> AutoThread:
         """Add autothread preference."""
-        if AutoThread.get(guild_id) is not None:
-            AutoThread.remove(guild_id)
-        query = AutoThread(guild_id=guild_id, limit=limit)
+        if AutoThread.get(guild_id, channel_id) is not None:
+            AutoThread.remove(guild_id, channel_id)
+        query = AutoThread(guild_id=guild_id, channel_id=channel_id, limit=limit)
         session.add(query)
         session.commit()
         return query
 
     @staticmethod
-    def get(guild_id: int) -> Optional[AutoThread]:
+    def get(guild_id: int, channel_id: Optional[int]) -> Optional[AutoThread]:
         """Get autothread preference for the guild."""
-        query = session.query(AutoThread).filter_by(guild_id=guild_id).one_or_none()
+        query = (
+            session.query(AutoThread)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .one_or_none()
+        )
+        return query
+
+    @staticmethod
+    def remove(guild_id: int, channel_id: Optional[int]) -> int:
+        query = (
+            session.query(AutoThread).filter_by(guild_id=guild_id, channel_id=channel_id).delete()
+        )
         return query
 
     def __repr__(self) -> str:
-        return f"<AutoThread guild_id='{self.guild_id}' limit='{self.limit}'>"
+        return (
+            f"<AutoThread id='{self.id}' guild_id='{self.guild_id}' "
+            f"channel_id='{self.channel_id}' limit='{self.limit}'>"
+        )
 
     def dump(self) -> dict:
         return {
             "guild_id": self.guild_id,
+            "channel_id": self.channel_id,
             "limit": self.limit,
         }
 
@@ -93,28 +104,43 @@ class AutoThread(database.base):
 class Bookmark(database.base):
     __tablename__ = "base_base_bookmarks"
 
-    guild_id = Column(BigInteger, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    guild_id = Column(BigInteger)
+    channel_id = Column(BigInteger, default=None)
     enabled = Column(Boolean, default=False)
 
     @staticmethod
-    def add(guild_id: int, enabled: bool = False) -> Bookmark:
-        if Bookmark.get(guild_id) is not None:
-            Bookmark.remove(guild_id)
-        query = Bookmark(guild_id=guild_id, enabled=enabled)
+    def add(guild_id: int, channel_id: Optional[int], enabled: bool = False) -> Bookmark:
+        if Bookmark.get(guild_id, channel_id) is not None:
+            Bookmark.remove(guild_id, channel_id)
+        query = Bookmark(guild_id=guild_id, channel_id=channel_id, enabled=enabled)
         session.add(query)
         session.commit()
         return query
 
     @staticmethod
-    def get(guild_id: int) -> Optional[Bookmark]:
-        query = session.query(Bookmark).filter_by(guild_id=guild_id).one_or_none()
+    def get(guild_id: int, channel_id: Optional[int]) -> Optional[Bookmark]:
+        query = (
+            session.query(Bookmark)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .one_or_none()
+        )
+        return query
+
+    @staticmethod
+    def remove(guild_id: int, channel_id: Optional[int]) -> int:
+        query = session.query(Bookmark).filter_by(guild_id=guild_id, channel_id=channel_id).delete()
         return query
 
     def __repr__(self) -> str:
-        return f"<Bookmark guild_id='{self.guild_id}' enabled='{self.enabled}'>"
+        return (
+            f"<Bookmark id='{self.id}' guild_id='{self.guild_id}' "
+            f"channel_id='{self.channel_id}' enabled='{self.enabled}'>"
+        )
 
     def dump(self) -> dict:
         return {
             "guild_id": self.guild_id,
+            "channel_id": self.channel_id,
             "enabled": self.enabled,
         }

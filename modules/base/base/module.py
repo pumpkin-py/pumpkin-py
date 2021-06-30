@@ -60,15 +60,12 @@ class Base(commands.Cog):
     @commands.check(acl.check)
     @autopin.command(name="get")
     async def autopin_get(self, ctx, channel: discord.TextChannel = None):
-        embed = utils.Discord.create_embed(
-            author=ctx.author, title=tr("autopin get", "title", ctx)
-        )
+        embed = utils.Discord.create_embed(author=ctx.author, title=tr("autopin get", "title", ctx))
         limit: int = getattr(AutoPin.get(ctx.guild.id, None), "limit", 0)
         value: str = f"{limit}" if limit > 0 else tr("autopin get", "disabled", ctx)
         embed.add_field(
             name=tr("autopin get", "limit", ctx),
             value=value,
-            inline=False,
         )
 
         if channel is None:
@@ -88,24 +85,40 @@ class Base(commands.Cog):
     @commands.check(acl.check)
     @autopin.command(name="set")
     async def autopin_set(self, ctx, limit: int, channel: discord.TextChannel = None):
-        """Set autopin limit.
+        """Set autopin limit."""
+        if limit < 1:
+            raise commands.ArgumentError("Limit has to be at least one.")
 
-        :param limit: Neccesary reaction count. Set to ``0`` to disable.
-        """
-        if limit < 0:
-            raise commands.ArgumentError("Limit has to be at least zero.")
-
-        if limit == 0 and channel is not None:
-            # delete channel overwrite
-            AutoPin.remove(ctx.guild.id, channel.id)
+        if channel is None:
+            AutoPin.add(ctx.guild.id, None, limit)
+            await guild_log.info(
+                ctx.author,
+                ctx.channel,
+                f"Global autopin limit set to {limit}.",
+            )
         else:
-            AutoPin.add(ctx.guild.id, getattr(channel, "id", None), limit)
+            AutoPin.add(ctx.guild.id, channel.id, limit)
+            await guild_log.info(
+                ctx.author,
+                ctx.channel,
+                f"#{channel.name} autopin limit set to {limit}.",
+            )
 
-        await guild_log.info(ctx.author, ctx.channel, f"Autopin limit set to {limit}.")
         if limit == 0:
             await ctx.reply(tr("autopin set", "disabled", ctx))
         else:
             await ctx.reply(tr("autopin set", "reply", ctx))
+
+    @commands.check(acl.check)
+    @autopin.command(name="unset")
+    async def autopin_unset(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            AutoPin.remove(ctx.guild.id, None)
+            await guild_log.info(ctx.author, ctx.channel, "Autopin unset globally.")
+        else:
+            AutoPin.remove(ctx.guild.id, channel.id)
+            await guild_log.info(ctx.author, ctx.channel, f"Autopin unset in #{channel.name}.")
+        await ctx.reply(tr("autopin unset", "reply"))
 
     @commands.guild_only()
     @commands.check(acl.check)
@@ -115,61 +128,123 @@ class Base(commands.Cog):
 
     @commands.check(acl.check)
     @bookmarks.command(name="get")
-    async def bookmarks_get(self, ctx):
+    async def bookmarks_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
             author=ctx.author, title=tr("bookmarks get", "title", ctx)
         )
-        enabled: int = getattr(Bookmark.get(ctx.guild.id), "enabled", False)
+        enabled: int = getattr(Bookmark.get(ctx.guild.id, None), "enabled", False)
         embed.add_field(
             name=tr("bookmarks get", "settings", ctx),
             value=tr("bookmarks get", str(enabled), ctx),
         )
+
+        if channel is None:
+            channel = ctx.channel
+
+        channel_pref = Bookmark.get(ctx.guild.id, channel.id)
+        if channel_pref is not None:
+            embed.add_field(
+                name=tr("bookmarks get", "channel", ctx, channel=channel.name),
+                value=tr("bookmarks get", str(channel_pref.enabled), ctx),
+            )
+
         await ctx.send(embed=embed)
 
     @commands.check(acl.check)
     @bookmarks.command(name="set")
-    async def bookmarks_set(self, ctx, enabled: bool):
+    async def bookmarks_set(self, ctx, enabled: bool, channel: discord.TextChannel = None):
         """Enable or disable bookmarking."""
-        Bookmark.add(ctx.guild.id, enabled)
-        await guild_log.info(ctx.author, ctx.channel, f"Bookmarking set to {enabled}.")
-        if enabled:
-            await ctx.reply(tr("bookmarks set", "enabled", ctx))
+        if channel is None:
+            Bookmark.add(ctx.guild.id, None, enabled)
+            await guild_log.info(ctx.author, ctx.channel, f"Global bookmarks set to {enabled}.")
         else:
-            await ctx.reply(tr("bookmarks set", "disabled", ctx))
+            Bookmark.add(ctx.guild.id, channel.id, enabled)
+            await guild_log.info(
+                ctx.author, ctx.channel, f"#{channel.name} bookmarks set to {enabled}."
+            )
+        await ctx.reply(tr("bookmarks set", str(enabled), ctx))
+
+    @commands.check(acl.check)
+    @bookmarks.command(name="unset")
+    async def bookmarks_unset(self, ctx, channel: discord.TextChannel = None):
+        """Remove bookmark settings."""
+        if channel is None:
+            Bookmark.remove(ctx.guild.id, None)
+            await guild_log.info(ctx.author, ctx.channel, "Bookmarking unset globally.")
+        else:
+            Bookmark.remove(ctx.guild.id, channel.id)
+            await guild_log.info(ctx.author, ctx.channel, f"Bookmarking unset in #{channel.name}.")
+        await ctx.reply(tr("bookmarks unset", "reply"))
 
     @commands.guild_only()
     @commands.check(acl.check)
-    @commands.group()
+    @commands.group(enabled=False)
     async def autothread(self, ctx):
         await utils.Discord.send_help(ctx)
 
     @commands.check(acl.check)
     @autothread.command(name="get")
-    async def autothread_get(self, ctx):
+    async def autothread_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
             author=ctx.author, title=tr("autothread get", "title", ctx)
         )
-        limit: int = getattr(AutoPin.get(ctx.guild.id), "limit", 0)
+        limit: int = getattr(AutoThread.get(ctx.guild.id, None), "limit", 0)
         value: str = f"{limit}" if limit > 0 else tr("autothread get", "disabled", ctx)
-        embed.add_field(name=tr("autothread get", "limit", ctx), value=value)
+        embed.add_field(
+            name=tr("autothread get", "limit", ctx),
+            value=value,
+        )
+
+        if channel is None:
+            channel = ctx.channel
+
+        channel_pref = AutoThread.get(ctx.guild.id, channel.id)
+        if channel_pref is not None:
+            embed.add_field(
+                name=tr("autothread get", "channel", ctx, channel=channel.name),
+                value=f"{channel_pref.limit}"
+                if channel_pref.limit > 0
+                else tr("autothread get", "disabled", ctx),
+            )
+
         await ctx.send(embed=embed)
 
     @commands.check(acl.check)
     @autothread.command(name="set")
-    async def autothread_set(self, ctx, limit: int):
-        """Set autothread limit.
+    async def autothread_set(self, ctx, limit: int, channel: discord.TextChannel = None):
+        if limit < 1:
+            raise commands.ArgumentError("Limit has to be at least one.")
 
-        :param limit: Neccesary reaction count. Set to ``0`` to disable.
-        """
-        if limit < 0:
-            raise commands.ArgumentError("Limit has to be at least zero.")
-
-        AutoThread.add(ctx.guild.id, limit)
-        await guild_log.info(ctx.author, ctx.channel, f"Autothread limit set to {limit}.")
-        if limit > 0:
-            await ctx.reply(tr("autothread set", "reply", ctx))
+        if channel is None:
+            AutoThread.add(ctx.guild.id, None, limit)
+            await guild_log.info(
+                ctx.author,
+                ctx.channel,
+                f"Global autothread limit set to {limit}.",
+            )
         else:
+            AutoThread.add(ctx.guild.id, channel.id, limit)
+            await guild_log.info(
+                ctx.author,
+                ctx.channel,
+                f"#{channel.name} autothread limit set to {limit}.",
+            )
+
+        if limit == 0:
             await ctx.reply(tr("autothread set", "disabled", ctx))
+        else:
+            await ctx.reply(tr("autothread set", "reply", ctx))
+
+    @commands.check(acl.check)
+    @autothread.command(name="unset")
+    async def autothread_unset(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            AutoThread.remove(ctx.guild.id, None)
+            await guild_log.info(ctx.author, ctx.channel, "Autothread unset globally.")
+        else:
+            AutoThread.remove(ctx.guild.id, channel.id)
+            await guild_log.info(ctx.author, ctx.channel, f"Autothread unset in #{channel.name}.")
+        await ctx.reply(tr("autothread unset", "reply"))
 
     #
 
@@ -215,7 +290,6 @@ class Base(commands.Cog):
                 continue
 
             # remove if the message is pinned or is in unpinnable channel
-            # TODO Unpinnable channels
             if message.pinned:
                 await guild_log.debug(
                     payload.member,
@@ -226,9 +300,7 @@ class Base(commands.Cog):
                 return
 
             # stop if there isn't enough pins
-            limit: int = getattr(
-                AutoPin.get(payload.guild_id, payload.channel_id), "limit", -1
-            )
+            limit: int = getattr(AutoPin.get(payload.guild_id, payload.channel_id), "limit", -1)
             # overwrite for channel doesn't exist, use guild preference
             if limit < 0:
                 limit = getattr(AutoPin.get(payload.guild_id, None), "limit", 0)
