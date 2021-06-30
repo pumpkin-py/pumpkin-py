@@ -3,6 +3,7 @@ import datetime
 import discord
 from discord.ext import commands
 
+from core import TranslationContext
 from core import acl, text, logging, utils
 
 from .database import AutoPin, AutoThread, Bookmark
@@ -64,9 +65,20 @@ class Base(commands.Cog):
         AutoPin.add(ctx.guild.id, limit)
         await guild_log.info(ctx.author, ctx.channel, f"Autopin limit set to {limit}.")
         if limit == 0:
-            await ctx.reply(tr("autopin", "disabled"))
+            await ctx.reply(tr("autopin", "disabled", ctx))
         else:
-            await ctx.reply(tr("autopin", "reply"))
+            await ctx.reply(tr("autopin", "reply", ctx))
+
+    @commands.guild_only()
+    @commands.check(acl.check)
+    async def bookmark(self, ctx, enabled: bool):
+        """Enable or disable bookmarking."""
+        Bookmark.add(ctx.guild.id, enabled)
+        await guild_log.info(ctx.author, ctx.channel, f"Bookmarking set to {enabled}.")
+        if enabled:
+            await ctx.reply(tr("bookmark", "enabled", ctx))
+        else:
+            await ctx.reply(tr("bookmark", "disabled", ctx))
 
     @commands.guild_only()
     @commands.check(acl.check)
@@ -82,20 +94,9 @@ class Base(commands.Cog):
         AutoThread.add(ctx.guild.id, limit)
         await guild_log.info(ctx.author, ctx.channel, f"Autothread limit set to {limit}.")
         if limit > 0:
-            await ctx.reply(tr("autothread", "reply"))
+            await ctx.reply(tr("autothread", "reply", ctx))
         else:
-            await ctx.reply(tr("autothread", "disabled"))
-
-    @commands.guild_only()
-    @commands.check(acl.check)
-    async def bookmark(self, ctx, enabled: bool):
-        """Enable or disable bookmarking."""
-        Bookmark.add(ctx.guild.id, enabled)
-        await guild_log.info(ctx.author, ctx.channel, f"Bookmarking set to {enabled}.")
-        if enabled:
-            await ctx.reply(tr("bookmark", "enabled"))
-        else:
-            await ctx.reply(tr("bookmark", "disabled"))
+            await ctx.reply(tr("autothread", "disabled", ctx))
 
     #
 
@@ -111,10 +112,13 @@ class Base(commands.Cog):
         elif emoji == "🔖":
             await self._bookmark(payload)
         elif emoji == "🧵":
-            await self._thread(payload)
+            await self._autothread(payload)
 
     async def _autopin(self, payload: discord.RawReactionActionEvent, emoji: str):
-        message = utils.Discord.get_message(
+        """Handle autopin functionality."""
+        tc = TranslationContext(payload.guild_id, payload.user_id)
+
+        message = await utils.Discord.get_message(
             self.bot, payload.guild_id, payload.channel_id, payload.message_id
         )
         if message is None:
@@ -129,7 +133,7 @@ class Base(commands.Cog):
             return
 
         if emoji == "📍" and not payload.member.bot:
-            await payload.member.send(tr("_autopin", "bad pin emoji"))
+            await payload.member.send(tr("_autopin", "bad pin emoji", tc))
             await utils.Discord.remove_reaction(message, emoji, payload.member)
             return
 
@@ -169,6 +173,73 @@ class Base(commands.Cog):
 
             await reaction.clear()
             await message.add_reaction("📍")
+
+    async def _bookmark(self, payload: discord.RawReactionActionEvent):
+        """Handle bookmark functionality."""
+        tc = TranslationContext(payload.guild_id, payload.user_id)
+
+        message = await utils.Discord.get_message(
+            self.bot, payload.guild_id, payload.channel_id, payload.message_id
+        )
+        if message is None:
+            await bot_log.error(
+                payload.member,
+                "autopin",
+                (
+                    f"Could not find message {payload.message_id} "
+                    f"in channel {payload.channel_id} in guild {payload.guild_id}."
+                ),
+            )
+            return
+
+        embed = utils.Discord.create_embed(
+            author=payload.member,
+            title=tr("_bookmark", "title", tc),
+            description=message.content[:2000],
+        )
+        embed.set_author(name=message.author.display_name, icon_url=message.author.avatar_url)
+
+        timestamp = utils.Time.datetime(message.created_at)
+        embed.add_field(
+            name=f"{timestamp} UTC",
+            value=tr(
+                "_bookmark",
+                "info",
+                tc,
+                guild=utils.Text.sanitise(message.guild.name),
+                channel=utils.Text.sanitise(message.channel.name),
+                link=message.jump_url,
+            ),
+            inline=False,
+        )
+
+        if len(message.attachments):
+            embed.add_field(
+                name=tr("_bookmark", "files", tc),
+                value=tr("_bookmark", "total", tc, count=len(message.attachments)),
+            )
+        if len(message.embeds):
+            embed.add_field(
+                name=tr("_bookmark", "embeds", tc),
+                value=tr("_bookmark", "total", tc, count=len(message.embeds)),
+            )
+
+        await utils.Discord.remove_reaction(message, payload.emoji, payload.member)
+        await payload.member.send(embed=embed)
+
+        await guild_log.debug(
+            payload.member, message.channel, f"Bookmarked message {message.jump_url}."
+        )
+
+    async def _autothread(self, payload: discord.RawReactionActionEvent):
+        """Handle autothread functionality.
+
+        This function is not yet available on Discord publicly, nor in in
+        discord.py, so it doesn't do anything.
+        """
+        tc = TranslationContext(payload.guild_id, payload.user_id)
+
+        await payload.member.send(tr("_autothread", "wip", tc))
 
 
 def setup(bot) -> None:

@@ -1,12 +1,13 @@
 import configparser
 import os
 import re
-from typing import Optional
+from typing import Optional, Union
 
 import ring
 
 import discord
 
+from core import TranslationContext
 from core.exceptions import BadTranslation
 from database.config import Config
 from database.language import GuildLanguage, MemberLanguage
@@ -54,12 +55,17 @@ class Translator:
         return self.__repr__()
 
     def translate(
-        self, command: str, string: str, ctx: discord.ext.commands.Context = None, **values
+        self,
+        command: str,
+        string: str,
+        ctx: Union[discord.ext.commands.Context, TranslationContext] = None,
+        **values,
     ) -> str:
         """Get translation for requested key.
 
         :param command: The INI section. ``[foo]``
         :param string: Command key. ``key``
+        :param ctx: Translation context. Used to determine preferred language.
         :param values: Substitution pairs. ``key = value``
         :return: Translated string.
         :raises BadTranslation: Command, string or some of the values key do not
@@ -81,7 +87,7 @@ class Translator:
         .. code-block:: python
             :linenos:
 
-            await ctx.reply(tr("foo", "reply", user=ctx.author.name))
+            await ctx.reply(tr("foo", "reply", ctx, user=ctx.author.name))
         """
         # get language preference
         langcode: str = self.get_language_preference(ctx)
@@ -112,7 +118,9 @@ class Translator:
 
         return text
 
-    def get_language_preference(self, ctx: discord.ext.commands.Context) -> str:
+    def get_language_preference(
+        self, ctx: Union[discord.ext.commands.Context, TranslationContext]
+    ) -> str:
         """Get language for the string.
 
         Preference hierarchy:
@@ -121,13 +129,22 @@ class Translator:
         * Try to get guild information: if it has language preference, return it.
         * Return the bot default.
         """
-        if ctx is not None:
-            user_language: Optional[str] = self._get_user_language(ctx.guild.id, ctx.author.id)
+        guild_id: Optional[int]
+        user_id: Optional[int]
+        if ctx.__class__ == TranslationContext:
+            guild_id, user_id = ctx.guild_id, ctx.user_id
+        elif ctx.__class__ == discord.ext.commands.Context:
+            guild_id, user_id = ctx.guild.id, ctx.author.id
+        else:
+            guild_id, user_id = None, None
+
+        if guild_id is not None and user_id is not None:
+            user_language: Optional[str] = self._get_user_language(guild_id, user_id)
             if user_language is not None:
                 return user_language
 
-        if ctx is not None and ctx.guild is not None:
-            guild_language: Optional[str] = self._get_guild_language(ctx.guild.id)
+        if guild_id is not None:
+            guild_language: Optional[str] = self._get_guild_language(guild_id)
             if guild_language is not None:
                 return guild_language
 
