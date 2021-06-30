@@ -149,6 +149,11 @@ class Discord:
             return None
 
     @staticmethod
+    def message_url_from_reaction_payload(payload: discord.RawReactionActionEvent):
+        guild_id = payload.guild_id if payload.guild_id is not None else "@me"
+        return f"https://discord.com/channels/{guild_id}/{payload.channel_id}/{payload.message_id}"
+
+    @staticmethod
     def create_embed(
         *,
         error: bool = False,

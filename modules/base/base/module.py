@@ -272,11 +272,9 @@ class Base(commands.Cog):
         if message is None:
             await bot_log.error(
                 payload.member,
-                "autopin",
-                (
-                    f"Could not find message {payload.message_id} "
-                    f"in channel {payload.channel_id} in guild {payload.guild_id}."
-                ),
+                None,
+                "Could not find message "
+                + utils.Discord.message_url_from_reaction_payload(payload),
             )
             return
 
@@ -334,11 +332,9 @@ class Base(commands.Cog):
         if message is None:
             await bot_log.error(
                 payload.member,
-                "autopin",
-                (
-                    f"Could not find message {payload.message_id} "
-                    f"in channel {payload.channel_id} in guild {payload.guild_id}."
-                ),
+                None,
+                "Could not find message "
+                + utils.Discord.message_url_from_reaction_payload(payload),
             )
             return
 
@@ -393,13 +389,12 @@ class Base(commands.Cog):
             self.bot, payload.guild_id, payload.channel_id, payload.message_id
         )
         if message is None:
+
             await bot_log.error(
                 payload.member,
-                "autopin",
-                (
-                    f"Could not find message {payload.message_id} "
-                    f"in channel {payload.channel_id} in guild {payload.guild_id}."
-                ),
+                None,
+                "Could not find message "
+                + utils.Discord.message_url_from_reaction_payload(payload),
             )
             return
 
