@@ -124,8 +124,36 @@ class Discord:
     """Helper functions for (mostly) discord API actions."""
 
     @staticmethod
+    async def get_message(
+        bot: commands.Bot, guild_id: int, channel_id: int, message_id: int
+    ) -> Optional[discord.Message]:
+        """Get message.
+
+        If the message is contained in bot cache, it is returned from it, to
+        save API calls. Otherwise it is fetched.
+
+        :param bot: The :class:`~discord.ext.commands.Bot` object.
+        :param guild_id: Guild ID.
+        :param channel_id: Channel ID.
+        :param message_id: Message ID.
+        :return: Found message or ``None``.
+        """
+        query = [m for m in bot.cached_messages if m.id == message_id]
+        if len(query) == 1:
+            return query[0]
+
+        try:
+            channel = bot.get_guild(guild_id).get_channel(channel_id)
+            return await channel.fetch_message(message_id)
+        except discord.errors.HTTPException:
+            return None
+
+    @staticmethod
     def create_embed(
-        *, error: bool = False, author: Union[discord.Member, discord.User] = None, **kwargs
+        *,
+        error: bool = False,
+        author: Union[discord.Member, discord.User] = None,
+        **kwargs,
     ) -> discord.Embed:
         """Create discord embed.
 
