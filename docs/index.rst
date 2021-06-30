@@ -12,6 +12,8 @@ Intro to pumpkin.py
 
    installation/index
    changelog
+   getting-started/index
+   development/index
    legal
    autoapi/index
 
