@@ -116,6 +116,10 @@ class Translator:
                 raise BadTranslation(langfile, command, string, key)
             text = text.replace(key_, str(value))
 
+        # remove double quotes, which may be used to allow special characters
+        # like '#' inside of the string
+        text = text.strip('"')
+
         return text
 
     def get_language_preference(
