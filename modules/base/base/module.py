@@ -59,16 +59,35 @@ class Base(commands.Cog):
 
     @commands.check(acl.check)
     @autopin.command(name="get")
-    async def autopin_get(self, ctx):
-        embed = utils.Discord.create_embed(author=ctx.author, title=tr("autopin get", "title", ctx))
-        limit: int = getattr(AutoPin.get(ctx.guild.id), "limit", 0)
+    async def autopin_get(self, ctx, channel: discord.TextChannel = None):
+        embed = utils.Discord.create_embed(
+            author=ctx.author, title=tr("autopin get", "title", ctx)
+        )
+        limit: int = getattr(AutoPin.get(ctx.guild.id, None), "limit", 0)
         value: str = f"{limit}" if limit > 0 else tr("autopin get", "disabled", ctx)
-        embed.add_field(name=tr("autopin get", "limit", ctx), value=value)
+        embed.add_field(
+            name=tr("autopin get", "limit", ctx),
+            value=value,
+            inline=False,
+        )
+
+        if channel is None:
+            channel = ctx.channel
+
+        channel_pref = AutoPin.get(ctx.guild.id, channel.id)
+        if channel_pref is not None:
+            embed.add_field(
+                name=tr("autopin get", "channel", ctx, channel=channel.name),
+                value=f"{channel_pref.limit}"
+                if channel_pref.limit > 0
+                else tr("autopin get", "disabled", ctx),
+            )
+
         await ctx.send(embed=embed)
 
     @commands.check(acl.check)
     @autopin.command(name="set")
-    async def autopin_set(self, ctx, limit: int):
+    async def autopin_set(self, ctx, limit: int, channel: discord.TextChannel = None):
         """Set autopin limit.
 
         :param limit: Neccesary reaction count. Set to ``0`` to disable.
@@ -76,7 +95,12 @@ class Base(commands.Cog):
         if limit < 0:
             raise commands.ArgumentError("Limit has to be at least zero.")
 
-        AutoPin.add(ctx.guild.id, limit)
+        if limit == 0 and channel is not None:
+            # delete channel overwrite
+            AutoPin.remove(ctx.guild.id, channel.id)
+        else:
+            AutoPin.add(ctx.guild.id, getattr(channel, "id", None), limit)
+
         await guild_log.info(ctx.author, ctx.channel, f"Autopin limit set to {limit}.")
         if limit == 0:
             await ctx.reply(tr("autopin set", "disabled", ctx))
@@ -202,7 +226,12 @@ class Base(commands.Cog):
                 return
 
             # stop if there isn't enough pins
-            limit = AutoPin.get(payload.guild_id).limit
+            limit: int = getattr(
+                AutoPin.get(payload.guild_id, payload.channel_id), "limit", -1
+            )
+            # overwrite for channel doesn't exist, use guild preference
+            if limit < 0:
+                limit = getattr(AutoPin.get(payload.guild_id, None), "limit", 0)
             if limit == 0 or reaction.count < limit:
                 return
 
