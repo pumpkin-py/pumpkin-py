@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from sqlalchemy import BigInteger, Boolean, Column, Integer
 
 from database import database, session
@@ -22,11 +24,9 @@ class AutoPin(database.base):
         return query
 
     @staticmethod
-    def get(guild_id: int) -> AutoPin:
+    def get(guild_id: int) -> Optional[AutoPin]:
         """Get autopin preferences for the guild."""
         query = session.query(AutoPin).filter_by(guild_id=guild_id).one_or_none()
-        if query is None:
-            query = AutoPin.add(guild_id)
         return query
 
     def __repr__(self) -> str:
@@ -48,17 +48,17 @@ class AutoThread(database.base):
     @staticmethod
     def add(guild_id: int, limit: int = 0) -> AutoThread:
         """Add autothread preference."""
+        if AutoThread.get(guild_id) is not None:
+            AutoThread.remove(guild_id)
         query = AutoThread(guild_id=guild_id, limit=limit)
-        session.merge(query)
+        session.add(query)
         session.commit()
         return query
 
     @staticmethod
-    def get(guild_id: int) -> AutoThread:
+    def get(guild_id: int) -> Optional[AutoThread]:
         """Get autothread preference for the guild."""
         query = session.query(AutoThread).filter_by(guild_id=guild_id).one_or_none()
-        if query is None:
-            query = AutoThread.add(guild_id)
         return query
 
     def __repr__(self) -> str:
@@ -79,16 +79,16 @@ class Bookmark(database.base):
 
     @staticmethod
     def add(guild_id: int, enabled: bool = False) -> Bookmark:
+        if Bookmark.get(guild_id) is not None:
+            Bookmark.remove(guild_id)
         query = Bookmark(guild_id=guild_id, enabled=enabled)
-        session.merge(query)
+        session.add(query)
         session.commit()
         return query
 
     @staticmethod
-    def get(guild_id: int) -> Bookmark:
+    def get(guild_id: int) -> Optional[Bookmark]:
         query = session.query(Bookmark).filter_by(guild_id=guild_id).one_or_none()
-        if query is None:
-            query = Bookmark.add(guild_id)
         return query
 
     def __repr__(self) -> str:

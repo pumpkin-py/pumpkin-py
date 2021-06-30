@@ -53,8 +53,22 @@ class Base(commands.Cog):
 
     @commands.guild_only()
     @commands.check(acl.check)
-    @commands.command()
-    async def autopin(self, ctx, limit: int):
+    @commands.group(name="autopin")
+    async def autopin(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @commands.check(acl.check)
+    @autopin.command(name="get")
+    async def autopin_get(self, ctx):
+        embed = utils.Discord.create_embed(author=ctx.author, title=tr("autopin get", "title", ctx))
+        limit: int = getattr(AutoPin.get(ctx.guild.id), "limit", 0)
+        value: str = f"{limit}" if limit > 0 else tr("autopin get", "disabled", ctx)
+        embed.add_field(name=tr("autopin get", "limit", ctx), value=value)
+        await ctx.send(embed=embed)
+
+    @commands.check(acl.check)
+    @autopin.command(name="set")
+    async def autopin_set(self, ctx, limit: int):
         """Set autopin limit.
 
         :param limit: Neccesary reaction count. Set to ``0`` to disable.
@@ -65,25 +79,60 @@ class Base(commands.Cog):
         AutoPin.add(ctx.guild.id, limit)
         await guild_log.info(ctx.author, ctx.channel, f"Autopin limit set to {limit}.")
         if limit == 0:
-            await ctx.reply(tr("autopin", "disabled", ctx))
+            await ctx.reply(tr("autopin set", "disabled", ctx))
         else:
-            await ctx.reply(tr("autopin", "reply", ctx))
+            await ctx.reply(tr("autopin set", "reply", ctx))
 
     @commands.guild_only()
     @commands.check(acl.check)
-    async def bookmark(self, ctx, enabled: bool):
+    @commands.group(name="bookmarks")
+    async def bookmarks(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @commands.check(acl.check)
+    @bookmarks.command(name="get")
+    async def bookmarks_get(self, ctx):
+        embed = utils.Discord.create_embed(
+            author=ctx.author, title=tr("bookmarks get", "title", ctx)
+        )
+        enabled: int = getattr(Bookmark.get(ctx.guild.id), "enabled", False)
+        embed.add_field(
+            name=tr("bookmarks get", "settings", ctx),
+            value=tr("bookmarks get", str(enabled), ctx),
+        )
+        await ctx.send(embed=embed)
+
+    @commands.check(acl.check)
+    @bookmarks.command(name="set")
+    async def bookmarks_set(self, ctx, enabled: bool):
         """Enable or disable bookmarking."""
         Bookmark.add(ctx.guild.id, enabled)
         await guild_log.info(ctx.author, ctx.channel, f"Bookmarking set to {enabled}.")
         if enabled:
-            await ctx.reply(tr("bookmark", "enabled", ctx))
+            await ctx.reply(tr("bookmarks set", "enabled", ctx))
         else:
-            await ctx.reply(tr("bookmark", "disabled", ctx))
+            await ctx.reply(tr("bookmarks set", "disabled", ctx))
 
     @commands.guild_only()
     @commands.check(acl.check)
-    @commands.command()
-    async def autothread(self, ctx, limit: int):
+    @commands.group()
+    async def autothread(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @commands.check(acl.check)
+    @autothread.command(name="get")
+    async def autothread_get(self, ctx):
+        embed = utils.Discord.create_embed(
+            author=ctx.author, title=tr("autothread get", "title", ctx)
+        )
+        limit: int = getattr(AutoPin.get(ctx.guild.id), "limit", 0)
+        value: str = f"{limit}" if limit > 0 else tr("autothread get", "disabled", ctx)
+        embed.add_field(name=tr("autothread get", "limit", ctx), value=value)
+        await ctx.send(embed=embed)
+
+    @commands.check(acl.check)
+    @autothread.command(name="set")
+    async def autothread_set(self, ctx, limit: int):
         """Set autothread limit.
 
         :param limit: Neccesary reaction count. Set to ``0`` to disable.
@@ -94,9 +143,9 @@ class Base(commands.Cog):
         AutoThread.add(ctx.guild.id, limit)
         await guild_log.info(ctx.author, ctx.channel, f"Autothread limit set to {limit}.")
         if limit > 0:
-            await ctx.reply(tr("autothread", "reply", ctx))
+            await ctx.reply(tr("autothread set", "reply", ctx))
         else:
-            await ctx.reply(tr("autothread", "disabled", ctx))
+            await ctx.reply(tr("autothread set", "disabled", ctx))
 
     #
 
@@ -153,7 +202,8 @@ class Base(commands.Cog):
                 return
 
             # stop if there isn't enough pins
-            if reaction.count < AutoPin().get(payload.guild_id).limit:
+            limit = AutoPin.get(payload.guild_id).limit
+            if limit == 0 or reaction.count < limit:
                 return
 
             try:
@@ -161,11 +211,7 @@ class Base(commands.Cog):
                 await guild_log.info(
                     payload.member,
                     message.channel,
-                    "Pinning message {0.id} in #{1.name} ({1.id}) in {2.name} ({2.id}).".format(
-                        message,
-                        message.channel,
-                        message.guild,
-                    ),
+                    f"Pinned message {message.jump_url}",
                 )
             except discord.errors.HTTPException:
                 await guild_log.error(payload.member, message.channel, "Could not pin message.")
@@ -176,6 +222,9 @@ class Base(commands.Cog):
 
     async def _bookmark(self, payload: discord.RawReactionActionEvent):
         """Handle bookmark functionality."""
+        if not Bookmark.get(payload.guild_id).enabled:
+            return
+
         tc = TranslationContext(payload.guild_id, payload.user_id)
 
         message = await utils.Discord.get_message(
@@ -239,6 +288,21 @@ class Base(commands.Cog):
         """
         tc = TranslationContext(payload.guild_id, payload.user_id)
 
+        message = await utils.Discord.get_message(
+            self.bot, payload.guild_id, payload.channel_id, payload.message_id
+        )
+        if message is None:
+            await bot_log.error(
+                payload.member,
+                "autopin",
+                (
+                    f"Could not find message {payload.message_id} "
+                    f"in channel {payload.channel_id} in guild {payload.guild_id}."
+                ),
+            )
+            return
+
+        await utils.Discord.remove_reaction(message, payload.emoji, payload.member)
         await payload.member.send(tr("_autothread", "wip", tc))
 
 
