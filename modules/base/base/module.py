@@ -268,18 +268,6 @@ class Base(commands.Cog):
         if payload.guild_id is None or payload.member is None:
             return
 
-        emoji = getattr(payload.emoji, "name", None)
-        if emoji == "📌" or emoji == "📍":
-            await self._autopin(payload, emoji)
-        elif emoji == "🔖":
-            await self._bookmark(payload)
-        elif emoji == "🧵":
-            await self._autothread(payload)
-
-    async def _autopin(self, payload: discord.RawReactionActionEvent, emoji: str):
-        """Handle autopin functionality."""
-        tc = TranslationContext(payload.guild_id, payload.user_id)
-
         message = await utils.Discord.get_message(
             self.bot, payload.guild_id, payload.channel_id, payload.message_id
         )
@@ -291,6 +279,27 @@ class Base(commands.Cog):
                 + utils.Discord.message_url_from_reaction_payload(payload),
             )
             return
+
+        # do not allow the actions on system messages (boost announcements etc.)
+        if message.type != discord.MessageType.default:
+            return
+
+        emoji = getattr(payload.emoji, "name", None)
+        if emoji == "📌" or emoji == "📍":
+            await self._autopin(payload, message, emoji)
+        elif emoji == "🔖":
+            await self._bookmark(payload, message)
+        elif emoji == "🧵":
+            await self._autothread(payload, message)
+
+    async def _autopin(
+        self,
+        payload: discord.RawReactionActionEvent,
+        message: discord.Message,
+        emoji: str,
+    ):
+        """Handle autopin functionality."""
+        tc = TranslationContext(payload.guild_id, payload.user_id)
 
         if emoji == "📍" and not payload.member.bot:
             await payload.member.send(tr("_autopin", "bad pin emoji", tc))
@@ -337,24 +346,14 @@ class Base(commands.Cog):
             await reaction.clear()
             await message.add_reaction("📍")
 
-    async def _bookmark(self, payload: discord.RawReactionActionEvent):
+    async def _bookmark(
+        self, payload: discord.RawReactionActionEvent, message: discord.Message
+    ):
         """Handle bookmark functionality."""
         if not Bookmark.get(payload.guild_id).enabled:
             return
 
         tc = TranslationContext(payload.guild_id, payload.user_id)
-
-        message = await utils.Discord.get_message(
-            self.bot, payload.guild_id, payload.channel_id, payload.message_id
-        )
-        if message is None:
-            await bot_log.error(
-                payload.member,
-                None,
-                "Could not find message "
-                + utils.Discord.message_url_from_reaction_payload(payload),
-            )
-            return
 
         embed = utils.Discord.create_embed(
             author=payload.member,
@@ -397,26 +396,15 @@ class Base(commands.Cog):
             payload.member, message.channel, f"Bookmarked message {message.jump_url}."
         )
 
-    async def _autothread(self, payload: discord.RawReactionActionEvent):
+    async def _autothread(
+        self, payload: discord.RawReactionActionEvent, message: discord.Message
+    ):
         """Handle autothread functionality.
 
         This function is not yet available on Discord publicly, nor in in
         discord.py, so it doesn't do anything.
         """
         tc = TranslationContext(payload.guild_id, payload.user_id)
-
-        message = await utils.Discord.get_message(
-            self.bot, payload.guild_id, payload.channel_id, payload.message_id
-        )
-        if message is None:
-
-            await bot_log.error(
-                payload.member,
-                None,
-                "Could not find message "
-                + utils.Discord.message_url_from_reaction_payload(payload),
-            )
-            return
 
         await utils.Discord.remove_reaction(message, payload.emoji, payload.member)
         await payload.member.send(tr("_autothread", "wip", tc))
