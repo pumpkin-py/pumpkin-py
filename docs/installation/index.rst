@@ -1,7 +1,7 @@
 Installation
 ============
 
-This chapter will guide you through the setup process.
+This chapter will guide you through the setup process. You can pick either the docker or direct installation, they touch the same topic and are independent of each other.
 
 .. toctree::
    :maxdepth: 2

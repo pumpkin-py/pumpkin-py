@@ -9,7 +9,7 @@ Connecting to remote server by using username and password gets annoying really 
 .. code-block:: bash
 
 	ssh-keygen -t ed25519
-	# save the file as something descriptive, e.g. /home/discord/.ssh/pumpkin_server
+	# save the file as something descriptive, e.g. /home/<username>/.ssh/pumpkin_server
 	# you can omit the password by pressing Enter twice
 
 Then add the key to the SSH configuration file (``~/.ssh/config``), so it knows when to use it.
@@ -21,6 +21,8 @@ Then add the key to the SSH configuration file (``~/.ssh/config``), so it knows 
 		PubkeyAuthentication yes
 		IdentitiesOnly yes
 		IdentityFile ~/.ssh/pumpkin_server
+
+To use the SSH key on the server, you have to add the contents of the **public** key (e.g. ``/home/<username>/.ssh/pumpkin_server.pub``) to server's ``/home/discord/.ssh/authorized_keys``.
 
 PostgreSQL backups
 ------------------

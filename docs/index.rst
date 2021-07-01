@@ -11,10 +11,10 @@ Intro to pumpkin.py
    :caption: Contents:
 
    installation/index
-   changelog
    getting-started/index
    development/index
    legal
+   changelog
    autoapi/index
 
 
