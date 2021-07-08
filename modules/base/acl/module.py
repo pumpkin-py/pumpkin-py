@@ -293,7 +293,9 @@ class ACL(commands.Cog):
         try:
             json_data = json.load(data_file)
         except json.decoder.JSONDecodeError as exc:
-            await ctx.reply(tr("acl rule import", "bad json", ctx) + f"\n> `{str(exc)}`")
+            await ctx.reply(
+                tr("acl rule import", "bad json", ctx) + f"\n> `{str(exc)}`"
+            )
             return
 
         new, updated, rejected = self.import_rules(ctx.guild.id, json_data, mode=mode)
@@ -323,7 +325,9 @@ class ACL(commands.Cog):
             if reason in ("not group", "duplicate"):
                 result += ", ".join(command for command, _ in commands)
             else:
-                result += ", ".join(f"{command} (`{value}`)" for command, value in commands)
+                result += ", ".join(
+                    f"{command} (`{value}`)" for command, value in commands
+                )
 
         if send_errors:
             for stub in utils.Text.split(result):
@@ -394,13 +398,17 @@ class ACL(commands.Cog):
 
             # booleans
             if attributes.get("default", False) not in (True, False):
-                result_rej["not bool"].add((command, type(attributes["default"]).__name__))
+                result_rej["not bool"].add(
+                    (command, type(attributes["default"]).__name__)
+                )
                 bad = True
 
             # lists
             for keyword in ("users_allow", "users_deny", "groups_allow", "groups_deny"):
                 if type(attributes.get(keyword, [])) != list:
-                    result_rej["not list"].add((command, type(attributes[keyword]).__name__))
+                    result_rej["not list"].add(
+                        (command, type(attributes[keyword]).__name__)
+                    )
                     bad = True
 
             # groups
@@ -414,7 +422,9 @@ class ACL(commands.Cog):
             for keyword in ("users_allow", "users_deny"):
                 for user_id in attributes.get(keyword, []):
                     if type(user_id) != int:
-                        result_rej["not int"].add((command, type(attributes[keyword]).__name__))
+                        result_rej["not int"].add(
+                            (command, type(attributes[keyword]).__name__)
+                        )
                         bad = True
 
             if bad:

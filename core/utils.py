@@ -88,7 +88,9 @@ class Time:
     @staticmethod
     def id_to_datetime(snowflake_id: int) -> datetime.datetime:
         """Convert snowflake ID to timestamp."""
-        return datetime.datetime.fromtimestamp(((snowflake_id >> 22) + 1420070400000) / 1000)
+        return datetime.datetime.fromtimestamp(
+            ((snowflake_id >> 22) + 1420070400000) / 1000
+        )
 
     @staticmethod
     def date(timestamp: datetime.datetime) -> str:
@@ -223,7 +225,9 @@ class Discord:
         return True
 
     @staticmethod
-    async def remove_reaction(message: discord.Message, emoji, member: discord.Member) -> bool:
+    async def remove_reaction(
+        message: discord.Message, emoji, member: discord.Member
+    ) -> bool:
         """Try to remove reaction.
 
 

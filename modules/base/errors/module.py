@@ -26,7 +26,9 @@ class Errors(commands.Cog):
         await bot_log.error(None, None, extra={"traceback": tb})
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
+    async def on_command_error(
+        self, ctx: commands.Context, error: commands.CommandError
+    ):
         """Handle bot exceptions."""
         # Recursion prevention
         if hasattr(ctx.command, "on_error") or hasattr(ctx.command, "on_command_error"):
@@ -49,10 +51,14 @@ class Errors(commands.Cog):
             author=ctx.author, error=True, title=title, description=content
         )
 
-        tb: str = "".join(traceback.format_exception(type(error), error, error.__traceback__))
+        tb: str = "".join(
+            traceback.format_exception(type(error), error, error.__traceback__)
+        )
 
         if show_traceback:
-            embed.add_field(name="Traceback", value="```" + tb[-256:] + "```", inline=False)
+            embed.add_field(
+                name="Traceback", value="```" + tb[-256:] + "```", inline=False
+            )
         await ctx.send(embed=embed)
 
         # Send to error logging channel
@@ -69,7 +75,9 @@ class Errors(commands.Cog):
                 extra={"traceback": (traceback.format_tb(error.__traceback__),)},
             )
 
-    def __get_error_message(ctx: commands.Context, error: Exception) -> Tuple[str, str, bool, bool]:
+    def __get_error_message(
+        ctx: commands.Context, error: Exception
+    ) -> Tuple[str, str, bool, bool]:
         """Get message for the error.
 
         :param ctx: The invocation context.
@@ -109,7 +117,13 @@ class Errors(commands.Cog):
         if type(error) == commands.MaxConcurrencyReached:
             return (
                 tr("MaxConcurrencyReached", "name", ctx),
-                tr("MaxConcurrencyReached", "value", ctx, num=error.number, per=error.per.name),
+                tr(
+                    "MaxConcurrencyReached",
+                    "value",
+                    ctx,
+                    num=error.number,
+                    per=error.per.name,
+                ),
                 False,
                 False,
             )
@@ -176,7 +190,12 @@ class Errors(commands.Cog):
         if type(error) == commands.ConversionError:
             return (
                 tr("ConversionError", "name", ctx),
-                tr("ConversionError", "value", ctx, converter=type(error.converter).__name__),
+                tr(
+                    "ConversionError",
+                    "value",
+                    ctx,
+                    converter=type(error.converter).__name__,
+                ),
                 False,
                 False,
             )
@@ -214,7 +233,9 @@ class Errors(commands.Cog):
                 False,
                 False,
             )
-        if isinstance(error, commands.CommandError) or isinstance(error, discord.ClientException):
+        if isinstance(error, commands.CommandError) or isinstance(
+            error, discord.ClientException
+        ):
             return (
                 tr(type(error).__name__, "name", ctx),
                 tr(type(error).__name__, "value", ctx),
@@ -223,7 +244,9 @@ class Errors(commands.Cog):
             )
 
         # non-critical discord.py exceptions
-        if type(error) == discord.NoMoreItems or isinstance(error, discord.HTTPException):
+        if type(error) == discord.NoMoreItems or isinstance(
+            error, discord.HTTPException
+        ):
             return (
                 tr(type(error).__name__, "name", ctx),
                 tr(type(error).__name__, "value", ctx),

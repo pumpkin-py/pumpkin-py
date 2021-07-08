@@ -16,5 +16,6 @@ class TranslationContext:
 
     def __repr__(self) -> str:
         return (
-            f"<{self.__class__.__name__} " f"guild_id='{self.guild_id}' user_id='{self.user_id}'>"
+            f"<{self.__class__.__name__} "
+            f"guild_id='{self.guild_id}' user_id='{self.user_id}'>"
         )

@@ -51,7 +51,11 @@ class ACL_group(database.base):
         )
 
     def __eq__(self, obj) -> bool:
-        return type(self) == type(obj) and self.guild_id == obj.guild_id and self.name == obj.name
+        return (
+            type(self) == type(obj)
+            and self.guild_id == obj.guild_id
+            and self.name == obj.name
+        )
 
     def dump(self) -> Dict[str, Union[int, str]]:
         """Return object representation as dictionary for easy serialisation."""
@@ -63,7 +67,9 @@ class ACL_group(database.base):
         }
 
     @staticmethod
-    def add(guild_id: int, name: str, parent: Optional[str], role_id: Optional[int]) -> ACL_group:
+    def add(
+        guild_id: int, name: str, parent: Optional[str], role_id: Optional[int]
+    ) -> ACL_group:
         """Add new permission group.
 
         :param guild_id: Guild ID.
@@ -94,7 +100,11 @@ class ACL_group(database.base):
         :param name: Name of the permisson group.
         :return: Found group or ``None``.
         """
-        query = session.query(ACL_group).filter_by(guild_id=guild_id, name=name).one_or_none()
+        query = (
+            session.query(ACL_group)
+            .filter_by(guild_id=guild_id, name=name)
+            .one_or_none()
+        )
         return query
 
     @staticmethod
@@ -109,7 +119,11 @@ class ACL_group(database.base):
         if role_id is None:
             return None
 
-        query = session.query(ACL_group).filter_by(guild_id=guild_id, role_id=role_id).one_or_none()
+        query = (
+            session.query(ACL_group)
+            .filter_by(guild_id=guild_id, role_id=role_id)
+            .one_or_none()
+        )
         return query
 
     @staticmethod
@@ -130,7 +144,9 @@ class ACL_group(database.base):
         :param name: Group name.
         :return: Number of deleted groups, always ``0`` or ``1``.
         """
-        query = session.query(ACL_group).filter_by(guild_id=guild_id, name=name).delete()
+        query = (
+            session.query(ACL_group).filter_by(guild_id=guild_id, name=name).delete()
+        )
         return query
 
 
@@ -212,7 +228,11 @@ class ACL_rule(database.base):
         :return: Found permission rule or ``None``.
         """
 
-        query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).one_or_none()
+        query = (
+            session.query(ACL_rule)
+            .filter_by(guild_id=guild_id, command=command)
+            .one_or_none()
+        )
         return query
 
     @staticmethod
@@ -234,7 +254,11 @@ class ACL_rule(database.base):
             :attr:`~discord.ext.commands.Command.qualified_name` attribute).
         :return: Number of deleted rules, always ``0`` or ``1``.
         """
-        query = session.query(ACL_rule).filter_by(guild_id=guild_id, command=command).delete()
+        query = (
+            session.query(ACL_rule)
+            .filter_by(guild_id=guild_id, command=command)
+            .delete()
+        )
         return query
 
     @staticmethod
@@ -335,7 +359,9 @@ class ACL_rule_user(database.base):
 
     def __eq__(self, obj) -> bool:
         return (
-            type(self) == type(obj) and self.rule_id == obj.rule_id and self.user_id == obj.user_id
+            type(self) == type(obj)
+            and self.rule_id == obj.rule_id
+            and self.user_id == obj.user_id
         )
 
     def dump(self) -> Dict[str, Union[bool, int]]:

@@ -123,7 +123,9 @@ class MemberLanguage(database.base):
             responsibility to make sure it has correct value.
         :return: Created member language preference.
         """
-        preference = MemberLanguage(guild_id=guild_id, member_id=member_id, language=language)
+        preference = MemberLanguage(
+            guild_id=guild_id, member_id=member_id, language=language
+        )
 
         # remove old language preference
         MemberLanguage.remove(guild_id, member_id)

@@ -73,12 +73,18 @@ class Logging(database.base):
         :param level: Minimal logging level to be reported.
         :return: Created bot log subscription.
         """
-        query = session.query(Logging).filter_by(scope="bot", guild_id=guild_id).one_or_none()
+        query = (
+            session.query(Logging)
+            .filter_by(scope="bot", guild_id=guild_id)
+            .one_or_none()
+        )
         if query is not None:
             query.channel_id = channel_id
             query.level = level
         else:
-            query = Logging(guild_id=guild_id, channel_id=channel_id, level=level, scope="bot")
+            query = Logging(
+                guild_id=guild_id, channel_id=channel_id, level=level, scope="bot"
+            )
         session.merge(query)
         session.commit()
         return query
@@ -117,7 +123,9 @@ class Logging(database.base):
         :param guild_id: Guild ID of subscription channel.
         :return: Number of deleted bot log subscriptions, always ``0`` or ``1``.
         """
-        query = session.query(Logging).filter_by(scope="bot", guild_id=guild_id).delete()
+        query = (
+            session.query(Logging).filter_by(scope="bot", guild_id=guild_id).delete()
+        )
         return query
 
     @staticmethod
@@ -156,7 +164,9 @@ class Logging(database.base):
         return query
 
     @staticmethod
-    def get_guild(guild_id: int, level: int, module: Optional[str] = None) -> Optional[Logging]:
+    def get_guild(
+        guild_id: int, level: int, module: Optional[str] = None
+    ) -> Optional[Logging]:
         """Get active guild logger.
 
         :param guild_id: Guild ID.

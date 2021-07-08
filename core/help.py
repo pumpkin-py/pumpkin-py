@@ -166,9 +166,13 @@ class Help(commands.MinimalHelpCommand):
         # module_tr = self._get_cog_translator(cog)
         # self.paginator.add_line(module_tr("_", "help"), empty=True)
 
-        filtered = await self.filter_commands(cog.get_commands(), sort=self.sort_commands)
+        filtered = await self.filter_commands(
+            cog.get_commands(), sort=self.sort_commands
+        )
         if filtered:
-            self.paginator.add_line(f"{tr('help', 'module')} **__{cog.qualified_name}__**")
+            self.paginator.add_line(
+                f"{tr('help', 'module')} **__{cog.qualified_name}__**"
+            )
             for command in filtered:
                 self.add_subcommand_formatting(command)
 
@@ -190,14 +194,18 @@ class Help(commands.MinimalHelpCommand):
 
     def _get_command_translator(self, command: commands.Command) -> Callable:
         """Get translation function for current command."""
-        py_main: str = os.path.dirname(os.path.realpath(sys.modules["__main__"].__file__))
+        py_main: str = os.path.dirname(
+            os.path.realpath(sys.modules["__main__"].__file__)
+        )
         py_module: str = command.module.replace(".", "/")
         module_path: str = os.path.join(py_main, py_module + ".py")
         return self._get_module_translator(module_path)
 
     def _get_cog_translator(self, cog: commands.Cog) -> Callable:
         """Get translation function for current command."""
-        py_main: str = os.path.dirname(os.path.realpath(sys.modules["__main__"].__file__))
+        py_main: str = os.path.dirname(
+            os.path.realpath(sys.modules["__main__"].__file__)
+        )
         py_module: str = cog.__cog_commands__[0].module.replace(".", "/")
         module_path: str = os.path.join(py_main, py_module + ".py")
 

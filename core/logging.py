@@ -280,7 +280,9 @@ class Logger:
     async def _maybe_send_guild(self, entry: LogEntry):
         """Send the log entry to guild's channel, if the guild is subscribed for
         guild logs of this level."""
-        log_info: Optional[Logging] = Logging.get_guild(entry.guild_id, entry.levelno, entry.module)
+        log_info: Optional[Logging] = Logging.get_guild(
+            entry.guild_id, entry.levelno, entry.module
+        )
         if log_info is None:
             return
 
@@ -294,7 +296,9 @@ class Logger:
         # TODO This should probably be done in parallel
         for target in channels:
             try:
-                channel = self.bot.get_guild(target.guild_id).get_channel(target.channel_id)
+                channel = self.bot.get_guild(target.guild_id).get_channel(
+                    target.channel_id
+                )
             except AttributeError:
                 # Guild or channel is not accesible
                 print(
@@ -371,7 +375,9 @@ class Bot(Logger):
 
     def __init__(self, bot=None):
         if Bot.__instance is not None:
-            raise Exception('Bot logger has to be a singleton, use ".logger()" instead.')
+            raise Exception(
+                'Bot logger has to be a singleton, use ".logger()" instead.'
+            )
         Bot.__instance = self
         if bot is not None:
             self.bot = bot
@@ -399,7 +405,9 @@ class Guild(Logger):
 
     def __init__(self, bot=None):
         if Guild.__instance is not None:
-            raise Exception('Guild logger has to be a singleton, use ".logger()" instead.')
+            raise Exception(
+                'Guild logger has to be a singleton, use ".logger()" instead.'
+            )
         Guild.__instance = self
         if bot is not None:
             self.bot = bot

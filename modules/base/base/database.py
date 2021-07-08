@@ -29,13 +29,19 @@ class AutoPin(database.base):
     def get(guild_id: int, channel_id: Optional[int]) -> Optional[AutoPin]:
         """Get autopin preferences for the guild."""
         query = (
-            session.query(AutoPin).filter_by(guild_id=guild_id, channel_id=channel_id).one_or_none()
+            session.query(AutoPin)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .one_or_none()
         )
         return query
 
     @staticmethod
     def remove(guild_id: int, channel_id: Optional[int]) -> int:
-        query = session.query(AutoPin).filter_by(guild_id=guild_id, channel_id=channel_id).delete()
+        query = (
+            session.query(AutoPin)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .delete()
+        )
         return query
 
     def __repr__(self) -> str:
@@ -83,7 +89,9 @@ class AutoThread(database.base):
     @staticmethod
     def remove(guild_id: int, channel_id: Optional[int]) -> int:
         query = (
-            session.query(AutoThread).filter_by(guild_id=guild_id, channel_id=channel_id).delete()
+            session.query(AutoThread)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .delete()
         )
         return query
 
@@ -110,7 +118,9 @@ class Bookmark(database.base):
     enabled = Column(Boolean, default=False)
 
     @staticmethod
-    def add(guild_id: int, channel_id: Optional[int], enabled: bool = False) -> Bookmark:
+    def add(
+        guild_id: int, channel_id: Optional[int], enabled: bool = False
+    ) -> Bookmark:
         if Bookmark.get(guild_id, channel_id) is not None:
             Bookmark.remove(guild_id, channel_id)
         query = Bookmark(guild_id=guild_id, channel_id=channel_id, enabled=enabled)
@@ -129,7 +139,11 @@ class Bookmark(database.base):
 
     @staticmethod
     def remove(guild_id: int, channel_id: Optional[int]) -> int:
-        query = session.query(Bookmark).filter_by(guild_id=guild_id, channel_id=channel_id).delete()
+        query = (
+            session.query(Bookmark)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .delete()
+        )
         return query
 
     def __repr__(self) -> str:

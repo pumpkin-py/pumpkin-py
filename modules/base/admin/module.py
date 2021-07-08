@@ -188,7 +188,9 @@ class Admin(commands.Cog):
         # check if the repo isn't already installed
         if os.path.exists(os.path.join(os.getcwd(), "modules", repository.name)):
             tempdir.cleanup()
-            return await ctx.send(tr("repository install", "exists", ctx, name=repository.name))
+            return await ctx.send(
+                tr("repository install", "exists", ctx, name=repository.name)
+            )
 
         # install requirements
         repo_deps = Admin._install_module_requirements(path=workdir)
@@ -369,7 +371,12 @@ class Admin(commands.Cog):
                 payload = requests.get(url)
                 if payload.status_code != "200":
                     await ctx.send(
-                        tr("pumpkin avatar", "download error", ctx, code=payload.status_code)
+                        tr(
+                            "pumpkin avatar",
+                            "download error",
+                            ctx,
+                            code=payload.status_code,
+                        )
                     )
                     return
                 image_binary = payload.content
@@ -389,7 +396,9 @@ class Admin(commands.Cog):
                 return
 
         await ctx.send(tr("pumpkin avatar", "reply", ctx))
-        await bot_log.info(ctx.author, ctx.channel, "Avatar changed, the URL was " + url + ".")
+        await bot_log.info(
+            ctx.author, ctx.channel, "Avatar changed, the URL was " + url + "."
+        )
 
     @commands.group(name="config")
     async def config_(self, ctx):
@@ -404,7 +413,11 @@ class Admin(commands.Cog):
         embed.add_field(
             name=tr("config get", "prefix", ctx),
             value=str(config.prefix)
-            + ((" " + tr("config get", "mention", ctx)) if config.mention_as_prefix else ""),
+            + (
+                (" " + tr("config get", "mention", ctx))
+                if config.mention_as_prefix
+                else ""
+            ),
             inline=False,
         )
         embed.add_field(
@@ -444,12 +457,22 @@ class Admin(commands.Cog):
         genders = ("m", "f")
         if key == "gender" and value not in genders:
             return await ctx.send(
-                tr("config set", "bad gender", ctx, genders=", ".join(f"`{g}`" for g in genders))
+                tr(
+                    "config set",
+                    "bad gender",
+                    ctx,
+                    genders=", ".join(f"`{g}`" for g in genders),
+                )
             )
         states = ("online", "idle", "dnd", "invisible", "auto")
         if key == "status" and value not in states:
             return await ctx.send(
-                tr("config set", "bad status", ctx, states=", ".join(f"`{s}`" for s in states))
+                tr(
+                    "config set",
+                    "bad status",
+                    ctx,
+                    states=", ".join(f"`{s}`" for s in states),
+                )
             )
 
         if key == "prefix":
@@ -546,7 +569,9 @@ class Admin(commands.Cog):
 
         for key in ("__all__", "__name__", "__version__"):
             if key not in init.keys():
-                return Repository(path, False, "missing value", {"value": utils.Text.sanitise(key)})
+                return Repository(
+                    path, False, "missing value", {"value": utils.Text.sanitise(key)}
+                )
 
         # repository version
         version = init["__version__"]
@@ -554,7 +579,9 @@ class Admin(commands.Cog):
         # repository name
         name = init["__name__"]
         if re.fullmatch(r"[a-z_]+", name) is None:
-            return Repository(path, False, "invalid name", {"name": utils.Text.sanitise(name)})
+            return Repository(
+                path, False, "invalid name", {"name": utils.Text.sanitise(name)}
+            )
 
         # repository modules
         for key in init["__all__"].strip("()[]").split(","):
@@ -564,7 +591,10 @@ class Admin(commands.Cog):
 
             if re.fullmatch(r"[a-z_]+", module) is None:
                 return Repository(
-                    path, False, "invalid module name", {"name": utils.Text.sanitise(module)}
+                    path,
+                    False,
+                    "invalid module name",
+                    {"name": utils.Text.sanitise(module)},
                 )
 
             if not os.path.isdir(os.path.join(path, module)):
@@ -573,10 +603,14 @@ class Admin(commands.Cog):
                 )
             modules.append(module)
 
-        return Repository(path, True, "reply", name=name, modules=tuple(modules), version=version)
+        return Repository(
+            path, True, "reply", name=name, modules=tuple(modules), version=version
+        )
 
     @staticmethod
-    def _install_module_requirements(*, path: str) -> Optional[subprocess.CompletedProcess]:
+    def _install_module_requirements(
+        *, path: str
+    ) -> Optional[subprocess.CompletedProcess]:
         """Install new packages from requirements.txt file.
 
         :param path: A Path to the repository.
