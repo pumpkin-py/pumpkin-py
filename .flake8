@@ -7,6 +7,6 @@ per-file-ignores =
 exclude = .git,.venv
 count = True
 max-complexity = 25
-max-line-length = 100
+max-line-length = 90
 format=%(code)s %(path)s (%(row)d:%(col)d): %(text)s
 statistics = True
