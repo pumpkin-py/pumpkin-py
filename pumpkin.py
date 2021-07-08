@@ -145,7 +145,11 @@ for module in db_modules:
     if not module.enabled:
         print("Skipping module " + module.name, file=sys.stdout)  # noqa: T001
         continue
-    bot.load_extension(f"modules.{module.name}.module")
+    try:
+        bot.load_extension(f"modules.{module.name}.module")
+    except commands.ExtensionNotFound:
+        print(f"Module not found: {module.name}", file=sys.stdout)  # noqa: T001
+        continue
     print("Loaded module " + module.name, file=sys.stdout)  # noqa: T001
 
 
