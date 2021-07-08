@@ -85,14 +85,18 @@ def _import_database_tables():
             # 2/ Do we want to support this? It may be solved just by importing the modules
             #    to the "database/__init__.py" file.
             database_stub: str = os.path.join(module, "database")
-            if not os.path.isfile(database_stub + ".py") and not os.path.isdir(database_stub):
+            if not os.path.isfile(database_stub + ".py") and not os.path.isdir(
+                database_stub
+            ):
                 continue
 
             # Import the module
             try:
                 import_stub: str = database_stub.replace("/", ".")
                 importlib.import_module(import_stub)
-                print(f"Imported database models in {import_stub}.", file=sys.stderr)  # noqa: T001
+                print(
+                    f"Imported database models in {import_stub}.", file=sys.stderr
+                )  # noqa: T001
             except ModuleNotFoundError as exc:
                 # TODO How to properly log errors?
                 print(  # noqa: T001

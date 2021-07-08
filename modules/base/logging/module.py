@@ -30,7 +30,11 @@ class Logging(commands.Cog):
         def format_entry(entry: DBLogging):
             level = logging.LogLevel(entry.level).name
             try:
-                channel = self.bot.get_guild(entry.guild_id).get_channel(entry.channel_id).name
+                channel = (
+                    self.bot.get_guild(entry.guild_id)
+                    .get_channel(entry.channel_id)
+                    .name
+                )
             except AttributeError:
                 channel = f"{entry.channel_id}"
             text = f"{level:<8} {entry.scope:<5} | #{channel:<10}"
@@ -41,7 +45,9 @@ class Logging(commands.Cog):
             await ctx.reply(f"```{stub}```")
 
     @logging_.command(name="set")
-    async def logging_set(self, ctx, scope: str, level: str, module: Optional[str] = None):
+    async def logging_set(
+        self, ctx, scope: str, level: str, module: Optional[str] = None
+    ):
         if scope not in ("bot", "guild"):
             await ctx.reply(tr("logging set", "invalid scope", ctx))
             return

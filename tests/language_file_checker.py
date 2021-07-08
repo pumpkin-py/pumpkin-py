@@ -14,7 +14,9 @@ class Module:
         self.result = None
 
         # get languages
-        self.language_files = [f for f in os.listdir(path) if re.match(r"[a-z_]+.ini", f)]
+        self.language_files = [
+            f for f in os.listdir(path) if re.match(r"[a-z_]+.ini", f)
+        ]
         if "en.ini" not in self.language_files:
             self.result = f'Module "{self.path}" has to have english language file.'
             return

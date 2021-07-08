@@ -60,7 +60,9 @@ class Base(commands.Cog):
     @commands.check(acl.check)
     @autopin.command(name="get")
     async def autopin_get(self, ctx, channel: discord.TextChannel = None):
-        embed = utils.Discord.create_embed(author=ctx.author, title=tr("autopin get", "title", ctx))
+        embed = utils.Discord.create_embed(
+            author=ctx.author, title=tr("autopin get", "title", ctx)
+        )
         limit: int = getattr(AutoPin.get(ctx.guild.id, None), "limit", 0)
         value: str = f"{limit}" if limit > 0 else tr("autopin get", "disabled", ctx)
         embed.add_field(
@@ -117,7 +119,9 @@ class Base(commands.Cog):
             await guild_log.info(ctx.author, ctx.channel, "Autopin unset globally.")
         else:
             AutoPin.remove(ctx.guild.id, channel.id)
-            await guild_log.info(ctx.author, ctx.channel, f"Autopin unset in #{channel.name}.")
+            await guild_log.info(
+                ctx.author, ctx.channel, f"Autopin unset in #{channel.name}."
+            )
         await ctx.reply(tr("autopin unset", "reply"))
 
     @commands.guild_only()
@@ -152,11 +156,15 @@ class Base(commands.Cog):
 
     @commands.check(acl.check)
     @bookmarks.command(name="set")
-    async def bookmarks_set(self, ctx, enabled: bool, channel: discord.TextChannel = None):
+    async def bookmarks_set(
+        self, ctx, enabled: bool, channel: discord.TextChannel = None
+    ):
         """Enable or disable bookmarking."""
         if channel is None:
             Bookmark.add(ctx.guild.id, None, enabled)
-            await guild_log.info(ctx.author, ctx.channel, f"Global bookmarks set to {enabled}.")
+            await guild_log.info(
+                ctx.author, ctx.channel, f"Global bookmarks set to {enabled}."
+            )
         else:
             Bookmark.add(ctx.guild.id, channel.id, enabled)
             await guild_log.info(
@@ -173,7 +181,9 @@ class Base(commands.Cog):
             await guild_log.info(ctx.author, ctx.channel, "Bookmarking unset globally.")
         else:
             Bookmark.remove(ctx.guild.id, channel.id)
-            await guild_log.info(ctx.author, ctx.channel, f"Bookmarking unset in #{channel.name}.")
+            await guild_log.info(
+                ctx.author, ctx.channel, f"Bookmarking unset in #{channel.name}."
+            )
         await ctx.reply(tr("bookmarks unset", "reply"))
 
     @commands.guild_only()
@@ -211,7 +221,9 @@ class Base(commands.Cog):
 
     @commands.check(acl.check)
     @autothread.command(name="set")
-    async def autothread_set(self, ctx, limit: int, channel: discord.TextChannel = None):
+    async def autothread_set(
+        self, ctx, limit: int, channel: discord.TextChannel = None
+    ):
         if limit < 1:
             raise commands.ArgumentError("Limit has to be at least one.")
 
@@ -243,7 +255,9 @@ class Base(commands.Cog):
             await guild_log.info(ctx.author, ctx.channel, "Autothread unset globally.")
         else:
             AutoThread.remove(ctx.guild.id, channel.id)
-            await guild_log.info(ctx.author, ctx.channel, f"Autothread unset in #{channel.name}.")
+            await guild_log.info(
+                ctx.author, ctx.channel, f"Autothread unset in #{channel.name}."
+            )
         await ctx.reply(tr("autothread unset", "reply"))
 
     #
@@ -298,7 +312,9 @@ class Base(commands.Cog):
                 return
 
             # stop if there isn't enough pins
-            limit: int = getattr(AutoPin.get(payload.guild_id, payload.channel_id), "limit", -1)
+            limit: int = getattr(
+                AutoPin.get(payload.guild_id, payload.channel_id), "limit", -1
+            )
             # overwrite for channel doesn't exist, use guild preference
             if limit < 0:
                 limit = getattr(AutoPin.get(payload.guild_id, None), "limit", 0)
@@ -313,7 +329,9 @@ class Base(commands.Cog):
                     f"Pinned message {message.jump_url}",
                 )
             except discord.errors.HTTPException:
-                await guild_log.error(payload.member, message.channel, "Could not pin message.")
+                await guild_log.error(
+                    payload.member, message.channel, "Could not pin message."
+                )
                 return
 
             await reaction.clear()
@@ -343,7 +361,9 @@ class Base(commands.Cog):
             title=tr("_bookmark", "title", tc),
             description=message.content[:2000],
         )
-        embed.set_author(name=message.author.display_name, icon_url=message.author.avatar_url)
+        embed.set_author(
+            name=message.author.display_name, icon_url=message.author.avatar_url
+        )
 
         timestamp = utils.Time.datetime(message.created_at)
         embed.add_field(

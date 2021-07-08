@@ -45,7 +45,13 @@ class BadTranslation(PumpkinException):
     :param key: String variable.
     """
 
-    def __init__(self, langfile: str, command: str = None, string: str = None, key: str = None):
+    def __init__(
+        self,
+        langfile: str = None,
+        command: str = None,
+        string: str = None,
+        key: str = None,
+    ):
         self.langfile = langfile
         self.command = command
         self.string = string
@@ -59,4 +65,7 @@ class BadTranslation(PumpkinException):
             return error + f': No command "{self.command}".'
         if self.key is None:
             return error + f': Command "{self.command}" has no string "{self.string}".'
-        return error + f': Command "{self.command}" string "{self.string}" has no key "{self.key}".'
+        return (
+            error
+            + f': Command "{self.command}" string "{self.string}" has no key "{self.key}".'
+        )

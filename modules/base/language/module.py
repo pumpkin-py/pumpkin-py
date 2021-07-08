@@ -34,20 +34,28 @@ class Language(commands.Cog):
         embed = utils.Discord.create_embed(
             author=ctx.author,
             title=tr("language get", "title", ctx),
-            description=tr("language get", "languages", ctx, languages=", ".join(LANGUAGES)),
+            description=tr(
+                "language get", "languages", ctx, languages=", ".join(LANGUAGES)
+            ),
         )
 
-        user_preference = MemberLanguage.get(guild_id=ctx.guild.id, member_id=ctx.author.id)
+        user_preference = MemberLanguage.get(
+            guild_id=ctx.guild.id, member_id=ctx.author.id
+        )
         embed.add_field(
             name=tr("language get", "user", ctx),
-            value=getattr(user_preference, "language", tr("language get", "not set", ctx)),
+            value=getattr(
+                user_preference, "language", tr("language get", "not set", ctx)
+            ),
             inline=False,
         )
 
         guild_preference = GuildLanguage.get(guild_id=ctx.guild.id)
         embed.add_field(
             name=tr("language get", "guild", ctx),
-            value=getattr(guild_preference, "language", tr("language get", "not set", ctx)),
+            value=getattr(
+                guild_preference, "language", tr("language get", "not set", ctx)
+            ),
             inline=False,
         )
 
@@ -65,8 +73,12 @@ class Language(commands.Cog):
         if language not in LANGUAGES:
             await ctx.reply(tr("language set", "bad language", ctx))
             return
-        MemberLanguage.add(guild_id=ctx.guild.id, member_id=ctx.author.id, language=language)
-        await guild_log.info(ctx.author, ctx.channel, f"Language preference set to '{language}'.")
+        MemberLanguage.add(
+            guild_id=ctx.guild.id, member_id=ctx.author.id, language=language
+        )
+        await guild_log.info(
+            ctx.author, ctx.channel, f"Language preference set to '{language}'."
+        )
         await ctx.reply(
             tr("language set", "reply", ctx, language=language)
             + " "
@@ -81,7 +93,9 @@ class Language(commands.Cog):
             await ctx.reply(tr("language unset", "not set", ctx))
             return
         await guild_log.info(ctx.author, ctx.channel, "Language preference unset.")
-        await ctx.reply(tr("language unset", "reply", ctx) + " " + tr("caching", "cooldown", ctx))
+        await ctx.reply(
+            tr("language unset", "reply", ctx) + " " + tr("caching", "cooldown", ctx)
+        )
 
     @commands.check(acl.check)
     @language.group(name="guild")
@@ -113,9 +127,13 @@ class Language(commands.Cog):
         if ok == 0:
             await ctx.reply(tr("language guild unset", "not set", ctx))
             return
-        await guild_log.info(ctx.author, ctx.channel, "Guild language preference unset.")
+        await guild_log.info(
+            ctx.author, ctx.channel, "Guild language preference unset."
+        )
         await ctx.reply(
-            tr("language guild unset", "reply", ctx) + " " + tr("caching", "cooldown", ctx)
+            tr("language guild unset", "reply", ctx)
+            + " "
+            + tr("caching", "cooldown", ctx)
         )
 
 
