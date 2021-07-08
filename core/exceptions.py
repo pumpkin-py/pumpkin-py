@@ -12,6 +12,12 @@ class DotEnvException(PumpkinException):
     pass
 
 
+class ModuleDependencyException(PumpkinException):
+    """Raised when some module subclasses some other missing module."""
+
+    pass
+
+
 class BadTranslation(PumpkinException):
     """Raised when translation file is not valid or contains errors.
 
