@@ -12,10 +12,21 @@ class DotEnvException(PumpkinException):
     pass
 
 
-class ModuleDependencyException(PumpkinException):
-    """Raised when some module subclasses some other missing module."""
+class ModuleException(PumpkinException):
+    """Raised when module-related error occurs.
 
-    pass
+    :param repository: Repository name.
+    :param module: Module name.
+    :param message: Exception message.
+    """
+
+    def __init__(self, repository: str, module: str, message: str):
+        self.repository: str = repository
+        self.module: str = module
+        self.message: str = message
+
+    def __str__(self) -> str:
+        return f"Error in module {self.repository}.{self.module}: {self.message}"
 
 
 class BadTranslation(PumpkinException):
@@ -27,19 +38,20 @@ class BadTranslation(PumpkinException):
     * Command is not found.
     * Command string is not found.
     * Command string does not have requested key.
+
+    :param langfile: Path to language file.
+    :param command: Qualified command name.
+    :param string: Requested string name.
+    :param key: String variable.
     """
 
-    def __init__(
-        self, langfile: str = None, command: str = None, string: str = None, key: str = None
-    ):
+    def __init__(self, langfile: str, command: str = None, string: str = None, key: str = None):
         self.langfile = langfile
         self.command = command
         self.string = string
         self.key = key
 
     def __str__(self):
-        if self.langfile is None:
-            return f'Translation error: No file "{self.langfile}".'
         error = f'Translation error in "{self.langfile}"'
         if self.command is None:
             return error + "."
