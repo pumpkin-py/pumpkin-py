@@ -147,7 +147,7 @@ for module in db_modules:
         continue
     try:
         bot.load_extension(f"modules.{module.name}.module")
-    except commands.ExtensionNotFound:
+    except (ImportError, ModuleNotFoundError, commands.ExtensionNotFound):
         print(f"Module not found: {module.name}", file=sys.stdout)  # noqa: T001
         continue
     print("Loaded module " + module.name, file=sys.stdout)  # noqa: T001
