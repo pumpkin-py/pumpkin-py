@@ -144,12 +144,18 @@ class Admin(commands.Cog):
             )
 
         result = ">>> "
+        # This allows us to print non-loaded modules in *italics* and loaded
+        # (and thus available) in regular font.
+        loaded_cogs = [
+            c.__module__[8:-7]  # strip 'modules.' & '.module' from the name
+            for c in sorted(self.bot.cogs.values(), key=lambda m: m.__module__)
+        ]
         for repository in repositories:
             result += f"**{repository.name}**\n"
-            loaded_cogs = [c.lower() for c in sorted(self.bot.cogs.keys())]
             modules = []
             for module in repository.modules:
-                modules.append(module if module in loaded_cogs else f"*{module}*")
+                module_name: str = f"{repository.name}.{module}"
+                modules.append(module if module_name in loaded_cogs else f"*{module}*")
             result += ", ".join(modules) + "\n"
         await ctx.send(result)
 
