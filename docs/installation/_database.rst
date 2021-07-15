@@ -14,7 +14,7 @@ The user, its password and database will be your connection string:
 
 .. code-block::
 
-	postgres://<username>:<password>@localhost:5432/<database>
+	postgresql://<username>:<password>@localhost:5432/<database>
 
 SQLite requires no installation and no setup and saves its data into a file. It is much slower and it shouldn't be used in production (really small servers shouldn't be a big problem, though). The connection string is just a pointer to the file:
 

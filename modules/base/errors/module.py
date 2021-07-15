@@ -23,7 +23,7 @@ class Errors(commands.Cog):
     @commands.Cog.listener()
     async def on_error(event, *args, **kwargs):
         tb = traceback.format_exc()
-        await bot_log.error(None, None, extra={"traceback": tb})
+        await bot_log.error(None, None, traceback=tb)
 
     @commands.Cog.listener()
     async def on_command_error(
@@ -72,7 +72,7 @@ class Errors(commands.Cog):
                 ctx.author,
                 ctx.channel,
                 f"{type(error).__name__}: {str(error)}",
-                extra={"traceback": (traceback.format_tb(error.__traceback__),)},
+                traceback=traceback.format_tb(error.__traceback__),
             )
 
     def __get_error_message(

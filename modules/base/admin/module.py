@@ -454,8 +454,8 @@ class Admin(commands.Cog):
             )
         if key == "mention_as_prefix":
             bool_value: Optional[bool] = utils.Text.parse_bool(value)
-        if bool_value is None:
-            return await ctx.send(tr("config set", "invalid value", ctx))
+            if bool_value is None:
+                return await ctx.send(tr("config set", "invalid value", ctx))
 
         languages = ("en", "cs")
         if key == "language" and value not in languages:
