@@ -14,11 +14,11 @@ We'll be using Ubuntu 20.04 LTS in this guide, but it should generally be simila
 System setup
 ------------
 
-First you have to make sure you have the bare minimum: ``git`` and ``ssh`` server.
+First you have to make sure you have the bare minimum: ``git`` and ``ssh`` server, along with some modules that will be required later.
 
 .. code-block:: bash
 
-	apt install git openssh-server
+	apt install git openssh-server build-essential
 	systemctl start sshd
 
 Take your time and go through the SSH server settings to make the server as secure as possible.
@@ -197,6 +197,7 @@ Systemd service can autostart or restart the application when it crashes. The se
 	User = discord
 	StandardOutput = journal+console
 
+	EnvironmentFile = /home/discord/pumpkin/.env
 	WorkingDirectory = /home/discord/pumpkin
 	ExecStart = /home/discord/pumpkin/.venv/bin/python3 pumpkin.py
 
