@@ -95,7 +95,7 @@ class Translator:
         """
         # get language preference
         langcode: str = self.get_language_preference(ctx)
-        langfile: str = os.path.join(self._dirname, "lang", langcode + ".ini")
+        langfile: str = os.path.join(self._dirname, langcode + ".ini")
 
         data = self.data[langcode]
 
