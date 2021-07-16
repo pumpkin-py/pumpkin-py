@@ -12,7 +12,7 @@ import discord
 from discord.ext import commands, tasks
 
 import database.config
-from core import text, logging, utils
+from core import acl, text, logging, utils
 from .database import BaseAdminModule as Module
 
 tr = text.Translator(__file__).translate
@@ -108,10 +108,12 @@ class Admin(commands.Cog):
 
     # Commands
 
+    @commands.check(acl.check)
     @commands.group(name="repository", aliases=["repo"])
     async def repository(self, ctx):
         await utils.Discord.send_help(ctx)
 
+    @commands.check(acl.check)
     @repository.command(name="list")
     async def repository_list(self, ctx, query: str = ""):
         repository_names = Admin._get_repository_list(query=query)
@@ -160,6 +162,7 @@ class Admin(commands.Cog):
         await ctx.send(result)
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
+    @commands.check(acl.check)
     @repository.command(name="install")
     async def repository_install(self, ctx, url: str):
         tempdir = tempfile.TemporaryDirectory()
@@ -231,6 +234,7 @@ class Admin(commands.Cog):
         tempdir.cleanup()
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
+    @commands.check(acl.check)
     @repository.command(name="update", aliases=["fetch", "pull"])
     async def repository_update(self, ctx, name: str):
         repo_path = os.path.join(os.getcwd(), "modules", name)
@@ -257,13 +261,14 @@ class Admin(commands.Cog):
 
         repo = git.repo.base.Repo(repo_path, search_parent_directories=(name == "base"))
         async with ctx.typing():
-            result = repo.git.pull()
+            result = repo.git.pull(force=True)
 
         result = utils.Text.split(result, 1990)
         for r in result:
             await ctx.send("```" + r + "```")
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
+    @commands.check(acl.check)
     @repository.command(name="uninstall")
     async def repository_uninstall(self, ctx, name: str):
         if name in ("core", "base"):
@@ -305,10 +310,12 @@ class Admin(commands.Cog):
             )
         )
 
+    @commands.check(acl.check)
     @commands.group(name="module")
     async def module(self, ctx):
         await utils.Discord.send_help(ctx)
 
+    @commands.check(acl.check)
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
         self.bot.load_extension("modules." + name + ".module")
@@ -316,6 +323,7 @@ class Admin(commands.Cog):
         Module.add(name, enabled=True)
         await bot_log.info(ctx.author, ctx.channel, "Loaded " + name)
 
+    @commands.check(acl.check)
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
         if name in ("base.admin",):
@@ -326,30 +334,36 @@ class Admin(commands.Cog):
         Module.add(name, enabled=False)
         await bot_log.info(ctx.author, ctx.channel, "Unloaded " + name)
 
+    @commands.check(acl.check)
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
         self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(tr("module reload", "reply", ctx, name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
 
+    @commands.check(acl.check)
     @commands.group(name="command")
     async def command(self, ctx):
         await utils.Discord.send_help(ctx)
 
+    @commands.check(acl.check)
     @command.command(name="enable")
     async def command_enable(self, ctx, *, name: str):
         pass
         # TODO Save state to database
 
+    @commands.check(acl.check)
     @command.command(name="disable")
     async def command_disable(self, ctx, *, name: str):
         pass
         # TODO Save state to database
 
+    @commands.check(acl.check)
     @commands.group(name="pumpkin")
     async def pumpkin(self, ctx):
         await utils.Discord.send_help(ctx)
 
+    @commands.check(acl.check)
     @pumpkin.command(name="name")
     async def pumpkin_name(self, ctx, *, name: str):
         try:
@@ -366,6 +380,7 @@ class Admin(commands.Cog):
         await ctx.send(tr("pumpkin name", "reply", ctx, name=utils.Text.sanitise(name)))
         await bot_log.info(ctx.author, ctx.channel, "Name changed to " + name + ".")
 
+    @commands.check(acl.check)
     @pumpkin.command(name="avatar")
     async def pumpkin_avatar(self, ctx, *, url: str = ""):
         if not len(url) and not len(ctx.message.attachments):
@@ -406,10 +421,12 @@ class Admin(commands.Cog):
             ctx.author, ctx.channel, "Avatar changed, the URL was " + url + "."
         )
 
+    @commands.check(acl.check)
     @commands.group(name="config")
     async def config_(self, ctx):
         await utils.Discord.send_help(ctx)
 
+    @commands.check(acl.check)
     @config_.command(name="get")
     async def config_get(self, ctx):
         embed = utils.Discord.create_embed(
@@ -440,6 +457,7 @@ class Admin(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @commands.check(acl.check)
     @config_.command(name="set")
     async def config_set(self, ctx, key: str, value: str):
         keys = ("prefix", "mention_as_prefix", "language", "gender", "status")
