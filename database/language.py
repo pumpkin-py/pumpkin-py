@@ -49,7 +49,7 @@ class GuildLanguage(database.base):
         preference = GuildLanguage(guild_id=guild_id, language=language)
 
         # remove old language preference
-        session.remove(guild_id)
+        session.query(GuildLanguage).filter_by(guild_id=guild_id).delete()
 
         session.add(preference)
         session.commit()
@@ -73,6 +73,7 @@ class GuildLanguage(database.base):
         :return: Number of deleted preferences, always ``0`` or ``1``.
         """
         query = session.query(GuildLanguage).filter_by(guild_id=guild_id).delete()
+        session.commit()
         return query
 
 
@@ -158,4 +159,5 @@ class MemberLanguage(database.base):
         :return: Number of deleted preferences, always ``0`` or ``1``.
         """
         query = session.query(MemberLanguage).filter_by(guild_id=guild_id).delete()
+        session.commit()
         return query
