@@ -126,7 +126,7 @@ class Admin(commands.Cog):
                 repositories.append(repository)
             else:
                 # Do not raise warnings if it's just the Python stuff
-                if repository.directory == "__pycache__":
+                if repository.directory in ("tests", "__pycache__"):
                     continue
 
                 await bot_log.warning(

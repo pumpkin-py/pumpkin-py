@@ -176,3 +176,10 @@ An example database file ``bistro/database.py`` may look like this:
 	    	    "name": self.name,
 	    	    "description": self.description,
 	    	}
+
+Testing
+-------
+
+You MAY include a directory called `tests/` in the root of the repository (e.g. between the module directories). This directory will be ignored by pumpkin.py module checks and won't emit "Invalid module" warnings.
+
+Please note that this may be changed in the future and some pumpkin.py versions may require the modules to be subclassed in `modules/` directory, if this proves to be confusing.
