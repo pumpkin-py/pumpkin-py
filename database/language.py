@@ -17,13 +17,13 @@ class GuildLanguage(database.base):
 
     __tablename__ = "language_guilds"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger, unique=True)
     language = Column(String)
 
     def __repr__(self) -> str:
         return (
-            f'<GuildLanguage id="{self.id}" '
+            f'<GuildLanguage idx="{self.idx}" '
             f'guild_id="{self.guild_id}" language="{self.language}">'
         )
 
@@ -88,14 +88,14 @@ class MemberLanguage(database.base):
 
     __tablename__ = "language_members"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
     member_id = Column(BigInteger)
     language = Column(String)
 
     def __repr__(self) -> str:
         return (
-            f'<MemberLanguage id="{self.id}" guild_id="{self.guild_id}" '
+            f'<MemberLanguage idx="{self.idx}" guild_id="{self.guild_id}" '
             f'member_id="{self.member_id}" language="{self.language}">'
         )
 

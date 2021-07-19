@@ -37,7 +37,7 @@ class ACL_group(database.base):
     # function. In this case we should use 'parent_name'/'parent_id' and the
     # 'parent' attribute should be the parent object.
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
     name = Column(String)
     parent = Column(String, default=None)
@@ -46,7 +46,7 @@ class ACL_group(database.base):
 
     def __repr__(self) -> str:
         return (
-            f'<ACL_group id="{self.id}" name="{self.name}" parent="{self.parent}" '
+            f'<ACL_group idx="{self.idx}" name="{self.name}" parent="{self.parent}" '
             f'guild_id="{self.guild_id}" role_id="{self.role_id}">'
         )
 
@@ -166,7 +166,7 @@ class ACL_rule(database.base):
 
     __tablename__ = "acl_rules"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
     command = Column(String)
     default = Column(Boolean, default=False)
@@ -175,7 +175,7 @@ class ACL_rule(database.base):
 
     def __repr__(self) -> str:
         return (
-            f'<ACL_rule id="{self.id}" guild_id="{self.guild_id}" '
+            f'<ACL_rule idx="{self.idx}" guild_id="{self.guild_id}" '
             f'command="{self.command}" default="{self.default}">'
         )
 
@@ -189,7 +189,6 @@ class ACL_rule(database.base):
     def dump(self) -> Dict[str, Union[int, str, List[Union[int, str]]]]:
         """Return object representation as dictionary for easy serialisation."""
         return {
-            "id": self.id,
             "guild_id": self.guild_id,
             "command": self.command,
             "default": self.default,
@@ -283,7 +282,7 @@ class ACL_rule(database.base):
         if group is None:
             raise ValueError(f'group_name="{group_name}" cannot be mapped to group.')
 
-        rule_group = ACL_rule_group(group_id=group.id, allow=allow)
+        rule_group = ACL_rule_group(group_idx=group.idx, allow=allow)
         self.groups.append(rule_group)
         session.commit()
         return rule_group
@@ -313,7 +312,7 @@ class ACL_rule(database.base):
         :param allow: Whether to allow or deny the permission to given user.
         :return: Rule user constraint.
         """
-        rule_user = ACL_rule_user(rule_id=self.id, user_id=user_id, allow=allow)
+        rule_user = ACL_rule_user(rule_idx=self.idx, user_id=user_id, allow=allow)
         self.users.append(rule_user)
         session.commit()
         return rule_user
@@ -344,31 +343,30 @@ class ACL_rule_user(database.base):
 
     __tablename__ = "acl_rule_users"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    rule_id = Column(Integer, ForeignKey("acl_rules.id", ondelete="CASCADE"))
+    idx = Column(Integer, primary_key=True, autoincrement=True)
+    rule_idx = Column(Integer, ForeignKey("acl_rules.idx", ondelete="CASCADE"))
     rule = relationship("ACL_rule", back_populates="users")
     user_id = Column(BigInteger)
     allow = Column(Boolean)
 
     def __repr__(self) -> str:
         return (
-            f'<ACL_rule_user id="{self.id}" '
-            f'rule_id="{self.rule_id}" user_id="{self.user_id}" '
+            f'<ACL_rule_user idx="{self.idx}" '
+            f'rule_idx="{self.rule_id}" user_id="{self.user_id}" '
             f'allow="{self.allow}">'
         )
 
     def __eq__(self, obj) -> bool:
         return (
             type(self) == type(obj)
-            and self.rule_id == obj.rule_id
+            and self.rule_idx == obj.rule_idx
             and self.user_id == obj.user_id
         )
 
     def dump(self) -> Dict[str, Union[bool, int]]:
         """Return object representation as dictionary for easy serialisation."""
         return {
-            "id": self.id,
-            "rule_id": self.rule_id,
+            "rule_idx": self.rule_id,
             "user_id": self.user_id,
             "allow": self.allow,
         }
@@ -382,32 +380,31 @@ class ACL_rule_group(database.base):
 
     __tablename__ = "acl_rule_groups"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    rule_id = Column(Integer, ForeignKey("acl_rules.id", ondelete="CASCADE"))
+    idx = Column(Integer, primary_key=True, autoincrement=True)
+    rule_idx = Column(Integer, ForeignKey("acl_rules.idx", ondelete="CASCADE"))
     rule = relationship("ACL_rule", back_populates="groups")
-    group_id = Column(Integer, ForeignKey("acl_groups.id", ondelete="CASCADE"))
+    group_idx = Column(Integer, ForeignKey("acl_groups.idx", ondelete="CASCADE"))
     group = relationship("ACL_group", back_populates="rules")
     allow = Column(Boolean, default=None)
 
     def __repr__(self) -> str:
         return (
-            f'<ACL_rule_group id="{self.id}" '
-            f'rule_id="{self.rule_id}" group_id="{self.group_id}" '
+            f'<ACL_rule_group idx="{self.idx}" '
+            f'rule_idx="{self.rule_id}" group_idx="{self.group_id}" '
             f'allow="{self.allow}">'
         )
 
     def __eq__(self, obj) -> bool:
         return (
             type(self) == type(obj)
-            and self.rule_id == obj.rule_id
-            and self.group_id == obj.group_id
+            and self.rule_idx == obj.rule_idx
+            and self.group_idx == obj.group_idx
         )
 
     def dump(self) -> Dict[str, Union[bool, int]]:
         """Return object representation as dictionary for easy serialisation."""
         return {
-            "id": self.id,
-            "rule_id": self.rule_id,
-            "group_id": self.group_id,
+            "rule_idx": self.rule_id,
+            "group_idx": self.group_id,
             "allow": self.allow,
         }

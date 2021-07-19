@@ -10,7 +10,7 @@ from database import database, session
 class AutoPin(database.base):
     __tablename__ = "base_base_autopin"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
     channel_id = Column(BigInteger, default=None)
     limit = Column(Integer, default=0)
@@ -46,7 +46,7 @@ class AutoPin(database.base):
 
     def __repr__(self) -> str:
         return (
-            f"<AutoPin id='{self.id}' guild_id='{self.guild_id}' "
+            f"<AutoPin idx='{self.idx}' guild_id='{self.guild_id}' "
             f"channel_id='{self.channel_id}' limit='{self.limit}'>"
         )
 
@@ -61,7 +61,7 @@ class AutoPin(database.base):
 class AutoThread(database.base):
     __tablename__ = "base_base_autothread"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
     channel_id = Column(BigInteger, default=None)
     limit = Column(Integer, default=0)
@@ -97,7 +97,7 @@ class AutoThread(database.base):
 
     def __repr__(self) -> str:
         return (
-            f"<AutoThread id='{self.id}' guild_id='{self.guild_id}' "
+            f"<AutoThread idx='{self.idx}' guild_id='{self.guild_id}' "
             f"channel_id='{self.channel_id}' limit='{self.limit}'>"
         )
 
@@ -112,7 +112,7 @@ class AutoThread(database.base):
 class Bookmark(database.base):
     __tablename__ = "base_base_bookmarks"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
     channel_id = Column(BigInteger, default=None)
     enabled = Column(Boolean, default=False)
@@ -148,7 +148,7 @@ class Bookmark(database.base):
 
     def __repr__(self) -> str:
         return (
-            f"<Bookmark id='{self.id}' guild_id='{self.guild_id}' "
+            f"<Bookmark idx='{self.idx}' guild_id='{self.guild_id}' "
             f"channel_id='{self.channel_id}' enabled='{self.enabled}'>"
         )
 
