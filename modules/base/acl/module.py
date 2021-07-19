@@ -193,8 +193,8 @@ class ACL(commands.Cog):
         await utils.Discord.send_help(ctx)
 
     @commands.check(acl.check)
-    @acl_rule.command(name="generate")
-    async def acl_rule_generate(self, ctx):
+    @acl_rule.command(name="template")
+    async def acl_rule_template(self, ctx):
         """Generate rule template."""
         filename: str = f"acl_{ctx.guild.id}_template.json"
 
