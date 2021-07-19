@@ -169,7 +169,8 @@ class Admin(commands.Cog):
         workdir = os.path.join(tempdir.name, "newmodule")
 
         # download to temporary directory
-        download_stderr = Admin._download_repository(url=url, path=tempdir.name)
+        async with ctx.typing():
+            download_stderr = Admin._download_repository(url=url, path=tempdir.name)
         if download_stderr is not None:
             tempdir.cleanup()
             if "does not exist" in download_stderr:
@@ -502,6 +503,8 @@ class Admin(commands.Cog):
         if key == "prefix":
             config.prefix = value
         elif key == "mention_as_prefix":
+            # FIXME This requires you to to know the internal implementation.
+            # We should hint it somewhere or change the key.
             config.mention_as_prefix = bool_value
         elif key == "language":
             config.language = value
