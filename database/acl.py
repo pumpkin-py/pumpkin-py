@@ -133,7 +133,7 @@ class ACL_group(database.base):
         :param guild_id: Guild ID.
         :return: List of guild groups.
         """
-        query = session.query(ACL_group).all()
+        query = session.query(ACL_group).filter_by(guild_id=guild_id).all()
         return query
 
     @staticmethod

@@ -77,7 +77,7 @@ class ACL(commands.Cog):
         template = "{group_id:<2} {name:<20} {role:<18}"
         for group in bfs(groups):
             result += "\n" + template.format(
-                group_id=group.id,
+                group_id=group.idx,
                 name="  " * group.level + group.name,
                 role=group.role_id,
             )
