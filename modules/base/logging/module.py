@@ -66,12 +66,14 @@ class Logging(commands.Cog):
 
         # TODO Test if the module exists
 
+        log_message: str
         if scope == "bot":
             DBLogging.add_bot(
                 guild_id=ctx.guild.id,
                 channel_id=ctx.channel.id,
                 level=levelno,
             )
+            log_message = f"Bot log level set to {level}."
         if scope == "guild":
             DBLogging.add_guild(
                 guild_id=ctx.guild.id,
@@ -79,7 +81,14 @@ class Logging(commands.Cog):
                 level=levelno,
                 module=module,
             )
+            log_message = (
+                f"Guild log level (module {module}) set to {level}."
+                if module
+                else f"Guild log level set to {level}."
+            )
+
         await ctx.reply(tr("logging set", "reply"))
+        await guild_log.info(ctx.author, ctx.channel, log_message)
 
     @commands.check(acl.check)
     @logging_.command(name="unset")
@@ -88,13 +97,21 @@ class Logging(commands.Cog):
             await ctx.reply(tr("logging unset", "invalid scope", ctx))
             return
 
+        log_message: str
         if scope == "bot":
             result = DBLogging.remove_bot(guild_id=ctx.guild.id)
+            log_message = "Bot logging disabled."
         if scope == "guild":
             result = DBLogging.remove_guild(guild_id=ctx.guild.id, module=module)
+            log_message = (
+                f"Guild logging of module {module} disabled."
+                if module
+                else "Guild logging disabled."
+            )
 
         if result > 0:
             await ctx.reply(tr("logging unset", "reply", ctx))
+            await guild_log.info(ctx.author, ctx.channel, log_message)
         else:
             await ctx.reply(tr("logging unset", "none", ctx))
 
