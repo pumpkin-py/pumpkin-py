@@ -74,7 +74,7 @@ class LogEntry:
         actor: LogActor,
         source: LogSource,
         message: str,
-        extra: dict = dict(),
+        **extra: dict,
     ):
         self.timestamp = datetime.datetime.now()
         self.scope = scope
@@ -127,7 +127,12 @@ class LogEntry:
         if self.guild_name != "None":
             stubs.append(f"({self.guild_name})")
 
-        return " ".join(stubs) + f": {self.message}"
+        message = " ".join(stubs) + f": {self.message}"
+
+        if "traceback" in self.extra.keys():
+            message += "\n" + "".join(self.extra["traceback"])
+
+        return message
 
     def format_stderr(self):
         """Format entry so it can be sent to log file.
@@ -135,18 +140,8 @@ class LogEntry:
         This is similar to :meth:`format_discord`, but it also contains time
         information.
         """
-        stubs: List[str] = list()
-
-        stubs.append(utils.Time.datetime(self.timestamp))
-        stubs.append(self.levelstr)
-        if self.actor_name != "None":
-            stubs.append(self.actor_name)
-        if self.channel_name != "None":
-            stubs.append(f"#{self.channel_name}")
-        if self.guild_name != "None":
-            stubs.append(f"({self.guild_name})")
-
-        return " ".join(stubs) + f": {self.message}"
+        timestamp: str = utils.Time.datetime(self.timestamp)
+        return timestamp + " " + self.format_discord()
 
     @property
     def function(self):
@@ -260,7 +255,7 @@ class Logger:
             actor,
             source,
             message,
-            extra,
+            **extra,
         )
 
         print(entry.format_stderr(), file=sys.stderr)  # noqa: T001
