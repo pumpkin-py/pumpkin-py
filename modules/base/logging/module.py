@@ -43,8 +43,11 @@ class Logging(commands.Cog):
             return (text + f" | {entry.module}") if entry.module else text
 
         output = "\n".join([format_entry(e) for e in entries])
-        for stub in utils.Text.split(output):
-            await ctx.reply(f"```{stub}```")
+        if len(output):
+            for stub in utils.Text.split(output):
+                await ctx.reply(f"```{stub}```")
+        else:
+            await ctx.reply(tr("logging list", "none", ctx))
 
     @commands.check(acl.check)
     @logging_.command(name="set")

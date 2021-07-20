@@ -196,7 +196,7 @@ class Logging(database.base):
                     Logging.guild_id == guild_id,
                     Logging.level <= level,
                     Logging.scope == "guild",
-                    Logging.module is None,
+                    Logging.module == None,  # noqa: E711
                 )
                 .one_or_none()
             )
@@ -233,5 +233,5 @@ class Logging(database.base):
         return (
             f'<Logging idx="{self.idx}" '
             f'guild_id="{self.guild_id}" channel_id="{self.channel_id}" '
-            f'level="{self.level} scope="{self.scope}" module="{self.module}">'
+            f'level="{self.level}" scope="{self.scope}" module="{self.module}">'
         )
