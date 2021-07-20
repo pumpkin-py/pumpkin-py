@@ -1,14 +1,12 @@
 import git
 import os
 import re
-import requests
 import shutil
 import subprocess  # nosec: B404
 import sys
 import tempfile
 from typing import Optional, List, Tuple
 
-import discord
 from discord.ext import commands, tasks
 
 import database.config
@@ -358,69 +356,6 @@ class Admin(commands.Cog):
     async def command_disable(self, ctx, *, name: str):
         pass
         # TODO Save state to database
-
-    @commands.check(acl.check)
-    @commands.group(name="pumpkin")
-    async def pumpkin(self, ctx):
-        await utils.Discord.send_help(ctx)
-
-    @commands.check(acl.check)
-    @pumpkin.command(name="name")
-    async def pumpkin_name(self, ctx, *, name: str):
-        try:
-            await self.bot.user.edit(username=name)
-        except discord.HTTPException:
-            await ctx.send(tr("pumpkin name", "cooldown", ctx))
-            await bot_log.debug(
-                ctx.author,
-                ctx.channel,
-                "Could not change the nickname because of API cooldown.",
-            )
-            return
-
-        await ctx.send(tr("pumpkin name", "reply", ctx, name=utils.Text.sanitise(name)))
-        await bot_log.info(ctx.author, ctx.channel, "Name changed to " + name + ".")
-
-    @commands.check(acl.check)
-    @pumpkin.command(name="avatar")
-    async def pumpkin_avatar(self, ctx, *, url: str = ""):
-        if not len(url) and not len(ctx.message.attachments):
-            await ctx.send("pumpkin avatar", "no argument")
-            return
-
-        with ctx.typing():
-            if len(url):
-                payload = requests.get(url)
-                if payload.status_code != "200":
-                    await ctx.send(
-                        tr(
-                            "pumpkin avatar",
-                            "download error",
-                            ctx,
-                            code=payload.status_code,
-                        )
-                    )
-                    return
-                image_binary = payload.content
-            else:
-                image_binary = await ctx.message.attachments[0].read()
-                url = ctx.message.attachments[0].proxy_url
-
-            try:
-                await self.bot.user.edit(avatar=image_binary)
-            except discord.HTTPException:
-                await ctx.send(tr("pumpkin avatar", "cooldown", ctx))
-                await bot_log.debug(
-                    ctx.author,
-                    ctx.channel,
-                    "Could not change the avatar because of API cooldown.",
-                )
-                return
-
-        await ctx.send(tr("pumpkin avatar", "reply", ctx))
-        await bot_log.info(
-            ctx.author, ctx.channel, "Avatar changed, the URL was " + url + "."
-        )
 
     @commands.check(acl.check)
     @commands.group(name="config")
