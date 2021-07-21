@@ -348,23 +348,6 @@ class Admin(commands.Cog):
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
 
     @commands.check(acl.check)
-    @commands.group(name="command")
-    async def command(self, ctx):
-        await utils.Discord.send_help(ctx)
-
-    @commands.check(acl.check)
-    @command.command(name="enable")
-    async def command_enable(self, ctx, *, name: str):
-        pass
-        # TODO Save state to database
-
-    @commands.check(acl.check)
-    @command.command(name="disable")
-    async def command_disable(self, ctx, *, name: str):
-        pass
-        # TODO Save state to database
-
-    @commands.check(acl.check)
     @commands.group(name="config")
     async def config_(self, ctx):
         await utils.Discord.send_help(ctx)
