@@ -231,6 +231,11 @@ class Admin(commands.Cog):
             )
         )
         tempdir.cleanup()
+        await bot_log.info(
+            ctx.author,
+            ctx.channel,
+            f"Repository {repository.name} installed.",
+        )
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.check(acl.check)
@@ -265,6 +270,7 @@ class Admin(commands.Cog):
         result = utils.Text.split(result, 1990)
         for r in result:
             await ctx.send("```" + r + "```")
+        await bot_log.info(ctx.author, ctx.channel, f"Repository {name} updated.")
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.check(acl.check)
@@ -308,6 +314,7 @@ class Admin(commands.Cog):
                 name=utils.Text.sanitise(name, limit=64),
             )
         )
+        await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.")
 
     @commands.check(acl.check)
     @commands.group(name="module")
