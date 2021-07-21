@@ -27,6 +27,9 @@ def check(ctx: commands.Context) -> bool:
     If the context is in the DMs, access is always denied, because the ACL is
     tied to guild IDs.
 
+    The command may be disabled globally (by setting :attr:`guild_id` to `0`).
+    In that case :class:`False` is returned.
+
     Then a database lookup is performed. If the command rule is not found,
     access is denied.
 
@@ -73,6 +76,10 @@ def check(ctx: commands.Context) -> bool:
 
     # do not allow invocations in DMs
     if ctx.guild is None:
+        return False
+
+    # do not allow invocations of disabled commands
+    if acldb.ACL_rule.get(0, ctx.command.qualified_name) is not None:
         return False
 
     rule = acldb.ACL_rule.get(ctx.guild.id, ctx.command.qualified_name)

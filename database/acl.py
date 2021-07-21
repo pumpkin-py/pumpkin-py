@@ -258,6 +258,7 @@ class ACL_rule(database.base):
             .filter_by(guild_id=guild_id, command=command)
             .delete()
         )
+        session.commit()
         return query
 
     @staticmethod
@@ -268,6 +269,7 @@ class ACL_rule(database.base):
         :return: Number of deleted rules.
         """
         query = session.query(ACL_rule).filter_by(guild_id=guild_id).delete()
+        session.commit()
         return query
 
     def add_group(self, group_name: str, allow: bool) -> ACL_rule_group:

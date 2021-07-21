@@ -340,6 +340,33 @@ class ACL(commands.Cog):
                 f"ACL rule import: {len(new)} added, {len(updated)} updated.",
             )
 
+    @commands.check(acl.check)
+    @commands.group(name="command")
+    async def command(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @commands.check(acl.check)
+    @command.command(name="disable")
+    async def command_disable(self, ctx, *, command: str):
+        if ACL_rule.get(guild_id=0, command=command) is not None:
+            await ctx.reply(tr("command disable", "not enabled", ctx, name=command))
+            return
+
+        ACL_rule.add(guild_id=0, command=command, default=False)
+        await ctx.reply(tr("command disable", "reply", ctx, name=command))
+        await bot_log.info(ctx.author, ctx.channel, f"Command {command} disabled.")
+
+    @commands.check(acl.check)
+    @command.command(name="enable")
+    async def command_enable(self, ctx, *, command: str):
+        if ACL_rule.get(guild_id=0, command=command) is None:
+            await ctx.reply(tr("command enable", "not disabled", ctx, name=command))
+            return
+
+        ACL_rule.remove(guild_id=0, command=command)
+        await ctx.reply(tr("command enable", "reply", ctx, name=command))
+        await bot_log.info(ctx.author, ctx.channel, f"Command {command} enabled.")
+
     #
 
     def get_group_embed(self, ctx, group: ACL_group) -> discord.Embed:
