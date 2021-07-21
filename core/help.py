@@ -1,7 +1,8 @@
+import contextlib
 import os
 import sys
 from functools import lru_cache
-from typing import Sequence, Callable
+from typing import Sequence, Callable, Optional
 
 from discord.ext import commands
 
@@ -129,10 +130,10 @@ class Help(commands.MinimalHelpCommand):
         """
         fmt = f"\N{EN DASH} **{command.qualified_name}**"
 
-        command_tr = self._get_command_translator(command)
         try:
+            command_tr: Optional[Callable] = self._get_command_translator(command)
             fmt += ": " + command_tr(command.qualified_name, "help", self.context)
-        except exceptions.BadTranslation:
+        except (TypeError, exceptions.BadTranslation):
             if len(command.short_doc):
                 fmt += f". *{command.short_doc}*"
             else:
@@ -163,8 +164,9 @@ class Help(commands.MinimalHelpCommand):
 
     async def send_cog_help(self, cog: commands.Cog) -> None:
         """Format cog output."""
-        # module_tr = self._get_cog_translator(cog)
-        # self.paginator.add_line(module_tr("_", "help"), empty=True)
+        with contextlib.suppress(TypeError, exceptions.BadTranslation):
+            module_tr: Optional[Callable] = self._get_cog_translator(cog)
+            self.paginator.add_line(module_tr("_", "help"), empty=True)
 
         filtered = await self.filter_commands(
             cog.get_commands(), sort=self.sort_commands
@@ -192,7 +194,7 @@ class Help(commands.MinimalHelpCommand):
         for page in self.paginator.pages:
             await destination.send(">>> " + page)
 
-    def _get_command_translator(self, command: commands.Command) -> Callable:
+    def _get_command_translator(self, command: commands.Command) -> Optional[Callable]:
         """Get translation function for current command."""
         py_main: str = os.path.dirname(
             os.path.realpath(sys.modules["__main__"].__file__)
@@ -201,7 +203,7 @@ class Help(commands.MinimalHelpCommand):
         module_path: str = os.path.join(py_main, py_module + ".py")
         return self._get_module_translator(module_path)
 
-    def _get_cog_translator(self, cog: commands.Cog) -> Callable:
+    def _get_cog_translator(self, cog: commands.Cog) -> Optional[Callable]:
         """Get translation function for current command."""
         py_main: str = os.path.dirname(
             os.path.realpath(sys.modules["__main__"].__file__)
@@ -212,11 +214,14 @@ class Help(commands.MinimalHelpCommand):
         return self._get_module_translator(module_path)
 
     @lru_cache(maxsize=10)
-    def _get_module_translator(self, module_path: str) -> Callable:
+    def _get_module_translator(self, module_path: str) -> Optional[Callable]:
         """Get translation function for module path.
 
         This function is wrapped inside of :meth:`_get_command_translator`
         and :meth:`_get_cog_translator` functions so we can use caching
         via :meth:`functools.lru_cache`.
         """
-        return text.Translator(module_path).translate
+        try:
+            return text.Translator(module_path).translate
+        except FileNotFoundError:
+            return None
