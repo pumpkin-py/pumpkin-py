@@ -40,7 +40,7 @@ def write_log(entry) -> None:
     if not os.path.isdir("logs"):
         os.mkdir("logs")
     with open(f"logs/{filename}", "a+") as handle:
-        json.dump(entry.dump(), handle)
+        json.dump(entry.dump(), handle, ensure_ascii=False)
         handle.write("\n")
 
 
@@ -129,10 +129,13 @@ class LogEntry:
 
         message = " ".join(stubs) + f": {self.message}"
 
+        if "content" in self.extra.keys():
+            message += "\n" + self.extra["content"]
+
         if "traceback" in self.extra.keys():
             message += "\n" + "".join(self.extra["traceback"])
 
-        return message
+        return message.replace("```", "`\u200B``")
 
     def format_stderr(self):
         """Format entry so it can be sent to log file.
@@ -140,8 +143,26 @@ class LogEntry:
         This is similar to :meth:`format_discord`, but it also contains time
         information.
         """
-        timestamp: str = utils.Time.datetime(self.timestamp)
-        return timestamp + " " + self.format_discord()
+        stubs: List[str] = list()
+
+        stubs.append(utils.Time.datetime(self.timestamp))
+        stubs.append(self.levelstr)
+        if self.actor_name != "None":
+            stubs.append(self.actor_name)
+        if self.channel_name != "None":
+            stubs.append(f"#{self.channel_name}")
+        if self.guild_name != "None":
+            stubs.append(f"({self.guild_name})")
+
+        message = " ".join(stubs) + f": {self.message}"
+
+        if "content" in self.extra.keys():
+            message += "\n" + self.extra["content"]
+
+        if "traceback" in self.extra.keys():
+            message += "\n" + "".join(self.extra["traceback"])
+
+        return message
 
     @property
     def function(self):

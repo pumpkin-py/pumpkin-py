@@ -64,6 +64,7 @@ class Errors(commands.Cog):
                 ctx.author,
                 ctx.channel,
                 f"{type(error).__name__}: {str(error)}",
+                content=ctx.message.content,
                 traceback=traceback.format_exception(
                     type(error), error, error.__traceback__
                 ),
