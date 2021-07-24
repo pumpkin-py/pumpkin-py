@@ -41,7 +41,7 @@ The following script makes backup of the database and saves it. If it is the fir
 	# Database inside of Docker
 	docker exec -it pumpkin_db_1 pg_dump -c -U postgres > dump_`date +%Y-%m-%d"_"%H:%M:%S`.sql
 	# Database running directly on the system
-	pg_dump pumpkin > dump_`date +%Y-%m-%d"_"%H:%M:%S`.sql
+	pg_dump -U <database user name> pumpkin > dump_`date +%Y-%m-%d"_"%H:%M:%S`.sql
 
 	today=$(date +%d)
 
@@ -53,6 +53,18 @@ The following script makes backup of the database and saves it. If it is the fir
 	fi
 
 	exit 0
+
+To allow passwordless access to the database (in the non-docker situation), create file ``~/.pgpass``with the following content: ``hostname:port:database:username:password``
+
+.. code-block::
+
+	localhost:*:<database>:<username>:<password>
+
+The file has to be readable only by the owner:
+
+.. code-block:: bash
+
+	chmod 600 ~/.pgpass
 
 ..
 	The Docker backup is not tested!
