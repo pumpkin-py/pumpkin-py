@@ -98,6 +98,12 @@ class Errors(commands.Cog):
                 tr("MissingRequiredArgument", "value", ctx, arg=error.param.name),
                 False,
             )
+        if type(error) == commands.CheckFailure:
+            return (
+                tr("CheckFailure", "name", ctx),
+                tr("CheckFailure", "value", ctx),
+                False,
+            )
         if type(error) == commands.CommandOnCooldown:
             time = utils.Time.seconds(error.retry_after)
             return (
