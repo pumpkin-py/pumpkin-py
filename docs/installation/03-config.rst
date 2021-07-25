@@ -54,7 +54,7 @@ The following script makes backup of the database and saves it. If it is the fir
 
 	exit 0
 
-To allow passwordless access to the database (in the non-docker situation), create file ``~/.pgpass``with the following content: ``hostname:port:database:username:password``
+To allow passwordless access to the database (in the non-docker situation), create file ``~/.pgpass`` with the following content: ``hostname:port:database:username:password``
 
 .. code-block::
 
@@ -76,6 +76,13 @@ Then you can set up a cron job to run the script every day.
 	# make backup every day at 1 AM
 	0 1 * * * bash ~/pumpkin-backup.sh >> ~/pumpkin-backup.log 2>&1
 
+To **restore** the backup, you have to drop the database first, which may require you to login as the ``postgres`` user:
+
+.. code-block::
+
+	psql -U postgres -c "DROP DATABASE <database>;"
+	psql -U postgres -c "CREATE DATABASE <database>;"
+	psql -U <username> -f <backup file>
 
 Log management
 --------------
