@@ -451,6 +451,22 @@ class Admin(commands.Cog):
         if key in ("prefix", "status"):
             await utils.Discord.update_presence(self.bot)
 
+    @commands.check(acl.check)
+    @commands.group(name="pumpkin")
+    async def pumpkin_(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @commands.check(acl.check)
+    @pumpkin_.command(name="restart")
+    async def pumpkin_restart(self, ctx):
+        """This won't work without system-level error detection."""
+        exit(1)
+
+    @commands.check(acl.check)
+    @pumpkin_.command(name="shutdown")
+    async def pumpkin_shutdown(self, ctx):
+        exit(0)
+
     #
 
     @staticmethod
