@@ -217,6 +217,12 @@ class Errors(commands.Cog):
                 tr("CommandRegistrationError", "value", ctx, cmd=error.name),
                 False,
             )
+        if isinstance(error, commands.UserInputError):
+            return (
+                tr(type(error).__name__, "name", ctx),
+                tr(type(error).__name__, "value", ctx),
+                False,
+            )
         if isinstance(error, commands.CommandError) or isinstance(
             error, discord.ClientException
         ):
