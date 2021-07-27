@@ -14,6 +14,14 @@ bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
 
 
+# TODO Some errors are returning just generic answers,
+# even if the error object has some arguments. We may want to go through and
+# add them to the message strings.
+
+# TODO This is just a weird list of errors. Maybe we should make it somehow
+# simpler, e.g. split the "get translation" from "should we log this?".
+
+
 class Errors(commands.Cog):
     """Error handling module."""
 
@@ -184,6 +192,18 @@ class Errors(commands.Cog):
                     ctx,
                     converter=type(error.converter).__name__,
                 ),
+                False,
+            )
+        if type(error) == commands.ChannelNotReadable:
+            return (
+                tr(error.__class__.__name__, "name", ctx),
+                tr(error.__class__.__name__, "value", ctx, channel=error.argument.name),
+                False,
+            )
+        if isinstance(error, commands.BadArgument):
+            return (
+                tr(error.__class__.__name__, "name", ctx),
+                tr(error.__class__.__name__, "value", ctx),
                 False,
             )
 
