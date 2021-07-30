@@ -32,7 +32,7 @@ It will probably be neccesary to add the user to the Docker group (this will tak
 
 For the next command you will probably need to log out and back in to load the group change.
 
-Build the container:
+Change current directory to the folder where your cloned repository is and build the container:
 
 .. code-block:: bash
 
