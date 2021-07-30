@@ -9,4 +9,5 @@ This chapter will guide you through the setup process. You can pick either the d
 
    01-docker
    02-direct
-   03-config
+   03-development
+   04-config
