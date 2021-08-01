@@ -82,3 +82,26 @@ Development inside of virtual environment
 -----------------------------------------
 
 .. include:: _venv.rst
+
+Running the bot
+---------------
+
+Assuming you are in virtual environment and have everything set up, run
+
+.. code-block:: bash
+
+	python3 pumpkin.py
+
+It will print startup information and a welcome message, something like this:
+
+.. code-block:: bash
+
+	Imported database models in modules.base.base.database.
+	Imported database models in modules.base.admin.database.
+	Loaded module base.acl
+	Loaded module base.admin
+	Loaded module base.base
+	Loaded module base.logging
+	Loaded module base.errors
+	Loaded module base.language
+	2021-08-01 16:00:00 INFO: The pie is ready.
