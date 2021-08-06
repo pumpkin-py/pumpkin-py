@@ -188,7 +188,7 @@ class Base(commands.Cog):
 
     @commands.guild_only()
     @commands.check(acl.check)
-    @commands.group(enabled=False)
+    @commands.group()
     async def autothread(self, ctx):
         await utils.Discord.send_help(ctx)
 
@@ -204,6 +204,12 @@ class Base(commands.Cog):
             name=tr("autothread get", "limit", ctx),
             value=value,
         )
+        if discord.version_info.major < 2:
+            embed.add_field(
+                name=tr("autothread get", "warning", ctx),
+                value=tr("autothread get", "support", ctx),
+                inline=False,
+            )
 
         if channel is None:
             channel = ctx.channel
@@ -397,17 +403,61 @@ class Base(commands.Cog):
         )
 
     async def _autothread(
-        self, payload: discord.RawReactionActionEvent, message: discord.Message
+        self,
+        payload: discord.RawReactionActionEvent,
+        message: discord.Message,
     ):
-        """Handle autothread functionality.
-
-        This function is not yet available on Discord publicly, nor in in
-        discord.py, so it doesn't do anything.
-        """
+        """Handle autothread functionality."""
+        # only new versions of discord.py support threads
+        if discord.version_info.major < 2:
+            return
         tc = TranslationContext(payload.guild_id, payload.user_id)
 
-        await utils.Discord.remove_reaction(message, payload.emoji, payload.member)
-        await payload.member.send(tr("_autothread", "wip", tc))
+        for reaction in message.reactions:
+            if reaction.emoji != "🧵":
+                continue
+
+            # remove if the message already has a thread
+            if message.flags.has_thread:
+                await guild_log.debug(
+                    payload.member,
+                    message.channel,
+                    f"Removing {payload.user_id}'s thread: Message has already a thread.",
+                )
+                await reaction.clear()
+                return
+
+            # stop if there isn't enough thread reactions
+            limit: int = getattr(
+                AutoThread.get(payload.guild_id, payload.channel_id), "limit", -1
+            )
+            # overwrite for channel doesn't exist, use guild preference
+            if limit < 0:
+                limit = getattr(AutoThread.get(payload.guild_id, None), "limit", 0)
+            if limit == 0 or reaction.count < limit:
+                return
+
+            try:
+                threadName = (
+                    tr("_autothread", "thread", tc) + " " + str(message.author.name)
+                )
+                await message.start_thread(name=threadName)
+                await guild_log.info(
+                    message.author,
+                    payload.member,
+                    message.channel,
+                    f"Thread opened on a message {message.jump_url}.",
+                )
+            except discord.errors.HTTPException:
+                await guild_log.error(
+                    message.author,
+                    payload.member,
+                    message.channel,
+                    f"Could not open a thread on a message {message.jump_url}.",
+                )
+                return
+
+            await reaction.clear()
 
 
 def setup(bot) -> None:
