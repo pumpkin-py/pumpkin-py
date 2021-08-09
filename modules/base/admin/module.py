@@ -38,6 +38,7 @@ class Repository:
         modules: tuple = None,
         version: str = None,
     ):
+        self.kwargs = {}
         self.directory: str = os.path.basename(path)
         self.valid: bool = valid
         self.message: str = message
