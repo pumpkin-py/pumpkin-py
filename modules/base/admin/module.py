@@ -546,7 +546,7 @@ class Admin(commands.Cog):
 
         # repository name
         name = init["__name__"]
-        if re.fullmatch(r"[a-z_]+", name) is None:
+        if re.fullmatch(r"[a-z-]+", name) is None:
             return Repository(
                 path, False, "invalid name", {"name": utils.Text.sanitise(name)}
             )
@@ -557,7 +557,7 @@ class Admin(commands.Cog):
             if not len(module):
                 continue
 
-            if re.fullmatch(r"[a-z_]+", module) is None:
+            if re.fullmatch(r"[a-z-]+", module) is None:
                 return Repository(
                     path,
                     False,

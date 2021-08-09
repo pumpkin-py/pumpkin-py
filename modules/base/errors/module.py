@@ -220,7 +220,7 @@ class Errors(commands.Cog):
             # return friendly name, e.g. strip "modules.{module}.module"
             name = error.name[8:-7]
             # send helpful message if the requested module does not follow naming rules
-            if re.fullmatch(r"([a-z_]+)\.([a-z_]+)", name) is None:
+            if re.fullmatch(r"([a-z-]+)\.([a-z-]+)", name) is None:
                 key = "ExtensionNotFound_hint"
             else:
                 key = type(error).__name__
