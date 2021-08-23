@@ -5,7 +5,6 @@ from discord.ext import commands
 
 from core import TranslationContext
 from core import check, text, logging, utils
-from core.utils import Discord
 
 from .database import AutoPin, AutoThread, Bookmark
 
