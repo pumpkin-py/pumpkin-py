@@ -2,7 +2,7 @@ from typing import Optional
 
 from discord.ext import commands
 
-from core import acl, text, logging, utils
+from core import check, text, logging, utils
 from database.logging import Logging as DBLogging
 
 tr = text.Translator(__file__).translate
@@ -19,12 +19,12 @@ class Logging(commands.Cog):
     #
 
     @commands.guild_only()
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="logging")
     async def logging_(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @logging_.command(name="list")
     async def logging_list(self, ctx):
         entries = DBLogging.get_all(ctx.guild.id)
@@ -49,7 +49,7 @@ class Logging(commands.Cog):
         else:
             await ctx.reply(tr("logging list", "none", ctx))
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @logging_.command(name="set")
     async def logging_set(
         self, ctx, scope: str, level: str, module: Optional[str] = None
@@ -90,7 +90,7 @@ class Logging(commands.Cog):
         await ctx.reply(tr("logging set", "reply"))
         await guild_log.info(ctx.author, ctx.channel, log_message)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @logging_.command(name="unset")
     async def logging_unset(self, ctx, scope: str, module: Optional[str] = None):
         if scope not in ("bot", "guild"):

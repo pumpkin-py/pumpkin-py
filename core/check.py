@@ -3,7 +3,7 @@ from discord.ext import commands
 from database import acl as acldb
 
 
-def check(ctx: commands.Context) -> bool:
+def acl(ctx: commands.Context) -> bool:
     """ACL check function.
 
     :param ctx: The command context.

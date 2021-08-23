@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Set, Tuple
 import discord
 from discord.ext import commands
 
-from core import acl, text, logging, utils
+from core import check, text, logging, utils
 from database.acl import ACL_group, ACL_rule
 
 tr = text.Translator(__file__).translate
@@ -24,19 +24,19 @@ class ACL(commands.Cog):
     #
 
     @commands.guild_only()
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="acl")
     async def acl_(self, ctx):
         """Permission control."""
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_.group(name="group")
     async def acl_group(self, ctx):
         """Permission group control."""
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_group.command(name="list")
     async def acl_group_list(self, ctx):
         """List permission groups."""
@@ -84,7 +84,7 @@ class ACL(commands.Cog):
 
         await ctx.reply(f"```{result}```")
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_group.command(name="get")
     async def acl_group_get(self, ctx, name: str):
         """Get ACL group."""
@@ -95,7 +95,7 @@ class ACL(commands.Cog):
 
         await ctx.reply(embed=self.get_group_embed(ctx, group))
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_group.command(name="add")
     async def acl_group_add(self, ctx, name: str, parent: str, role_id: int):
         """Add ACL group.
@@ -126,7 +126,7 @@ class ACL(commands.Cog):
             group=group.dump(),
         )
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_group.command(name="update")
     async def acl_group_update(self, ctx, name: str, param: str, value):
         """Update ACL group.
@@ -172,7 +172,7 @@ class ACL(commands.Cog):
             group=group.dump(),
         )
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_group.command(name="remove")
     async def acl_group_remove(self, ctx, name: str):
         """Remove ACL group."""
@@ -186,13 +186,13 @@ class ACL(commands.Cog):
 
     #
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_.group(name="rule")
     async def acl_rule(self, ctx):
         """Permission rules."""
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_rule.command(name="template")
     async def acl_rule_template(self, ctx):
         """Generate rule template."""
@@ -219,7 +219,7 @@ class ACL(commands.Cog):
         file.close()
         await guild_log.debug(ctx.author, ctx.channel, "ACL rules defaults exported.")
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_rule.command(name="export")
     async def acl_rule_export(self, ctx):
         """Export command rules."""
@@ -247,7 +247,7 @@ class ACL(commands.Cog):
         file.close()
         await guild_log.info(ctx.author, ctx.channel, "ACL rules exported.")
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_rule.command(name="remove")
     async def acl_rule_remove(self, ctx, *, command: str):
         """Remove command."""
@@ -259,7 +259,7 @@ class ACL(commands.Cog):
         await ctx.reply(tr("acl rule remove", "reply", ctx))
         await guild_log.warning(ctx.author, ctx.channel, f"ACL rule {command} removed.")
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_rule.command(name="flush")
     async def acl_rule_flush(self, ctx):
         """Flush all the command rules."""
@@ -272,7 +272,7 @@ class ACL(commands.Cog):
         await ctx.send(tr("acl rule flush", "reply", ctx, count=count))
         await guild_log.info(ctx.author, ctx.channel, "ACL rules flushed.")
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @acl_rule.command(name="import")
     async def acl_rule_import(self, ctx, mode: str = "add"):
         """Add new rules from JSON file.
@@ -340,12 +340,12 @@ class ACL(commands.Cog):
                 f"ACL rule import: {len(new)} added, {len(updated)} updated.",
             )
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="command")
     async def command(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @command.command(name="disable")
     async def command_disable(self, ctx, *, command: str):
         if ACL_rule.get(guild_id=0, command=command) is not None:
@@ -356,7 +356,7 @@ class ACL(commands.Cog):
         await ctx.reply(tr("command disable", "reply", ctx, name=command))
         await bot_log.info(ctx.author, ctx.channel, f"Command {command} disabled.")
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @command.command(name="enable")
     async def command_enable(self, ctx, *, command: str):
         if ACL_rule.get(guild_id=0, command=command) is None:

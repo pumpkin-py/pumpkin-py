@@ -4,7 +4,8 @@ import discord
 from discord.ext import commands
 
 from core import TranslationContext
-from core import acl, text, logging, utils
+from core import check, text, logging, utils
+from core.utils import Discord
 
 from .database import AutoPin, AutoThread, Bookmark
 
@@ -52,12 +53,12 @@ class Base(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.guild_only()
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="autopin")
     async def autopin(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @autopin.command(name="get")
     async def autopin_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
@@ -84,7 +85,7 @@ class Base(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @autopin.command(name="set")
     async def autopin_set(self, ctx, limit: int, channel: discord.TextChannel = None):
         """Set autopin limit."""
@@ -111,7 +112,7 @@ class Base(commands.Cog):
         else:
             await ctx.reply(tr("autopin set", "reply", ctx))
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @autopin.command(name="unset")
     async def autopin_unset(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
@@ -125,12 +126,12 @@ class Base(commands.Cog):
         await ctx.reply(tr("autopin unset", "reply"))
 
     @commands.guild_only()
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="bookmarks")
     async def bookmarks(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @bookmarks.command(name="get")
     async def bookmarks_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
@@ -154,7 +155,7 @@ class Base(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @bookmarks.command(name="set")
     async def bookmarks_set(
         self, ctx, enabled: bool, channel: discord.TextChannel = None
@@ -172,7 +173,7 @@ class Base(commands.Cog):
             )
         await ctx.reply(tr("bookmarks set", str(enabled), ctx))
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @bookmarks.command(name="unset")
     async def bookmarks_unset(self, ctx, channel: discord.TextChannel = None):
         """Remove bookmark settings."""
@@ -187,12 +188,12 @@ class Base(commands.Cog):
         await ctx.reply(tr("bookmarks unset", "reply"))
 
     @commands.guild_only()
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group()
     async def autothread(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @autothread.command(name="get")
     async def autothread_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
@@ -225,7 +226,7 @@ class Base(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @autothread.command(name="set")
     async def autothread_set(
         self, ctx, limit: int, channel: discord.TextChannel = None
@@ -253,7 +254,7 @@ class Base(commands.Cog):
         else:
             await ctx.reply(tr("autothread set", "reply", ctx))
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @autothread.command(name="unset")
     async def autothread_unset(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
