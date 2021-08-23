@@ -189,7 +189,7 @@ class Base(commands.Cog):
 
     @commands.guild_only()
     @commands.check(check.acl)
-    @commands.group()
+    @commands.group(name="autothread", aliases=["autothreads"])
     async def autothread(self, ctx):
         await utils.Discord.send_help(ctx)
 
@@ -423,7 +423,7 @@ class Base(commands.Cog):
                 await guild_log.debug(
                     payload.member,
                     message.channel,
-                    f"Removing {payload.user_id}'s thread: Message has already a thread.",
+                    f"Removing {payload.user_id}'s reaction: Message has already a thread.",
                 )
                 await reaction.clear()
                 return
@@ -438,20 +438,23 @@ class Base(commands.Cog):
             if limit == 0 or reaction.count < limit:
                 return
 
+            # we can't open threads inside of threads
+            if isinstance(message.channel, discord.Thread):
+                await reaction.clear()
+                return
+
             try:
                 threadName = (
                     tr("_autothread", "thread", tc) + " " + str(message.author.name)
                 )
                 await message.start_thread(name=threadName)
                 await guild_log.info(
-                    message.author,
                     payload.member,
                     message.channel,
                     f"Thread opened on a message {message.jump_url}.",
                 )
             except discord.errors.HTTPException:
                 await guild_log.error(
-                    message.author,
                     payload.member,
                     message.channel,
                     f"Could not open a thread on a message {message.jump_url}.",

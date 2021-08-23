@@ -14,7 +14,7 @@ Repository metadata
 
 The first file we're gonna create will be ``__init__.py``. This file MUST be present in your repository, because pumpkin.py reads its information in order to work with it. It has to contain three variables described below´:
 
-- ``__name__`` is a string representing name of the repository. It must be instance-unique and can only contain lowercase ASCII letters and a dash (``[a-z-]+``) and MUST NOT be ``core`` or ``base``. Moderators can run the **repository list** command to show installed repositories to prevent name clashes.
+- ``__name__`` is a string representing name of the repository. It must be instance-unique and can only contain lowercase ASCII letters and a dash (``[a-z_]+``) and MUST NOT be ``core`` or ``base``. Moderators can run the **repository list** command to show installed repositories to prevent name clashes.
 - ``__version__`` is a string that MUST follow the `semver rules <https://semver.org/>`_.
 - ``__all__`` is a tuple of strings that lists all modules included in the repository.
 
