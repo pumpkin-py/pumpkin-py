@@ -10,7 +10,7 @@ from typing import Optional, List, Tuple
 from discord.ext import commands, tasks
 
 import database.config
-from core import acl, text, logging, utils
+from core import check, text, logging, utils
 from .database import BaseAdminModule as Module
 
 tr = text.Translator(__file__).translate
@@ -38,6 +38,7 @@ class Repository:
         modules: tuple = None,
         version: str = None,
     ):
+        self.kwargs = {}
         self.directory: str = os.path.basename(path)
         self.valid: bool = valid
         self.message: str = message
@@ -106,12 +107,12 @@ class Admin(commands.Cog):
 
     # Commands
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="repository", aliases=["repo"])
     async def repository(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @repository.command(name="list")
     async def repository_list(self, ctx, query: str = ""):
         repository_names = Admin._get_repository_list(query=query)
@@ -160,7 +161,7 @@ class Admin(commands.Cog):
         await ctx.send(result)
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @repository.command(name="install")
     async def repository_install(self, ctx, url: str):
         tempdir = tempfile.TemporaryDirectory()
@@ -238,7 +239,7 @@ class Admin(commands.Cog):
         )
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @repository.command(name="update", aliases=["fetch", "pull"])
     async def repository_update(self, ctx, name: str):
         repo_path = os.path.join(os.getcwd(), "modules", name)
@@ -273,7 +274,7 @@ class Admin(commands.Cog):
         await bot_log.info(ctx.author, ctx.channel, f"Repository {name} updated.")
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @repository.command(name="uninstall")
     async def repository_uninstall(self, ctx, name: str):
         if name in ("core", "base"):
@@ -316,12 +317,12 @@ class Admin(commands.Cog):
         )
         await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.")
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="module")
     async def module(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
         self.bot.load_extension("modules." + name + ".module")
@@ -329,7 +330,7 @@ class Admin(commands.Cog):
         Module.add(name, enabled=True)
         await bot_log.info(ctx.author, ctx.channel, "Loaded " + name)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
         if name in ("base.admin",):
@@ -340,19 +341,19 @@ class Admin(commands.Cog):
         Module.add(name, enabled=False)
         await bot_log.info(ctx.author, ctx.channel, "Unloaded " + name)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
         self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(tr("module reload", "reply", ctx, name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="config")
     async def config_(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @config_.command(name="get")
     async def config_get(self, ctx):
         embed = utils.Discord.create_embed(
@@ -383,7 +384,7 @@ class Admin(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @config_.command(name="set")
     async def config_set(self, ctx, key: str, value: str):
         keys = ("prefix", "mention_as_prefix", "language", "gender", "status")
@@ -451,18 +452,18 @@ class Admin(commands.Cog):
         if key in ("prefix", "status"):
             await utils.Discord.update_presence(self.bot)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="pumpkin")
     async def pumpkin_(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @pumpkin_.command(name="restart")
     async def pumpkin_restart(self, ctx):
         """This won't work without system-level error detection."""
         exit(1)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @pumpkin_.command(name="shutdown")
     async def pumpkin_shutdown(self, ctx):
         exit(0)

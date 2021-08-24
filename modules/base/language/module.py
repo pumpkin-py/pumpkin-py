@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 import database.config
-from core import acl, text, logging, utils
+from core import check, text, logging, utils
 from database.language import GuildLanguage, MemberLanguage
 
 tr = text.Translator(__file__).translate
@@ -23,12 +23,12 @@ class Language(commands.Cog):
     #
 
     @commands.guild_only()
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @commands.group(name="language")
     async def language(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @language.command(name="get")
     async def language_get(self, ctx):
         embed = utils.Discord.create_embed(
@@ -67,7 +67,7 @@ class Language(commands.Cog):
 
         await ctx.reply(embed=embed)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @language.command(name="set")
     async def language_set(self, ctx, *, language: str):
         if language not in LANGUAGES:
@@ -85,7 +85,7 @@ class Language(commands.Cog):
             + tr("caching", "cooldown", ctx)
         )
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @language.command(name="unset")
     async def language_unset(self, ctx):
         ok = MemberLanguage.remove(guild_id=ctx.guild.id, member_id=ctx.author.id)
@@ -97,12 +97,12 @@ class Language(commands.Cog):
             tr("language unset", "reply", ctx) + " " + tr("caching", "cooldown", ctx)
         )
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @language.group(name="guild")
     async def language_guild(self, ctx):
         await utils.Discord.send_help(ctx)
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @language_guild.command(name="set")
     async def language_guild_set(self, ctx, *, language: str):
         if language not in LANGUAGES:
@@ -120,7 +120,7 @@ class Language(commands.Cog):
             + tr("caching", "cooldown", ctx)
         )
 
-    @commands.check(acl.check)
+    @commands.check(check.acl)
     @language_guild.command(name="unset")
     async def language_guild_unset(self, ctx):
         ok = GuildLanguage.remove(guild_id=ctx.guild.id)
