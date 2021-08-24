@@ -231,7 +231,6 @@ class ACL(commands.Cog):
 
         for rule in rules:
             rule_dict = rule.dump()
-            del rule_dict["idx"]
             del rule_dict["command"]
             del rule_dict["guild_id"]
             export[rule.command] = rule_dict
