@@ -121,7 +121,7 @@ def acl(ctx: commands.Context) -> bool:
 
 
 def version(
-    major: int, minor: int, micro: Optional[int] = None, reply=True
+    major: int, minor: int, micro: Optional[int] = None, reply: bool = True
 ) -> Optional[Callable]:
     """Specify minimal discord.py version
 
