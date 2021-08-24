@@ -1,5 +1,11 @@
-from discord.ext import commands
+from functools import wraps
+from typing import Optional
 
+import discord
+from discord.ext import commands
+from discord.ext.commands import Context
+
+from core.utils import tr
 from database import acl as acldb
 
 
@@ -113,3 +119,34 @@ def check(ctx: commands.Context) -> bool:
 
     # user's roles are not mapped to any ACL group, return default
     return rule.default
+
+
+def version(major: int, minor: int, micro: Optional[int] = None):
+    """Decorator that specifies minimum discord.py version"""
+
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            version_info = discord.version_info
+            version_check = True
+
+            if version_info.major == major:
+                if version_info.minor == minor:
+                    if micro is None or version_info.micro >= micro:
+                        version_check = False
+                elif version_info.minor > minor:
+                    version_check = False
+            elif version_info.major > major:
+                version_check = False
+
+            if not version_check:
+                return await func(*args, **kwargs)
+
+            if isinstance(args[1], Context):
+                await args[1].message.reply(tr("version", "reply"))
+
+            return False
+
+        return wrapper
+
+    return decorator
