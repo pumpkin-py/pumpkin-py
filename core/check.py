@@ -1,9 +1,8 @@
 from functools import wraps
-from typing import Optional
+from typing import Optional, Callable
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import Context
 
 from core.utils import tr
 from database import acl as acldb
@@ -121,8 +120,17 @@ def acl(ctx: commands.Context) -> bool:
     return rule.default
 
 
-def version(major: int, minor: int, micro: Optional[int] = None):
-    """Decorator that specifies minimum discord.py version"""
+def version(
+    major: int, minor: int, micro: Optional[int] = None, reply=True
+) -> Optional[Callable]:
+    """Specify minimal discord.py version
+
+    :param major: minimum major version
+    :param minor: minimum minor version of the specified major version
+    :param micro: optional minimum micro version of that major version
+    :param reply: flag controls if user receives reply
+    :return: function to be called or None on wrong version
+    """
 
     def decorator(func):
         @wraps(func)
@@ -132,7 +140,7 @@ def version(major: int, minor: int, micro: Optional[int] = None):
 
             if version_info.major == major:
                 if version_info.minor == minor:
-                    if micro is None or version_info.micro >= micro:
+                    if micro is not None and version_info.micro >= micro:
                         version_check = False
                 elif version_info.minor > minor:
                     version_check = False
@@ -142,10 +150,10 @@ def version(major: int, minor: int, micro: Optional[int] = None):
             if not version_check:
                 return await func(*args, **kwargs)
 
-            if isinstance(args[1], Context):
+            if reply and isinstance(args[1], commands.Context):
                 await args[1].message.reply(tr("version", "reply"))
 
-            return False
+            return None
 
         return wrapper
 
