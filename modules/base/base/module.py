@@ -1,4 +1,5 @@
 import datetime
+from math import ceil
 
 import discord
 from discord.ext import commands
@@ -417,36 +418,54 @@ class Base(commands.Cog):
             if reaction.emoji != "🧵":
                 continue
 
-            # remove if the message already has a thread
-            if message.flags.has_thread:
-                await guild_log.debug(
-                    payload.member,
-                    message.channel,
-                    f"Removing {payload.user_id}'s reaction: Message has already a thread.",
-                )
+            # we can't open threads inside of threads
+            if isinstance(message.channel, discord.Thread):
                 await reaction.clear()
                 return
 
-            # stop if there isn't enough thread reactions
+            # get emoji limit for channel
             limit: int = getattr(
                 AutoThread.get(payload.guild_id, payload.channel_id), "limit", -1
             )
             # overwrite for channel doesn't exist, use guild preference
             if limit < 0:
                 limit = getattr(AutoThread.get(payload.guild_id, None), "limit", 0)
+
+            # get message's existing thread
+            thread_of_message: discord.Thread = None  # used globally in this loop
+            if message.flags.has_thread:
+                for thread in message.channel.threads:
+                    if thread.id == message.id:
+                        thread_of_message = thread
+                        break
+                # check if the given message has an archived thread
+                if message.flags.has_thread:
+                    if thread_of_message.archived:
+                        # lower emoji limit
+                        limit = ceil(limit * 0.75)
+                    else:
+                        await reaction.clear()
+                        return
+
+            # stop if there isn't enough thread reactions
             if limit == 0 or reaction.count < limit:
                 return
-
-            # we can't open threads inside of threads
-            if isinstance(message.channel, discord.Thread):
+            # unarchive thread if exists and is archived (filtered out previously)
+            if thread_of_message is not None:
+                await thread_of_message.edit(archived=False)
+                await guild_log.info(
+                    payload.member,
+                    message.channel,
+                    f"Thread unarchived on a message {message.jump_url}.",
+                )
                 await reaction.clear()
                 return
-
+            # create a new thread
             try:
-                threadName = (
-                    tr("_autothread", "thread", tc) + " " + str(message.author.name)
+                thread_name = (
+                    tr("_autothread", "thread", tc) + " " + message.author.name
                 )
-                await message.start_thread(name=threadName)
+                await message.create_thread(name=thread_name)
                 await guild_log.info(
                     payload.member,
                     message.channel,
