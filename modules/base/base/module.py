@@ -339,6 +339,8 @@ class Base(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        if message.author.bot:
+            return
         if AutoThread.get(message.guild.id, message.channel.id) is None:
             return
         try:
