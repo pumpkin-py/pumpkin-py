@@ -7,8 +7,8 @@ from sqlalchemy import BigInteger, Boolean, Column, Integer
 from database import database, session
 
 
-class AutoPin(database.base):
-    __tablename__ = "base_base_autopin"
+class UserPin(database.base):
+    __tablename__ = "base_base_userpin"
 
     idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
@@ -16,20 +16,20 @@ class AutoPin(database.base):
     limit = Column(Integer, default=0)
 
     @staticmethod
-    def add(guild_id: int, channel_id: Optional[int], limit: int = 0) -> AutoPin:
-        """Add autopin preference."""
-        if AutoPin.get(guild_id, channel_id) is not None:
-            AutoPin.remove(guild_id, channel_id)
-        query = AutoPin(guild_id=guild_id, channel_id=channel_id, limit=limit)
+    def add(guild_id: int, channel_id: Optional[int], limit: int = 0) -> UserPin:
+        """Add userpin preference."""
+        if UserPin.get(guild_id, channel_id) is not None:
+            UserPin.remove(guild_id, channel_id)
+        query = UserPin(guild_id=guild_id, channel_id=channel_id, limit=limit)
         session.add(query)
         session.commit()
         return query
 
     @staticmethod
-    def get(guild_id: int, channel_id: Optional[int]) -> Optional[AutoPin]:
-        """Get autopin preferences for the guild."""
+    def get(guild_id: int, channel_id: Optional[int]) -> Optional[UserPin]:
+        """Get userpin preferences for the guild."""
         query = (
-            session.query(AutoPin)
+            session.query(UserPin)
             .filter_by(guild_id=guild_id, channel_id=channel_id)
             .one_or_none()
         )
@@ -38,7 +38,7 @@ class AutoPin(database.base):
     @staticmethod
     def remove(guild_id: int, channel_id: Optional[int]) -> int:
         query = (
-            session.query(AutoPin)
+            session.query(UserPin)
             .filter_by(guild_id=guild_id, channel_id=channel_id)
             .delete()
         )
@@ -46,7 +46,7 @@ class AutoPin(database.base):
 
     def __repr__(self) -> str:
         return (
-            f"<AutoPin idx='{self.idx}' guild_id='{self.guild_id}' "
+            f"<UserPin idx='{self.idx}' guild_id='{self.guild_id}' "
             f"channel_id='{self.channel_id}' limit='{self.limit}'>"
         )
 
@@ -58,8 +58,8 @@ class AutoPin(database.base):
         }
 
 
-class AutoThread(database.base):
-    __tablename__ = "base_base_autothread"
+class UserThread(database.base):
+    __tablename__ = "base_base_userthread"
 
     idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
@@ -67,20 +67,20 @@ class AutoThread(database.base):
     limit = Column(Integer, default=0)
 
     @staticmethod
-    def add(guild_id: int, channel_id: Optional[int], limit: int = 0) -> AutoThread:
-        """Add autothread preference."""
-        if AutoThread.get(guild_id, channel_id) is not None:
-            AutoThread.remove(guild_id, channel_id)
-        query = AutoThread(guild_id=guild_id, channel_id=channel_id, limit=limit)
+    def add(guild_id: int, channel_id: Optional[int], limit: int = 0) -> UserThread:
+        """Add userthread preference."""
+        if UserThread.get(guild_id, channel_id) is not None:
+            UserThread.remove(guild_id, channel_id)
+        query = UserThread(guild_id=guild_id, channel_id=channel_id, limit=limit)
         session.add(query)
         session.commit()
         return query
 
     @staticmethod
-    def get(guild_id: int, channel_id: Optional[int]) -> Optional[AutoThread]:
-        """Get autothread preference for the guild."""
+    def get(guild_id: int, channel_id: Optional[int]) -> Optional[UserThread]:
+        """Get userthread preference for the guild."""
         query = (
-            session.query(AutoThread)
+            session.query(UserThread)
             .filter_by(guild_id=guild_id, channel_id=channel_id)
             .one_or_none()
         )
@@ -89,7 +89,7 @@ class AutoThread(database.base):
     @staticmethod
     def remove(guild_id: int, channel_id: Optional[int]) -> int:
         query = (
-            session.query(AutoThread)
+            session.query(UserThread)
             .filter_by(guild_id=guild_id, channel_id=channel_id)
             .delete()
         )
@@ -97,7 +97,7 @@ class AutoThread(database.base):
 
     def __repr__(self) -> str:
         return (
-            f"<AutoThread idx='{self.idx}' guild_id='{self.guild_id}' "
+            f"<UserThread idx='{self.idx}' guild_id='{self.guild_id}' "
             f"channel_id='{self.channel_id}' limit='{self.limit}'>"
         )
 

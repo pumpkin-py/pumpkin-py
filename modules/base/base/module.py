@@ -7,7 +7,7 @@ from discord.ext import commands
 from core import TranslationContext
 from core import check, text, logging, utils
 
-from .database import AutoPin, AutoThread, Bookmark
+from .database import UserPin, UserThread, Bookmark
 
 tr = text.Translator(__file__).translate
 bot_log = logging.Bot.logger()
@@ -54,76 +54,76 @@ class Base(commands.Cog):
 
     @commands.guild_only()
     @commands.check(check.acl)
-    @commands.group(name="autopin")
-    async def autopin(self, ctx):
+    @commands.group(name="userpin")
+    async def userpin(self, ctx):
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
-    @autopin.command(name="get")
-    async def autopin_get(self, ctx, channel: discord.TextChannel = None):
+    @userpin.command(name="get")
+    async def userpin_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
-            author=ctx.author, title=tr("autopin get", "title", ctx)
+            author=ctx.author, title=tr("userpin get", "title", ctx)
         )
-        limit: int = getattr(AutoPin.get(ctx.guild.id, None), "limit", 0)
-        value: str = f"{limit}" if limit > 0 else tr("autopin get", "disabled", ctx)
+        limit: int = getattr(UserPin.get(ctx.guild.id, None), "limit", 0)
+        value: str = f"{limit}" if limit > 0 else tr("userpin get", "disabled", ctx)
         embed.add_field(
-            name=tr("autopin get", "limit", ctx),
+            name=tr("userpin get", "limit", ctx),
             value=value,
         )
 
         if channel is None:
             channel = ctx.channel
 
-        channel_pref = AutoPin.get(ctx.guild.id, channel.id)
+        channel_pref = UserPin.get(ctx.guild.id, channel.id)
         if channel_pref is not None:
             embed.add_field(
-                name=tr("autopin get", "channel", ctx, channel=channel.name),
+                name=tr("userpin get", "channel", ctx, channel=channel.name),
                 value=f"{channel_pref.limit}"
                 if channel_pref.limit > 0
-                else tr("autopin get", "disabled", ctx),
+                else tr("userpin get", "disabled", ctx),
             )
 
         await ctx.send(embed=embed)
 
     @commands.check(check.acl)
-    @autopin.command(name="set")
-    async def autopin_set(self, ctx, limit: int, channel: discord.TextChannel = None):
-        """Set autopin limit."""
+    @userpin.command(name="set")
+    async def userpin_set(self, ctx, limit: int, channel: discord.TextChannel = None):
+        """Set userpin limit."""
         if limit < 1:
             raise commands.ArgumentError("Limit has to be at least one.")
 
         if channel is None:
-            AutoPin.add(ctx.guild.id, None, limit)
+            UserPin.add(ctx.guild.id, None, limit)
             await guild_log.info(
                 ctx.author,
                 ctx.channel,
-                f"Global autopin limit set to {limit}.",
+                f"Global userpin limit set to {limit}.",
             )
         else:
-            AutoPin.add(ctx.guild.id, channel.id, limit)
+            UserPin.add(ctx.guild.id, channel.id, limit)
             await guild_log.info(
                 ctx.author,
                 ctx.channel,
-                f"#{channel.name} autopin limit set to {limit}.",
+                f"#{channel.name} userpin limit set to {limit}.",
             )
 
         if limit == 0:
-            await ctx.reply(tr("autopin set", "disabled", ctx))
+            await ctx.reply(tr("userpin set", "disabled", ctx))
         else:
-            await ctx.reply(tr("autopin set", "reply", ctx))
+            await ctx.reply(tr("userpin set", "reply", ctx))
 
     @commands.check(check.acl)
-    @autopin.command(name="unset")
-    async def autopin_unset(self, ctx, channel: discord.TextChannel = None):
+    @userpin.command(name="unset")
+    async def userpin_unset(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
-            AutoPin.remove(ctx.guild.id, None)
+            UserPin.remove(ctx.guild.id, None)
             await guild_log.info(ctx.author, ctx.channel, "Autopin unset globally.")
         else:
-            AutoPin.remove(ctx.guild.id, channel.id)
+            UserPin.remove(ctx.guild.id, channel.id)
             await guild_log.info(
                 ctx.author, ctx.channel, f"Autopin unset in #{channel.name}."
             )
-        await ctx.reply(tr("autopin unset", "reply"))
+        await ctx.reply(tr("userpin unset", "reply"))
 
     @commands.guild_only()
     @commands.check(check.acl)
@@ -189,83 +189,83 @@ class Base(commands.Cog):
 
     @commands.guild_only()
     @commands.check(check.acl)
-    @commands.group(name="autothread", aliases=["autothreads"])
-    async def autothread(self, ctx):
+    @commands.group(name="userthread", aliases=["userthreads"])
+    async def userthread(self, ctx):
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
-    @autothread.command(name="get")
-    async def autothread_get(self, ctx, channel: discord.TextChannel = None):
+    @userthread.command(name="get")
+    async def userthread_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
-            author=ctx.author, title=tr("autothread get", "title", ctx)
+            author=ctx.author, title=tr("userthread get", "title", ctx)
         )
-        limit: int = getattr(AutoThread.get(ctx.guild.id, None), "limit", 0)
-        value: str = f"{limit}" if limit > 0 else tr("autothread get", "disabled", ctx)
+        limit: int = getattr(UserThread.get(ctx.guild.id, None), "limit", 0)
+        value: str = f"{limit}" if limit > 0 else tr("userthread get", "disabled", ctx)
         embed.add_field(
-            name=tr("autothread get", "limit", ctx),
+            name=tr("userthread get", "limit", ctx),
             value=value,
         )
         if discord.version_info.major < 2:
             embed.add_field(
-                name=tr("autothread get", "warning", ctx),
-                value=tr("autothread get", "support", ctx),
+                name=tr("userthread get", "warning", ctx),
+                value=tr("userthread get", "support", ctx),
                 inline=False,
             )
 
         if channel is None:
             channel = ctx.channel
 
-        channel_pref = AutoThread.get(ctx.guild.id, channel.id)
+        channel_pref = UserThread.get(ctx.guild.id, channel.id)
         if channel_pref is not None:
             embed.add_field(
-                name=tr("autothread get", "channel", ctx, channel=channel.name),
+                name=tr("userthread get", "channel", ctx, channel=channel.name),
                 value=f"{channel_pref.limit}"
                 if channel_pref.limit > 0
-                else tr("autothread get", "disabled", ctx),
+                else tr("userthread get", "disabled", ctx),
             )
 
         await ctx.send(embed=embed)
 
     @commands.check(check.acl)
-    @autothread.command(name="set")
-    async def autothread_set(
+    @userthread.command(name="set")
+    async def userthread_set(
         self, ctx, limit: int, channel: discord.TextChannel = None
     ):
         if limit < 1:
             raise commands.ArgumentError("Limit has to be at least one.")
 
         if channel is None:
-            AutoThread.add(ctx.guild.id, None, limit)
+            UserThread.add(ctx.guild.id, None, limit)
             await guild_log.info(
                 ctx.author,
                 ctx.channel,
-                f"Global autothread limit set to {limit}.",
+                f"Global userthread limit set to {limit}.",
             )
         else:
-            AutoThread.add(ctx.guild.id, channel.id, limit)
+            UserThread.add(ctx.guild.id, channel.id, limit)
             await guild_log.info(
                 ctx.author,
                 ctx.channel,
-                f"#{channel.name} autothread limit set to {limit}.",
+                f"#{channel.name} userthread limit set to {limit}.",
             )
 
         if limit == 0:
-            await ctx.reply(tr("autothread set", "disabled", ctx))
+            await ctx.reply(tr("userthread set", "disabled", ctx))
         else:
-            await ctx.reply(tr("autothread set", "reply", ctx))
+            await ctx.reply(tr("userthread set", "reply", ctx))
 
     @commands.check(check.acl)
-    @autothread.command(name="unset")
-    async def autothread_unset(self, ctx, channel: discord.TextChannel = None):
+    @userthread.command(name="unset")
+    async def userthread_unset(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
-            AutoThread.remove(ctx.guild.id, None)
+            UserThread.remove(ctx.guild.id, None)
             await guild_log.info(ctx.author, ctx.channel, "Autothread unset globally.")
         else:
-            AutoThread.remove(ctx.guild.id, channel.id)
+            UserThread.remove(ctx.guild.id, channel.id)
             await guild_log.info(
                 ctx.author, ctx.channel, f"Autothread unset in #{channel.name}."
             )
-        await ctx.reply(tr("autothread unset", "reply"))
+        await ctx.reply(tr("userthread unset", "reply"))
 
     #
 
@@ -293,23 +293,23 @@ class Base(commands.Cog):
 
         emoji = getattr(payload.emoji, "name", None)
         if emoji == "📌" or emoji == "📍":
-            await self._autopin(payload, message, emoji)
+            await self._userpin(payload, message, emoji)
         elif emoji == "🔖":
             await self._bookmark(payload, message)
         elif emoji == "🧵":
-            await self._autothread(payload, message)
+            await self._userthread(payload, message)
 
-    async def _autopin(
+    async def _userpin(
         self,
         payload: discord.RawReactionActionEvent,
         message: discord.Message,
         emoji: str,
     ):
-        """Handle autopin functionality."""
+        """Handle userpin functionality."""
         tc = TranslationContext(payload.guild_id, payload.user_id)
 
         if emoji == "📍" and not payload.member.bot:
-            await payload.member.send(tr("_autopin", "bad pin emoji", tc))
+            await payload.member.send(tr("_userpin", "bad pin emoji", tc))
             await utils.Discord.remove_reaction(message, emoji, payload.member)
             return
 
@@ -329,11 +329,11 @@ class Base(commands.Cog):
 
             # stop if there isn't enough pins
             limit: int = getattr(
-                AutoPin.get(payload.guild_id, payload.channel_id), "limit", -1
+                UserPin.get(payload.guild_id, payload.channel_id), "limit", -1
             )
             # overwrite for channel doesn't exist, use guild preference
             if limit < 0:
-                limit = getattr(AutoPin.get(payload.guild_id, None), "limit", 0)
+                limit = getattr(UserPin.get(payload.guild_id, None), "limit", 0)
             if limit == 0 or reaction.count < limit:
                 return
 
@@ -403,12 +403,12 @@ class Base(commands.Cog):
             payload.member, message.channel, f"Bookmarked message {message.jump_url}."
         )
 
-    async def _autothread(
+    async def _userthread(
         self,
         payload: discord.RawReactionActionEvent,
         message: discord.Message,
     ):
-        """Handle autothread functionality."""
+        """Handle userthread functionality."""
         # only new versions of discord.py support threads
         if discord.version_info.major < 2:
             return
@@ -425,11 +425,11 @@ class Base(commands.Cog):
 
             # get emoji limit for channel
             limit: int = getattr(
-                AutoThread.get(payload.guild_id, payload.channel_id), "limit", -1
+                UserThread.get(payload.guild_id, payload.channel_id), "limit", -1
             )
             # overwrite for channel doesn't exist, use guild preference
             if limit < 0:
-                limit = getattr(AutoThread.get(payload.guild_id, None), "limit", 0)
+                limit = getattr(UserThread.get(payload.guild_id, None), "limit", 0)
 
             # get message's existing thread
             thread_of_message: discord.Thread = None  # used globally in this loop
@@ -463,7 +463,7 @@ class Base(commands.Cog):
             # create a new thread
             try:
                 thread_name = (
-                    tr("_autothread", "thread", tc) + " " + message.author.name
+                    tr("_userthread", "thread", tc) + " " + message.author.name
                 )
                 await message.create_thread(name=thread_name)
                 await guild_log.info(
