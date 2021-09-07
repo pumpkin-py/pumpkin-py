@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Optional
 
 from sqlalchemy import BigInteger, Boolean, Column, Integer
 
@@ -158,3 +158,51 @@ class Bookmark(database.base):
             "channel_id": self.channel_id,
             "enabled": self.enabled,
         }
+
+
+class AutoThread(database.base):
+    __tablename__ = "base_base_autothread"
+
+    idx = Column(Integer, primary_key=True, autoincrement=True)
+    guild_id = Column(BigInteger)
+    channel_id = Column(BigInteger)
+
+    @staticmethod
+    def add(guild_id: int, channel_id: int) -> AutoThread:
+        query = Bookmark.get(guild_id, channel_id)
+        if query:
+            return query
+
+        query = AutoThread(guild_id=guild_id, channel_id=channel_id)
+        session.add(query)
+        session.commit()
+        return query
+
+    @staticmethod
+    def get(guild_id: int, channel_id: int) -> Optional[AutoThread]:
+        query = (
+            session.query(AutoThread)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .one_or_none()
+        )
+        return query
+
+    @staticmethod
+    def get_all(guild_id: int) -> List[AutoThread]:
+        query = session.query(AutoThread).filter_by(guild_id=guild_id).all()
+        return query
+
+    @staticmethod
+    def remove(guild_id: int, channel_id: int) -> int:
+        query = (
+            session.query(AutoThread)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .delete()
+        )
+        return query
+
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__name__} "
+            f"guild_id='{self.guild_id} channel_id='{self.channel_id}'>"
+        )

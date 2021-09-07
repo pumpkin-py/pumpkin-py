@@ -1,5 +1,6 @@
 import datetime
 from math import ceil
+from typing import List
 
 import discord
 from discord.ext import commands
@@ -7,7 +8,7 @@ from discord.ext import commands
 from core import TranslationContext
 from core import check, text, logging, utils
 
-from .database import UserPin, UserThread, Bookmark
+from .database import AutoThread, UserPin, UserThread, Bookmark
 
 tr = text.Translator(__file__).translate
 bot_log = logging.Bot.logger()
@@ -189,7 +190,7 @@ class Base(commands.Cog):
 
     @commands.guild_only()
     @commands.check(check.acl)
-    @commands.group(name="userthread", aliases=["userthreads"])
+    @commands.group(name="userthread")
     async def userthread(self, ctx):
         await utils.Discord.send_help(ctx)
 
@@ -265,9 +266,95 @@ class Base(commands.Cog):
             await guild_log.info(
                 ctx.author, ctx.channel, f"Autothread unset in #{channel.name}."
             )
-        await ctx.reply(tr("userthread unset", "reply"))
+        await ctx.reply(tr("userthread unset", "reply", ctx))
+
+    @commands.guild_only()
+    @commands.check(check.acl)
+    @commands.group(name="autothread")
+    async def autothread(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @commands.check(check.acl)
+    @autothread.command(name="list")
+    async def autothread_list(self, ctx):
+        channels: List[discord.TextChannel] = []
+
+        for item in AutoThread.get_all(ctx.guild.id):
+            channel = ctx.guild.get_channel(item.channel_id)
+            if channel is None:
+                await guild_log.info(
+                    ctx.author,
+                    ctx.channel,
+                    f"Autothread channel {item.channel_id} not found, deleting.",
+                )
+                AutoThread.remove(item.guild_id, item.channel_id)
+                continue
+            channels.append(channel)
+
+        if not channels:
+            await ctx.reply(tr("autothread list", "none", ctx))
+            return
+
+        embed = utils.Discord.create_embed(
+            author=ctx.author, title=tr("userthread get", "title", ctx)
+        )
+        embed.add_field(
+            name=tr("autothread list", "channels", ctx),
+            value="\n".join(c.name for c in channels),
+            inline=False,
+        )
+        await ctx.reply(embed=embed)
+
+    @commands.check(check.acl)
+    @autothread.command(name="set")
+    async def autothread_set(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
+        AutoThread.add(ctx.guild.id, channel.id)
+        await ctx.reply(tr("autothread set", "reply", ctx))
+        await guild_log.info(
+            ctx.author,
+            ctx.channel,
+            f"Autothread enabled for {channel.name}.",
+        )
+
+    @commands.check(check.acl)
+    @autothread.command(name="unset")
+    async def autothread_unset(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
+        result = AutoThread.remove(ctx.guild.id, channel.id)
+        if not result:
+            await ctx.reply(tr("autothread unset", "none", ctx))
+            return
+
+        await ctx.reply(tr("autothread unset", "ok", ctx))
+        await guild_log.info(
+            ctx.author,
+            ctx.channel,
+            f"Autothread disabled for {channel.name}.",
+        )
 
     #
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        if AutoThread.get(message.guild.id, message.channel.id) is None:
+            return
+        try:
+            await message.create_thread(name=tr("_autothread", "title"))
+            await guild_log.debug(
+                message.author,
+                message.channel,
+                "A new thread created automatically.",
+            )
+        except discord.HTTPException as exc:
+            await guild_log.error(
+                message.author,
+                message.channel,
+                "Could not create a thread automatically.",
+                exception=exc,
+            )
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
