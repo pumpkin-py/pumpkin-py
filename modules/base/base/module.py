@@ -22,6 +22,7 @@ class Base(commands.Cog):
         self.bot = bot
 
         self.boot = datetime.datetime.now().replace(microsecond=0)
+        self.durations = {"1h": 60, "1d": 1440, "3d": 4320, "7d": 10080}
 
     #
 
@@ -307,10 +308,13 @@ class Base(commands.Cog):
 
     @commands.check(check.acl)
     @autothread.command(name="set")
-    async def autothread_set(self, ctx, channel: discord.TextChannel = None):
-        if channel is None:
-            channel = ctx.channel
-        AutoThread.add(ctx.guild.id, channel.id)
+    async def autothread_set(self, ctx, channel: discord.TextChannel, duration: str):
+        try:
+            duration_translated = self.durations[duration]
+        except KeyError:
+            await ctx.reply(tr("autothread set", "duration", ctx))
+            return
+        AutoThread.add(ctx.guild.id, channel.id, duration_translated)
         await ctx.reply(tr("autothread set", "reply", ctx))
         await guild_log.info(
             ctx.author,
@@ -341,10 +345,18 @@ class Base(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
-        if AutoThread.get(message.guild.id, message.channel.id) is None:
+        thread_settings = AutoThread.get(message.guild.id, message.channel.id)
+        if thread_settings is None:
             return
+        duration = thread_settings.duration
+        if message.guild.premium_tier < 2 and duration == self.durations["7d"]:
+            duration = self.durations["3d"]
+        if message.guild.premium_tier < 1 and duration == self.durations["3d"]:
+            duration = self.durations["1d"]
         try:
-            await message.create_thread(name=tr("_autothread", "title"))
+            await message.create_thread(
+                name=tr("_autothread", "title"), auto_archive_duration=duration
+            )
             await guild_log.debug(
                 message.author,
                 message.channel,
@@ -354,8 +366,7 @@ class Base(commands.Cog):
             await guild_log.error(
                 message.author,
                 message.channel,
-                "Could not create a thread automatically.",
-                exception=exc,
+                f"Could not create a thread automatically: {exc}",
             )
 
     @commands.Cog.listener()
