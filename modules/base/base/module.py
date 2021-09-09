@@ -119,11 +119,11 @@ class Base(commands.Cog):
     async def userpin_unset(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
             UserPin.remove(ctx.guild.id, None)
-            await guild_log.info(ctx.author, ctx.channel, "Autopin unset globally.")
+            await guild_log.info(ctx.author, ctx.channel, "Userpin unset globally.")
         else:
             UserPin.remove(ctx.guild.id, channel.id)
             await guild_log.info(
-                ctx.author, ctx.channel, f"Autopin unset in #{channel.name}."
+                ctx.author, ctx.channel, f"Userpin unset in #{channel.name}."
             )
         await ctx.reply(tr("userpin unset", "reply"))
 
@@ -261,11 +261,11 @@ class Base(commands.Cog):
     async def userthread_unset(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
             UserThread.remove(ctx.guild.id, None)
-            await guild_log.info(ctx.author, ctx.channel, "Autothread unset globally.")
+            await guild_log.info(ctx.author, ctx.channel, "Userthread unset globally.")
         else:
             UserThread.remove(ctx.guild.id, channel.id)
             await guild_log.info(
-                ctx.author, ctx.channel, f"Autothread unset in #{channel.name}."
+                ctx.author, ctx.channel, f"Userthread unset in #{channel.name}."
             )
         await ctx.reply(tr("userthread unset", "reply", ctx))
 
@@ -297,7 +297,7 @@ class Base(commands.Cog):
             return
 
         embed = utils.Discord.create_embed(
-            author=ctx.author, title=tr("userthread get", "title", ctx)
+            author=ctx.author, title=tr("autothread get", "title", ctx)
         )
         embed.add_field(
             name=tr("autothread list", "channels", ctx),
