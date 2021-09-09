@@ -1,6 +1,6 @@
 import datetime
 from math import ceil
-from typing import List
+from typing import List, Tuple
 
 import discord
 from discord.ext import commands
@@ -278,7 +278,7 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @autothread.command(name="list")
     async def autothread_list(self, ctx):
-        channels: List[discord.TextChannel] = []
+        channels: List[Tuple[discord.TextChannel, AutoThread]] = []
 
         for item in AutoThread.get_all(ctx.guild.id):
             channel = ctx.guild.get_channel(item.channel_id)
@@ -290,18 +290,22 @@ class Base(commands.Cog):
                 )
                 AutoThread.remove(item.guild_id, item.channel_id)
                 continue
-            channels.append(channel)
+            channels.append((channel, item))
 
-        if not channels:
+        if not len(channels):
             await ctx.reply(tr("autothread list", "none", ctx))
             return
 
+        inverse_durations = {v: k for k, v in self.durations.items()}
         embed = utils.Discord.create_embed(
             author=ctx.author, title=tr("autothread get", "title", ctx)
         )
         embed.add_field(
             name=tr("autothread list", "channels", ctx),
-            value="\n".join(c.name for c in channels),
+            value="\n".join(
+                f"#{dc_channel.name} ({inverse_durations[thread_channel.duration]})"
+                for dc_channel, thread_channel in channels
+            ),
             inline=False,
         )
         await ctx.reply(embed=embed)
@@ -348,11 +352,15 @@ class Base(commands.Cog):
         thread_settings = AutoThread.get(message.guild.id, message.channel.id)
         if thread_settings is None:
             return
+
+        # ensure we're creating thread that does not take longer than
+        # the current guild level allows us to
         duration = thread_settings.duration
-        if message.guild.premium_tier < 2 and duration == self.durations["7d"]:
+        if message.guild.premium_tier < 3 and duration > self.durations["3d"]:
             duration = self.durations["3d"]
-        if message.guild.premium_tier < 1 and duration == self.durations["3d"]:
+        if message.guild.premium_tier < 2 and duration > self.durations["1d"]:
             duration = self.durations["1d"]
+
         try:
             await message.create_thread(
                 name=tr("_autothread", "title"), auto_archive_duration=duration
