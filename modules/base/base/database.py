@@ -166,14 +166,15 @@ class AutoThread(database.base):
     idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
     channel_id = Column(BigInteger)
+    duration = Column(Integer)
 
     @staticmethod
-    def add(guild_id: int, channel_id: int) -> AutoThread:
-        query = Bookmark.get(guild_id, channel_id)
+    def add(guild_id: int, channel_id: int, duration: int) -> AutoThread:
+        query = AutoThread.get(guild_id, channel_id)
         if query:
             return query
 
-        query = AutoThread(guild_id=guild_id, channel_id=channel_id)
+        query = AutoThread(guild_id=guild_id, channel_id=channel_id, duration=duration)
         session.add(query)
         session.commit()
         return query
@@ -204,5 +205,5 @@ class AutoThread(database.base):
     def __repr__(self) -> str:
         return (
             f"<{self.__class__.__name__} "
-            f"guild_id='{self.guild_id} channel_id='{self.channel_id}'>"
+            f"guild_id='{self.guild_id} channel_id='{self.channel_id} duration='{self.duration}'>"
         )
