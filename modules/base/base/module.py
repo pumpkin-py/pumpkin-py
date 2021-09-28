@@ -6,11 +6,11 @@ import discord
 from discord.ext import commands
 
 from core import TranslationContext
-from core import check, text, logging, utils
+from core import check, i18n, logging, utils
 
 from .database import AutoThread, UserPin, UserThread, Bookmark
 
-tr = text.Translator(__file__).translate
+_ = i18n.Translator("modules/base").translate
 bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
 
@@ -29,7 +29,8 @@ class Base(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         """Return latency information."""
-        await ctx.send(tr("ping", "reply", ctx, time="{:.2f}".format(self.bot.latency)))
+        delay: str = "{:.2f}".format(self.bot.latency)
+        await ctx.reply(_(ctx, "Pong: **{delay}** 🏓".format(delay=delay)))
 
     @commands.command()
     async def uptime(self, ctx):
@@ -37,17 +38,14 @@ class Base(commands.Cog):
         now = datetime.datetime.now().replace(microsecond=0)
         delta = now - self.boot
 
-        embed = utils.Discord.create_embed(
-            author=ctx.author,
-            title=tr("uptime", "title", ctx),
-        )
+        embed = utils.Discord.create_embed(author=ctx.author, title=_(ctx, "Uptime"))
         embed.add_field(
-            name=tr("uptime", "time_since", ctx),
+            name=_(ctx, "Boot time"),
             value=utils.Time.datetime(self.boot),
             inline=False,
         )
         embed.add_field(
-            name=tr("uptime", "time_delta", ctx),
+            name=_(ctx, "Run time"),
             value=str(delta),
             inline=False,
         )
@@ -64,12 +62,13 @@ class Base(commands.Cog):
     @userpin.command(name="get")
     async def userpin_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
-            author=ctx.author, title=tr("userpin get", "title", ctx)
+            author=ctx.author,
+            title=_(ctx, "Message pinning 📌"),
         )
         limit: int = getattr(UserPin.get(ctx.guild.id, None), "limit", 0)
-        value: str = f"{limit}" if limit > 0 else tr("userpin get", "disabled", ctx)
+        value: str = f"{limit}" if limit > 0 else _(ctx, "Function is disabled")
         embed.add_field(
-            name=tr("userpin get", "limit", ctx),
+            name=_(ctx, "Global limit"),
             value=value,
         )
 
@@ -79,10 +78,10 @@ class Base(commands.Cog):
         channel_pref = UserPin.get(ctx.guild.id, channel.id)
         if channel_pref is not None:
             embed.add_field(
-                name=tr("userpin get", "channel", ctx, channel=channel.name),
+                name=_(ctx, "Channel #{channel}".format(channel=channel.name)),
                 value=f"{channel_pref.limit}"
                 if channel_pref.limit > 0
-                else tr("userpin get", "disabled", ctx),
+                else _(ctx, "Function is disabled"),
             )
 
         await ctx.send(embed=embed)
@@ -110,9 +109,9 @@ class Base(commands.Cog):
             )
 
         if limit == 0:
-            await ctx.reply(tr("userpin set", "disabled", ctx))
+            await ctx.reply(_(ctx, "Pinning was disabled."))
         else:
-            await ctx.reply(tr("userpin set", "reply", ctx))
+            await ctx.reply(_(ctx, "Pinning preferences have been updated."))
 
     @commands.check(check.acl)
     @userpin.command(name="unset")
@@ -125,7 +124,7 @@ class Base(commands.Cog):
             await guild_log.info(
                 ctx.author, ctx.channel, f"Userpin unset in #{channel.name}."
             )
-        await ctx.reply(tr("userpin unset", "reply"))
+        await ctx.reply(_(ctx, "The preference was unset."))
 
     @commands.guild_only()
     @commands.check(check.acl)
@@ -137,12 +136,12 @@ class Base(commands.Cog):
     @bookmarks.command(name="get")
     async def bookmarks_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
-            author=ctx.author, title=tr("bookmarks get", "title", ctx)
+            author=ctx.author, title=_(ctx, "Bookmarks 🔖")
         )
         enabled: int = getattr(Bookmark.get(ctx.guild.id, None), "enabled", False)
         embed.add_field(
-            name=tr("bookmarks get", "settings", ctx),
-            value=tr("bookmarks get", str(enabled), ctx),
+            name=_(ctx, "Global settings"),
+            value=_(ctx, "Enabled") if enabled else _(ctx, "Disabled"),
         )
 
         if channel is None:
@@ -151,8 +150,8 @@ class Base(commands.Cog):
         channel_pref = Bookmark.get(ctx.guild.id, channel.id)
         if channel_pref is not None:
             embed.add_field(
-                name=tr("bookmarks get", "channel", ctx, channel=channel.name),
-                value=tr("bookmarks get", str(channel_pref.enabled), ctx),
+                name=_(ctx, "Channel #{channel}".format(channel=channel.name)),
+                value=_(ctx, "Enabled") if channel_pref.enabled else _(ctx, "Disabled"),
             )
 
         await ctx.send(embed=embed)
@@ -173,7 +172,9 @@ class Base(commands.Cog):
             await guild_log.info(
                 ctx.author, ctx.channel, f"#{channel.name} bookmarks set to {enabled}."
             )
-        await ctx.reply(tr("bookmarks set", str(enabled), ctx))
+        await ctx.reply(
+            _(ctx, "Bookmarks enabled.") if enabled else _(ctx, "Bookmarks disabled.")
+        )
 
     @commands.check(check.acl)
     @bookmarks.command(name="unset")
@@ -187,7 +188,7 @@ class Base(commands.Cog):
             await guild_log.info(
                 ctx.author, ctx.channel, f"Bookmarking unset in #{channel.name}."
             )
-        await ctx.reply(tr("bookmarks unset", "reply"))
+        await ctx.reply(_(ctx, "The preference was unset."))
 
     @commands.guild_only()
     @commands.check(check.acl)
@@ -199,12 +200,12 @@ class Base(commands.Cog):
     @userthread.command(name="get")
     async def userthread_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
-            author=ctx.author, title=tr("userthread get", "title", ctx)
+            author=ctx.author, title=_(ctx, "Userthread 🧵")
         )
         limit: int = getattr(UserThread.get(ctx.guild.id, None), "limit", 0)
-        value: str = f"{limit}" if limit > 0 else tr("userthread get", "disabled", ctx)
+        value: str = f"{limit}" if limit > 0 else _(ctx, "Function is disabled")
         embed.add_field(
-            name=tr("userthread get", "limit", ctx),
+            name=_(ctx, "Global limit"),
             value=value,
         )
         if discord.version_info.major < 2:
@@ -220,10 +221,10 @@ class Base(commands.Cog):
         channel_pref = UserThread.get(ctx.guild.id, channel.id)
         if channel_pref is not None:
             embed.add_field(
-                name=tr("userthread get", "channel", ctx, channel=channel.name),
+                name=_(ctx, "Channel #{channel}".format(channel=channel.name)),
                 value=f"{channel_pref.limit}"
                 if channel_pref.limit > 0
-                else tr("userthread get", "disabled", ctx),
+                else _(ctx, "Function is disabled"),
             )
 
         await ctx.send(embed=embed)
@@ -252,9 +253,9 @@ class Base(commands.Cog):
             )
 
         if limit == 0:
-            await ctx.reply(tr("userthread set", "disabled", ctx))
+            await ctx.reply(_(ctx, "Thread creation was disabled."))
         else:
-            await ctx.reply(tr("userthread set", "reply", ctx))
+            await ctx.reply(_(ctx, "Thread preference has been updated."))
 
     @commands.check(check.acl)
     @userthread.command(name="unset")
@@ -267,7 +268,7 @@ class Base(commands.Cog):
             await guild_log.info(
                 ctx.author, ctx.channel, f"Userthread unset in #{channel.name}."
             )
-        await ctx.reply(tr("userthread unset", "reply", ctx))
+        await ctx.reply(_(ctx, "The preference was unset."))
 
     @commands.guild_only()
     @commands.check(check.acl)
@@ -293,15 +294,15 @@ class Base(commands.Cog):
             channels.append((channel, item))
 
         if not len(channels):
-            await ctx.reply(tr("autothread list", "none", ctx))
+            await ctx.reply(_(ctx, "No channel has autothread enabled."))
             return
 
         inverse_durations = {v: k for k, v in self.durations.items()}
         embed = utils.Discord.create_embed(
-            author=ctx.author, title=tr("autothread get", "title", ctx)
+            author=ctx.author, title=_(ctx, "Autothread 🧵")
         )
         embed.add_field(
-            name=tr("autothread list", "channels", ctx),
+            name=_(ctx, "Channels"),
             value="\n".join(
                 f"#{dc_channel.name} ({inverse_durations[thread_channel.duration]})"
                 for dc_channel, thread_channel in channels
@@ -316,10 +317,17 @@ class Base(commands.Cog):
         try:
             duration_translated = self.durations[duration]
         except KeyError:
-            await ctx.reply(tr("autothread set", "duration", ctx))
+            await ctx.reply(
+                _(
+                    ctx,
+                    "Argument *duration* must be one of these values: '1h', '1d', '3d', '7d'.",
+                )
+            )
             return
         AutoThread.add(ctx.guild.id, channel.id, duration_translated)
-        await ctx.reply(tr("autothread set", "reply", ctx))
+        await ctx.reply(
+            _(ctx, "Threads will be automatically created in that channel.")
+        )
         await guild_log.info(
             ctx.author,
             ctx.channel,
@@ -333,10 +341,12 @@ class Base(commands.Cog):
             channel = ctx.channel
         result = AutoThread.remove(ctx.guild.id, channel.id)
         if not result:
-            await ctx.reply(tr("autothread unset", "none", ctx))
+            await ctx.reply(_(ctx, "I'm not creating new threads in that channel."))
             return
 
-        await ctx.reply(tr("autothread unset", "ok", ctx))
+        await ctx.reply(
+            _(ctx, "Threads will no longer be automatically created in that channel.")
+        )
         await guild_log.info(
             ctx.author,
             ctx.channel,
@@ -347,6 +357,8 @@ class Base(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        tc = TranslationContext(message.guild.id, message.author.id)
+
         if message.author.bot:
             return
         thread_settings = AutoThread.get(message.guild.id, message.channel.id)
@@ -363,7 +375,7 @@ class Base(commands.Cog):
 
         try:
             await message.create_thread(
-                name=tr("_autothread", "title"), auto_archive_duration=duration
+                name=_(tc, "Automatic thread"), auto_archive_duration=duration
             )
             await guild_log.debug(
                 message.author,
@@ -417,7 +429,9 @@ class Base(commands.Cog):
         tc = TranslationContext(payload.guild_id, payload.user_id)
 
         if emoji == "📍" and not payload.member.bot:
-            await payload.member.send(tr("_userpin", "bad pin emoji", tc))
+            await payload.member.send(
+                _(tc, "I'm using 📍 to mark the pinned message, use 📌.")
+            )
             await utils.Discord.remove_reaction(message, emoji, payload.member)
             return
 
@@ -472,7 +486,7 @@ class Base(commands.Cog):
 
         embed = utils.Discord.create_embed(
             author=payload.member,
-            title=tr("_bookmark", "title", tc),
+            title=_(tc, "🔖 Bookmark created"),
             description=message.content[:2000],
         )
         embed.set_author(
@@ -482,26 +496,26 @@ class Base(commands.Cog):
         timestamp = utils.Time.datetime(message.created_at)
         embed.add_field(
             name=f"{timestamp} UTC",
-            value=tr(
-                "_bookmark",
-                "info",
+            value=_(
                 tc,
-                guild=utils.Text.sanitise(message.guild.name),
-                channel=utils.Text.sanitise(message.channel.name),
-                link=message.jump_url,
+                "[Server {guild}, channel #{channel}]({link})".format(
+                    guild=utils.Text.sanitise(message.guild.name),
+                    channel=utils.Text.sanitise(message.channel.name),
+                    link=message.jump_url,
+                ),
             ),
             inline=False,
         )
 
         if len(message.attachments):
             embed.add_field(
-                name=tr("_bookmark", "files", tc),
-                value=tr("_bookmark", "total", tc, count=len(message.attachments)),
+                name=_(tc, "Files"),
+                value=_(tc, "Total {count}".format(count=len(message.attachments))),
             )
         if len(message.embeds):
             embed.add_field(
-                name=tr("_bookmark", "embeds", tc),
-                value=tr("_bookmark", "total", tc, count=len(message.embeds)),
+                name=_(tc, "Embeds"),
+                value=_(tc, "Total {count}".format(count=len(message.embeds))),
             )
 
         await utils.Discord.remove_reaction(message, payload.emoji, payload.member)
@@ -570,8 +584,8 @@ class Base(commands.Cog):
                 return
             # create a new thread
             try:
-                thread_name = (
-                    tr("_userthread", "thread", tc) + " " + message.author.name
+                thread_name = _(
+                    tc, "Thread by {author}".format(author=message.author.name)
                 )
                 await message.create_thread(name=thread_name)
                 await guild_log.info(

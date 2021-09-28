@@ -6,11 +6,11 @@ from typing import Optional, List
 from discord.ext import commands, tasks
 
 import database.config
-from core import check, text, logging, utils
+from core import check, i18n, text, logging, utils
 from .database import BaseAdminModule as Module
 from .objects import RepositoryManager, Repository
 
-_ = lambda ctx, string: string  # noqa: E731
+_ = i18n.Translator("modules/base").translate
 tr = text.Translator(__file__).translate
 bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
@@ -160,7 +160,7 @@ class Admin(commands.Cog):
     async def repository_update(self, ctx, name: str):
         repository: Optional[Repository] = manager.get_repository(name)
         if repository is None:
-            await ctx.reply(_("No such repository."))
+            await ctx.reply(_(ctx, "No such repository."))
             return
 
         requirements_txt_hash: str = repository.requirements_txt_hash
@@ -171,7 +171,7 @@ class Admin(commands.Cog):
             await ctx.send("```" + output + "```")
 
         if repository.requirements_txt_hash != requirements_txt_hash:
-            await ctx.send(_(ctx, "File requirements.txt changed, running pip."))
+            await ctx.send(_(ctx, "File `requirements.txt` changed, running `pip`."))
 
             async with ctx.typing():
                 install: str = repository.install_requirements()
