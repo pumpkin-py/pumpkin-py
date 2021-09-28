@@ -8,32 +8,22 @@ There are four **if**\ s of the text format:
 - If it is command help, it should not end with a period.
 - If the embed content or help is one or more sentences, it should end with a period.
 
-The language files are stored in module's ``lang`` directory as ini files. Each module MUST have an ``en.ini`` and MAY have additional languages. When they aren't found, the english string is used.
+Translated strings are stored in `po` files.
 
-.. code-block:: ini
+To update them, run
 
-	...
+.. code-block:: bash
 
-	[language get]
-	help = Localisation info
-	title = Localisation
-	user = User settings
-	guild = Server settings
-	bot = Global settings
-	not set = Not set
-
-	[language set]
-	help = Change preferred language
-	bad language = I can't speak that language.
-	reply = I'll remember the preference of **((language))**.
+	python3 gettext.py modules/base
+	# or other module that needs updating
 
 All modules define the translation function on top of the file, and you should too:
 
 .. code-block:: python3
 
-	from core import text
+	from core import i18n
 
-	tr = text.Translator(__file__).translate
+	_ = i18n.Translator("repo/module").translate
 
 	...
 
@@ -43,7 +33,7 @@ Because the members and guilds can set their language preference we have to tell
 
 	async def language_set(self, ctx, language: str):
 	    if language not in ("en", "es"):
-	        await ctx.reply(tr("language set", "bad language", ctx))
+	        await ctx.reply(_(ctx, "I can't speak that language!"))
 	        return
 
 	    ...
@@ -66,6 +56,4 @@ Sometimes context isn't available, though -- e.g. in raw reaction. These times y
 	        payload.channel_id,
 	        payload.message_id,
 	    )
-	    await message.reply("foo", "bar", tc)
-
-If you omit it, the bot will use its global language settings instead of user/guild preference.
+	    await message.reply(_(tc, "Reaction detected!"))
