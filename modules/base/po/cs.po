@@ -1,0 +1,143 @@
+# file: modules/base/base/module.py:33:31
+msgid Pong: **{delay}** 🏓
+msgstr Pong: **{delay}** 🏓
+
+# file: modules/base/base/module.py:41:75
+msgid Uptime
+msgstr Uptime
+
+# file: modules/base/base/module.py:43:24
+msgid Boot time
+msgstr Čas spuštění
+
+# file: modules/base/base/module.py:48:24
+msgid Run time
+msgstr Doba od spuštění
+
+# file: modules/base/base/module.py:66:25
+msgid Message pinning 📌
+msgstr Připínání zpráv 📌
+
+# file: modules/base/base/module.py:69:57
+# file: modules/base/base/module.py:206:57
+msgid Function is disabled
+msgstr Funkce je vypnutá
+
+# file: modules/base/base/module.py:71:24
+# file: modules/base/base/module.py:208:24
+msgid Global limit
+msgstr Globální limit
+
+# file: modules/base/base/module.py:81:28
+# file: modules/base/base/module.py:153:28
+# file: modules/base/base/module.py:224:28
+msgid Channel #{channel}
+msgstr Kanál #{channel}
+
+# file: modules/base/base/module.py:112:35
+msgid Pinning was disabled.
+msgstr Připíání bylo vypnuto.
+
+# file: modules/base/base/module.py:114:35
+msgid Pinning preferences have been updated.
+msgstr Preference připínání byla aktualizována.
+
+# file: modules/base/base/module.py:127:31
+# file: modules/base/base/module.py:191:31
+# file: modules/base/base/module.py:271:31
+msgid The preference was unset.
+msgstr Preference zrušena.
+
+# file: modules/base/base/module.py:139:44
+msgid Bookmarks 🔖
+msgstr Záložky 🔖
+
+# file: modules/base/base/module.py:143:24
+msgid Global settings
+msgstr Globální nastavení
+
+# file: modules/base/base/module.py:203:44
+msgid Userthread 🧵
+msgstr Vlastní vlákna 🧵
+
+# file: modules/base/base/module.py:256:35
+msgid Thread creation was disabled.
+msgstr Vytváření vláken bylo vypnuto.
+
+# file: modules/base/base/module.py:258:35
+msgid Thread preference has been updated.
+msgstr Preference vytváření vláken byla aktualizována.
+
+# file: modules/base/base/module.py:297:35
+msgid No channel has autothread enabled.
+msgstr Automatická vlákna nejsou povolena v žádném kanálu.
+
+# file: modules/base/base/module.py:302:44
+msgid Autothread 🧵
+msgstr Automatická vlákna 🧵
+
+# file: modules/base/base/module.py:305:24
+msgid Channels
+msgstr Kanály
+
+# file: modules/base/base/module.py:323:20
+msgid Argument *duration* must be one of these values: '1h', '1d', '3d', '7d'.
+msgstr Argument *duration* musí být jedna z těchto hodnot: '1h', '1d', '3d', '7d'.
+
+# file: modules/base/base/module.py:329:19
+msgid Threads will be automatically created in that channel.
+msgstr V zadaném kanálu budou vlákna automaticky otevírána.
+
+# file: modules/base/base/module.py:344:35
+msgid I'm not creating new threads in that channel.
+msgstr V tom kanálu nová vlákna automaticky neotevírám.
+
+# file: modules/base/base/module.py:348:19
+msgid Threads will no longer be automatically created in that channel.
+msgstr V tom kanálu už nová vlákna automaticky otevírat nebudu.
+
+# file: modules/base/base/module.py:378:27
+msgid Automatic thread
+msgstr Automatické vlákno
+
+# file: modules/base/base/module.py:433:22
+msgid I'm using 📍 to mark the pinned message, use 📌.
+msgstr Emoji 📍 používám já pro označení připnutých zpráv, použij 📌.
+
+# file: modules/base/base/module.py:489:24
+msgid 🔖 Bookmark created
+msgstr 🔖 Záložka vytvořena
+
+# file: modules/base/base/module.py:501:16
+msgid [Server {guild}, channel #{channel}]({link})
+msgstr [Server {guild}, kanál #{channel}]({link})
+
+# file: modules/base/base/module.py:512:27
+msgid Files
+msgstr Soubory
+
+# file: modules/base/base/module.py:513:28
+# file: modules/base/base/module.py:518:28
+msgid Total {count}
+msgstr Celkem {count}
+
+# file: modules/base/base/module.py:517:27
+msgid Embeds
+msgstr Tabulky
+
+# file: modules/base/base/module.py:588:24
+msgid Thread by {author}
+msgstr Vlákno od {author}
+
+# file: modules/base/admin/module.py:163:35
+# file: modules/base/admin/module.py:192:35
+msgid No such repository.
+msgstr Takový repozitář neexistuje.
+
+# file: modules/base/admin/module.py:174:34
+msgid File `requirements.txt` changed, running `pip`.
+msgstr Soubor `requirements.txt` byl změněn, spouštím `pip`.
+
+# file: modules/base/admin/module.py:187:35
+msgid This repository is protected.
+msgstr Repozitář je chráněn.
