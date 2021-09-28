@@ -1,63 +1,22 @@
-import git
-import os
-import re
 import shutil
-import subprocess  # nosec: B404
-import sys
 import tempfile
-from typing import Optional, List, Tuple
+from pathlib import Path
+from typing import Optional, List
 
 from discord.ext import commands, tasks
 
 import database.config
 from core import check, text, logging, utils
 from .database import BaseAdminModule as Module
+from .objects import RepositoryManager, Repository
 
+_ = lambda ctx, string: string  # noqa: E731
 tr = text.Translator(__file__).translate
 bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
 config = database.config.Config.get()
 
-# TODO Whole repository handling logic should be rewritten, this is a mess
-
-
-class Repository:
-    """Module repository.
-
-    This object is used when working with the **repo** command.
-    """
-
-    def __init__(
-        self,
-        path: str,
-        valid: bool,
-        message: str,
-        message_vars: dict = None,
-        *,
-        name: str = None,
-        modules: tuple = None,
-        version: str = None,
-    ):
-        self.kwargs = {}
-        self.directory: str = os.path.basename(path)
-        self.valid: bool = valid
-        self.message: str = message
-        self.message_vars: Optional[dict] = message_vars
-        self.name: Optional[str] = name
-        self.modules: Optional[Tuple[str]] = modules
-        self.version: Optional[str] = version
-
-    def __repr__(self):
-        if self.valid:
-            return (
-                f'<Repository directory="{self.directory}" valid="{self.valid}" '
-                f'message="{self.message}" name="{self.name}" '
-                f'modules={self.modules} version="{self.version}>"'
-            )
-        return (
-            f'<Repository directory="{self.directory}" valid="{self.valid}" '
-            f'message="{self.message}" message_vars={self.message_vars}>'
-        )
+manager = RepositoryManager()
 
 
 class Admin(commands.Cog):
@@ -114,50 +73,27 @@ class Admin(commands.Cog):
 
     @commands.check(check.acl)
     @repository.command(name="list")
-    async def repository_list(self, ctx, query: str = ""):
-        repository_names = Admin._get_repository_list(query=query)
-
-        repositories = []
-        for repository_name in repository_names:
-            repository_path = os.path.join(os.getcwd(), "modules", repository_name)
-            repository = Admin._get_repository(path=repository_path)
-            if repository.valid:
-                repositories.append(repository)
-            else:
-                # Do not raise warnings if it's just the Python stuff
-                if repository.directory in ("tests", "__pycache__"):
-                    continue
-
-                await bot_log.warning(
-                    ctx.author,
-                    ctx.channel,
-                    f"Found invalid repository: {repository.__repr__()}",
-                )
-
-        if not len(repositories):
-            return await ctx.send(
-                tr(
-                    "repository list",
-                    "nothing",
-                    ctx,
-                    filter=utils.Text.sanitise(query, limit=64),
-                )
-            )
+    async def repository_list(self, ctx):
+        repositories = manager.repositories
 
         result = ">>> "
         # This allows us to print non-loaded modules in *italics* and loaded
         # (and thus available) in regular font.
         loaded_cogs = [
-            c.__module__[8:-7]  # strip 'modules.' & '.module' from the name
-            for c in sorted(self.bot.cogs.values(), key=lambda m: m.__module__)
+            cog.__module__[8:-7]  # strip 'modules.' & '.module' from the name
+            for cog in sorted(self.bot.cogs.values(), key=lambda m: m.__module__)
         ]
         for repository in repositories:
             result += f"**{repository.name}**\n"
-            modules = []
-            for module in repository.modules:
-                module_name: str = f"{repository.name}.{module}"
-                modules.append(module if module_name in loaded_cogs else f"*{module}*")
-            result += ", ".join(modules) + "\n"
+            module_names: List[str] = []
+            for module_name in repository.module_names:
+                full_module_name: str = f"{repository.name}.{module_name}"
+                module_names.append(
+                    module_name
+                    if full_module_name in loaded_cogs
+                    else f"*{module_name}*"
+                )
+            result += ", ".join(module_names) + "\n"
         await ctx.send(result)
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
@@ -165,70 +101,50 @@ class Admin(commands.Cog):
     @repository.command(name="install")
     async def repository_install(self, ctx, url: str):
         tempdir = tempfile.TemporaryDirectory()
-        workdir = os.path.join(tempdir.name, "newmodule")
+        workdir = Path(tempdir.name) / "pumpkin-module"
 
         # download to temporary directory
         async with ctx.typing():
-            download_stderr = Admin._download_repository(url=url, path=tempdir.name)
-        if download_stderr is not None:
+            stderr: Optional[str] = Repository.git_clone(workdir, url)
+        if stderr is not None:
             tempdir.cleanup()
-            if "does not exist" in download_stderr:
-                return await ctx.send(tr("repository install", "bad url", ctx))
-            embed = utils.Discord.create_embed(
-                error=True,
-                author=ctx.author,
-                title=tr("repository install", "git error", ctx),
-            )
-            embed.add_field(
-                name=tr("repository install", "stderr", ctx),
-                value="```" + download_stderr[:1010] + "```",
-                inline=False,
-            )
-            return await ctx.send(embed=embed)
+            for output in utils.Text.split(stderr):
+                await ctx.send(">>> ```" + output + "```")
+            return
 
-        # verify metadata validity
-        repository = Admin._get_repository(path=workdir)
-        if not repository.valid:
+        try:
+            repository = Repository(workdir)
+        except Exception as exc:
             tempdir.cleanup()
-            return await ctx.send(
-                tr("verify_module_repo", repository.message, ctx, **repository.kwargs)
-            )
+            # TODO Add some additional translated message?
+            await ctx.reply(str(exc))
+            return
 
         # check if the repo isn't already installed
-        if os.path.exists(os.path.join(os.getcwd(), "modules", repository.name)):
+        if repository.name in [r.name for r in manager.repositories]:
             tempdir.cleanup()
-            return await ctx.send(
+            await ctx.send(
                 tr("repository install", "exists", ctx, name=repository.name)
             )
+            return
 
         # install requirements
-        repo_deps = Admin._install_module_requirements(path=workdir)
-        if repo_deps is not None and repo_deps.returncode != 0:
-            tempdir.cleanup()
-            embed = utils.Discord.create_embed(
-                error=True,
-                author=ctx.author,
-                title=tr("repository install", "requirements error", ctx),
-            )
-            embed.add_field(
-                name=tr("repository install", "stderr", ctx),
-                value="```" + repo_deps.stderr.decode("utf-8").strip()[:1010] + "```",
-                inline=False,
-            )
-            return await ctx.send(embed=repo_deps)
+        async with ctx.typing():
+            install: Optional[str] = repository.install_requirements()
+            if install is not None:
+                for output in utils.Text.split(install):
+                    await ctx.send("```" + output + "```")
 
         # move to modules/
-        module_location = shutil.move(
-            workdir,
-            os.path.join(os.getcwd(), "modules", repository.name),
-        )
+        repository_location = str(Path.cwd() / "modules" / repository.name)
+        shutil.move(str(workdir), repository_location)
         await ctx.send(
             tr(
                 "repository install",
                 "reply",
                 ctx,
-                path=module_location,
-                modules=", ".join(f"**{m}**" for m in repository.modules),
+                path="modules/" + repository.name,
+                modules=", ".join(f"**{m}**" for m in repository.module_names),
             )
         )
         tempdir.cleanup()
@@ -242,80 +158,64 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @repository.command(name="update", aliases=["fetch", "pull"])
     async def repository_update(self, ctx, name: str):
-        repo_path = os.path.join(os.getcwd(), "modules", name)
-        if not os.path.isdir(repo_path):
-            return await ctx.send(
-                tr(
-                    "repository update",
-                    "not found",
-                    ctx,
-                    name=utils.Text.sanitise(name, limit=64),
-                )
-            )
+        repository: Optional[Repository] = manager.get_repository(name)
+        if repository is None:
+            await ctx.reply(_("No such repository."))
+            return
 
-        repository = Admin._get_repository(path=repo_path)
-        if not repository.valid:
-            return await ctx.send(
-                tr(
-                    "repository update",
-                    "not repository",
-                    ctx,
-                    name=utils.Text.sanitise(name, limit=64),
-                )
-            )
+        requirements_txt_hash: str = repository.requirements_txt_hash
 
-        repo = git.repo.base.Repo(repo_path, search_parent_directories=(name == "base"))
         async with ctx.typing():
-            result = repo.git.pull(force=True)
+            pull: str = repository.git_pull()
+        for output in utils.Text.split(pull):
+            await ctx.send("```" + output + "```")
 
-        result = utils.Text.split(result, 1990)
-        for r in result:
-            await ctx.send("```" + r + "```")
-        await bot_log.info(ctx.author, ctx.channel, f"Repository {name} updated.")
+        if repository.requirements_txt_hash != requirements_txt_hash:
+            await ctx.send(_(ctx, "File requirements.txt changed, running pip."))
+
+            async with ctx.typing():
+                install: str = repository.install_requirements()
+                if install is not None:
+                    for output in utils.Text.split(install):
+                        await ctx.send("```" + output + "```")
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.check(check.acl)
     @repository.command(name="uninstall")
     async def repository_uninstall(self, ctx, name: str):
-        if name in ("core", "base"):
-            return await ctx.send(
-                tr(
-                    "repository uninstall",
-                    "protected",
-                    ctx,
-                    name=utils.Text.sanitise(name, limit=64),
+        if name == "base":
+            await ctx.reply(_(ctx, "This repository is protected."))
+            return
+
+        repository: Optional[Repository] = manager.get_repository(name)
+        if repository is None:
+            await ctx.reply(_(ctx, "No such repository."))
+            return
+
+        repository_path: Path = Path.cwd() / "modules" / repository.name
+        if not repository_path.is_dir():
+            await ctx.reply(
+                _(ctx, "Could not find the repository at {path}.").format(
+                    path=repository_path
                 )
             )
-        repo_path = os.path.join(os.getcwd(), "modules", name)
-        if not os.path.isdir(repo_path):
-            return await ctx.send(
-                tr(
-                    "repository uninstall",
-                    "not found",
-                    ctx,
-                    name=utils.Text.sanitise(name, limit=64),
-                )
-            )
-        repository = Admin._get_repository(path=repo_path)
-        if not repository.valid:
-            return await ctx.send(
-                tr(
-                    "repository uninstall",
-                    "not repository",
-                    ctx,
-                    name=utils.Text.sanitise(name, limit=64),
-                )
-            )
-        shutil.rmtree(repo_path)
-        await ctx.send(
-            tr(
-                "repository uninstall",
-                "reply",
-                ctx,
-                name=utils.Text.sanitise(name, limit=64),
-            )
-        )
+            return
+
+        if repository_path.is_symlink():
+            repository_path.unlink()
+        else:
+            shutil.rmtree(repository_path)
+
         await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.")
+        await ctx.reply(
+            _(
+                ctx,
+                "Repository **{name}** uninstalled. \n"
+                "Please note that the modules have not been unloaded. When I start next "
+                "time I'll attempt to load them. If they are not found, they will be "
+                "silently skipped.",
+            ).format(name=repository.name)
+        )
 
     @commands.check(check.acl)
     @commands.group(name="module")
@@ -467,143 +367,6 @@ class Admin(commands.Cog):
     @pumpkin_.command(name="shutdown")
     async def pumpkin_shutdown(self, ctx):
         exit(0)
-
-    #
-
-    @staticmethod
-    def _download_repository(*, url: str, path: str) -> Optional[str]:
-        """Download repository to given directory.
-
-        :param url: A link to valid git repository.
-        :param path: Path for git to download the repository.
-        :return: An error that occured or ``None``.
-        """
-        try:
-            git.repo.base.Repo.clone_from(url, os.path.join(path, "newmodule"))
-        except git.exc.GitError as exc:
-            if type(exc) == git.exc.GitCommandError and "does not exist" in str(exc):
-                return tr("_download_repository", "bad url")
-
-            stderr: str = str(exc)[str(exc).find("stderr: ") + 8 :]
-            return stderr
-        return None
-
-    @staticmethod
-    def _get_repository_list(*, query: str = "") -> List[str]:
-        """Get list of repositories
-
-        :param query: A string that has to be part of the module name.
-        :return: List of found module names.
-        """
-        files = os.listdir(os.path.join(os.getcwd(), "modules"))
-        repositories = []
-        for file in files:
-            if len(query) and query not in file:
-                continue
-            if os.path.isdir(os.path.join(os.getcwd(), "modules", file)):
-                repositories.append(file)
-        repositories.sort()
-        return repositories
-
-    @staticmethod
-    def _get_repository(*, path: str) -> Repository:
-        """Verify the module repository.
-
-        The file ``__init__.py`` has to have variables ``__name__``,
-        ``__version__`` and ``__all__``.
-
-        ``__name__`` must be a valid name of only lowercase letters and ``-``.
-
-        ``__all__`` must be a list of modules, all of which have to exist as
-        directories inside the directory the path points to. All modules must
-        be lowercase ascii only.
-
-        :param path: A path to cloned repository.
-        :return: :class:`Repository` object.
-        """
-        # check the __init__.py file
-        if not os.path.isfile(os.path.join(path, "__init__.py")):
-            return Repository(path, False, "no init", {})
-
-        name: str
-        version: str
-        modules: List[str] = []
-
-        init: dict = {}
-        with open(os.path.join(path, "__init__.py"), "r") as handle:
-            # read the first 2048 bytes -- the file should be much smaller anyways
-            lines = handle.readlines(2048)
-            for key, value in [line.split("=") for line in lines if "=" in line]:
-                init[key.strip()] = value.strip("\n ").replace("'", "").replace('"', "")
-
-        for key in ("__all__", "__name__", "__version__"):
-            if key not in init.keys():
-                return Repository(
-                    path, False, "missing value", {"value": utils.Text.sanitise(key)}
-                )
-
-        # repository version
-        version = init["__version__"]
-
-        # repository name
-        name = init["__name__"]
-        if re.fullmatch(r"[a-z_]+", name) is None:
-            return Repository(
-                path, False, "invalid name", {"name": utils.Text.sanitise(name)}
-            )
-
-        # repository modules
-        for key in init["__all__"].strip("()[]").split(","):
-            module = key.strip()
-            if not len(module):
-                continue
-
-            if re.fullmatch(r"[a-z_]+", module) is None:
-                return Repository(
-                    path,
-                    False,
-                    "invalid module name",
-                    {"name": utils.Text.sanitise(module)},
-                )
-
-            if not os.path.isdir(os.path.join(path, module)):
-                return Repository(
-                    path, False, "missing module", {"name": utils.Text.sanitise(module)}
-                )
-            modules.append(module)
-
-        return Repository(
-            path, True, "reply", name=name, modules=tuple(modules), version=version
-        )
-
-    @staticmethod
-    def _install_module_requirements(
-        *, path: str
-    ) -> Optional[subprocess.CompletedProcess]:
-        """Install new packages from requirements.txt file.
-
-        :param path: A Path to the repository.
-        :return:
-            :class:`subprocess.CompletedProcess` in case of succesfull installation,
-            :class:`discord.Embed` if installation fails,
-            ``None`` if the file was not found.
-        """
-        filepath = os.path.join(path, "requirements.txt")
-        if os.path.isfile(filepath):
-            # This should work even in the `venv` environment
-            result = subprocess.run(  # nosec: B603
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "-r",
-                    os.path.join(path, "requirements.txt"),
-                ],
-                capture_output=True,
-            )
-            return result
-        return None
 
 
 def setup(bot) -> None:

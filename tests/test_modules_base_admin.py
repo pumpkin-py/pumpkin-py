@@ -2,8 +2,10 @@ import git
 import os
 import pytest
 import tempfile
+from pathlib import Path
 
 from modules.base.admin.module import Admin
+from modules.base.admin.objects import Repository
 
 
 def _create_repo(path: str):
@@ -15,14 +17,12 @@ def _update_init(
     *,
     name: str = "test",
     modules: tuple = ("test",),
-    version: str = "0.1.2",
     create_modules: bool = True,
 ):
     """Update __init__.py file"""
     with open(os.path.join(path, "__init__.py"), "w") as handle:
         module_names = [f'"{m}"' for m in modules]
         handle.write(f'__all__ = ({", ".join(module_names)})\n')
-        handle.write(f'__version__ = "{version}"\n')
         handle.write(f'__name__ = "{name}"\n')
 
     if not create_modules:
@@ -54,21 +54,16 @@ def test_module_check():
     info = {
         "all": ("test", "test_test"),
         "name": "test",
-        "version": "0.1.2",
     }
     _update_init(
         tempdir.name,
         name=info["name"],
-        version=info["version"],
         modules=info["all"],
     )
 
-    result = Admin._get_repository(path=tempdir.name)
-    assert result.valid is True
-    assert result.message == "reply"
-    assert result.modules == info["all"]
-    assert result.name == info["name"]
-    assert result.version == info["version"]
+    repository = Repository(Path(tempdir.name))
+    assert repository.name == info["name"]
+    assert repository.module_names == info["all"]
 
     tempdir.cleanup()
 
@@ -76,26 +71,33 @@ def test_module_check():
 def test_module_check_failures():
     tempdir = tempfile.TemporaryDirectory()
     _create_repo(tempdir.name)
+    temppath = Path(tempdir.name)
 
     _update_init(tempdir.name, name="CAPITALS")
-    result = Admin._get_repository(path=tempdir.name)
-    assert result.valid is False
-    assert result.message == "invalid name"
+    with pytest.raises(ValueError) as excinfo:
+        Repository(temppath)
+    assert str(excinfo.value) == f"Repository at '{temppath}' has invalid name."
 
     _update_init(tempdir.name, name="")
-    result = Admin._get_repository(path=tempdir.name)
-    assert result.valid is False
-    assert result.message == "invalid name"
+    with pytest.raises(ValueError) as excinfo:
+        Repository(temppath)
+    assert str(excinfo.value) == f"Repository at '{temppath}' has invalid name."
 
     _update_init(tempdir.name, modules=("CAPITALS",))
-    result = Admin._get_repository(path=tempdir.name)
-    assert result.valid is False
-    assert result.message == "invalid module name"
+    with pytest.raises(ValueError) as excinfo:
+        Repository(temppath)
+    assert (
+        str(excinfo.value)
+        == f"Repository at '{temppath}' has invalid specification of included modules."
+    )
 
     _update_init(tempdir.name, modules=("missing",), create_modules=False)
-    result = Admin._get_repository(path=tempdir.name)
-    assert result.valid is False
-    assert result.message == "missing module"
+    with pytest.raises(ValueError) as excinfo:
+        Repository(temppath)
+    assert (
+        str(excinfo.value) == f"Specification of a repository at '{temppath}' "
+        f"includes link to invalid module 'missing'."
+    )
 
     tempdir.cleanup()
 
@@ -104,6 +106,7 @@ def test_module_check_failures():
 # https://docs.pytest.org/en/latest/skipping.html?highlight=skipping#id1
 @pytest.mark.skip
 def test_requirements_install():
+    # FIXME Needs updating to current system
     tempdir = tempfile.TemporaryDirectory()
     _create_repo(tempdir.name)
 
