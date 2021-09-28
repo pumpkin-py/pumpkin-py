@@ -1,3 +1,6 @@
+LANGUAGES = ("cs", "sk")
+
+
 class TranslationContext:
     """Fake class used for translation.
 
