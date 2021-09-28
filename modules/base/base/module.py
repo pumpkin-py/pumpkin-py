@@ -208,12 +208,6 @@ class Base(commands.Cog):
             name=_(ctx, "Global limit"),
             value=value,
         )
-        if discord.version_info.major < 2:
-            embed.add_field(
-                name=tr("userthread get", "warning", ctx),
-                value=tr("userthread get", "support", ctx),
-                inline=False,
-            )
 
         if channel is None:
             channel = ctx.channel
@@ -531,9 +525,6 @@ class Base(commands.Cog):
         message: discord.Message,
     ):
         """Handle userthread functionality."""
-        # only new versions of discord.py support threads
-        if discord.version_info.major < 2:
-            return
         tc = TranslationContext(payload.guild_id, payload.user_id)
 
         for reaction in message.reactions:
