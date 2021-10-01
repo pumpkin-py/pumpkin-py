@@ -160,36 +160,42 @@ class Discord:
         *,
         error: bool = False,
         author: Union[discord.Member, discord.User] = None,
-        **kwargs,
+        title: str = discord.Embed.Empty,
+        description: str = discord.Embed.Empty,
+        footer: str = None,
+        color: Union[int, discord.Colour] = None,
     ) -> discord.Embed:
         """Create discord embed.
 
         :param error: Whether the embed reports an error.
         :param author: Event author.
-        :param kwargs: Additional parameters.
+        :param title: Title for embed, max 256 characters.
+        :param description: Description, max 4096 characters.
+        :param footer: Footer, max 2048 characters.
+        :param color: Embed color. Must be an int for a RGB color or Discord Colour class.
         :return: The created embed.
 
         If you supply ``title``, ``description``, ``color`` or ``footer``, they
         will be included in the embed.
         """
+        if color is None:
+            color = discord.Color.red() if error else discord.Color.green()
+
         embed = discord.Embed(
-            title=kwargs.get("title", discord.Embed.Empty),
-            description=kwargs.get("description", discord.Embed.Empty),
-            color=kwargs.get(
-                "color",
-                discord.Color.red() if error else discord.Color.green(),
-            ),
+            title=title,
+            description=description,
+            color=color,
         )
 
         # footer
-        footer = tr("create_embed", "footer")
+        base_footer = tr("create_embed", "footer")
         if author is not None:
-            footer += f" {author.display_name}"
-        if kwargs.get("footer", False):
-            footer += " | " + kwargs.get("footer")
+            base_footer += f" {author.display_name}"
+        if footer is not None:
+            base_footer += " | " + footer
         embed.set_footer(
             icon_url=getattr(author, "avatar_url", discord.Embed.Empty),
-            text=footer,
+            text=base_footer,
         )
         embed.timestamp = datetime.datetime.now(tz=datetime.timezone.utc)
 
