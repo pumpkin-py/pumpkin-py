@@ -160,10 +160,10 @@ class Discord:
         *,
         error: bool = False,
         author: Union[discord.Member, discord.User] = None,
-        title: Union[str, discord.Colour] = discord.Embed.Empty,
-        description: Union[str, discord.Colour] = discord.Embed.Empty,
-        footer: str = None,
-        color: Union[int, discord.Colour] = None,
+        title: Union[str, discord.Embed.Empty] = discord.Embed.Empty,
+        description: Union[str, discord.Embed.Empty] = discord.Embed.Empty,
+        footer: Optional[str] = None,
+        color: Optional[int, discord.Colour] = None,
     ) -> discord.Embed:
         """Create discord embed.
 
