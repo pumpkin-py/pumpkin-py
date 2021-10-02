@@ -21,8 +21,11 @@ def _update_init(
 ):
     """Update __init__.py file"""
     with open(os.path.join(path, "__init__.py"), "w") as handle:
-        module_names = [f'"{m}"' for m in modules]
-        handle.write(f'__all__ = ({", ".join(module_names)})\n')
+        module_names = ", ".join([f'"{m}"' for m in modules])
+        if len(modules) == 1:
+            # make sure the written value is tuple, not string
+            module_names += ","
+        handle.write(f"__all__ = ({module_names})\n")
         handle.write(f'__name__ = "{name}"\n')
 
     if not create_modules:
@@ -47,7 +50,29 @@ def test_module_download():
     pass
 
 
-def test_module_check():
+def test_module_check__one_module():
+    tempdir = tempfile.TemporaryDirectory()
+    _create_repo(tempdir.name)
+
+    info = {
+        "all": ("test",),
+        "name": "test",
+    }
+    _update_init(
+        tempdir.name,
+        name=info["name"],
+        modules=info["all"],
+    )
+
+    try:
+        repository = Repository(Path(tempdir.name))
+        assert repository.name == info["name"]
+        assert repository.module_names == info["all"]
+    finally:
+        tempdir.cleanup()
+
+
+def test_module_check__more_modules():
     tempdir = tempfile.TemporaryDirectory()
     _create_repo(tempdir.name)
 
@@ -61,11 +86,12 @@ def test_module_check():
         modules=info["all"],
     )
 
-    repository = Repository(Path(tempdir.name))
-    assert repository.name == info["name"]
-    assert repository.module_names == info["all"]
-
-    tempdir.cleanup()
+    try:
+        repository = Repository(Path(tempdir.name))
+        assert repository.name == info["name"]
+        assert repository.module_names == info["all"]
+    finally:
+        tempdir.cleanup()
 
 
 def test_module_check_failures():

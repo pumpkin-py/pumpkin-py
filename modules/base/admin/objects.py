@@ -143,12 +143,12 @@ class Repository:
                 "invalid specification of included modules."
             )
         names: str = matched.groups()[-1]
-        list_of_names = [n.strip(" \"'") for n in names.split(",")]
+        list_of_names = [n.strip(" \"'") for n in names.split(",") if len(n)]
         for name in list_of_names:
             if re.fullmatch(RE_NAME, name) is None:
                 raise ValueError(
                     f"Repository at '{self.path}' specification "
-                    "contains invalid name for included module."
+                    f"contains invalid name for included module '{name}'."
                 )
         return tuple(list_of_names)
 
