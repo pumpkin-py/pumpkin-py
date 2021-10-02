@@ -10,8 +10,9 @@ __pycache__
 .mypy_cache/
 
 # Bot data
+_local/*
 logs/*
-modules/*/
+modules/*
 !modules/base
 pumpkin.db
 pumpkin.db-journal
