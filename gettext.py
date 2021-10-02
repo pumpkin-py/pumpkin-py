@@ -186,19 +186,16 @@ class Analyzer(ast.NodeVisitor):
 
 class Reporter:
     def __init__(self):
-        self.strings: Dict[str, List[str]] = {}
+        self.strings: List[str] = []
 
-    def add_strings(self, strings: List[String]):
-        for string in strings:
-            if string.text not in self.strings.keys():
-                self.strings[string.text] = []
-            self.strings[string.text].append(string.identifier)
+    def add_strings(self, new_strings: List[String]):
+        """Add list of strings to internal pool of strings."""
+        self.strings += [s.text for s in new_strings]
 
 
 class POFile:
     def __init__(self, filename: Path):
         self.filename = filename
-        self.strings: Dict[str, List[str]] = {}
         self.translations: Dict[str, str] = {}
 
         self.load_strings()
@@ -208,7 +205,6 @@ class POFile:
             return
 
         with open(self.filename, "r") as pofile:
-            identifiers: List[str] = []
             msgid: str = ""
             msgstr: Optional[str] = None
 
@@ -218,25 +214,16 @@ class POFile:
                 if not len(line):
                     continue
 
-                if line.startswith("# file: "):
-                    identifier: str = line.replace("# file: ", "")
-                    identifiers.append(identifier)
-                    continue
-
                 if line.startswith("msgid "):
-                    msgid = line[len("msgid ") :]
+                    msgid: str = line[len("msgid ") :]
                     continue
 
                 if line.startswith("msgstr"):
-                    msgstr = line[len("msgstr") :].strip()
+                    msgstr: str = line[len("msgstr") :].strip()
                     if not len(msgstr):
                         msgstr = None
 
-                    self.strings[msgid] = identifiers
                     self.translations[msgid] = msgstr
-
-                    # reset
-                    self.identifiers = []
                     continue
 
     def update(self, reporter: Reporter):
@@ -245,21 +232,23 @@ class POFile:
             if msgid not in self.strings.keys() and msgid in self.translations.keys():
                 # string has been renamed
                 del self.translations[msgid]
+        translations = self.translations
+        self.translations = {}
+
+        for string in reporter.strings:
+            if string in translations.keys():
+                self.translations[string] = translations[string]
+            else:
+                self.translations[string] = None
 
     def save(self):
-        """Dump new content into the file."""
+        """Dump the content into the file."""
         with open(self.filename, "w") as pofile:
-            for msgid, occurences in self.strings.items():
-                for occurence in occurences:
-                    pofile.write(f"# file: {occurence}\n")
-
+            for msgid, msgstr in self.translations.items():
                 pofile.write(f"msgid {msgid}\n")
 
-                if (
-                    msgid in self.translations.keys()
-                    and self.translations[msgid] is not None
-                ):
-                    pofile.write(f"msgstr {self.translations[msgid]}\n")
+                if msgstr is not None:
+                    pofile.write(f"msgstr {msgstr}\n")
                 else:
                     pofile.write("msgstr\n")
 
