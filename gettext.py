@@ -4,8 +4,12 @@ import argparse
 import ast
 import sys
 import os
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 from pathlib import Path
+
+
+# NOTE: Download package 'pprintast' from PyPI if you need to debug the AST.
+# It can be simply called from the terminal.
 
 
 def main():
@@ -95,15 +99,21 @@ class Analyzer(ast.NodeVisitor):
         for error in self.errors:
             print(error)
 
+    def _iterate(self, iterable: Iterable):
+        for item in iterable:
+            if item.__class__ is ast.Call:
+                self.visit_Call(item)
+            if item.__class__ in (ast.List, ast.Tuple):
+                self._iterate(item.elts)
+            if item.__class__ is ast.Dict:
+                self._iterate(item.keys)
+                self._iterate(item.values)
+
     def visit_Call(self, node: ast.Call):
         # Inspect unnamed arguments for function calls
-        for arg in node.args:
-            if arg.__class__ is ast.Call:
-                self.visit_Call(arg)
+        self._iterate(node.args)
         # Inspect named arguments for function calls
-        for kw in node.keywords:
-            if kw.value.__class__ is ast.Call:
-                self.visit_Call(kw.value)
+        self._iterate([kw.value for kw in node.keywords])
 
         # Ignore calls to functions with we don't care about
         if node.func.__class__ != ast.Name or node.func.id != "_":
