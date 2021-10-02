@@ -163,7 +163,7 @@ class Discord:
         title: Union[str, discord.Embed.Empty] = discord.Embed.Empty,
         description: Union[str, discord.Embed.Empty] = discord.Embed.Empty,
         footer: Optional[str] = None,
-        color: Optional[int, discord.Colour] = None,
+        color: Optional[Union[int, discord.Colour]] = None,
     ) -> discord.Embed:
         """Create discord embed.
 
