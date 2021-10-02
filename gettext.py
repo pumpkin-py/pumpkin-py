@@ -28,11 +28,10 @@ def main():
     reporter = Reporter()
 
     py_files: List[Path] = directory.glob("**/*.py")
+    # FIXME: Is glob stable? How does it handle new file?
     for py_file in py_files:
         with open(py_file, "r") as source:
             tree = ast.parse(source.read())
-
-        # pprint(ast.dump(tree))
 
         analyzer = Analyzer(py_file)
         analyzer.visit(tree)
@@ -71,6 +70,8 @@ class AbstractGettextObject:
 
 
 class Error(AbstractGettextObject):
+    """Information about invalid call to the translation function."""
+
     __slots__ = ("filename", "line", "column", "text")
 
     def __str__(self) -> str:
@@ -78,15 +79,13 @@ class Error(AbstractGettextObject):
 
 
 class String(AbstractGettextObject):
+    """String reference."""
+
     __slots__ = ("filename", "line", "column", "text", "translation")
 
     def __init__(self, filename: Path, line: int, column: int, text: str):
         super().__init__(filename, line, column, text)
         self.translation: Optional[str] = None
-
-    @property
-    def identifier(self) -> str:
-        return f"{self.filename!s}:{self.line}:{self.column}"
 
 
 class Analyzer(ast.NodeVisitor):
@@ -96,10 +95,12 @@ class Analyzer(ast.NodeVisitor):
         self.strings: List[String] = []
 
     def report_errors(self):
+        """Print errors to the stdout."""
         for error in self.errors:
             print(error)
 
     def _iterate(self, iterable: Iterable):
+        """Call itself over all found iterables to find all 'Call's."""
         for item in iterable:
             if item.__class__ is ast.Call:
                 self.visit_Call(item)
@@ -110,6 +111,18 @@ class Analyzer(ast.NodeVisitor):
                 self._iterate(item.values)
 
     def visit_Call(self, node: ast.Call):
+        """Visit every function call.
+
+        This function will ignore all function calls that are not called
+        with as a function called '_' (an underscore).
+
+        Those functions have to have two arguments:
+        - one named 'ctx' or 'tc',
+        - one string.
+
+        These strings are saved to internal string pool and used to update
+        the PO files.
+        """
         # Inspect unnamed arguments for function calls
         self._iterate(node.args)
         # Inspect named arguments for function calls
@@ -185,6 +198,10 @@ class Analyzer(ast.NodeVisitor):
 
 
 class Reporter:
+    """Object holding strings found in the source files."""
+
+    __slots__ = ("strings",)
+
     def __init__(self):
         self.strings: List[str] = []
 
@@ -194,6 +211,10 @@ class Reporter:
 
 
 class POFile:
+    """Object representing a PO file."""
+
+    __slots__ = ("filename", "translations")
+
     def __init__(self, filename: Path):
         self.filename = filename
         self.translations: Dict[str, str] = {}
@@ -201,6 +222,11 @@ class POFile:
         self.load_strings()
 
     def load_strings(self) -> None:
+        """Load translations from the file.
+
+        If the file does not exist it is equivalent to empty file containing
+        no translations.
+        """
         if not self.filename.exists():
             return
 
@@ -227,11 +253,17 @@ class POFile:
                     continue
 
     def update(self, reporter: Reporter):
-        self.strings = reporter.strings
-        for msgid in self.strings.keys():
-            if msgid not in self.strings.keys() and msgid in self.translations.keys():
-                # string has been renamed
-                del self.translations[msgid]
+        """Update state of translations.
+
+        If the reporter's string is contained in current translations,
+        it will be copied, so the translation is not lost.
+
+        If the reporter's string is not contained in current translations,
+        it will get set to `None`.
+
+        Strings not found by the reporter, but are present in the file,
+        have been removed from the source files and can be removed here, too.
+        """
         translations = self.translations
         self.translations = {}
 
