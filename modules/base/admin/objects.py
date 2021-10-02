@@ -150,6 +150,10 @@ class Repository:
                     f"Repository at '{self.path}' specification "
                     f"contains invalid name for included module '{name}'."
                 )
+            if not (self.path / name / "__init__.py").is_file():
+                raise ValueError(f"Module '{name}' is missing its init file.")
+            if not (self.path / name / "module.py").is_file():
+                raise ValueError(f"Module '{name}' is missing its module file.")
         return tuple(list_of_names)
 
     @staticmethod
