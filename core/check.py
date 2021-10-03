@@ -151,7 +151,7 @@ def version(
                 return await func(*args, **kwargs)
 
             if reply and isinstance(args[1], commands.Context):
-                ctx = None
+                ctx = args[1]
                 await args[1].message.reply(
                     _(ctx, "This command is not available in this version")
                 )

@@ -192,8 +192,7 @@ class Discord:
         )
 
         # footer
-        ctx = None
-        base_footer = _(ctx, "Answer for")
+        base_footer = "📩 "
         if author is not None:
             base_footer += f" {author.display_name}"
         if footer is not None:

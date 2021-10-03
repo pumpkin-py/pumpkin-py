@@ -169,6 +169,7 @@ class Help(commands.MinimalHelpCommand):
 
     async def send_cog_help(self, cog: commands.Cog) -> None:
         """Format cog output."""
+        ctx = self.context
         with contextlib.suppress(TypeError, exceptions.BadTranslation):
             module_tr: Optional[Callable] = self._get_cog_translator(cog)
             self.paginator.add_line(module_tr("_", "help"), empty=True)
@@ -177,7 +178,7 @@ class Help(commands.MinimalHelpCommand):
             cog.get_commands(), sort=self.sort_commands
         )
         if filtered:
-            self.paginator.add_line(f"{tr('Module')} **__{cog.qualified_name}__**")
+            self.paginator.add_line(f"{_(ctx, 'Module')} **__{cog.qualified_name}__**")
             for command in filtered:
                 self.add_subcommand_formatting(command)
 
