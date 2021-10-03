@@ -36,7 +36,7 @@ class LogLevel(IntEnum):
 
 def write_log(entry) -> None:
     """Write log entry to the log file."""
-    filename = f"file_{entry.timestamp.strftime('%Y-%m-%d')}.log"
+    filename = f"log_{entry.timestamp.strftime('%Y-%m-%d')}.log"
     if not os.path.isdir("logs"):
         os.mkdir("logs")
     with open(f"logs/{filename}", "a+") as handle:
