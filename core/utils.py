@@ -164,6 +164,7 @@ class Discord:
         description: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
         footer: Optional[str] = None,
         color: Optional[Union[int, discord.Colour]] = None,
+        url: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
     ) -> discord.Embed:
         """Create discord embed.
 
@@ -173,6 +174,7 @@ class Discord:
         :param description: Description, max 4096 characters.
         :param footer: Footer, max 2048 characters.
         :param color: Embed color. Must be an int for a RGB color or Discord Colour class.
+        :param url: The URL of the embed.
         :return: The created embed.
 
         If you supply ``title``, ``description``, ``color`` or ``footer``, they
@@ -185,6 +187,7 @@ class Discord:
             title=title,
             description=description,
             color=color,
+            url=url,
         )
 
         # footer
