@@ -4,8 +4,12 @@ import argparse
 import ast
 import sys
 import os
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 from pathlib import Path
+
+
+# NOTE: Download package 'pprintast' from PyPI if you need to debug the AST.
+# It can be simply called from the terminal.
 
 
 def main():
@@ -24,11 +28,10 @@ def main():
     reporter = Reporter()
 
     py_files: List[Path] = directory.glob("**/*.py")
+    # FIXME: Is glob stable? How does it handle new file?
     for py_file in py_files:
         with open(py_file, "r") as source:
             tree = ast.parse(source.read())
-
-        # pprint(ast.dump(tree))
 
         analyzer = Analyzer(py_file)
         analyzer.visit(tree)
@@ -67,6 +70,8 @@ class AbstractGettextObject:
 
 
 class Error(AbstractGettextObject):
+    """Information about invalid call to the translation function."""
+
     __slots__ = ("filename", "line", "column", "text")
 
     def __str__(self) -> str:
@@ -74,15 +79,13 @@ class Error(AbstractGettextObject):
 
 
 class String(AbstractGettextObject):
+    """String reference."""
+
     __slots__ = ("filename", "line", "column", "text", "translation")
 
     def __init__(self, filename: Path, line: int, column: int, text: str):
         super().__init__(filename, line, column, text)
         self.translation: Optional[str] = None
-
-    @property
-    def identifier(self) -> str:
-        return f"{self.filename!s}:{self.line}:{self.column}"
 
 
 class Analyzer(ast.NodeVisitor):
@@ -92,18 +95,38 @@ class Analyzer(ast.NodeVisitor):
         self.strings: List[String] = []
 
     def report_errors(self):
+        """Print errors to the stdout."""
         for error in self.errors:
             print(error)
 
+    def _iterate(self, iterable: Iterable):
+        """Call itself over all found iterables to find all 'Call's."""
+        for item in iterable:
+            if item.__class__ is ast.Call:
+                self.visit_Call(item)
+            if item.__class__ in (ast.List, ast.Tuple):
+                self._iterate(item.elts)
+            if item.__class__ is ast.Dict:
+                self._iterate(item.keys)
+                self._iterate(item.values)
+
     def visit_Call(self, node: ast.Call):
+        """Visit every function call.
+
+        This function will ignore all function calls that are not called
+        with as a function called '_' (an underscore).
+
+        Those functions have to have two arguments:
+        - one named 'ctx' or 'tc',
+        - one string.
+
+        These strings are saved to internal string pool and used to update
+        the PO files.
+        """
         # Inspect unnamed arguments for function calls
-        for arg in node.args:
-            if arg.__class__ is ast.Call:
-                self.visit_Call(arg)
+        self._iterate(node.args)
         # Inspect named arguments for function calls
-        for kw in node.keywords:
-            if kw.value.__class__ is ast.Call:
-                self.visit_Call(kw.value)
+        self._iterate([kw.value for kw in node.keywords])
 
         # Ignore calls to functions with we don't care about
         if node.func.__class__ != ast.Name or node.func.id != "_":
@@ -175,30 +198,39 @@ class Analyzer(ast.NodeVisitor):
 
 
 class Reporter:
-    def __init__(self):
-        self.strings: Dict[str, List[str]] = {}
+    """Object holding strings found in the source files."""
 
-    def add_strings(self, strings: List[String]):
-        for string in strings:
-            if string.text not in self.strings.keys():
-                self.strings[string.text] = []
-            self.strings[string.text].append(string.identifier)
+    __slots__ = ("strings",)
+
+    def __init__(self):
+        self.strings: List[str] = []
+
+    def add_strings(self, new_strings: List[String]):
+        """Add list of strings to internal pool of strings."""
+        self.strings += [s.text for s in new_strings]
 
 
 class POFile:
+    """Object representing a PO file."""
+
+    __slots__ = ("filename", "translations")
+
     def __init__(self, filename: Path):
         self.filename = filename
-        self.strings: Dict[str, List[str]] = {}
         self.translations: Dict[str, str] = {}
 
         self.load_strings()
 
     def load_strings(self) -> None:
+        """Load translations from the file.
+
+        If the file does not exist it is equivalent to empty file containing
+        no translations.
+        """
         if not self.filename.exists():
             return
 
         with open(self.filename, "r") as pofile:
-            identifiers: List[str] = []
             msgid: str = ""
             msgstr: Optional[str] = None
 
@@ -208,48 +240,47 @@ class POFile:
                 if not len(line):
                     continue
 
-                if line.startswith("# file: "):
-                    identifier: str = line.replace("# file: ", "")
-                    identifiers.append(identifier)
-                    continue
-
                 if line.startswith("msgid "):
-                    msgid = line[len("msgid ") :]
+                    msgid: str = line[len("msgid ") :]
                     continue
 
                 if line.startswith("msgstr"):
-                    msgstr = line[len("msgstr") :].strip()
+                    msgstr: str = line[len("msgstr") :].strip()
                     if not len(msgstr):
                         msgstr = None
 
-                    self.strings[msgid] = identifiers
                     self.translations[msgid] = msgstr
-
-                    # reset
-                    self.identifiers = []
                     continue
 
     def update(self, reporter: Reporter):
-        self.strings = reporter.strings
-        for msgid in self.strings.keys():
-            if msgid not in self.strings.keys() and msgid in self.translations.keys():
-                # string has been renamed
-                del self.translations[msgid]
+        """Update state of translations.
+
+        If the reporter's string is contained in current translations,
+        it will be copied, so the translation is not lost.
+
+        If the reporter's string is not contained in current translations,
+        it will get set to `None`.
+
+        Strings not found by the reporter, but are present in the file,
+        have been removed from the source files and can be removed here, too.
+        """
+        translations = self.translations
+        self.translations = {}
+
+        for string in reporter.strings:
+            if string in translations.keys():
+                self.translations[string] = translations[string]
+            else:
+                self.translations[string] = None
 
     def save(self):
-        """Dump new content into the file."""
+        """Dump the content into the file."""
         with open(self.filename, "w") as pofile:
-            for msgid, occurences in self.strings.items():
-                for occurence in occurences:
-                    pofile.write(f"# file: {occurence}\n")
-
+            for msgid, msgstr in self.translations.items():
                 pofile.write(f"msgid {msgid}\n")
 
-                if (
-                    msgid in self.translations.keys()
-                    and self.translations[msgid] is not None
-                ):
-                    pofile.write(f"msgstr {self.translations[msgid]}\n")
+                if msgstr is not None:
+                    pofile.write(f"msgstr {msgstr}\n")
                 else:
                     pofile.write("msgstr\n")
 
