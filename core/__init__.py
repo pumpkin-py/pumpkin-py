@@ -8,7 +8,7 @@ class TranslationContext:
     reaction is added, especially when it is
     :class:`discord.RawReactionActionEvent`. This may be used to get around.
 
-    See :class:`~core.text.Translator` for more details.
+    See :class:`~core.i18n.Translator` for more details.
     """
 
     __slots__ = ("guild_id", "user_id")

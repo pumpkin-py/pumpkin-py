@@ -10,7 +10,7 @@ from core import check, i18n, text, logging, utils
 from .database import BaseAdminModule as Module
 from .objects import RepositoryManager, Repository
 
-_ = i18n.Translator("modules/base").translate
+_ = i18n.Translator(__file__).translate
 tr = text.Translator(__file__).translate
 bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
@@ -125,7 +125,12 @@ class Admin(commands.Cog):
         if repository.name in [r.name for r in manager.repositories]:
             tempdir.cleanup()
             await ctx.send(
-                tr("repository install", "exists", ctx, name=repository.name)
+                _(
+                    ctx,
+                    "Repository named `{name}` already exists.".format(
+                        name=repository.name
+                    ),
+                )
             )
             return
 
@@ -141,12 +146,12 @@ class Admin(commands.Cog):
         shutil.move(str(workdir), repository_location)
         manager.refresh()
         await ctx.send(
-            tr(
-                "repository install",
-                "reply",
+            _(
                 ctx,
-                path="modules/" + repository.name,
-                modules=", ".join(f"**{m}**" for m in repository.module_names),
+                "Repository has been installed to `{path}`. It includes the following modules: {modules}.".format(
+                    path="modules/" + repository.name,
+                    modules=", ".join(f"**{m}**" for m in repository.module_names),
+                ),
             )
         )
         tempdir.cleanup()
@@ -267,7 +272,7 @@ class Admin(commands.Cog):
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
         self.bot.load_extension("modules." + name + ".module")
-        await ctx.send(tr("module load", "reply", ctx, name=name))
+        await ctx.send(_(ctx, "Module **{name}** has been loaded.".format(name=name)))
         Module.add(name, enabled=True)
         await bot_log.info(ctx.author, ctx.channel, "Loaded " + name)
 
@@ -275,10 +280,12 @@ class Admin(commands.Cog):
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
         if name in ("base.admin",):
-            await ctx.send(tr("module unload", "forbidden", ctx, name=name))
+            await ctx.send(
+                _(ctx, "Module **{name}** cannot be unloaded.".format(name=name))
+            )
             return
         self.bot.unload_extension("modules." + name + ".module")
-        await ctx.send(tr("module unload", "reply", ctx, name=name))
+        await ctx.send(_(ctx, "Module **{name}** has been unloaded.".format(name=name)))
         Module.add(name, enabled=False)
         await bot_log.info(ctx.author, ctx.channel, "Unloaded " + name)
 
@@ -286,7 +293,7 @@ class Admin(commands.Cog):
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
         self.bot.reload_extension("modules." + name + ".module")
-        await ctx.send(tr("module reload", "reply", ctx, name=name))
+        await ctx.send(_(ctx, "Module **{name}** has been reloaded.".format(name=name)))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
 
     @commands.check(check.acl)
@@ -299,28 +306,24 @@ class Admin(commands.Cog):
     async def config_get(self, ctx):
         embed = utils.Discord.create_embed(
             author=ctx.author,
-            title=tr("config get", "title", ctx),
+            title=_(ctx, "Global configuration"),
         )
         embed.add_field(
-            name=tr("config get", "prefix", ctx),
+            name=_(ctx, "Bot prefix"),
             value=str(config.prefix)
-            + (
-                (" " + tr("config get", "mention", ctx))
-                if config.mention_as_prefix
-                else ""
-            ),
+            + ((" " + _(ctx, "or by mention")) if config.mention_as_prefix else ""),
             inline=False,
         )
         embed.add_field(
-            name=tr("config get", "language", ctx),
+            name=_(ctx, "Language"),
             value=config.language,
         )
         embed.add_field(
-            name=tr("config get", "gender", ctx),
+            name=_(ctx, "Lexical gender"),
             value=config.gender,
         )
         embed.add_field(
-            name=tr("config get", "status", ctx),
+            name=_(ctx, "Status"),
             value=config.status,
         )
         await ctx.send(embed=embed)
@@ -331,39 +334,39 @@ class Admin(commands.Cog):
         keys = ("prefix", "mention_as_prefix", "language", "gender", "status")
         if key not in keys:
             return await ctx.send(
-                tr(
-                    "config set",
-                    "bad key",
+                _(
                     ctx,
-                    keys=", ".join(f"`{k}`" for k in keys),
+                    "Key has to be one of: {keys}".format(
+                        keys=", ".join(f"`{k}`" for k in keys)
+                    ),
                 )
             )
         if key == "mention_as_prefix":
             bool_value: Optional[bool] = utils.Text.parse_bool(value)
             if bool_value is None:
-                return await ctx.send(tr("config set", "invalid value", ctx))
+                return await ctx.send(_(ctx, "Invalid value"))
 
         languages = ("en", "cs")
         if key == "language" and value not in languages:
-            return await ctx.send(tr("config set", "invalid language", ctx))
+            return await ctx.send(_(ctx, "Unsupported language"))
         genders = ("m", "f")
         if key == "gender" and value not in genders:
             return await ctx.send(
-                tr(
-                    "config set",
-                    "bad gender",
+                _(
                     ctx,
-                    genders=", ".join(f"`{g}`" for g in genders),
+                    "Valid genders values are: {genders}".format(
+                        genders=", ".join(f"`{g}`" for g in genders)
+                    ),
                 )
             )
         states = ("online", "idle", "dnd", "invisible", "auto")
         if key == "status" and value not in states:
             return await ctx.send(
-                tr(
-                    "config set",
-                    "bad status",
+                _(
                     ctx,
-                    states=", ".join(f"`{s}`" for s in states),
+                    "Valid status values are: {states}".format(
+                        states=", ".join(f"`{s}`" for s in states)
+                    ),
                 )
             )
 

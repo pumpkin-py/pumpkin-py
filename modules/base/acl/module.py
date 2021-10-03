@@ -7,10 +7,11 @@ from typing import Any, Dict, List, Set, Tuple
 import discord
 from discord.ext import commands
 
-from core import check, text, logging, utils
+from core import check, text, logging, utils, i18n
 from database.acl import ACL_group, ACL_rule
 
 tr = text.Translator(__file__).translate
+_ = i18n.Translator(__file__).translate
 bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
 
@@ -43,7 +44,7 @@ class ACL(commands.Cog):
         groups = ACL_group.get_all(ctx.guild.id)
 
         if not len(groups):
-            await ctx.reply(tr("acl group list", "none", ctx))
+            await ctx.reply(_(ctx, "You didn't define any ACL groups yet."))
             return
 
         # compute relationships between groups
@@ -90,7 +91,7 @@ class ACL(commands.Cog):
         """Get ACL group."""
         group = ACL_group.get(ctx.guild.id, name)
         if group is None:
-            await ctx.reply(tr("acl group get", "none", ctx))
+            await ctx.reply(_(ctx, "No such group exists."))
             return
 
         await ctx.reply(embed=self.get_group_embed(ctx, group))
@@ -111,7 +112,9 @@ class ACL(commands.Cog):
         """
         RE_NAME = r"[a-zA-Z-]+"
         if re.fullmatch(RE_NAME, name) is None:
-            await ctx.reply(tr("acl group add", "bad name", ctx, regex=RE_NAME))
+            await ctx.reply(
+                _(ctx, "Bad group name (regex `{regex}`)".format(regex=RE_NAME))
+            )
             return
 
         if len(parent) == 0:
@@ -146,13 +149,20 @@ class ACL(commands.Cog):
         """
         group = ACL_group.get(ctx.guild.id, name)
         if group is None:
-            await ctx.reply(tr("acl group update", "none", ctx))
+            await ctx.reply(_(ctx, "No such group exists."))
             return
 
         if param == "name":
             RE_NAME = r"[a-zA-Z-]+"
             if re.fullmatch(RE_NAME, name) is None:
-                await ctx.reply(tr("acl group update", "bad name", ctx, regex=RE_NAME))
+                await ctx.reply(
+                    _(
+                        ctx,
+                        "ACL group can't be named like that (regex `{regex}`).".format(
+                            regex=RE_NAME
+                        ),
+                    )
+                )
                 return
             group.name = value
         elif param == "parent":
@@ -160,7 +170,7 @@ class ACL(commands.Cog):
         elif param == "role_id":
             group.role_id = int(value)
         else:
-            await ctx.reply(tr("acl group update", "bad parameter", ctx))
+            await ctx.reply(_(ctx, "Bad parameter."))
             return
 
         group.save()
@@ -178,10 +188,10 @@ class ACL(commands.Cog):
         """Remove ACL group."""
         result = ACL_group.remove(ctx.guild.id, name)
         if result < 0:
-            await ctx.reply(tr("acl group remove", "none", ctx))
+            await ctx.reply(_(ctx, "No such group."))
             return
 
-        await ctx.reply(tr("acl group remove", "reply", ctx))
+        await ctx.reply(_(ctx, "ACL group removed."))
         await guild_log.warning(ctx.author, ctx.channel, f'ACL group "{name}" removed.')
 
     #
@@ -213,7 +223,7 @@ class ACL(commands.Cog):
 
         file.seek(0)
         await ctx.reply(
-            tr("acl rule generate", "reply", count=len(export)),
+            _(ctx, "**{count} rules** exported.".format(count=len(export))),
             file=discord.File(fp=file, filename=filename),
         )
         file.close()
@@ -240,7 +250,7 @@ class ACL(commands.Cog):
 
         file.seek(0)
         await ctx.reply(
-            tr("acl rule export", "reply", ctx, count=len(rules)),
+            _(ctx, "**{count} rules** exported.".format(count=len(rules))),
             file=discord.File(fp=file, filename=filename),
         )
         file.close()
@@ -252,10 +262,10 @@ class ACL(commands.Cog):
         """Remove command."""
         count = ACL_rule.remove(ctx.guild.id, command)
         if count < 1:
-            await ctx.reply(tr("acl rule remove", "none", ctx))
+            await ctx.reply(_(ctx, "No such ACL rule."))
             return
 
-        await ctx.reply(tr("acl rule remove", "reply", ctx))
+        await ctx.reply(_(ctx, "Rule removed."))
         await guild_log.warning(ctx.author, ctx.channel, f"ACL rule {command} removed.")
 
     @commands.check(check.acl)
@@ -268,7 +278,7 @@ class ACL(commands.Cog):
 
         # delete all
         count = ACL_rule.remove_all(ctx.guild.id)
-        await ctx.send(tr("acl rule flush", "reply", ctx, count=count))
+        await ctx.send(_(ctx, "I've removed add {count} rules.".format(count=count)))
         await guild_log.info(ctx.author, ctx.channel, "ACL rules flushed.")
 
     @commands.check(check.acl)
@@ -279,10 +289,10 @@ class ACL(commands.Cog):
         Existing rules are skipped, unless you pass "replace" as mode parameter.
         """
         if len(ctx.message.attachments) != 1:
-            await ctx.reply(tr("acl rule import", "wrong file", ctx))
+            await ctx.reply(_(ctx, "I'm expecting one JSON file."))
             return
         if not ctx.message.attachments[0].filename.lower().endswith("json"):
-            await ctx.reply(tr("acl rule import", "wrong json", ctx))
+            await ctx.reply(_(ctx, "You have to upload the JSON file."))
             return
 
         # download the file
@@ -293,7 +303,7 @@ class ACL(commands.Cog):
             json_data = json.load(data_file)
         except json.decoder.JSONDecodeError as exc:
             await ctx.reply(
-                tr("acl rule import", "bad json", ctx) + f"\n> `{str(exc)}`"
+                _(ctx, "Your JSON file contains errors.") + f"\n> `{str(exc)}`"
             )
             return
 
@@ -301,16 +311,15 @@ class ACL(commands.Cog):
         data_file.close()
 
         await ctx.reply(
-            tr(
-                "acl rule import",
-                "reply",
+            _(
                 ctx,
-                new=len(new),
-                updated=len(updated),
+                "I've imported **{new}** new and **{updated}** updated rules.".format(
+                    new=len(new), updated=len(updated)
+                ),
             )
         )
 
-        result = tr("acl rule import", "skip", ctx)
+        result = _(ctx, "Skipping:")
         send_errors: bool = False
         for reason in rejected.keys():
             commands = rejected[reason]
@@ -320,7 +329,19 @@ class ACL(commands.Cog):
 
             send_errors = True
 
-            result += "\n> **" + tr("import check", reason, ctx) + "**: "
+            reason_message = {
+                "not bool": _(ctx, "expected `bool`"),
+                "not list": _(ctx, "expected `list`"),
+                "not group": _(ctx, "invalid group"),
+                "not int": _(ctx, "expected `int`"),
+                "duplicate": _(ctx, "duplicate"),
+            }
+
+            result += (
+                "\n> **"
+                + reason_message.get(reason, _(ctx, "An unexpected error occurred"))
+                + "**: "
+            )
             if reason in ("not group", "duplicate"):
                 result += ", ".join(command for command, _ in commands)
             else:
@@ -348,22 +369,30 @@ class ACL(commands.Cog):
     @command.command(name="disable")
     async def command_disable(self, ctx, *, command: str):
         if ACL_rule.get(guild_id=0, command=command) is not None:
-            await ctx.reply(tr("command disable", "not enabled", ctx, name=command))
+            await ctx.reply(
+                _(ctx, "Command **{name}** is not enabled.".format(name=command))
+            )
             return
 
         ACL_rule.add(guild_id=0, command=command, default=False)
-        await ctx.reply(tr("command disable", "reply", ctx, name=command))
+        await ctx.reply(
+            _(ctx, "Command **{name}** has been disabled.".format(name=command))
+        )
         await bot_log.info(ctx.author, ctx.channel, f"Command {command} disabled.")
 
     @commands.check(check.acl)
     @command.command(name="enable")
     async def command_enable(self, ctx, *, command: str):
         if ACL_rule.get(guild_id=0, command=command) is None:
-            await ctx.reply(tr("command enable", "not disabled", ctx, name=command))
+            await ctx.reply(
+                _(ctx, "Command **{name}** is not disabled.".format(name=command))
+            )
             return
 
         ACL_rule.remove(guild_id=0, command=command)
-        await ctx.reply(tr("command enable", "reply", ctx, name=command))
+        await ctx.reply(
+            _(ctx, "Command **{name}** has been enabled.".format(name=command))
+        )
         await bot_log.info(ctx.author, ctx.channel, f"Command {command} enabled.")
 
     #
@@ -374,20 +403,20 @@ class ACL(commands.Cog):
 
         embed = utils.Discord.create_embed(
             author=ctx.author,
-            title=tr("group embed", "title", ctx, name=group_dict["name"]),
+            title=_(ctx, "ACL group {name}".format(name=group_dict["name"])),
         )
 
         role = ctx.guild.get_role(group_dict["role_id"])
         if role is not None:
             embed.add_field(
-                name=tr("group embed", "role", ctx),
+                name=_(ctx, "Discord role"),
                 value=f"{role.name} ({role.id})",
                 inline=False,
             )
 
         if group_dict["parent"] is not None:
             embed.add_field(
-                name=tr("group embed", "parent", ctx),
+                name=_(ctx, "Parent ACL group"),
                 value=group_dict["parent"],
                 inline=False,
             )

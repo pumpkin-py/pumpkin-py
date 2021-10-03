@@ -10,7 +10,7 @@ class GuildLanguage(database.base):
     """Language preference for the guild.
 
     .. note::
-        See text translation at :class:`core.text.Translator`.
+        See text translation at :class:`core.i18n.Translator`.
 
         See command API at :class:`modules.base.language.module`.
     """
