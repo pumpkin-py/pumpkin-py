@@ -99,7 +99,7 @@ class Admin(commands.Cog):
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.check(check.acl)
     @repository.command(name="install")
-    async def repository_install(self, ctx, url: str):
+    async def repository_install(self, ctx, url: str, branch: Optional[str] = None):
         tempdir = tempfile.TemporaryDirectory()
         workdir = Path(tempdir.name) / "pumpkin-module"
 
@@ -113,11 +113,12 @@ class Admin(commands.Cog):
             return
 
         try:
-            repository = Repository(workdir)
+            repository = Repository(workdir, branch)
         except Exception as exc:
             tempdir.cleanup()
-            # TODO Add some additional translated message?
-            await ctx.reply(str(exc))
+            await ctx.reply(
+                _(ctx, "Repository initialization aborted: {exc}").format(exc=str(exc))
+            )
             return
 
         # check if the repo isn't already installed
@@ -138,6 +139,7 @@ class Admin(commands.Cog):
         # move to modules/
         repository_location = str(Path.cwd() / "modules" / repository.name)
         shutil.move(str(workdir), repository_location)
+        manager.refresh()
         await ctx.send(
             tr(
                 "repository install",
@@ -170,6 +172,8 @@ class Admin(commands.Cog):
         for output in utils.Text.split(pull):
             await ctx.send("```" + output + "```")
 
+        manager.refresh()
+
         if repository.requirements_txt_hash != requirements_txt_hash:
             await ctx.send(_(ctx, "File `requirements.txt` changed, running `pip`."))
 
@@ -178,6 +182,41 @@ class Admin(commands.Cog):
                 if install is not None:
                     for output in utils.Text.split(install):
                         await ctx.send("```" + output + "```")
+
+    @commands.check(check.acl)
+    @repository.command(name="checkout")
+    async def repository_checkout(self, ctx, name: str, branch: str):
+        """Change current branch of the repository."""
+        repository: Optional[Repository] = manager.get_repository(name)
+        if repository is None:
+            await ctx.reply(_(ctx, "No such repository."))
+            return
+
+        requirements_txt_hash: str = repository.requirements_txt_hash
+
+        try:
+            repository.change_branch(branch)
+        except Exception as exc:
+            await ctx.reply(
+                _(ctx, "Could not change branch: {exc}").format(exc=str(exc))
+            )
+            return
+
+        if repository.requirements_txt_hash != requirements_txt_hash:
+            await ctx.send(_(ctx, "File `requirements.txt` changed, running `pip`."))
+
+            async with ctx.typing():
+                install: str = repository.install_requirements()
+                if install is not None:
+                    for output in utils.Text.split(install):
+                        await ctx.send("```" + output + "```")
+
+        await bot_log.info(
+            ctx.author,
+            ctx.channel,
+            f"Branch of repository '{name}' changed to '{branch}'.",
+        )
+        await ctx.reply(_(ctx, "Branch changed to **{branch}**.").format(branch=branch))
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.check(check.acl)
@@ -205,6 +244,8 @@ class Admin(commands.Cog):
             repository_path.unlink()
         else:
             shutil.rmtree(repository_path)
+
+        manager.refresh()
 
         await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.")
         await ctx.reply(
