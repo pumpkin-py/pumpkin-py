@@ -384,6 +384,32 @@ class Base(commands.Cog):
             )
 
     @commands.Cog.listener()
+    async def on_raw_message_delete(self, payload: discord.RawMessageDeleteEvent):
+        """Handle thread deletion if parental message is deleted."""
+        if payload.guild_id is None:
+            return
+        channel = self.bot.get_guild(payload.guild_id).get_channel(payload.channel_id)
+        threads = channel.threads
+        for thread in threads:
+            if thread.id == payload.message_id:
+                messages = await thread.history(limit=2).flatten()
+                if len(messages) > 1:  # the parental message counts too, apparently
+                    await thread.edit(archived=True)
+                    await guild_log.info(
+                        None,
+                        channel,
+                        f"Deleted message, thread id {payload.message_id} archived.",
+                    )
+                else:
+                    await thread.delete()
+                    await guild_log.info(
+                        None,
+                        channel,
+                        f"Deleted message, empty thread id {payload.message_id} also deleted.",
+                    )
+                return
+
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """Handle message pinning."""
         if payload.guild_id is None or payload.member is None:
