@@ -1,3 +1,21 @@
+msgid Logging is not enabled on this server.
+msgstr
+
+msgid Invalid scope.
+msgstr
+
+msgid Invalid level.
+msgstr
+
+msgid Logging settings succesfully updated.
+msgstr
+
+msgid Logging target unset.
+msgstr
+
+msgid Supplied arguments didn't match any entries.
+msgstr
+
 msgid Pong: **{delay}** 🏓
 msgstr
 
@@ -91,6 +109,136 @@ msgstr
 msgid Thread by {author}
 msgstr
 
+msgid Error content
+msgstr
+
+msgid pumpkin.py exception
+msgstr
+
+msgid An environment variable is missing
+msgstr
+
+msgid Module exception
+msgstr
+
+msgid Translation error
+msgstr
+
+msgid An unexpected error occurred
+msgstr
+
+msgid Command error
+msgstr
+
+msgid The command has to have an argument `{arg}`
+msgstr
+
+msgid Permission error
+msgstr
+
+msgid Insufficient permission
+msgstr
+
+msgid Slow down
+msgstr
+
+msgid Wait **{time}**
+msgstr
+
+msgid Too much concurrency
+msgstr
+
+msgid This command is already running multiple times
+	The limit is **{num}**/**{per}**
+msgstr
+
+msgid You have to have a {role} role for that
+msgstr
+
+msgid I lack the role {role}
+msgstr
+
+msgid You have to have one role of {roles}
+msgstr
+
+msgid I need one of roles {roles}
+msgstr
+
+msgid You lack some of {perms} permissions
+msgstr
+
+msgid I lack the {perms} permission
+msgstr
+
+msgid Argument error
+msgstr
+
+msgid Bad data type in the `{param}` parameter
+msgstr
+
+msgid Bad Boolean Argument
+msgstr
+
+msgid Argument `{arg}` is not binary
+msgstr
+
+msgid An error occurred in converter `{converter}`
+msgstr
+
+msgid Not found
+msgstr
+
+msgid I can't see the **{channel}** channel
+msgstr
+
+msgid Bad Argument
+msgstr
+
+msgid Error in argument
+msgstr
+
+msgid Extension Error
+msgstr
+
+msgid An error occurred inside of **{extension}** extension
+msgstr
+
+msgid Extension **{extension}** is already loaded
+msgstr
+
+msgid **{extension}** failed
+msgstr
+
+msgid The extension **{extension}** could not be found
+msgstr
+
+msgid The extension **{extension}** could not be found. It should be in `repository.module` format
+msgstr
+
+msgid The extension **{extension}** is not loaded
+msgstr
+
+msgid Error
+msgstr
+
+msgid Error on registering the command `{cmd}`
+msgstr
+
+msgid Bad input
+msgstr
+
+msgid Client error
+msgstr
+
+msgid discord.py library error
+msgstr
+
+msgid Repository named `{name}` already exists.
+msgstr
+
+msgid Repository has been installed to `{path}`. It includes the following modules: {modules}.
+msgstr
+
 msgid No such repository.
 msgstr
 
@@ -98,4 +246,155 @@ msgid File `requirements.txt` changed, running `pip`.
 msgstr
 
 msgid This repository is protected.
+msgstr
+
+msgid Module **{name}** has been loaded.
+msgstr
+
+msgid Module **{name}** cannot be unloaded.
+msgstr
+
+msgid Module **{name}** has been unloaded.
+msgstr
+
+msgid Module **{name}** has been reloaded.
+msgstr
+
+msgid Global configuration
+msgstr
+
+msgid Bot prefix
+msgstr
+
+msgid Language
+msgstr
+
+msgid Lexical gender
+msgstr
+
+msgid Status
+msgstr
+
+msgid Key has to be one of: {keys}
+msgstr
+
+msgid Invalid value
+msgstr
+
+msgid Unsupported language
+msgstr
+
+msgid Valid genders values are: {genders}
+msgstr
+
+msgid Valid status values are: {states}
+msgstr
+
+msgid You didn't define any ACL groups yet.
+msgstr
+
+msgid No such group exists.
+msgstr
+
+msgid Bad group name (regex `{regex}`)
+msgstr
+
+msgid ACL group can't be named like that (regex `{regex}`).
+msgstr
+
+msgid Bad parameter.
+msgstr
+
+msgid No such group.
+msgstr
+
+msgid ACL group removed.
+msgstr
+
+msgid **{count} rules** exported.
+msgstr
+
+msgid No such ACL rule.
+msgstr
+
+msgid Rule removed.
+msgstr
+
+msgid I've removed add {count} rules.
+msgstr
+
+msgid I'm expecting one JSON file.
+msgstr
+
+msgid You have to upload the JSON file.
+msgstr
+
+msgid I've imported **{new}** new and **{updated}** updated rules.
+msgstr
+
+msgid Skipping:
+msgstr
+
+msgid expected `bool`
+msgstr
+
+msgid expected `list`
+msgstr
+
+msgid invalid group
+msgstr
+
+msgid expected `int`
+msgstr
+
+msgid duplicate
+msgstr
+
+msgid Command **{name}** is not enabled.
+msgstr
+
+msgid Command **{name}** has been disabled.
+msgstr
+
+msgid Command **{name}** is not disabled.
+msgstr
+
+msgid Command **{name}** has been enabled.
+msgstr
+
+msgid ACL group {name}
+msgstr
+
+msgid Discord role
+msgstr
+
+msgid Parent ACL group
+msgstr
+
+msgid Localisation
+msgstr
+
+msgid 	Available languages:
+	 > {languages}
+msgstr
+
+msgid User settings
+msgstr
+
+msgid Not set
+msgstr
+
+msgid Server settings
+msgstr
+
+msgid I can't speak that language.
+msgstr
+
+msgid You don't have any language preference.
+msgstr
+
+msgid You may need to wait two minutes for the change to take effect.
+msgstr
+
+msgid This server doesn't have any language preference.
 msgstr
