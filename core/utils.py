@@ -264,3 +264,18 @@ class Discord:
                 name=config.prefix + "help",
             ),
         )
+
+    @staticmethod
+    async def send_dm(
+        user: Union[discord.Member, discord.User],
+        text: Optional[str] = None,
+        *,
+        embed: Optional[discord.Embed] = None,
+    ) -> bool:
+        if text is None and embed is None:
+            raise ValueError("Could not send an empty message.")
+        try:
+            await user.send(text, embed=embed)
+            return True
+        except discord.HTTPException:
+            return False
