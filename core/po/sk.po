@@ -1,19 +1,11 @@
-# file: core/check.py:156:27
 msgid This command is not available in this version
 msgstr
 
-# file: core/utils.py:193:29
-msgid Answer for
-msgstr
-
-# file: core/help.py:42:22
 msgid I don't know the **{name}** command
 msgstr
 
-# file: core/help.py:53:16
 msgid Command **{name}** does not have subcommand **{subcommand}**
 msgstr
 
-# file: core/help.py:60:12
 msgid Command **{name}** has no subcommand
 msgstr
