@@ -1,8 +1,8 @@
 import git
-import os
 import pytest
 import tempfile
 from pathlib import Path
+from typing import Union
 
 from modules.base.admin.module import Admin
 from modules.base.admin.objects import Repository
@@ -13,30 +13,42 @@ def _create_repo(path: str):
 
 
 def _update_init(
-    path: str,
+    path: Union[str, Path],
     *,
     name: str = "test",
     modules: tuple = ("test",),
     create_modules: bool = True,
 ):
     """Update __init__.py file"""
-    with open(os.path.join(path, "__init__.py"), "w") as handle:
-        module_names = [f'"{m}"' for m in modules]
-        handle.write(f'__all__ = ({", ".join(module_names)})\n')
+    if path.__class__ == str:
+        path = Path(path)
+
+    with open(path / "__init__.py", "w") as handle:
+        module_names = ", ".join([f'"{m}"' for m in modules])
+        if len(modules) == 1:
+            # make sure the written value is tuple, not string
+            module_names += ","
+        handle.write(f"__all__ = ({module_names})\n")
         handle.write(f'__name__ = "{name}"\n')
 
     if not create_modules:
         return
     for module in modules:
-        try:
-            os.mkdir(os.path.join(path, module))
-        except FileExistsError:
-            pass
+        _update_module_files(path / module)
 
 
-def _update_requirements(path: str, *, lines: list):
+def _update_module_files(path: Path):
+    """Create files in the module directory."""
+    path.mkdir(exist_ok=True)
+    with open(path / "__init__.py", "w") as handle:
+        handle.write("")
+    with open(path / "module.py", "w") as handle:
+        handle.write("")
+
+
+def _update_requirements(path: Path, *, lines: list):
     """Update requirements.txt file"""
-    with open(os.path.join(path, "requirements.txt"), "w") as handle:
+    with open(path / "requirements.txt", "w") as handle:
         handle.write("\n".join(lines))
 
 
@@ -47,12 +59,12 @@ def test_module_download():
     pass
 
 
-def test_module_check():
+def test_module_check__one_module():
     tempdir = tempfile.TemporaryDirectory()
     _create_repo(tempdir.name)
 
     info = {
-        "all": ("test", "test_test"),
+        "all": ("test",),
         "name": "test",
     }
     _update_init(
@@ -61,17 +73,50 @@ def test_module_check():
         modules=info["all"],
     )
 
-    repository = Repository(Path(tempdir.name))
-    assert repository.name == info["name"]
-    assert repository.module_names == info["all"]
+    try:
+        repository = Repository(Path(tempdir.name))
+        assert repository.name == info["name"]
+        assert repository.module_names == info["all"]
+    finally:
+        tempdir.cleanup()
 
-    tempdir.cleanup()
+
+def test_module_check__more_modules():
+    tempdir = tempfile.TemporaryDirectory()
+    _create_repo(tempdir.name)
+
+    info = {
+        "all": ("test_a", "test_b"),
+        "name": "test",
+    }
+    _update_init(
+        tempdir.name,
+        name=info["name"],
+        modules=info["all"],
+    )
+
+    try:
+        repository = Repository(Path(tempdir.name))
+        assert repository.name == info["name"]
+        assert repository.module_names == info["all"]
+    finally:
+        tempdir.cleanup()
 
 
 def test_module_check_failures():
     tempdir = tempfile.TemporaryDirectory()
     _create_repo(tempdir.name)
     temppath = Path(tempdir.name)
+
+    info = {
+        "all": ("test",),
+        "name": "test",
+    }
+    _update_init(
+        tempdir.name,
+        name=info["name"],
+        modules=info["all"],
+    )
 
     _update_init(tempdir.name, name="CAPITALS")
     with pytest.raises(ValueError) as excinfo:
@@ -94,10 +139,7 @@ def test_module_check_failures():
     _update_init(tempdir.name, modules=("missing",), create_modules=False)
     with pytest.raises(ValueError) as excinfo:
         Repository(temppath)
-    assert (
-        str(excinfo.value) == f"Specification of a repository at '{temppath}' "
-        f"includes link to invalid module 'missing'."
-    )
+    assert str(excinfo.value) == "Module 'missing' is missing its init file."
 
     tempdir.cleanup()
 
