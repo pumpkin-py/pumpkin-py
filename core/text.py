@@ -26,7 +26,7 @@ class Translator:
 
         from core import text
 
-        tr = text.Translator(__file__).translate
+        tr = i18n.Translator(__file__).translate
     """
 
     def __init__(self, file: str):

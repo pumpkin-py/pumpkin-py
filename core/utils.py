@@ -4,10 +4,11 @@ from typing import List, Union, Optional
 import discord
 from discord.ext import commands
 
-from core import text
+from core import text, i18n
 from database.config import Config
 
 tr = text.Translator(__file__).translate
+_ = i18n.Translator(__file__).translate
 config = Config.get()
 
 
@@ -191,7 +192,7 @@ class Discord:
         )
 
         # footer
-        base_footer = tr("create_embed", "footer")
+        base_footer = "📩 "
         if author is not None:
             base_footer += f" {author.display_name}"
         if footer is not None:

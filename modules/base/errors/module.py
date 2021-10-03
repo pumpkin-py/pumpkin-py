@@ -6,10 +6,11 @@ import discord
 from discord.ext import commands
 
 import core.exceptions
-from core import text, logging, utils
+from core import text, logging, utils, i18n
 
 
 tr = text.Translator(__file__).translate
+_ = i18n.Translator(__file__).translate
 bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
 
@@ -60,7 +61,7 @@ class Errors(commands.Cog):
         )
         if log_error:
             embed.add_field(
-                name=tr("on_command_error", "error content"),
+                name=_(ctx, "Error content"),
                 value=str(error),
                 inline=False,
             )
@@ -93,8 +94,16 @@ class Errors(commands.Cog):
 
         # pumpkin.py own exceptions
         if isinstance(error, core.exceptions.PumpkinException):
+            error_message = {
+                "PumpkinException": _(ctx, "pumpkin.py exception"),
+                "DotEnvException": _(ctx, "An environment variable is missing"),
+                "ModuleException": _(ctx, "Module exception"),
+                "BadTranslation": _(ctx, "Translation error"),
+            }
             return (
-                tr("pumpkin.py", type(error).__name__, ctx),
+                error_message.get(
+                    type(error).__name__, _(ctx, "An unexpected error occurred")
+                ),
                 str(error),
                 True,
             )
@@ -102,108 +111,130 @@ class Errors(commands.Cog):
         # interactions
         if type(error) == commands.MissingRequiredArgument:
             return (
-                tr("MissingRequiredArgument", "name", ctx),
-                tr("MissingRequiredArgument", "value", ctx, arg=error.param.name),
+                _(ctx, "Command error"),
+                _(
+                    ctx,
+                    "The command has to have an argument `{arg}`".format(
+                        arg=error.param.name
+                    ),
+                ),
                 False,
             )
         if type(error) == commands.CheckFailure:
             return (
-                tr("CheckFailure", "name", ctx),
-                tr("CheckFailure", "value", ctx),
+                _(ctx, "Permission error"),
+                _(ctx, "Insufficient permission"),
                 False,
             )
         if type(error) == commands.CommandOnCooldown:
             time = utils.Time.seconds(error.retry_after)
             return (
-                tr("CommandOnCooldown", "name", ctx),
-                tr("CommandOnCooldown", "value", ctx, time=time),
+                _(ctx, "Slow down"),
+                _(ctx, "Wait **{time}**".format(time=time)),
                 False,
             )
         if type(error) == commands.MaxConcurrencyReached:
             return (
-                tr("MaxConcurrencyReached", "name", ctx),
-                tr(
-                    "MaxConcurrencyReached",
-                    "value",
+                _(ctx, "Too much concurrency"),
+                _(
                     ctx,
-                    num=error.number,
-                    per=error.per.name,
+                    "This command is already running multiple times\n\tThe limit is **{num}**/**{per}**".format(
+                        num=error.number, per=error.per.name
+                    ),
                 ),
                 False,
             )
         if type(error) == commands.MissingRole:
             return (
-                tr("MissingRole", "name", ctx),
-                tr("MissingRole", "value", ctx, role=f"`{error.missing_role!r}`"),
+                _(ctx, "Permission error"),
+                _(
+                    ctx,
+                    "You have to have a {role} role for that".format(
+                        role=f"`{error.missing_role!r}`"
+                    ),
+                ),
                 False,
             )
         if type(error) == commands.BotMissingRole:
             return (
-                tr("BotMissingRole", "name", ctx),
-                tr("BotMissingRole", "value", ctx, role=f"`{error.missing_role!r}`"),
+                _(ctx, "Permission error"),
+                _(
+                    ctx,
+                    "I lack the role {role}".format(role=f"`{error.missing_role!r}`"),
+                ),
                 False,
             )
         if type(error) == commands.MissingAnyRole:
             roles = ", ".join(f"**{r!r}**" for r in error.missing_roles)
             return (
-                tr("MissingAnyRole", "name", ctx),
-                tr("MissingAnyRole", "value", ctx, roles=roles),
+                _(ctx, "Permission error"),
+                _(ctx, "You have to have one role of {roles}".format(roles=roles)),
                 False,
             )
         if type(error) == commands.BotMissingAnyRole:
             roles = ", ".join(f"**{r!r}**" for r in error.missing_roles)
             return (
-                tr("BotMissingAnyRole", "name", ctx),
-                tr("BotMissingAnyRole", "value", ctx, roles=roles),
+                _(ctx, "Permission error"),
+                _(ctx, "I need one of roles {roles}".format(roles=roles)),
                 False,
             )
         if type(error) == commands.MissingPermissions:
             perms = ", ".join(f"**{p}**" for p in error.missing_perms)
             return (
-                tr("MissingPermissions", "name", ctx),
-                tr("MissingPermissions", "value", ctx, perms=perms),
+                _(ctx, "Permission error"),
+                _(ctx, "You lack some of {perms} permissions".format(perms=perms)),
                 False,
             )
         if type(error) == commands.BotMissingPermissions:
             perms = ", ".join(f"`{p}`" for p in error.missing_perms)
             return (
-                tr("BotMissingPermissions", "name", ctx),
-                tr("BotMissingPermissions", "value", ctx, perms=perms),
+                _(ctx, "Permission error"),
+                _(ctx, "I lack the {perms} permission".format(perms=perms)),
                 False,
             )
         if type(error) == commands.BadUnionArgument:
             return (
-                tr("BadUnionArgument", "name", ctx),
-                tr("BadUnionArgument", "value", ctx, param=error.param.name),
+                _(ctx, "Argument error"),
+                _(
+                    ctx,
+                    "Bad data type in the `{param}` parameter".format(
+                        param=error.param.name
+                    ),
+                ),
                 False,
             )
         if type(error) == commands.BadBoolArgument:
             return (
-                tr("BadBoolArgument", "name", ctx),
-                tr("BadBoolArgument", "value", ctx, arg=error.argument),
+                _(ctx, "Bad Boolean Argument"),
+                _(ctx, "Argument `{arg}` is not binary".format(arg=error.argument)),
                 False,
             )
         if type(error) == commands.ConversionError:
             return (
-                tr("ConversionError", "name", ctx),
-                tr(
-                    "ConversionError",
-                    "value",
+                _(ctx, "Command error"),
+                _(
                     ctx,
-                    converter=type(error.converter).__name__,
+                    "An error occurred in converter `{converter}`".format(
+                        converter=type(error.converter).__name__
+                    ),
                 ),
                 False,
             )
         if type(error) == commands.ChannelNotReadable:
             return (
-                tr(error.__class__.__name__, "name", ctx),
-                tr(error.__class__.__name__, "value", ctx, channel=error.argument.name),
+                _(ctx, "Not found"),
+                _(
+                    ctx,
+                    "I can't see the **{channel}** channel".format(
+                        channel=error.argument.name
+                    ),
+                ),
                 False,
             )
         if isinstance(error, commands.BadArgument):
             return (
-                tr(error.__class__.__name__, "name", ctx),
-                tr(error.__class__.__name__, "value", ctx),
+                _(ctx, "Bad Argument"),
+                _(ctx, "Error in argument"),
                 False,
             )
 
@@ -212,8 +243,13 @@ class Errors(commands.Cog):
             # return friendly name, e.g. strip "modules.{module}.module"
             name = error.name[8:-7]
             return (
-                tr("ExtensionFailed", "name", ctx),
-                tr("ExtensionFailed", "value", ctx, extension=name),
+                _(ctx, "Extension Error"),
+                _(
+                    ctx,
+                    "An error occurred inside of **{extension}** extension".format(
+                        extension=name
+                    ),
+                ),
                 True,
             )
         if isinstance(error, commands.ExtensionError):
@@ -224,31 +260,75 @@ class Errors(commands.Cog):
                 key = "ExtensionNotFound_hint"
             else:
                 key = type(error).__name__
+            error_message = {
+                "ExtensionAlreadyLoaded": _(
+                    ctx,
+                    "Extension **{extension}** is already loaded".format(
+                        extension=name
+                    ),
+                ),
+                "ExtensionError": _(
+                    ctx,
+                    "An error occurred inside of **{extension}** extension".format(
+                        extension=name
+                    ),
+                ),
+                "ExtensionFailed": _(
+                    ctx, "**{extension}** failed".format(extension=name)
+                ),
+                "ExtensionNotFound": _(
+                    ctx,
+                    "The extension **{extension}** could not be found".format(
+                        extension=name
+                    ),
+                ),
+                "ExtensionNotFound_hint": _(
+                    ctx,
+                    "The extension **{extension}** could not be found. It should be in `repository.module` format".format(
+                        extension=name
+                    ),
+                ),
+                "ExtensionNotLoaded": _(
+                    ctx,
+                    "The extension **{extension}** is not loaded".format(
+                        extension=name
+                    ),
+                ),
+            }
             return (
-                tr(key, "name", ctx),
-                tr(key, "value", ctx, extension=name),
+                _(ctx, "Extension Error"),
+                error_message.get(key, _(ctx, "An unexpected error occurred")),
                 False,
             )
 
         # the rest of client exceptions
         if type(error) == commands.CommandRegistrationError:
             return (
-                tr("CommandRegistrationError", "name", ctx),
-                tr("CommandRegistrationError", "value", ctx, cmd=error.name),
+                _(ctx, "Error"),
+                _(
+                    ctx,
+                    "Error on registering the command `{cmd}`".format(cmd=error.name),
+                ),
                 False,
             )
         if isinstance(error, commands.UserInputError):
             return (
-                tr(type(error).__name__, "name", ctx),
-                tr(type(error).__name__, "value", ctx),
+                _(ctx, "Command error"),
+                _(ctx, "Bad input"),
                 False,
             )
         if isinstance(error, commands.CommandError) or isinstance(
             error, discord.ClientException
         ):
+            error_message = {
+                "CommandError": _(ctx, "Command error"),
+                "ClientException": _(ctx, "Client error"),
+            }
             return (
-                tr(type(error).__name__, "name", ctx),
-                tr(type(error).__name__, "value", ctx),
+                _(ctx, "Error"),
+                error_message.get(
+                    type(error).__name__, _(ctx, "An unexpected error occurred")
+                ),
                 True,
             )
 
@@ -256,24 +336,30 @@ class Errors(commands.Cog):
         if type(error) == discord.NoMoreItems or isinstance(
             error, discord.HTTPException
         ):
+            error_message = {
+                "NoMoreItems": _(ctx, "pumpkin.py exception"),
+                "HTTPException": _(ctx, "An environment variable is missing"),
+            }
             return (
-                tr(type(error).__name__, "name", ctx),
-                tr(type(error).__name__, "value", ctx),
+                _(ctx, "Error"),
+                error_message.get(
+                    type(error).__name__, _(ctx, "An unexpected error occurred")
+                ),
                 True,
             )
 
         # critical discord.py exceptions
         if isinstance(error, discord.DiscordException):
             return (
-                tr(type(error).__name__, "name", ctx),
-                tr(type(error).__name__, "value", ctx),
+                _(ctx, "Error"),
+                _(ctx, "discord.py library error"),
                 True,
             )
 
         # other exceptions
         return (
             type(error).__name__,
-            tr("Unknown", "value", ctx),
+            _(ctx, "An unexpected error occurred"),
             True,
         )
 

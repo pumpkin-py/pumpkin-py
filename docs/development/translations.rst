@@ -14,7 +14,7 @@ To update them, run
 
 .. code-block:: bash
 
-	python3 gettext.py modules/base
+	python3 get_text.py modules/base
 	# or other module that needs updating
 
 All modules define the translation function on top of the file, and you should too:

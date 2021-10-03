@@ -6,9 +6,9 @@ from typing import Sequence, Callable, Optional
 
 from discord.ext import commands
 
-from core import text, exceptions
+from core import text, exceptions, i18n
 
-
+_ = i18n.Translator(__file__).translate
 tr = text.Translator(__file__).translate
 
 
@@ -34,26 +34,31 @@ class Help(commands.MinimalHelpCommand):
         )
 
     def command_not_found(self, string: str) -> str:
+        ctx = self.context
         """Command does not exist.
 
         This override changes the language from english to l10n version.
         """
-        return tr("help", "command not found", self.context, name=string)
+        return _(ctx, "I don't know the **{name}** command".format(name=string))
 
     def subcommand_not_found(self, command: commands.Command, string: str) -> str:
+        ctx = self.context
         """Command does not have requested subcommand.
 
         This override changes the language from english to l10n version.
         """
         if type(command) == commands.Group and len(command.all_commands) > 0:
-            return tr(
-                "help",
-                "no named subcommand",
-                self.context,
-                name=command.qualified_name,
-                subcommand=string,
+            return _(
+                ctx,
+                "Command **{name}** does not have subcommand **{subcommand}**".format(
+                    name=command.qualified_name,
+                    subcommand=string,
+                ),
             )
-        return tr("help", "no subcommand", self.context, name=command.qualified_name)
+        return _(
+            ctx,
+            "Command **{name}** has no subcommand".format(name=command.qualified_name),
+        )
 
     def get_command_signature(self, command: commands.Command) -> str:
         """Retrieves the signature portion of the help page.
@@ -164,6 +169,7 @@ class Help(commands.MinimalHelpCommand):
 
     async def send_cog_help(self, cog: commands.Cog) -> None:
         """Format cog output."""
+        ctx = self.context
         with contextlib.suppress(TypeError, exceptions.BadTranslation):
             module_tr: Optional[Callable] = self._get_cog_translator(cog)
             self.paginator.add_line(module_tr("_", "help"), empty=True)
@@ -172,9 +178,7 @@ class Help(commands.MinimalHelpCommand):
             cog.get_commands(), sort=self.sort_commands
         )
         if filtered:
-            self.paginator.add_line(
-                f"{tr('help', 'module')} **__{cog.qualified_name}__**"
-            )
+            self.paginator.add_line(f"{_(ctx, 'Module')} **__{cog.qualified_name}__**")
             for command in filtered:
                 self.add_subcommand_formatting(command)
 

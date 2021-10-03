@@ -4,7 +4,7 @@ from typing import Optional, Callable
 import discord
 from discord.ext import commands
 
-from core.utils import tr
+from core.utils import _
 from database import acl as acldb
 
 
@@ -151,7 +151,10 @@ def version(
                 return await func(*args, **kwargs)
 
             if reply and isinstance(args[1], commands.Context):
-                await args[1].message.reply(tr("version", "reply"))
+                ctx = args[1]
+                await args[1].message.reply(
+                    _(ctx, "This command is not available in this version")
+                )
 
             return None
 

@@ -81,7 +81,7 @@ In our case, we only have one module specified, so we have to create a file ``bi
 
 	from core import acl, text, logging
 
-	tr = text.Translator(__file__).translate
+	tr = i18n.Translator(__file__).translate
 	bot_log = logging.Bot.logger()
 	guild_log = logging.Guild.logger()
 

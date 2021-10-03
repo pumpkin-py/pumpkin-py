@@ -2,9 +2,10 @@ from typing import Optional
 
 from discord.ext import commands
 
-from core import check, text, logging, utils
+from core import check, text, logging, utils, i18n
 from database.logging import Logging as DBLogging
 
+_ = i18n.Translator(__file__).translate
 tr = text.Translator(__file__).translate
 bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
@@ -47,7 +48,7 @@ class Logging(commands.Cog):
             for stub in utils.Text.split(output):
                 await ctx.reply(f"```{stub}```")
         else:
-            await ctx.reply(tr("logging list", "none", ctx))
+            await ctx.reply(_(ctx, "Logging is not enabled on this server."))
 
     @commands.check(check.acl)
     @logging_.command(name="set")
@@ -55,12 +56,12 @@ class Logging(commands.Cog):
         self, ctx, scope: str, level: str, module: Optional[str] = None
     ):
         if scope not in ("bot", "guild"):
-            await ctx.reply(tr("logging set", "invalid scope", ctx))
+            await ctx.reply(_(ctx, "Invalid scope."))
             return
 
         level: str = level.upper()
         if level not in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "NONE"):
-            await ctx.reply(tr("logging set", "invalid level", ctx))
+            await ctx.reply(_(ctx, "Invalid level."))
             return
         levelno: int = getattr(logging.LogLevel, level).value
 
@@ -87,14 +88,14 @@ class Logging(commands.Cog):
                 else f"Guild log level set to {level}."
             )
 
-        await ctx.reply(tr("logging set", "reply"))
+        await ctx.reply(_(ctx, "Logging settings succesfully updated."))
         await guild_log.info(ctx.author, ctx.channel, log_message)
 
     @commands.check(check.acl)
     @logging_.command(name="unset")
     async def logging_unset(self, ctx, scope: str, module: Optional[str] = None):
         if scope not in ("bot", "guild"):
-            await ctx.reply(tr("logging unset", "invalid scope", ctx))
+            await ctx.reply(_(ctx, "Invalid scope."))
             return
 
         log_message: str
@@ -110,10 +111,10 @@ class Logging(commands.Cog):
             )
 
         if result > 0:
-            await ctx.reply(tr("logging unset", "reply", ctx))
+            await ctx.reply(_(ctx, "Logging target unset."))
             await guild_log.info(ctx.author, ctx.channel, log_message)
         else:
-            await ctx.reply(tr("logging unset", "none", ctx))
+            await ctx.reply(_(ctx, "Supplied arguments didn't match any entries."))
 
 
 def setup(bot) -> None:
