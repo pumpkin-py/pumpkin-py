@@ -26,6 +26,9 @@ class RepositoryManager:
 
     def __init__(self):
         self.log = []
+        self.refresh()
+
+    def refresh(self):
         self.repositories = self.get_repositories()
 
     def get_repositories(self) -> List[Repository]:
@@ -67,14 +70,17 @@ class RepositoryManager:
 class Repository:
     """Module repository."""
 
-    __slots__ = ("path", "name", "module_names")
+    __slots__ = ("path", "branch", "name", "module_names")
 
     path: Path
+    branch: str
     name: str
     module_names: Tuple[str]
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, branch: Optional[str] = None):
         self.path: Path = path
+        if branch is not None:
+            self.change_branch(branch)
         self.set_facts()
 
     def __repr__(self) -> str:
@@ -82,6 +88,20 @@ class Repository:
             f"<{self.__class__.__name__} path={self.path!s} "
             f"name='{self.name}' modules='{', '.join(self.module_names)}'>"
         )
+
+    def change_branch(self, branch: str) -> None:
+        """Change the git branch of the repository.
+
+        :raises ValueError: Output of git if an error occurs.
+        """
+        is_base: bool = getattr(self, "name", "") == "base"
+        repo = git.repo.base.Repo(str(self.path), search_parent_directories=is_base)
+        try:
+            repo.git.checkout(branch)
+        except git.exc.GitCommandError as exc:
+            raise ValueError(
+                f"Could not checkout branch {branch}: {exc.stderr.strip()}"
+            )
 
     def set_facts(self):
         """Check the __init__.py and get information from there."""
@@ -143,7 +163,8 @@ class Repository:
                 "invalid specification of included modules."
             )
         names: str = matched.groups()[-1]
-        list_of_names = [n.strip(" \"'") for n in names.split(",") if len(n)]
+        list_of_names = [n.strip(" \"'") for n in names.split(",")]
+        list_of_names = [n for n in list_of_names if len(n)]
         for name in list_of_names:
             if re.fullmatch(RE_NAME, name) is None:
                 raise ValueError(
