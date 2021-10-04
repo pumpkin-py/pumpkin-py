@@ -7,6 +7,7 @@ from discord.ext import commands, tasks
 
 import database.config
 from core import check, i18n, text, logging, utils
+from core import LANGUAGES as I18N_LANGUAGES
 from .database import BaseAdminModule as Module
 from .objects import RepositoryManager, Repository
 
@@ -15,6 +16,8 @@ tr = text.Translator(__file__).translate
 bot_log = logging.Bot.logger()
 guild_log = logging.Guild.logger()
 config = database.config.Config.get()
+
+LANGUAGES = ("en",) + I18N_LANGUAGES
 
 manager = RepositoryManager()
 
@@ -346,8 +349,7 @@ class Admin(commands.Cog):
             if bool_value is None:
                 return await ctx.send(_(ctx, "Invalid value"))
 
-        languages = ("en", "cs")
-        if key == "language" and value not in languages:
+        if key == "language" and value not in LANGUAGES:
             return await ctx.send(_(ctx, "Unsupported language"))
         genders = ("m", "f")
         if key == "gender" and value not in genders:

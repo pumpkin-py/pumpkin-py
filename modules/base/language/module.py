@@ -2,6 +2,7 @@ from discord.ext import commands
 
 import database.config
 from core import check, text, logging, utils, i18n
+from core import LANGUAGES as I18N_LANGUAGES
 from database.language import GuildLanguage, MemberLanguage
 
 _ = i18n.Translator(__file__).translate
@@ -9,10 +10,7 @@ tr = text.Translator(__file__).translate
 guild_log = logging.Guild.logger()
 config = database.config.Config.get()
 
-# TODO Should it be here, or can we place it somewhere else
-# so that we don't have to hardcode the values on multiple places?
-# The only other input is in Admin cog, so it's not too bad.
-LANGUAGES = ("en", "cs")
+LANGUAGES = ("en",) + I18N_LANGUAGES
 
 
 class Language(commands.Cog):
