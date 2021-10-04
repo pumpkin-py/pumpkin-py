@@ -179,14 +179,21 @@ class Admin(commands.Cog):
 
         manager.refresh()
 
+        requirements_txt_updated: bool = False
         if repository.requirements_txt_hash != requirements_txt_hash:
             await ctx.send(_(ctx, "File `requirements.txt` changed, running `pip`."))
+            requirements_txt_updated = True
 
             async with ctx.typing():
                 install: str = repository.install_requirements()
                 if install is not None:
                     for output in utils.Text.split(install):
                         await ctx.send("```" + output + "```")
+
+        log_message: str = f"Repository {name} updated."
+        if requirements_txt_updated:
+            log_message += " requirements.txt differed, pip was run."
+        await bot_log.info(ctx.author, ctx.channel, log_message)
 
     @commands.check(check.acl)
     @repository.command(name="checkout")
