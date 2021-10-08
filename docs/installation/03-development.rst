@@ -29,7 +29,7 @@ Then you have to setup link back to our main repository, which is usually called
 
 .. code-block:: bash
 
-	git remote add upstream https://github.com/Pumpkin-py/pumpkin.py.git
+	git remote add upstream https://github.com/pumpkin-py/pumpkin-py.git
 
 Database setup
 --------------

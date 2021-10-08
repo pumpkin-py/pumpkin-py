@@ -1,7 +1,7 @@
 Intro to pumpkin.py
 ===================
 
-`pumpkin.py <https://github.com/Pumpkin-py/pumpkin.py>`_ is universal and modular discord bot.
+`pumpkin.py <https://github.com/pumpkin-py/pumpkin-py>`_ is universal and modular discord bot.
 
 .. note::
    This documentation is highly WIP, as the bot is. Proceed with caution.
