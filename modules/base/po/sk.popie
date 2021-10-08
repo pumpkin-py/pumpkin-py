@@ -329,6 +329,9 @@ msgstr
 msgid You have to upload the JSON file.
 msgstr
 
+msgid Your JSON file contains errors.
+msgstr
+
 msgid I've imported **{new}** new and **{updated}** updated rules.
 msgstr
 
@@ -374,6 +377,9 @@ msgstr
 msgid Localization
 msgstr
 
+msgid Available languages:
+msgstr
+
 msgid User settings
 msgstr
 
@@ -386,11 +392,20 @@ msgstr
 msgid I can't speak that language.
 msgstr
 
-msgid You don't have any language preference.
+msgid I'll remember the preference of **{language}**
 msgstr
 
 msgid You may need to wait two minutes for the change to take effect.
 msgstr
 
+msgid You don't have any language preference.
+msgstr
+
+msgid I'll be using **{language}** on this server now.
+msgstr
+
 msgid This server doesn't have any language preference.
+msgstr
+
+msgid I'll be using the global settings from now on.
 msgstr
