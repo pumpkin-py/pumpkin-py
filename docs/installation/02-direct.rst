@@ -128,7 +128,7 @@ Use ``git`` to download the source:
 
 .. code-block:: bash
 
-	git clone git@github.com:Pumpkin-py/pumpkin.py.git pumpkin
+	git clone git@github.com:pumpkin-py/pumpkin-py.git pumpkin
 	cd pumpkin
 
 To update the bot later, run

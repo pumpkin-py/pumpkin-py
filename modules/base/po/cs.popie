@@ -17,97 +17,97 @@ msgid Supplied arguments didn't match any entries.
 msgstr
 
 msgid Pong: **{delay}** 🏓
-msgstr
+msgstr Pong: **{delay}** 🏓
 
 msgid Uptime
-msgstr
+msgstr Uptime
 
 msgid Boot time
-msgstr
+msgstr Čas spuštění
 
 msgid Run time
-msgstr
+msgstr Doba od spuštění
 
 msgid Message pinning 📌
-msgstr
+msgstr Připínání zpráv 📌
 
 msgid Function is disabled
-msgstr
+msgstr Funkce je vypnutá
 
 msgid Global limit
-msgstr
+msgstr Globální limit
 
 msgid Channel #{channel}
-msgstr
+msgstr Kanál #{channel}
 
 msgid Pinning was disabled.
-msgstr
+msgstr Připíání bylo vypnuto.
 
 msgid Pinning preferences have been updated.
-msgstr
+msgstr Preference připínání byla aktualizována.
 
 msgid The preference was unset.
-msgstr
+msgstr Preference zrušena.
 
 msgid Bookmarks 🔖
-msgstr
+msgstr Záložky 🔖
 
 msgid Global settings
-msgstr
+msgstr Globální nastavení
 
 msgid Userthread 🧵
-msgstr
+msgstr Vlastní vlákna 🧵
 
 msgid Thread creation was disabled.
-msgstr
+msgstr Vytváření vláken bylo vypnuto.
 
 msgid Thread preference has been updated.
-msgstr
+msgstr Preference vytváření vláken byla aktualizována.
 
 msgid No channel has autothread enabled.
-msgstr
+msgstr Automatická vlákna nejsou povolena v žádném kanálu.
 
 msgid Autothread 🧵
-msgstr
+msgstr Automatická vlákna 🧵
 
 msgid Channels
-msgstr
+msgstr Kanály
 
 msgid Argument *duration* must be one of these values: '1h', '1d', '3d', '7d'.
-msgstr
+msgstr Argument *duration* musí být jedna z těchto hodnot: '1h', '1d', '3d', '7d'.
 
 msgid Threads will be automatically created in that channel.
-msgstr
+msgstr V zadaném kanálu budou vlákna automaticky otevírána.
 
 msgid I'm not creating new threads in that channel.
-msgstr
+msgstr V tom kanálu nová vlákna automaticky neotevírám.
 
 msgid Threads will no longer be automatically created in that channel.
-msgstr
+msgstr V tom kanálu už nová vlákna automaticky otevírat nebudu.
 
 msgid Automatic thread
-msgstr
+msgstr Automatické vlákno
 
 msgid I'm using 📍 to mark the pinned message, use 📌.
-msgstr
+msgstr Emoji 📍 používám já pro označení připnutých zpráv, použij 📌.
 
 msgid 🔖 Bookmark created
-msgstr
+msgstr 🔖 Záložka vytvořena
 
 msgid [Server {guild}, channel #{channel}]({link})
-msgstr
+msgstr [Server {guild}, kanál #{channel}]({link})
 
 msgid Files
-msgstr
+msgstr Soubory
 
 msgid Total {count}
-msgstr
+msgstr Celkem {count}
 
 msgid Embeds
-msgstr
+msgstr Tabulky
 
 msgid Thread by {author}
-msgstr
+msgstr Vlákno od {author}
 
 msgid Error content
 msgstr
@@ -240,13 +240,13 @@ msgid Repository has been installed to `{path}`. It includes the following modul
 msgstr
 
 msgid No such repository.
-msgstr
+msgstr Takový repozitář neexistuje.
 
 msgid File `requirements.txt` changed, running `pip`.
-msgstr
+msgstr Soubor `requirements.txt` byl změněn, spouštím `pip`.
 
 msgid This repository is protected.
-msgstr
+msgstr Repozitář je chráněn.
 
 msgid Module **{name}** has been loaded.
 msgstr
@@ -371,11 +371,7 @@ msgstr
 msgid Parent ACL group
 msgstr
 
-msgid Localisation
-msgstr
-
-msgid 	Available languages:
-	 > {languages}
+msgid Localization
 msgstr
 
 msgid User settings

@@ -1,13 +1,11 @@
-Creating a repository
-=====================
+How to create a repository
+==========================
 
-.. warning::
-
-	The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in `RFC 2119 <https://tools.ietf.org/html/rfc2119>`_.
+.. include:: _rfc_notice.rst
 
 Let's write a simple repository with just one module. We're gonna name it ``bistro``, because we'll gonna be making some delicious snacks.
 
-You can start with an empty directory (named ``pumpkin-bistro``, for example), or you can use our `template repository <https://github.com/Pumpkin-py/pumpkin-template>`_, it doesn't matter.
+You can start with an empty directory (named ``pumpkin-bistro``, for example), or you can use our `template repository <https://github.com/pumpkin-py/pumpkin-template>`_, it doesn't matter.
 
 Repository metadata
 -------------------
