@@ -13,11 +13,13 @@ Pumpkin.py is a Discord bot framework written in discord.py.
 
 ## Installing and running the bot
 
-This bot is still in a pre-release state. Currently it is not fit for any deployment
+See [ReadTheDocs](https://pumpkinpy.readthedocs.io/en/latest/).
 
 ## Development
 
-We haven't started using the major.minor.patch versioning, because the code does not work on itself yet. If you are a developer, read the [CONTRIBUTING](CONTRIBUTING.md) for more information and code reference.
+We haven't started using the major.minor.patch versioning, because the code does not work on itself yet.
+
+See [Development section on ReadTheDocs](https://pumpkinpy.readthedocs.io/en/latest/development/index.html).
 
 ## Authors
 

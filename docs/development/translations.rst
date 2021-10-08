@@ -1,6 +1,8 @@
 Translations
 ============
 
+.. include:: _rfc_notice.rst
+
 There are four **if**\ s of the text format:
 
 - If the string represents bot's reply, it should end with a period.
@@ -8,22 +10,23 @@ There are four **if**\ s of the text format:
 - If it is command help, it should not end with a period.
 - If the embed content or help is one or more sentences, it should end with a period.
 
-Translated strings are stored in `po` files.
+Translated strings are stored in ``po``-like files (with extension ``.popie``.
 
-To update them, run
+They should be updated automatically by pre-commit when you change the English text. However, if you want to trigger it manually, install the ``pumpkin-tools`` package and run the tool ``popie``:
 
 .. code-block:: bash
 
-	python3 po_pie.py modules/base
-	# or other module that needs updating
+	python3 -m pip install git+https://github.com/pumpkin-py/pumpkin-tools.git
+	popie <list of directories or files>
 
-All modules define the translation function on top of the file, and you should too:
+All modules define the translation function on top:
 
 .. code-block:: python3
 
 	from core import i18n
 
 	_ = i18n.Translator("repo/module").translate
+	# Set the "repo/module" to match the name of your repository and module
 
 	...
 
@@ -32,7 +35,7 @@ Because the members and guilds can set their language preference we have to tell
 .. code-block:: python3
 
 	async def language_set(self, ctx, language: str):
-	    if language not in ("en", "es"):
+	    if language not in LANGUAGES:
 	        await ctx.reply(_(ctx, "I can't speak that language!"))
 	        return
 
