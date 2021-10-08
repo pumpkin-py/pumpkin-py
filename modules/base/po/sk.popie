@@ -371,11 +371,7 @@ msgstr
 msgid Parent ACL group
 msgstr
 
-msgid Localisation
-msgstr
-
-msgid 	Available languages:
-	 > {languages}
+msgid Localization
 msgstr
 
 msgid User settings

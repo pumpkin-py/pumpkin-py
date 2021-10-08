@@ -32,13 +32,8 @@ class Language(commands.Cog):
     async def language_get(self, ctx):
         embed = utils.Discord.create_embed(
             author=ctx.author,
-            title=_(ctx, "Localisation"),
-            description=_(
-                ctx,
-                "\tAvailable languages:\n\t > {languages}".format(
-                    languages=", ".join(LANGUAGES)
-                ),
-            ),
+            title=_(ctx, "Localization"),
+            description=_(ctx, "Available languages:") + "\n> " + ", ".join(LANGUAGES),
         )
 
         user_preference = MemberLanguage.get(

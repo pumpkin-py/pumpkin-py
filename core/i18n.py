@@ -13,7 +13,7 @@ config = Config.get()
 
 
 class Translator:
-    """Class for getting translations from PO text files.
+    """Class for getting translations from PoPie text files.
 
     .. code-block:: python
         :linenos:
@@ -28,7 +28,7 @@ class Translator:
 
         self.strings: Dict[str, Dict[str, Optional[str]]] = {}
         for language in LANGUAGES:
-            pofile: Path = self._dir / "po" / f"{language}.po"
+            pofile: Path = self._dir / "po" / f"{language}.popie"
             if not pofile.exists():
                 continue
             self.strings[language] = self.parse_po_file(pofile)
