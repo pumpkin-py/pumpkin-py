@@ -22,3 +22,8 @@ repos:
     hooks:
     - id: bandit
       args: [--skip=B101]
+
+  - repo: https://github.com/pumpkin-py/pumpkin-tools
+    rev: ea6b7a1de575815237d50b4609e41fc0df6aff3d
+    hooks:
+    - id: popie
