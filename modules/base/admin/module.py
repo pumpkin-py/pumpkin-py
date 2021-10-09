@@ -31,12 +31,32 @@ class Admin(commands.Cog):
         self.status = ""
         if config.status == "auto":
             self.status_loop.start()
+        self.send_manager_log.start()
 
     def cog_unload(self):
         """Cancel status loop on unload."""
         self.status_loop.cancel()
 
     # Loops
+
+    @tasks.loop(minutes=1)
+    async def send_manager_log(self):
+        """Send manager log, if there is one."""
+        if not manager.log:
+            return
+
+        manager_log: str = "\n".join(manager.log)
+        await bot_log.warning(
+            None,
+            None,
+            f"Replaying {manager.__class__.__name__} log." + "\n" + manager_log,
+        )
+        manager.flush_log()
+
+    @send_manager_log.before_loop
+    async def before_send_manager_log(self):
+        if not self.bot.is_ready():
+            await self.bot.wait_until_ready()
 
     @tasks.loop(minutes=1)
     async def status_loop(self):

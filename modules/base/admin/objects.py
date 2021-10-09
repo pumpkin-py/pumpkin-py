@@ -31,6 +31,9 @@ class RepositoryManager:
     def refresh(self):
         self.repositories = self.get_repositories()
 
+    def flush_log(self):
+        self.log = []
+
     def get_repositories(self) -> List[Repository]:
         """Scan for available repositories."""
         repositories: List[Repository] = []
@@ -50,7 +53,7 @@ class RepositoryManager:
                 repository = Repository(directory)
             except Exception as exc:
                 self.log.append(
-                    f"Directory {directory.name} is not a repository: {exc}"
+                    f"Directory '{directory.name}' is not a repository: {exc}"
                 )
                 continue
 
@@ -100,7 +103,7 @@ class Repository:
             repo.git.checkout(branch)
         except git.exc.GitCommandError as exc:
             raise ValueError(
-                f"Could not checkout branch {branch}: {exc.stderr.strip()}"
+                f"Could not checkout branch '{branch}': {exc.stderr.strip()}"
             )
 
     def set_facts(self):
