@@ -91,7 +91,7 @@ class Base(commands.Cog):
     async def userpin_set(self, ctx, limit: int, channel: discord.TextChannel = None):
         """Set userpin limit."""
         if limit < 1:
-            raise commands.ArgumentError("Limit has to be at least one.")
+            raise commands.BadArgument("Limit has to be at least one.")
 
         if channel is None:
             UserPin.add(ctx.guild.id, None, limit)
@@ -229,7 +229,7 @@ class Base(commands.Cog):
         self, ctx, limit: int, channel: discord.TextChannel = None
     ):
         if limit < 1:
-            raise commands.ArgumentError("Limit has to be at least one.")
+            raise commands.BadArgument("Limit has to be at least one.")
 
         if channel is None:
             UserThread.add(ctx.guild.id, None, limit)
