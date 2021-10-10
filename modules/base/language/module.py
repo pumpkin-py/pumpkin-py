@@ -75,7 +75,7 @@ class Language(commands.Cog):
         await ctx.reply(
             _(
                 ctx,
-                "I'll remember the preference of **{language}**".format(
+                "I'll remember the preference of **{language}**.".format(
                     language=language
                 ),
             )
