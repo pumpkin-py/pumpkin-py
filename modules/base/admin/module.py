@@ -284,9 +284,9 @@ class Admin(commands.Cog):
 
         await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.")
         await ctx.reply(
-            _(
+            _(ctx, "Repository **{name}** uninstalled.")
+            + _(
                 ctx,
-                "Repository **{name}** uninstalled. \n"
                 "Please note that the modules have not been unloaded. When I start next "
                 "time I'll attempt to load them. If they are not found, they will be "
                 "silently skipped.",

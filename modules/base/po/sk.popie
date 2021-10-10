@@ -233,6 +233,9 @@ msgstr
 msgid discord.py library error
 msgstr
 
+msgid Repository initialization aborted: {exc}
+msgstr
+
 msgid Repository named `{name}` already exists.
 msgstr
 
@@ -245,7 +248,22 @@ msgstr
 msgid File `requirements.txt` changed, running `pip`.
 msgstr
 
+msgid Could not change branch: {exc}
+msgstr
+
+msgid Branch changed to **{branch}**.
+msgstr
+
 msgid This repository is protected.
+msgstr
+
+msgid Could not find the repository at {path}.
+msgstr
+
+msgid Repository **{name}** uninstalled.
+msgstr
+
+msgid Please note that the modules have not been unloaded. When I start next time I'll attempt to load them. If they are not found, they will be silently skipped.
 msgstr
 
 msgid Module **{name}** has been loaded.
@@ -392,7 +410,7 @@ msgstr
 msgid I can't speak that language.
 msgstr
 
-msgid I'll remember the preference of **{language}**
+msgid I'll remember the preference of **{language}**.
 msgstr
 
 msgid You may need to wait two minutes for the change to take effect.
