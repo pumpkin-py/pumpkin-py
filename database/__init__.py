@@ -32,7 +32,7 @@ def init_core():
     importlib.import_module("database.config")
     importlib.import_module("database.acl")
     importlib.import_module("database.language")
-    importlib.import_module("database.logging")
+    importlib.import_module("database.logger")
 
     database.base.metadata.create_all(database.db)
     session.commit()
