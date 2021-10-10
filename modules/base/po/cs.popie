@@ -233,6 +233,9 @@ msgstr
 msgid discord.py library error
 msgstr
 
+msgid Repository initialization aborted: {exc}
+msgstr
+
 msgid Repository named `{name}` already exists.
 msgstr
 
@@ -245,8 +248,23 @@ msgstr Takový repozitář neexistuje.
 msgid File `requirements.txt` changed, running `pip`.
 msgstr Soubor `requirements.txt` byl změněn, spouštím `pip`.
 
+msgid Could not change branch: {exc}
+msgstr
+
+msgid Branch changed to **{branch}**.
+msgstr
+
 msgid This repository is protected.
 msgstr Repozitář je chráněn.
+
+msgid Could not find the repository at {path}.
+msgstr
+
+msgid Repository **{name}** uninstalled.
+msgstr
+
+msgid Please note that the modules have not been unloaded. When I start next time I'll attempt to load them. If they are not found, they will be silently skipped.
+msgstr
 
 msgid Module **{name}** has been loaded.
 msgstr
