@@ -9,10 +9,10 @@ The logger targets are usually defined on top of the file:
 
 .. code-block:: python3
 
-	from core import logging
+	from core import logger
 
-	bot_log = logging.Bot.logger()
-	guild_log = logging.Guild.logger()
+	bot_log = logger.Bot.logger()
+	guild_log = logger.Guild.logger()
 
 And to use the logger, use
 
@@ -20,7 +20,7 @@ And to use the logger, use
 
 	try:
 	    await action_that_throws_error()
-	except discord.exceptions.HTTPException:
+	except discord.exceptions.HTTPException as exc:
 	    await guild_log(
 	        ctx.author,
 	        ctx.channel,

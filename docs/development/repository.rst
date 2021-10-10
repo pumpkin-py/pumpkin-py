@@ -77,11 +77,11 @@ In our case, we only have one module specified, so we have to create a file ``bi
 	import discord
 	from discord.ext import commands
 
-	from core import acl, text, logging
+	from core import acl, text, logger
 
-	tr = i18n.Translator(__file__).translate
-	bot_log = logging.Bot.logger()
-	guild_log = logging.Guild.logger()
+	_ = i18n.Translator(__file__).translate
+	bot_log = logger.Bot.logger()
+	guild_log = logger.Guild.logger()
 
 
 	class Bistro(commands.Cog):
@@ -163,7 +163,7 @@ An example database file ``bistro/database.py`` may look like this:
 
 	    def __repr__(self) -> str:
 	        return (
-	            f'<Item idx="{self.idx}" '
+	            f'<{self.__class__.__name__} idx="{self.idx}" '
 	            f'guild_id="{self.guild_id}" name="{self.name}" '
 	            f'description="{self.description}">'
 	        )
