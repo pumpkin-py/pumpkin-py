@@ -58,6 +58,9 @@ msgstr
 msgid Userthread 🧵
 msgstr
 
+msgid Limit has to be positive integer or zero (if you want the feature disabled).
+msgstr
+
 msgid Thread creation was disabled.
 msgstr
 
