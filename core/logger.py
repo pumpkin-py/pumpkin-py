@@ -172,7 +172,7 @@ class LogEntry:
             result["content"] = self.content
         return result
 
-    def _format_as_string(self) -> str:
+    def _format_as_string(self, *, extended: bool) -> str:
         """Format the event as string."""
         stubs: List[str] = []
 
@@ -180,12 +180,10 @@ class LogEntry:
         if self.actor is not None:
             stubs.append(self.actor_name)
             stubs.append(f"({self.actor_id})")
-        if self.channel is not None:
-            stubs.append(self.channel_name)
-            stubs.append(f"({self.channel_id})")
-        if self.guild is not None:
+        if self.channel_name is not None:
+            stubs.append(f"#{self.channel_name}")
+        if extended and self.guild is not None:
             stubs.append(self.guild_name)
-            stubs.append(f"({self.guild_id})")
 
         message: str = " ".join(stubs) + f": {self.message}"
 
@@ -204,11 +202,11 @@ class LogEntry:
     def format_to_console(self) -> str:
         """Format the event so it can be printed to the console."""
         timestamp = utils.Time.datetime(self.timestamp)
-        return timestamp + " " + self._format_as_string()
+        return timestamp + " " + self._format_as_string(extended=True)
 
     def format_to_discord(self) -> str:
         """Format the event so it can be sent to Discord channel."""
-        return self._format_as_string()
+        return self._format_as_string(extended=False)
         # TODO Include embeds and 'content' if there is any
 
     def format_to_file(self) -> str:
