@@ -58,6 +58,9 @@ msgstr Globální nastavení
 msgid Userthread 🧵
 msgstr Vlastní vlákna 🧵
 
+msgid Limit has to be positive integer or zero (if you want the feature disabled).
+msgstr Limit musí být kladné celé číslo nebo nula (pokud má být funkce vypnuta).
+
 msgid Thread creation was disabled.
 msgstr Vytváření vláken bylo vypnuto.
 

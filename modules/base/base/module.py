@@ -228,7 +228,14 @@ class Base(commands.Cog):
     async def userthread_set(
         self, ctx, limit: int, channel: discord.TextChannel = None
     ):
-        if limit < 1:
+        if limit < 0:
+            await ctx.reply(
+                _(
+                    ctx,
+                    "Limit has to be positive integer or zero "
+                    "(if you want the feature disabled).",
+                )
+            )
             raise commands.BadArgument("Limit has to be at least one.")
 
         if channel is None:
