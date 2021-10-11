@@ -87,6 +87,11 @@ class UserThread(database.base):
         return query
 
     @staticmethod
+    def get_all(guild_id: int) -> List[UserThread]:
+        query = session.query(UserThread).filter_by(guild_id=guild_id).all()
+        return query
+
+    @staticmethod
     def remove(guild_id: int, channel_id: Optional[int]) -> int:
         query = (
             session.query(UserThread)
