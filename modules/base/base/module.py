@@ -6,13 +6,13 @@ import discord
 from discord.ext import commands
 
 from core import TranslationContext
-from core import check, i18n, logging, utils
+from core import check, i18n, logger, utils
 
 from .database import AutoThread, UserPin, UserThread, Bookmark
 
 _ = i18n.Translator("modules/base").translate
-bot_log = logging.Bot.logger()
-guild_log = logging.Guild.logger()
+bot_log = logger.Bot.logger()
+guild_log = logger.Guild.logger()
 
 
 class Base(commands.Cog):

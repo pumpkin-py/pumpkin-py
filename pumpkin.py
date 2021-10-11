@@ -79,10 +79,10 @@ bot = commands.Bot(
 
 # Setup logging
 
-from core import logging
+from core import logger
 
-bot_log = logging.Bot.logger(bot)
-guild_log = logging.Guild.logger(bot)
+bot_log = logger.Bot.logger(bot)
+guild_log = logger.Guild.logger(bot)
 
 
 # Setup listeners

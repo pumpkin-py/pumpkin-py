@@ -2,13 +2,13 @@ from typing import Optional
 
 from discord.ext import commands
 
-from core import check, text, logging, utils, i18n
-from database.logging import Logging as DBLogging
+from core import check, text, logger, utils, i18n
+from database.logger import LogConf
 
 _ = i18n.Translator(__file__).translate
 tr = text.Translator(__file__).translate
-bot_log = logging.Bot.logger()
-guild_log = logging.Guild.logger()
+bot_log = logger.Bot.logger()
+guild_log = logger.Guild.logger()
 
 
 class Logging(commands.Cog):
@@ -28,10 +28,13 @@ class Logging(commands.Cog):
     @commands.check(check.acl)
     @logging_.command(name="list")
     async def logging_list(self, ctx):
-        entries = DBLogging.get_all(ctx.guild.id)
+        confs = LogConf.get_all_subscriptions(guild_id=ctx.guild.id)
+        confs = sorted(confs, key=lambda c: c.channel_id)
+        confs = sorted(confs, key=lambda c: c.level)
+        confs = sorted(confs, key=lambda c: c.scope)
 
-        def format_entry(entry: DBLogging):
-            level = logging.LogLevel(entry.level).name
+        def format_entry(entry: LogConf):
+            level = logger.LogLevel(entry.level).name
             try:
                 channel = (
                     self.bot.get_guild(entry.guild_id)
@@ -43,7 +46,7 @@ class Logging(commands.Cog):
             text = f"{level:<8} {entry.scope:<5} | #{channel:<10}"
             return (text + f" | {entry.module}") if entry.module else text
 
-        output = "\n".join([format_entry(e) for e in entries])
+        output = "\n".join([format_entry(c) for c in confs])
         if len(output):
             for stub in utils.Text.split(output):
                 await ctx.reply(f"```{stub}```")
@@ -63,30 +66,30 @@ class Logging(commands.Cog):
         if level not in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "NONE"):
             await ctx.reply(_(ctx, "Invalid level."))
             return
-        levelno: int = getattr(logging.LogLevel, level).value
+        levelno: int = getattr(logger.LogLevel, level).value
 
         # TODO Test if the module exists
 
         log_message: str
         if scope == "bot":
-            DBLogging.add_bot(
-                guild_id=ctx.guild.id,
-                channel_id=ctx.channel.id,
-                level=levelno,
-            )
-            log_message = f"Bot log level set to {level}."
-        if scope == "guild":
-            DBLogging.add_guild(
+            LogConf.add_bot_subscription(
                 guild_id=ctx.guild.id,
                 channel_id=ctx.channel.id,
                 level=levelno,
                 module=module,
             )
-            log_message = (
-                f"Guild log level (module {module}) set to {level}."
-                if module
-                else f"Guild log level set to {level}."
+            log_message = f"Bot log level set to {level}"
+        if scope == "guild":
+            LogConf.add_guild_subscription(
+                guild_id=ctx.guild.id,
+                channel_id=ctx.channel.id,
+                level=levelno,
+                module=module,
             )
+            log_message = f"Guild log level set to {level}"
+        if module:
+            log_message += f" for module {module}"
+        log_message += "."
 
         await ctx.reply(_(ctx, "Logging settings succesfully updated."))
         await guild_log.info(ctx.author, ctx.channel, log_message)
@@ -100,17 +103,20 @@ class Logging(commands.Cog):
 
         log_message: str
         if scope == "bot":
-            result = DBLogging.remove_bot(guild_id=ctx.guild.id)
-            log_message = "Bot logging disabled."
-        if scope == "guild":
-            result = DBLogging.remove_guild(guild_id=ctx.guild.id, module=module)
-            log_message = (
-                f"Guild logging of module {module} disabled."
-                if module
-                else "Guild logging disabled."
+            result = LogConf.remove_bot_subscription(
+                guild_id=ctx.guild.id, module=module
             )
+            log_message = "Bot logging disabled"
+        if scope == "guild":
+            result = LogConf.remove_guild_subscription(
+                guild_id=ctx.guild.id, module=module
+            )
+            log_message = "Guild logging disabled"
+        if module:
+            log_message += f" for module {module}"
+        log_message += "."
 
-        if result > 0:
+        if result:
             await ctx.reply(_(ctx, "Logging target unset."))
             await guild_log.info(ctx.author, ctx.channel, log_message)
         else:

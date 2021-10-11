@@ -6,13 +6,13 @@ import discord
 from discord.ext import commands
 
 import core.exceptions
-from core import text, logging, utils, i18n
+from core import text, logger, utils, i18n
 
 
 tr = text.Translator(__file__).translate
 _ = i18n.Translator(__file__).translate
-bot_log = logging.Bot.logger()
-guild_log = logging.Guild.logger()
+bot_log = logger.Bot.logger()
+guild_log = logger.Guild.logger()
 
 
 # TODO Some errors are returning just generic answers,
@@ -74,9 +74,7 @@ class Errors(commands.Cog):
                 ctx.channel,
                 f"{type(error).__name__}: {str(error)}",
                 content=ctx.message.content,
-                traceback=traceback.format_exception(
-                    type(error), error, error.__traceback__
-                ),
+                exception=error,
             )
 
     def __get_error_message(
