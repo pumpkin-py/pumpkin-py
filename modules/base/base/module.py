@@ -197,6 +197,29 @@ class Base(commands.Cog):
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
+    @userthread.command(name="list")
+    async def userthread_list(self, ctx):
+        prefs = UserThread.get_all(ctx.guild.id)
+        limit: str = _(ctx, "Limit")
+        channel: str = _(ctx, "Channel")
+        result: str = f"{limit} {channel}\n"
+
+        if not prefs:
+            await ctx.reply(_(ctx, "No userthreads are defined."))
+            return
+
+        for p in prefs:
+            if p.channel_id is not None:
+                channel = ctx.guild.get_channel(p.channel_id)
+                if channel is None:
+                    continue
+                result += f"{p.limit:<{len(limit)}} #{channel.name}\n"
+            else:
+                result += f"{p.limit:<{len(limit)}} " + _(ctx, "(server)") + "\n"
+
+        await ctx.reply(f"```{result}```")
+
+    @commands.check(check.acl)
     @userthread.command(name="get")
     async def userthread_get(self, ctx, channel: discord.TextChannel = None):
         embed = utils.Discord.create_embed(
