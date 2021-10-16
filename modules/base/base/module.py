@@ -381,13 +381,13 @@ class Base(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        tc = TranslationContext(message.guild.id, message.author.id)
-
         if message.author.bot:
             return
         thread_settings = AutoThread.get(message.guild.id, message.channel.id)
         if thread_settings is None:
             return
+
+        tc = TranslationContext(message.guild.id, message.author.id)
 
         # ensure we're creating thread that does not take longer than
         # the current guild level allows us to
