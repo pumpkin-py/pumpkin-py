@@ -1,5 +1,5 @@
 msgid Logging is not enabled on this server.
-msgstr Logování není na tomto serveru povoleno.
+msgstr Logování není na tomto serveru zapnuto.
 
 msgid Invalid scope.
 msgstr Neplatný rozsah.
@@ -8,13 +8,13 @@ msgid Invalid level.
 msgstr Neplatná úroveň.
 
 msgid Logging settings succesfully updated.
-msgstr Nastavení logování úspěšně aktualizováno.
+msgstr Nastavení logování bylo úspěšně aktualizováno.
 
 msgid Logging target unset.
 msgstr
 
 msgid Supplied arguments didn't match any entries.
-msgstr Dodané argumenty nesouhlasily s žádnými vstupy.
+msgstr Dodané argumenty nesouhlasí s žádnými vstupy.
 
 msgid Pong: **{delay}** 🏓
 msgstr Pong: **{delay}** 🏓
@@ -193,7 +193,7 @@ msgid Bad data type in the `{param}` parameter
 msgstr Nesprávný datový typ v parametru `{param}`
 
 msgid Bad Boolean Argument
-msgstr Nesprávný Boolean Argument
+msgstr Nesprávný binární argument
 
 msgid Argument `{arg}` is not binary
 msgstr Argument `{arg}` není binární
@@ -244,13 +244,13 @@ msgid Bad input
 msgstr Nesprávný vstup
 
 msgid Client error
-msgstr Klientská chyba
+msgstr Chyba klienta
 
 msgid discord.py library error
 msgstr Chyba knihovny discord.py
 
 msgid Repository initialization aborted: {exc}
-msgstr Inicializace repozitáře přerušena: {exc}
+msgstr Inicializace repozitáře se nezdařila: {exc}
 
 msgid Repository named `{name}` already exists.
 msgstr Repozitář pojmenovaný `{name}` už existuje.
@@ -298,7 +298,7 @@ msgid Global configuration
 msgstr Globální konfigurace
 
 msgid Bot prefix
-msgstr předpona Bota
+msgstr Bot prefix
 
 msgid Language
 msgstr Jazyk
@@ -319,13 +319,13 @@ msgid Unsupported language
 msgstr Nepodporovaný jazyk
 
 msgid Valid genders values are: {genders}
-msgstr 
+msgstr
 
 msgid Valid status values are: {states}
-msgstr 
+msgstr Možné hodnoty pro status jsou: {states}
 
 msgid You didn't define any ACL groups yet.
-msgstr Zatím jsi nedefinoval žádné ACL skupiny.
+msgstr Zatím jste nedefinovali žádné ACL skupiny.
 
 msgid No such group exists.
 msgstr Taková skupina neexistuje.
@@ -334,7 +334,7 @@ msgid Bad group name (regex `{regex}`)
 msgstr Chybné jméno skupny (regex `{regex}`)
 
 msgid ACL group can't be named like that (regex `{regex}`).
-msgstr ACL skupina nemůže být takto pojmenována (regex `{regex}`)
+msgstr ACL skupina takto být pojmenována nemůže (regex `{regex}`).
 
 msgid Bad parameter.
 msgstr Špatný parametr.
@@ -346,7 +346,7 @@ msgid ACL group removed.
 msgstr ACL skupina odstraněna.
 
 msgid **{count} rules** exported.
-msgstr **{count} rules** bylo exportováno.
+msgstr **{count} pravidel** bylo exportováno.
 
 msgid No such ACL rule.
 msgstr Takové ACL pravidlo neexistuje.
@@ -388,16 +388,16 @@ msgid duplicate
 msgstr duplikovat
 
 msgid Command **{name}** is not enabled.
-msgstr Příkaz **{name}** není zapnut.
+msgstr Příkaz **{name}** není zapnutý.
 
 msgid Command **{name}** has been disabled.
-msgstr Příkaz **{name}** byl vypnut.
+msgstr Příkaz **{name}** byl vypnutý.
 
 msgid Command **{name}** is not disabled.
-msgstr Příkaz **{name}** nebyl vypnut.
+msgstr Příkaz **{name}** nebyl vypnutý.
 
 msgid Command **{name}** has been enabled.
-msgstr Příkaz **{name}** byl zapnut.
+msgstr Příkaz **{name}** byl zapnutý.
 
 msgid ACL group {name}
 msgstr ACL skupina {name}
@@ -427,13 +427,13 @@ msgid I can't speak that language.
 msgstr Neumím tento jazyk.
 
 msgid I'll remember the preference of **{language}**.
-msgstr Zapamatuji si preferenci **{language.}**
+msgstr Zapamatuji si preferenci **{language}**.
 
 msgid You may need to wait two minutes for the change to take effect.
 msgstr Je možné, že budeš muset počkat dvě minuty, aby se změna projevila.
 
 msgid You don't have any language preference.
-msgstr Nemáte žádnou jazykovou preferenci.
+msgstr Nemáš žádnou preferenci jazyka.
 
 msgid I'll be using **{language}** on this server now.
 msgstr Odteď budu na tomto serveru používat **{language}**.
