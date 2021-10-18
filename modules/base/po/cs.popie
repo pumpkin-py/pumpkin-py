@@ -1,20 +1,20 @@
 msgid Logging is not enabled on this server.
-msgstr
+msgstr Logování není na tomto serveru povoleno.
 
 msgid Invalid scope.
-msgstr
+msgstr Neplatný rozsah.
 
 msgid Invalid level.
-msgstr
+msgstr Neplatná úroveň.
 
 msgid Logging settings succesfully updated.
-msgstr
+msgstr Nastavení logování úspěšně aktualizováno.
 
 msgid Logging target unset.
 msgstr
 
 msgid Supplied arguments didn't match any entries.
-msgstr
+msgstr Dodané argumenty nesouhlasily s žádnými vstupy.
 
 msgid Pong: **{delay}** 🏓
 msgstr Pong: **{delay}** 🏓
@@ -41,7 +41,7 @@ msgid Channel #{channel}
 msgstr Kanál #{channel}
 
 msgid Pinning was disabled.
-msgstr Připíání bylo vypnuto.
+msgstr Připínání bylo vypnuto.
 
 msgid Pinning preferences have been updated.
 msgstr Preference připínání byla aktualizována.
@@ -128,134 +128,135 @@ msgid Error content
 msgstr
 
 msgid pumpkin.py exception
-msgstr
+msgstr Výjimka pumpkin.py
 
 msgid An environment variable is missing
-msgstr
+msgstr Chybí proměnná prostředí
 
 msgid Module exception
-msgstr
+msgstr Výjimka modulu
 
 msgid Translation error
-msgstr
+msgstr Chyba překladu
 
 msgid An unexpected error occurred
-msgstr
+msgstr Nastala nečekaná chyba
 
 msgid Command error
-msgstr
+msgstr Chyba příkazu
 
 msgid The command has to have an argument `{arg}`
-msgstr
+msgstr Příkaz musí mít argument `{arg}`
 
 msgid Permission error
-msgstr
+msgstr Chyba oprávnění
 
 msgid Insufficient permission
-msgstr
+msgstr Nedostatečné oprávnění
 
 msgid Slow down
-msgstr
+msgstr Zpomal
 
 msgid Wait **{time}**
-msgstr
+msgstr Počkej **{time}** 
 
 msgid Too much concurrency
 msgstr
 
 msgid This command is already running multiple times
 	The limit is **{num}**/**{per}**
-msgstr
+msgstr Tento příkaz už několikrát běží
+	Limit je **{num}**/**{per}**
 
 msgid You have to have a {role} role for that
-msgstr
+msgstr Na toto musíš mít roli {role}
 
 msgid I lack the role {role}
-msgstr
+msgstr Chybí mi role {role}
 
 msgid You have to have one role of {roles}
-msgstr
+msgstr Musíš mít jednu z rolí {roles}
 
 msgid I need one of roles {roles}
-msgstr
+msgstr Potřebuji jednu z rolí {roles}
 
 msgid You lack some of {perms} permissions
-msgstr
+msgstr Chybí ti některá z těchto oprávnění {perms}
 
 msgid I lack the {perms} permission
-msgstr
+msgstr Chybí mi oprávnění {perms}
 
 msgid Argument error
-msgstr
+msgstr Chyba argumentu
 
 msgid Bad data type in the `{param}` parameter
-msgstr
+msgstr Nesprávný datový typ v parametru `{param}`
 
 msgid Bad Boolean Argument
-msgstr
+msgstr Nesprávný Boolean Argument
 
 msgid Argument `{arg}` is not binary
-msgstr
+msgstr Argument `{arg}` není binární
 
 msgid An error occurred in converter `{converter}`
-msgstr
+msgstr Stala se chyba v konvertoru `{converter}`
 
 msgid Not found
-msgstr
+msgstr Nenalezeno
 
 msgid I can't see the **{channel}** channel
-msgstr
+msgstr Nevidím kanál **{channel}**
 
 msgid Bad Argument
-msgstr
+msgstr Nesprávný argument
 
 msgid Error in argument
-msgstr
+msgstr Chyba v argumentu
 
 msgid Extension Error
-msgstr
+msgstr Chyba rozšíření
 
 msgid An error occurred inside of **{extension}** extension
-msgstr
+msgstr Stala se chyba v rozšíření **{extension}**
 
 msgid Extension **{extension}** is already loaded
-msgstr
+msgstr Rozšíření **{extension}** je už načteno
 
 msgid **{extension}** failed
-msgstr
+msgstr **{extension}** selhalo
 
 msgid The extension **{extension}** could not be found
-msgstr
+msgstr Nebylo nalezeno rozšíření **{extension}**
 
 msgid The extension **{extension}** could not be found. It should be in `repository.module` format
-msgstr
+msgstr Rozšíření **{extension}** nebylo nalezeno. Mělo by to být ve formátu `repository.module`
 
 msgid The extension **{extension}** is not loaded
-msgstr
+msgstr Rozšíření **{extension}** není načteno
 
 msgid Error
-msgstr
+msgstr Chyba
 
 msgid Error on registering the command `{cmd}`
-msgstr
+msgstr Chyba při registraci příkazu `{cmd}`
 
 msgid Bad input
-msgstr
+msgstr Nesprávný vstup
 
 msgid Client error
-msgstr
+msgstr Klientská chyba
 
 msgid discord.py library error
-msgstr
+msgstr Chyba knihovny discord.py
 
 msgid Repository initialization aborted: {exc}
-msgstr
+msgstr Inicializace repozitáře přerušena: {exc}
 
 msgid Repository named `{name}` already exists.
-msgstr
+msgstr Repozitář pojmenovaný `{name}` už existuje.
 
 msgid Repository has been installed to `{path}`. It includes the following modules: {modules}.
-msgstr
+msgstr Repozitář byl nainstalován do `{path}`. Obsahuje následující moduly: {modules}.
 
 msgid No such repository.
 msgstr Takový repozitář neexistuje.
@@ -264,181 +265,181 @@ msgid File `requirements.txt` changed, running `pip`.
 msgstr Soubor `requirements.txt` byl změněn, spouštím `pip`.
 
 msgid Could not change branch: {exc}
-msgstr
+msgstr Nebylo možné změnit větev: {exc}
 
 msgid Branch changed to **{branch}**.
-msgstr
+msgstr Větev byla změněna na **{branch}**.
 
 msgid This repository is protected.
 msgstr Repozitář je chráněn.
 
 msgid Could not find the repository at {path}.
-msgstr
+msgstr Nebyl nalezen repozitář na {path}.
 
 msgid Repository **{name}** uninstalled.
-msgstr
+msgstr Repozitář **{name}** odinstalován.
 
 msgid Please note that the modules have not been unloaded. When I start next time I'll attempt to load them. If they are not found, they will be silently skipped.
-msgstr
+msgstr Vezmi prosím na vědomí, že moduly nebyly uvolněny. Až se příště spustím, pokusím se je načíst. Pokud nebudou nalezeny, budou tiše přeskočeny.
 
 msgid Module **{name}** has been loaded.
-msgstr
+msgstr Modul **{name}** byl načten.
 
 msgid Module **{name}** cannot be unloaded.
-msgstr
+msgstr Modul **{name}** nemůže být uvolněn.
 
 msgid Module **{name}** has been unloaded.
-msgstr
+msgstr Modul **{name}** byl uvolněn.
 
 msgid Module **{name}** has been reloaded.
-msgstr
+msgstr Modul **{name}** byl znovu načten.
 
 msgid Global configuration
-msgstr
+msgstr Globální konfigurace
 
 msgid Bot prefix
-msgstr
+msgstr předpona Bota
 
 msgid Language
-msgstr
+msgstr Jazyk
 
 msgid Lexical gender
 msgstr
 
 msgid Status
-msgstr
+msgstr Stav
 
 msgid Key has to be one of: {keys}
-msgstr
+msgstr Klíč musí být jeden z: {keys}
 
 msgid Invalid value
-msgstr
+msgstr Neplatná hodnota
 
 msgid Unsupported language
-msgstr
+msgstr Nepodporovaný jazyk
 
 msgid Valid genders values are: {genders}
-msgstr
+msgstr 
 
 msgid Valid status values are: {states}
-msgstr
+msgstr 
 
 msgid You didn't define any ACL groups yet.
-msgstr
+msgstr Zatím jsi nedefinoval žádné ACL skupiny.
 
 msgid No such group exists.
-msgstr
+msgstr Taková skupina neexistuje.
 
 msgid Bad group name (regex `{regex}`)
-msgstr
+msgstr Chybné jméno skupny (regex `{regex}`)
 
 msgid ACL group can't be named like that (regex `{regex}`).
-msgstr
+msgstr ACL skupina nemůže být takto pojmenována (regex `{regex}`)
 
 msgid Bad parameter.
-msgstr
+msgstr Špatný parametr.
 
 msgid No such group.
-msgstr
+msgstr Taková skupina neexistuje.
 
 msgid ACL group removed.
-msgstr
+msgstr ACL skupina odstraněna.
 
 msgid **{count} rules** exported.
-msgstr
+msgstr **{count} rules** bylo exportováno.
 
 msgid No such ACL rule.
-msgstr
+msgstr Takové ACL pravidlo neexistuje.
 
 msgid Rule removed.
-msgstr
+msgstr Pravidlo odstraněno.
 
 msgid I've removed add {count} rules.
 msgstr
 
 msgid I'm expecting one JSON file.
-msgstr
+msgstr Očekávám jeden JSON soubor.
 
 msgid You have to upload the JSON file.
-msgstr
+msgstr Musíš nahrát JSON soubor.
 
 msgid Your JSON file contains errors.
-msgstr
+msgstr Tvůj JSON soubor obsahuje chyby.
 
 msgid I've imported **{new}** new and **{updated}** updated rules.
-msgstr
+msgstr  Bylo importováno **{new}** nových a **{updated}** aktualizovaných pravidel.
 
 msgid Skipping:
-msgstr
+msgstr Přeskakuji:
 
 msgid expected `bool`
-msgstr
+msgstr očekáván `bool`
 
 msgid expected `list`
-msgstr
+msgstr očekáván `list`
 
 msgid invalid group
-msgstr
+msgstr neplatná skupina
 
 msgid expected `int`
-msgstr
+msgstr očekáván `int`
 
 msgid duplicate
-msgstr
+msgstr duplikovat
 
 msgid Command **{name}** is not enabled.
-msgstr
+msgstr Příkaz **{name}** není zapnut.
 
 msgid Command **{name}** has been disabled.
-msgstr
+msgstr Příkaz **{name}** byl vypnut.
 
 msgid Command **{name}** is not disabled.
-msgstr
+msgstr Příkaz **{name}** nebyl vypnut.
 
 msgid Command **{name}** has been enabled.
-msgstr
+msgstr Příkaz **{name}** byl zapnut.
 
 msgid ACL group {name}
-msgstr
+msgstr ACL skupina {name}
 
 msgid Discord role
-msgstr
+msgstr Discord role
 
 msgid Parent ACL group
-msgstr
+msgstr Rodičovská ACL skupina
 
 msgid Localization
-msgstr
+msgstr Lokalizace
 
 msgid Available languages:
-msgstr
+msgstr Dostupné jazyky:
 
 msgid User settings
-msgstr
+msgstr Uživatelské nastavení
 
 msgid Not set
-msgstr
+msgstr Nenastaveno
 
 msgid Server settings
-msgstr
+msgstr Nastavení serveru
 
 msgid I can't speak that language.
-msgstr
+msgstr Neumím tento jazyk.
 
 msgid I'll remember the preference of **{language}**.
-msgstr
+msgstr Zapamatuji si preferenci **{language.}**
 
 msgid You may need to wait two minutes for the change to take effect.
-msgstr
+msgstr Je možné, že budeš muset počkat dvě minuty, aby se změna projevila.
 
 msgid You don't have any language preference.
-msgstr
+msgstr Nemáte žádnou jazykovou preferenci.
 
 msgid I'll be using **{language}** on this server now.
-msgstr
+msgstr Odteď budu na tomto serveru používat **{language}**.
 
 msgid This server doesn't have any language preference.
-msgstr
+msgstr Tento server nemá žádné jazykové preference.
 
 msgid I'll be using the global settings from now on.
-msgstr
+msgstr Odteď budu používat globální nastavení.
