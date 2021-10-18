@@ -1,11 +1,11 @@
 msgid This command is not available in this version
-msgstr
+msgstr Daný příkaz není v této verzi dostupný
 
 msgid I don't know the **{name}** command
-msgstr
+msgstr Neznám příkaz **{name}**
 
 msgid Command **{name}** does not have subcommand **{subcommand}**
-msgstr
+msgstr Příkaz **{name}** nemá podpříkaz **{subcommand}**
 
 msgid Command **{name}** has no subcommand
-msgstr
+msgstr Příkaz **{name}** nemá žádný podpříkaz
