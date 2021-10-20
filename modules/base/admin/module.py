@@ -6,13 +6,12 @@ from typing import Optional, List
 from discord.ext import commands, tasks
 
 import database.config
-from core import check, i18n, text, logger, utils
+from core import check, i18n, logger, utils
 from core import LANGUAGES as I18N_LANGUAGES
 from .database import BaseAdminModule as Module
 from .objects import RepositoryManager, Repository
 
 _ = i18n.Translator(__file__).translate
-tr = text.Translator(__file__).translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
 config = database.config.Config.get()
