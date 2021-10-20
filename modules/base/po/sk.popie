@@ -164,7 +164,9 @@ msgid Too much concurrency
 msgstr
 
 msgid This command is already running multiple times
-	The limit is **{num}**/**{per}**
+msgstr
+
+msgid The limit is **{num}**/**{per}**
 msgstr
 
 msgid You have to have a {role} role for that

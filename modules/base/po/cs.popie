@@ -158,15 +158,16 @@ msgid Slow down
 msgstr Zpomal
 
 msgid Wait **{time}**
-msgstr Počkej **{time}** 
+msgstr Počkej **{time}**
 
 msgid Too much concurrency
 msgstr
 
 msgid This command is already running multiple times
-	The limit is **{num}**/**{per}**
 msgstr Tento příkaz už několikrát běží
-	Limit je **{num}**/**{per}**
+
+msgid The limit is **{num}**/**{per}**
+msgstr Limit je **{num}**/**{per}**
 
 msgid You have to have a {role} role for that
 msgstr Na toto musíš mít roli {role}
@@ -367,7 +368,7 @@ msgid Your JSON file contains errors.
 msgstr Tvůj JSON soubor obsahuje chyby.
 
 msgid I've imported **{new}** new and **{updated}** updated rules.
-msgstr  Bylo importováno **{new}** nových a **{updated}** aktualizovaných pravidel.
+msgstr Bylo importováno **{new}** nových a **{updated}** aktualizovaných pravidel.
 
 msgid Skipping:
 msgstr Přeskakuji:

@@ -133,9 +133,11 @@ class Errors(commands.Cog):
         if type(error) == commands.MaxConcurrencyReached:
             return (
                 _(ctx, "Too much concurrency"),
-                _(
+                _(ctx, "This command is already running multiple times")
+                + "\n"
+                + _(
                     ctx,
-                    "This command is already running multiple times\n\tThe limit is **{num}**/**{per}**".format(
+                    "The limit is **{num}**/**{per}**".format(
                         num=error.number, per=error.per.name
                     ),
                 ),
