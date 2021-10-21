@@ -529,7 +529,7 @@ class Base(commands.Cog):
         self, payload: discord.RawReactionActionEvent, message: discord.Message
     ):
         """Handle bookmark functionality."""
-        if not Bookmark.get(payload.guild_id).enabled:
+        if not Bookmark.get(payload.guild_id, payload.channel_id).enabled:
             return
 
         tc = TranslationContext(payload.guild_id, payload.user_id)
