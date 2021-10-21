@@ -147,6 +147,8 @@ class Discord:
 
         try:
             channel = bot.get_guild(guild_id).get_channel(channel_id)
+            if channel is None:
+                return None
             return await channel.fetch_message(message_id)
         except discord.errors.HTTPException:
             return None
