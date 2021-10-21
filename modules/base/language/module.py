@@ -1,12 +1,11 @@
 from discord.ext import commands
 
 import database.config
-from core import check, text, logger, utils, i18n
+from core import check, logger, utils, i18n
 from core import LANGUAGES as I18N_LANGUAGES
 from database.language import GuildLanguage, MemberLanguage
 
 _ = i18n.Translator(__file__).translate
-tr = text.Translator(__file__).translate
 guild_log = logger.Guild.logger()
 config = database.config.Config.get()
 
