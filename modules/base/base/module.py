@@ -445,6 +445,10 @@ class Base(commands.Cog):
         if payload.guild_id is None or payload.member is None:
             return
 
+        emoji = getattr(payload.emoji, "name", None)
+        if emoji not in ("📌", "📍", "🔖", "🧵"):
+            return
+
         message = await utils.Discord.get_message(
             self.bot, payload.guild_id, payload.channel_id, payload.message_id
         )
@@ -453,7 +457,8 @@ class Base(commands.Cog):
                 payload.member,
                 None,
                 "Could not find message "
-                + utils.Discord.message_url_from_reaction_payload(payload),
+                + utils.Discord.message_url_from_reaction_payload(payload)
+                + f", {emoji} functionality not triggered.",
             )
             return
 
@@ -461,7 +466,6 @@ class Base(commands.Cog):
         if message.type != discord.MessageType.default:
             return
 
-        emoji = getattr(payload.emoji, "name", None)
         if emoji == "📌" or emoji == "📍":
             await self._userpin(payload, message, emoji)
         elif emoji == "🔖":
