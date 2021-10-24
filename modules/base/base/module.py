@@ -463,7 +463,7 @@ class Base(commands.Cog):
             return
 
         # do not allow the actions on system messages (boost announcements etc.)
-        if message.type != discord.MessageType.default:
+        if message.type not in (discord.MessageType.default, discord.MessageType.reply):
             return
 
         if emoji == "📌" or emoji == "📍":
