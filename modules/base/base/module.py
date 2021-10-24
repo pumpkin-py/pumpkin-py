@@ -514,11 +514,13 @@ class Base(commands.Cog):
                 return
 
             try:
+                users = await reaction.users().flatten()
                 await message.pin()
                 await guild_log.info(
                     payload.member,
                     message.channel,
-                    f"Pinned message {message.jump_url}",
+                    f"Pinned message {message.jump_url}. "
+                    f"Reacted by users: {', '.join(user.name for user in users)}",
                 )
             except discord.errors.HTTPException:
                 await guild_log.error(
@@ -635,6 +637,7 @@ class Base(commands.Cog):
                 return
             # create a new thread
             try:
+                users = await reaction.users().flatten()
                 thread_name = _(
                     tc, "Thread by {author}".format(author=message.author.name)
                 )
@@ -642,7 +645,8 @@ class Base(commands.Cog):
                 await guild_log.info(
                     payload.member,
                     message.channel,
-                    f"Thread opened on a message {message.jump_url}.",
+                    f"Thread opened on a message {message.jump_url}. "
+                    f"Reacted by users: {', '.join(user.name for user in users)}",
                 )
             except discord.errors.HTTPException:
                 await guild_log.error(
