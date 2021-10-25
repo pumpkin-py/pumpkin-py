@@ -296,7 +296,9 @@ class Errors(commands.Cog):
             }
             return (
                 _(ctx, "Extension Error"),
-                error_message.get(key, _(ctx, "An unexpected error occurred")),
+                error_message.get(key, _(ctx, "An unexpected error occurred"))
+                + ":\n"
+                + str(error),
                 False,
             )
 
