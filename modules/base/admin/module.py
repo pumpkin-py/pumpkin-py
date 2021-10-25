@@ -281,9 +281,9 @@ class Admin(commands.Cog):
 
         manager.refresh()
 
-        await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.")
+        await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.").format(name=name)
         await ctx.reply(
-            _(ctx, "Repository **{name}** uninstalled.")
+            _(ctx, "Repository **{name}** uninstalled.").format(name=name)
             + _(
                 ctx,
                 "Please note that the modules have not been unloaded. When I start next "
