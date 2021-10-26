@@ -281,7 +281,7 @@ class Admin(commands.Cog):
 
         manager.refresh()
 
-        await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.").format(name=name)
+        await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.")
         await ctx.reply(
             _(ctx, "Repository **{name}** uninstalled.").format(name=name)
             + " "
