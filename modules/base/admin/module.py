@@ -283,7 +283,8 @@ class Admin(commands.Cog):
 
         await bot_log.info(ctx.author, ctx.channel, f"Repository {name} uninstalled.")
         await ctx.reply(
-            _(ctx, "Repository **{name}** uninstalled.")
+            _(ctx, "Repository **{name}** uninstalled.").format(name=name)
+            + " "
             + _(
                 ctx,
                 "Please note that the modules have not been unloaded. When I start next "
