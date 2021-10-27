@@ -1,6 +1,9 @@
 msgid This command is not available in this version
 msgstr Daný příkaz není v této verzi dostupný
 
+msgid <@{user}> 👉 <#{channel}>
+msgstr <@{user}> 👉 <#{channel}>
+
 msgid I don't know the **{name}** command
 msgstr Neznám příkaz **{name}**
 

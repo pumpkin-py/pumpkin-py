@@ -1,6 +1,9 @@
 msgid This command is not available in this version
 msgstr
 
+msgid <@{user}> 👉 <#{channel}>
+msgstr
+
 msgid I don't know the **{name}** command
 msgstr
 

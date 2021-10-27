@@ -3,11 +3,13 @@ import tempfile
 from pathlib import Path
 from typing import Optional, List
 
+import discord
 from discord.ext import commands, tasks
 
 import database.config
 from core import check, i18n, logger, utils
 from core import LANGUAGES as I18N_LANGUAGES
+from database.spamchannel import SpamChannel
 from .database import BaseAdminModule as Module
 from .objects import RepositoryManager, Repository
 
@@ -440,6 +442,98 @@ class Admin(commands.Cog):
     @pumpkin_.command(name="shutdown")
     async def pumpkin_shutdown(self, ctx):
         exit(0)
+
+    @commands.guild_only()
+    @commands.check(check.acl)
+    @commands.group(name="spamchannel", aliases=["spam"])
+    async def spamchannel(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @commands.check(check.acl)
+    @spamchannel.command(name="add")
+    async def spamchannel_add(self, ctx, channel: discord.TextChannel):
+        spam_channel = SpamChannel.get(ctx.guild.id, channel.id)
+        if spam_channel:
+            await ctx.send(
+                _(
+                    ctx,
+                    "{channel} is already spam channel.",
+                ).format(channel=channel.mention)
+            )
+            return
+
+        spam_channel = SpamChannel.add(ctx.guild.id, channel.id)
+        await ctx.send(
+            _(
+                ctx,
+                "Channel {channel} added as spam channel.",
+            ).format(channel=channel.mention)
+        )
+        await guild_log.info(
+            ctx.author,
+            ctx.channel,
+            f"Channel #{channel.name} set as spam channel.",
+        )
+
+    @commands.check(check.acl)
+    @spamchannel.command(name="list")
+    async def spamchannel_list(self, ctx):
+        spam_channels = SpamChannel.get_all(ctx.guild.id)
+        if not spam_channels:
+            await ctx.reply(_(ctx, "This server has no spam channels."))
+            return
+        spam_channels = sorted(spam_channels, key=lambda c: c.primary)[::-1]
+
+        channels = [ctx.guild.get_channel(c.channel_id) for c in spam_channels]
+        column_name_width: int = max([len(c.name) for c in channels if c])
+
+        result = []
+        for spam_channel, channel in zip(spam_channels, channels):
+            name = getattr(channel, "name", "???")
+            line = f"#{name:<{column_name_width}} {spam_channel.channel_id}"
+            if spam_channel.primary:
+                line += " " + _(ctx, "primary")
+            result.append(line)
+
+        await ctx.reply("```" + "\n".join(result) + "```")
+
+    @commands.check(check.acl)
+    @spamchannel.command(name="remove", aliases=["rem"])
+    async def spamchannel_remove(self, ctx, channel: discord.TextChannel):
+        if SpamChannel.remove(ctx.guild.id, channel.id):
+            message = _(ctx, "Spam channel {channel} removed.")
+        else:
+            message = _(ctx, "{channel} is not spam channel.")
+        await ctx.reply(message.format(channel=channel.mention))
+        await guild_log.info(
+            ctx.author,
+            ctx.channel,
+            f"Channel #{channel.name} is no longer a spam channel.",
+        )
+
+    @commands.check(check.acl)
+    @spamchannel.command(name="primary")
+    async def spamchannel_primary(self, ctx, channel: discord.TextChannel):
+        primary = SpamChannel.set_primary(ctx.guild.id, channel.id)
+
+        if not primary:
+            await ctx.reply(
+                _(
+                    ctx,
+                    "Channel {channel} is not marked as spam channel, "
+                    "it cannot be made primary.",
+                ).format(channel=channel.mention)
+            )
+            return
+
+        await ctx.reply(
+            _(ctx, "Channel {channel} set as primary.").format(channel=channel.mention)
+        )
+        await guild_log.info(
+            ctx.author,
+            ctx.channel,
+            f"Channel #{channel.name} set as primary spam channel.",
+        )
 
 
 def setup(bot) -> None:

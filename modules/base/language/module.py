@@ -5,7 +5,7 @@ from core import check, logger, utils, i18n
 from core import LANGUAGES as I18N_LANGUAGES
 from database.language import GuildLanguage, MemberLanguage
 
-_ = i18n.Translator(__file__).translate
+_ = i18n.Translator("modules/base").translate
 guild_log = logger.Guild.logger()
 config = database.config.Config.get()
 
