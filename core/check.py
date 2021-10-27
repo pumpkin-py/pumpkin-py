@@ -6,6 +6,11 @@ from discord.ext import commands
 
 from core.utils import _
 from database import acl as acldb
+from database.spamroom import SpamRoom
+
+from core import i18n
+
+_ = i18n.Translator(__file__).translate
 
 
 def acl(ctx: commands.Context) -> bool:
@@ -161,3 +166,35 @@ def version(
         return wrapper
 
     return decorator
+
+
+async def channel(ctx: commands.Context) -> bool:
+    if getattr(ctx.bot, "owner_id", 0) == ctx.author.id:
+        return True
+    if ctx.author.id in getattr(ctx.bot, "owner_ids", set()):
+        return True
+
+    # do not allow invocations in DMs
+    if ctx.guild is None:
+        return True
+
+    spamrooms = SpamRoom.get_all(ctx.guild.id)
+
+    if not spamrooms:
+        return True
+
+    primary = spamrooms[0]
+
+    for room in spamrooms:
+        if room.primary:
+            primary = room
+        if room.channel_id == ctx.channel.id:
+            return True
+
+    await ctx.send(
+        _(ctx, "<@{user}> 👉<#{channel}>").format(
+            user=ctx.author.id, channel=primary.channel_id
+        )
+    )
+
+    return True

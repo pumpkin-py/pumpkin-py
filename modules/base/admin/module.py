@@ -1,13 +1,15 @@
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Union
 
+import discord
 from discord.ext import commands, tasks
 
 import database.config
 from core import check, i18n, logger, utils
 from core import LANGUAGES as I18N_LANGUAGES
+from database.spamroom import SpamRoom
 from .database import BaseAdminModule as Module
 from .objects import RepositoryManager, Repository
 
@@ -440,6 +442,102 @@ class Admin(commands.Cog):
     @pumpkin_.command(name="shutdown")
     async def pumpkin_shutdown(self, ctx):
         exit(0)
+
+    @commands.guild_only()
+    @commands.check(check.acl)
+    @commands.group(name="spamchannel", aliases=["spam"])
+    async def spamchannel(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @commands.check(check.acl)
+    @spamchannel.command(name="add")
+    async def spamchannel_add(self, ctx, channel: discord.TextChannel):
+        room = SpamRoom.get(ctx.guild.id, channel.id)
+
+        if room:
+            await ctx.send(
+                _(
+                    ctx,
+                    "Channel <#{channel}> is already spamroom.".format(
+                        channel=channel.id
+                    ),
+                )
+            )
+            return
+
+        room = SpamRoom.add(ctx.guild.id, channel.id)
+        await ctx.send(
+            _(
+                ctx,
+                "Channel <#{channel}> added as spamroom.".format(channel=channel.id),
+            )
+        )
+
+    @commands.check(check.acl)
+    @spamchannel.command(name="list")
+    async def spamchannel_list(self, ctx):
+        rooms = SpamRoom.get_all(ctx.guild.id)
+
+        embed = utils.Discord.create_embed(
+            author=ctx.author,
+            title=_(ctx, "Bot spam channels"),
+        )
+
+        if rooms:
+            for room in rooms:
+                value = "<#{channel}>".format(channel=room.channel_id)
+
+                if room.primary:
+                    value += " " + _(ctx, "(primary)")
+
+                embed.add_field(
+                    name="({id})".format(id=room.channel_id),
+                    value=value,
+                    inline=False,
+                )
+        else:
+            embed.add_field(name="\u200b", value=_(ctx, "No channels found"))
+        await ctx.send(embed=embed)
+
+    @commands.check(check.acl)
+    @spamchannel.command(name="remove", aliases=["delete", "del"])
+    async def spamchannel_remove(self, ctx, channel: Union[discord.TextChannel, int]):
+        if type(channel) == discord.TextChannel:
+            channel = channel.id
+
+        SpamRoom.remove(ctx.guild.id, channel)
+        await ctx.send(
+            _(
+                ctx,
+                "Channel <#{channel}> removed from spamrooms.".format(channel=channel),
+            )
+        )
+
+    @commands.check(check.acl)
+    @spamchannel.command(name="primary")
+    async def spamchannel_primary(self, ctx, channel: discord.TextChannel = None):
+
+        if channel:
+            channel = channel.id
+
+        SpamRoom.change_primary(ctx.guild.id, channel)
+
+        if channel:
+            await ctx.send(
+                _(
+                    ctx,
+                    "Channel <#{channel}> set as primary spamroom.".format(
+                        channel=channel
+                    ),
+                )
+            )
+        else:
+            await ctx.send(
+                _(
+                    ctx,
+                    "Primary spamroom was unset, using first in list.",
+                )
+            )
 
 
 def setup(bot) -> None:
