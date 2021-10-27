@@ -53,6 +53,10 @@ jobs:
         run: |
           flake8 . --select=T --exit-zero
 
+      - name: Run PoPie
+        run: |
+          popie modules/base core/
+
       - name: Run pytest
         run: |
           DB_STRING=sqlite:///test.db python3 -c "import database; database.init_core(); database.init_modules();"

@@ -18,3 +18,6 @@ types-requests
 
 # tests
 pytest>=6.2.4,<7.0.0
+
+# pumpkin.py tools
+git+https://github.com/pumpkin-py/pumpkin-tools.git
