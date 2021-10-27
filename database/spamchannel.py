@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Optional
 
 from sqlalchemy import BigInteger, Boolean, Column, Integer, UniqueConstraint
 
@@ -7,8 +7,8 @@ from database import database
 from database import session
 
 
-class SpamRoom(database.base):
-    __tablename__ = "spamroom_channels"
+class SpamChannel(database.base):
+    __tablename__ = "spamchannels"
 
     idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
@@ -20,58 +20,61 @@ class SpamRoom(database.base):
         UniqueConstraint(channel_id, primary),
     )
 
-    def get_all(guild_id: int) -> List[SpamRoom]:
+    def get_all(guild_id: int) -> List[SpamChannel]:
         query = (
-            session.query(SpamRoom)
+            session.query(SpamChannel)
             .filter_by(guild_id=guild_id)
-            .order_by(SpamRoom.idx.asc())
+            .order_by(SpamChannel.idx.primary())
             .all()
         )
         return query
 
-    def add(guild_id: int, channel_id: int) -> SpamRoom:
-        room = SpamRoom(guild_id=guild_id, channel_id=channel_id)
+    def add(guild_id: int, channel_id: int) -> SpamChannel:
+        room = SpamChannel(guild_id=guild_id, channel_id=channel_id)
         session.add(room)
         session.commit()
         return room
 
-    def get(guild_id: int, channel_id: int) -> List[SpamRoom]:
+    def get(guild_id: int, channel_id: int) -> Optional[SpamChannel]:
         query = (
-            session.query(SpamRoom)
+            session.query(SpamChannel)
             .filter_by(guild_id=guild_id, channel_id=channel_id)
             .one_or_none()
         )
         return query
 
-    def change_primary(guild_id: int, channel_id: int):
-        unset = (
-            session.query(SpamRoom)
+    def set_primary(guild_id: int, channel_id: int):
+        primary = (
+            session.query(SpamChannel)
             .filter_by(guild_id=guild_id, primary=True)
             .one_or_none()
         )
 
-        if unset:
-            unset.primary = False
-            session.commit()
+        if primary:
+            if primary.channel_id == channel_id:
+                return primary
+
+            primary.primary = False
 
         if not channel_id or channel_id == 0:
+            session.commit()
             return
 
         query = (
-            session.query(SpamRoom)
+            session.query(SpamChannel)
             .filter_by(guild_id=guild_id, channel_id=channel_id)
             .one_or_none()
         )
 
         if query:
             query.primary = True
-            session.commit()
 
+        session.commit()
         return query
 
     def remove(guild_id: int, channel_id):
         query = (
-            session.query(SpamRoom)
+            session.query(SpamChannel)
             .filter_by(guild_id=guild_id, channel_id=channel_id)
             .delete()
         )
@@ -80,8 +83,8 @@ class SpamRoom(database.base):
 
     def __repr__(self) -> str:
         return (
-            f'<SpamRoom idx="{self.idx}" guild_id="{self.guild_id}" channel_id="{self.channel_id}" '
-            f'hardmode="{self.hardmode}">'
+            f'<SpamChannel idx="{self.idx}" guild_id="{self.guild_id}" channel_id="{self.channel_id}" '
+            f'primary="{self.primary}">'
         )
 
     def dump(self) -> Dict[str, Union[int, str]]:
@@ -89,5 +92,5 @@ class SpamRoom(database.base):
         return {
             "guild_id": self.guild_id,
             "channel_id": self.channel_id,
-            "hardmode": self.hardmode,
+            "primary": self.primary,
         }

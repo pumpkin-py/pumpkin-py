@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 from database import acl as acldb
-from database.spamroom import SpamRoom
+from database.spamchannel import SpamChannel
 
 from core import i18n
 
@@ -177,14 +177,14 @@ async def channel(ctx: commands.Context) -> bool:
     if ctx.guild is None:
         return True
 
-    spamrooms = SpamRoom.get_all(ctx.guild.id)
+    spamchannels = SpamChannel.get_all(ctx.guild.id)
 
-    if not spamrooms:
+    if not spamchannels:
         return True
 
-    primary = spamrooms[0]
+    primary = spamchannels[0]
 
-    for room in spamrooms:
+    for room in spamchannels:
         if room.primary:
             primary = room
         if room.channel_id == ctx.channel.id:

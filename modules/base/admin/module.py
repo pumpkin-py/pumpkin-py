@@ -9,7 +9,7 @@ from discord.ext import commands, tasks
 import database.config
 from core import check, i18n, logger, utils
 from core import LANGUAGES as I18N_LANGUAGES
-from database.spamroom import SpamRoom
+from database.spamchannel import SpamChannel
 from .database import BaseAdminModule as Module
 from .objects import RepositoryManager, Repository
 
@@ -452,31 +452,29 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @spamchannel.command(name="add")
     async def spamchannel_add(self, ctx, channel: discord.TextChannel):
-        room = SpamRoom.get(ctx.guild.id, channel.id)
+        room = SpamChannel.get(ctx.guild.id, channel.id)
 
         if room:
             await ctx.send(
                 _(
                     ctx,
-                    "Channel <#{channel}> is already spamroom.".format(
-                        channel=channel.id
-                    ),
-                )
+                    "Channel <#{channel}> is already spam channel.",
+                ).format(channel=channel.id)
             )
             return
 
-        room = SpamRoom.add(ctx.guild.id, channel.id)
+        room = SpamChannel.add(ctx.guild.id, channel.id)
         await ctx.send(
             _(
                 ctx,
-                "Channel <#{channel}> added as spamroom.".format(channel=channel.id),
-            )
+                "Channel <#{channel}> added as spam channel.",
+            ).format(channel=channel.id)
         )
 
     @commands.check(check.acl)
     @spamchannel.command(name="list")
     async def spamchannel_list(self, ctx):
-        rooms = SpamRoom.get_all(ctx.guild.id)
+        rooms = SpamChannel.get_all(ctx.guild.id)
 
         embed = utils.Discord.create_embed(
             author=ctx.author,
@@ -500,18 +498,25 @@ class Admin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.check(check.acl)
-    @spamchannel.command(name="remove", aliases=["delete", "del"])
+    @spamchannel.command(name="remove", aliases=["rem"])
     async def spamchannel_remove(self, ctx, channel: Union[discord.TextChannel, int]):
         if type(channel) == discord.TextChannel:
             channel = channel.id
 
-        SpamRoom.remove(ctx.guild.id, channel)
-        await ctx.send(
-            _(
-                ctx,
-                "Channel <#{channel}> removed from spamrooms.".format(channel=channel),
+        if SpamChannel.remove(ctx.guild.id, channel):
+            await ctx.send(
+                _(
+                    ctx,
+                    "Channel <#{channel}> removed from spam channel.",
+                ).format(channel=channel)
             )
-        )
+        else:
+            await ctx.send(
+                _(
+                    ctx,
+                    "Channel <#{channel}> is not spam channel.",
+                ).format(channel=channel)
+            )
 
     @commands.check(check.acl)
     @spamchannel.command(name="primary")
@@ -520,13 +525,13 @@ class Admin(commands.Cog):
         if channel:
             channel = channel.id
 
-        SpamRoom.change_primary(ctx.guild.id, channel)
+        SpamChannel.set_primary(ctx.guild.id, channel)
 
         if channel:
             await ctx.send(
                 _(
                     ctx,
-                    "Channel <#{channel}> set as primary spamroom.".format(
+                    "Channel <#{channel}> set as primary spam channel.".format(
                         channel=channel
                     ),
                 )
@@ -535,7 +540,7 @@ class Admin(commands.Cog):
             await ctx.send(
                 _(
                     ctx,
-                    "Primary spamroom was unset, using first in list.",
+                    "Primary spam channel was unset, using first in list.",
                 )
             )
 
