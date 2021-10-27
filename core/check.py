@@ -1,10 +1,9 @@
 from functools import wraps
-from typing import Optional, Callable
+from typing import Callable
 
 import discord
 from discord.ext import commands
 
-from core.utils import _
 from database import acl as acldb
 from database.spamroom import SpamRoom
 
