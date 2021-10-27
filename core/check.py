@@ -4,10 +4,13 @@ from typing import Optional, Callable
 import discord
 from discord.ext import commands
 
+from core.utils import _
 from database import acl as acldb
 from database.spamroom import SpamRoom
 
 from core import i18n
+
+_ = i18n.Translator(__file__).translate
 
 
 def acl(ctx: commands.Context) -> bool:
