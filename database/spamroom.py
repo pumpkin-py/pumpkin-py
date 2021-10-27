@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Optional, Union, List
+from typing import Dict, Union, List
 
 from sqlalchemy import BigInteger, Boolean, Column, Integer, UniqueConstraint
 

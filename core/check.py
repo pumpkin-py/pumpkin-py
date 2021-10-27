@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Callable
+from typing import Optional, Callable
 
 import discord
 from discord.ext import commands
