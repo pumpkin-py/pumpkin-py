@@ -13,21 +13,12 @@ class SpamChannel(database.base):
     idx = Column(Integer, primary_key=True, autoincrement=True)
     guild_id = Column(BigInteger)
     channel_id = Column(BigInteger)
-    primary = Column(Boolean)
+    primary = Column(Boolean, default=False)
 
     __table_args__ = (
         UniqueConstraint(guild_id, channel_id),
         UniqueConstraint(channel_id, primary),
     )
-
-    def get_all(guild_id: int) -> List[SpamChannel]:
-        query = (
-            session.query(SpamChannel)
-            .filter_by(guild_id=guild_id)
-            .order_by(SpamChannel.idx.primary())
-            .all()
-        )
-        return query
 
     def add(guild_id: int, channel_id: int) -> SpamChannel:
         channel = SpamChannel(guild_id=guild_id, channel_id=channel_id)
@@ -43,29 +34,22 @@ class SpamChannel(database.base):
         )
         return query
 
-    def set_primary(guild_id: int, channel_id: int):
-        primary = (
+    def get_all(guild_id: int) -> List[SpamChannel]:
+        query = session.query(SpamChannel).filter_by(guild_id=guild_id).all()
+        return query
+
+    def set_primary(guild_id: int, channel_id: int) -> Optional[SpamChannel]:
+        query = (
             session.query(SpamChannel)
             .filter_by(guild_id=guild_id, primary=True)
             .one_or_none()
         )
+        if query and query.channel_id == channel_id:
+            return query
+        if query:
+            query.primary = False
 
-        if primary:
-            if primary.channel_id == channel_id:
-                return primary
-
-            primary.primary = False
-
-        if not channel_id or channel_id == 0:
-            session.commit()
-            return
-
-        query = (
-            session.query(SpamChannel)
-            .filter_by(guild_id=guild_id, channel_id=channel_id)
-            .one_or_none()
-        )
-
+        query = SpamChannel.get(guild_id, channel_id)
         if query:
             query.primary = True
 
@@ -83,12 +67,12 @@ class SpamChannel(database.base):
 
     def __repr__(self) -> str:
         return (
-            f'<SpamChannel idx="{self.idx}" guild_id="{self.guild_id}" channel_id="{self.channel_id}" '
+            f'<{self.__class__.__name__} idx="{self.idx}" '
+            f'guild_id="{self.guild_id}" channel_id="{self.channel_id}" '
             f'primary="{self.primary}">'
         )
 
     def dump(self) -> Dict[str, Union[int, str]]:
-        """Return object representation as dictionary for easy serialisation."""
         return {
             "guild_id": self.guild_id,
             "channel_id": self.channel_id,

@@ -1,3 +1,4 @@
+import contextlib
 from functools import wraps
 from typing import Optional, Callable
 
@@ -167,31 +168,35 @@ def version(
     return decorator
 
 
-async def channel(ctx: commands.Context) -> bool:
+async def spamchannel(ctx: commands.Context) -> bool:
+    # TODO Add soft & hard blocking
+    #
+    # Only allow three (?) invocations in five (?) minutes per TextChannel.
+    # If this limit is exceeded, return False.
+
     if getattr(ctx.bot, "owner_id", 0) == ctx.author.id:
         return True
     if ctx.author.id in getattr(ctx.bot, "owner_ids", set()):
         return True
 
-    # do not allow invocations in DMs
     if ctx.guild is None:
         return True
 
     spamchannels = SpamChannel.get_all(ctx.guild.id)
-
     if not spamchannels:
         return True
 
-    primary = spamchannels[0]
+    if ctx.channel.id in [c.channel_id for c in spamchannels]:
+        return True
 
-    for channel in spamchannels:
-        if channel.primary:
-            primary = channel
-        if channel.channel_id == ctx.channel.id:
-            return True
+    primary: Optional[SpamChannel] = None
+    with contextlib.suppress(IndexError):
+        primary = [s for s in spamchannels if s.primary][0]
+    if not primary:
+        primary = spamchannels[0]
 
     await ctx.send(
-        _(ctx, "<@{user}> 👉<#{channel}>").format(
+        _(ctx, "<@{user}> 👉 <#{channel}>").format(
             user=ctx.author.id, channel=primary.channel_id
         )
     )
