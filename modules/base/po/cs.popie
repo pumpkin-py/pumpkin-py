@@ -326,28 +326,28 @@ msgid Valid status values are: {states}
 msgstr Možné hodnoty pro status jsou: {states}
 
 msgid {channel} is already spam channel.
-msgstr
+msgstr {channel} už je spam kanál
 
 msgid Channel {channel} added as spam channel.
-msgstr
+msgstr Kanál {channel} byl označen jako spam kanál
 
 msgid This server has no spam channels.
-msgstr
+msgstr Tento server nemá žádné spam kanály.
 
 msgid primary
-msgstr
+msgstr primární
 
 msgid Spam channel {channel} removed.
-msgstr
+msgstr Spam kanál {channel} byl odebrán.
 
 msgid {channel} is not spam channel.
-msgstr
+msgstr {channel} není spam kanál.
 
 msgid Channel {channel} is not marked as spam channel, it cannot be made primary.
-msgstr
+msgstr Kanál {channel} není spam kanál, nemůže být označen jako primární.
 
 msgid Channel {channel} set as primary.
-msgstr
+msgstr Kanál {channel} byl označen jako primární.
 
 msgid You didn't define any ACL groups yet.
 msgstr Zatím jste nedefinovali žádné ACL skupiny.
