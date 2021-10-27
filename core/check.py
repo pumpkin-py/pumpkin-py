@@ -184,10 +184,10 @@ async def channel(ctx: commands.Context) -> bool:
 
     primary = spamchannels[0]
 
-    for room in spamchannels:
-        if room.primary:
-            primary = room
-        if room.channel_id == ctx.channel.id:
+    for channel in spamchannels:
+        if channel.primary:
+            primary = channel
+        if channel.channel_id == ctx.channel.id:
             return True
 
     await ctx.send(

@@ -452,9 +452,9 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @spamchannel.command(name="add")
     async def spamchannel_add(self, ctx, channel: discord.TextChannel):
-        room = SpamChannel.get(ctx.guild.id, channel.id)
+        channel = SpamChannel.get(ctx.guild.id, channel.id)
 
-        if room:
+        if channel:
             await ctx.send(
                 _(
                     ctx,
@@ -463,7 +463,7 @@ class Admin(commands.Cog):
             )
             return
 
-        room = SpamChannel.add(ctx.guild.id, channel.id)
+        channel = SpamChannel.add(ctx.guild.id, channel.id)
         await ctx.send(
             _(
                 ctx,
@@ -474,22 +474,22 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @spamchannel.command(name="list")
     async def spamchannel_list(self, ctx):
-        rooms = SpamChannel.get_all(ctx.guild.id)
+        channels = SpamChannel.get_all(ctx.guild.id)
 
         embed = utils.Discord.create_embed(
             author=ctx.author,
             title=_(ctx, "Bot spam channels"),
         )
 
-        if rooms:
-            for room in rooms:
-                value = "<#{channel}>".format(channel=room.channel_id)
+        if channels:
+            for channel in channels:
+                value = "<#{channel}>".format(channel=channel.channel_id)
 
-                if room.primary:
+                if channel.primary:
                     value += " " + _(ctx, "(primary)")
 
                 embed.add_field(
-                    name="({id})".format(id=room.channel_id),
+                    name="({id})".format(id=channel.channel_id),
                     value=value,
                     inline=False,
                 )

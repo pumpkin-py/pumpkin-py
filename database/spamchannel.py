@@ -30,10 +30,10 @@ class SpamChannel(database.base):
         return query
 
     def add(guild_id: int, channel_id: int) -> SpamChannel:
-        room = SpamChannel(guild_id=guild_id, channel_id=channel_id)
-        session.add(room)
+        channel = SpamChannel(guild_id=guild_id, channel_id=channel_id)
+        session.add(channel)
         session.commit()
-        return room
+        return channel
 
     def get(guild_id: int, channel_id: int) -> Optional[SpamChannel]:
         query = (
