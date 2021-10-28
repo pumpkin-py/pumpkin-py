@@ -1,8 +1,6 @@
 import contextlib
-from functools import wraps
-from typing import Optional, Callable
+from typing import Optional
 
-import discord
 from discord.ext import commands
 
 from database import acl as acldb
@@ -123,49 +121,6 @@ def acl(ctx: commands.Context) -> bool:
 
     # user's roles are not mapped to any ACL group, return default
     return rule.default
-
-
-def version(
-    major: int, minor: int, micro: Optional[int] = None, reply: bool = True
-) -> Optional[Callable]:
-    """Specify minimal discord.py version
-
-    :param major: minimum major version
-    :param minor: minimum minor version of the specified major version
-    :param micro: optional minimum micro version of that major version
-    :param reply: flag controls if user receives reply
-    :return: function to be called or None on wrong version
-    """
-
-    def decorator(func):
-        @wraps(func)
-        async def wrapper(*args, **kwargs):
-            version_info = discord.version_info
-            version_check = True
-
-            if version_info.major == major:
-                if version_info.minor == minor:
-                    if micro is not None and version_info.micro >= micro:
-                        version_check = False
-                elif version_info.minor > minor:
-                    version_check = False
-            elif version_info.major > major:
-                version_check = False
-
-            if not version_check:
-                return await func(*args, **kwargs)
-
-            if reply and isinstance(args[1], commands.Context):
-                ctx = args[1]
-                await args[1].message.reply(
-                    _(ctx, "This command is not available in this version")
-                )
-
-            return None
-
-        return wrapper
-
-    return decorator
 
 
 async def spamchannel(ctx: commands.Context) -> bool:
