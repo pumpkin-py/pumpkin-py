@@ -159,7 +159,7 @@ async def spamchannel(ctx: commands.Context) -> bool:
     if limit < 0:
         return True
 
-    if not ctx.channel.id in SPAM_CACHE:
+    if ctx.channel.id not in SPAM_CACHE:
         SPAM_CACHE[ctx.channel.id] = 0
 
     if SPAM_CACHE[ctx.channel.id] >= limit:

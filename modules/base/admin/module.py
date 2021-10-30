@@ -553,7 +553,7 @@ class Admin(commands.Cog):
     @limit.command(name="set")
     async def spamlimit_set(self, ctx, limit: int, channel: discord.TextChannel = None):
 
-        channel_id = 0 if channel == None else channel.id
+        channel_id = 0 if channel is None else channel.id
 
         if limit < 0:
             await ctx.send(_(ctx, "Limit must be higher or equal 0."))
@@ -607,7 +607,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @limit.command(name="remove", aliases=["rem"])
     async def spamlimit_remove(self, ctx, channel: discord.TextChannel = None):
-        channel_id = 0 if channel == None else channel.id
+        channel_id = 0 if channel is None else channel.id
 
         if SpamLimit.remove(ctx.guild.id, channel_id):
             if channel_id != 0:
@@ -617,7 +617,7 @@ class Admin(commands.Cog):
                 log_message = f"Spam limit for channel #{channel.name} removed."
             else:
                 message = _(ctx, "Global spam limit removed.")
-                log_message = f"Global spam limit removed."
+                log_message = "Global spam limit removed."
 
             await guild_log.info(
                 ctx.author,
