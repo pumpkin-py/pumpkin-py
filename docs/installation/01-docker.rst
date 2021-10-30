@@ -4,7 +4,15 @@ Docker installation
 Database setup
 --------------
 
-.. include:: _database.rst
+The database holds all dynamic bot data (e.g. the user content). There are multiple options, but docker is already set up with PostgreSQL with automatic backups.
+
+There is no need for any large setup, just create a file called ``.env`` in the root directory of your cloned repo and copy the content of the ``default.docker.env`` file into it.
+The ``.env`` file will hold sensitive bot information, so don't let anyone see its content, ever. It already contains prefilled ``DB_STRING`` and ``DOCKER_DB_BACKUP_PATH`` variables.
+Feel free to change the ``DOCKER_DB_BACKUP_PATH`` variable to any path you want the backups to end up in.
+
+To restore a backup, replace the backupfile name with a path to the file in following command:
+
+zcat backupfile.sql.gz | docker-compose exec -T db psql --username=postgres --dbname=postgres -W
 
 Discord bot token
 -----------------
