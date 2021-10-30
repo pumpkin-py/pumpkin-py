@@ -450,7 +450,7 @@ class Admin(commands.Cog):
     @commands.group(name="botspam", aliases=["spam"])
     async def botspam(self, ctx):
         await utils.Discord.send_help(ctx)
-        
+
     @commands.guild_only()
     @commands.check(check.acl)
     @botspam.group(name="channel")
