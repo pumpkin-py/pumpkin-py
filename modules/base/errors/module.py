@@ -53,6 +53,9 @@ class Errors(commands.Cog):
         if type(error) == commands.CommandNotFound:
             return
 
+        if type(error) == core.exceptions.SpamChannelException:
+            return
+
         # Get information
         title, content, log_error = Errors.__get_error_message(ctx, error)
         embed = utils.Discord.create_embed(

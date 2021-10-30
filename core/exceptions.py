@@ -1,9 +1,18 @@
+from discord.ext import commands
+
+
 class PumpkinException(Exception):
     """Common base for all pumpkin.py exceptions."""
 
     def __str__(self):
         """Text representation of the exception."""
         return super().__str__()
+
+
+class SpamChannelException(commands.CommandError):
+    """Raised when spam channel check patience is reached"""
+
+    pass
 
 
 class DotEnvException(PumpkinException):

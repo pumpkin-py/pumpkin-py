@@ -9,7 +9,7 @@ from discord.ext import commands, tasks
 import database.config
 from core import check, i18n, logger, utils
 from core import LANGUAGES as I18N_LANGUAGES
-from database.spamchannel import SpamChannel
+from database.spamchannel import SpamChannel, SpamLimit
 from .database import BaseAdminModule as Module
 from .objects import RepositoryManager, Repository
 
@@ -33,6 +33,8 @@ class Admin(commands.Cog):
         if config.status == "auto":
             self.status_loop.start()
         self.send_manager_log.start()
+
+        self.decrease_spam_cache.start()
 
     def cog_unload(self):
         """Cancel status loop on unload."""
@@ -445,12 +447,18 @@ class Admin(commands.Cog):
 
     @commands.guild_only()
     @commands.check(check.acl)
-    @commands.group(name="spamchannel", aliases=["spam"])
-    async def spamchannel(self, ctx):
+    @commands.group(name="botspam", aliases=["spam"])
+    async def botspam(self, ctx):
+        await utils.Discord.send_help(ctx)
+        
+    @commands.guild_only()
+    @commands.check(check.acl)
+    @botspam.group(name="channel")
+    async def channel(self, ctx):
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
-    @spamchannel.command(name="add")
+    @channel.command(name="add")
     async def spamchannel_add(self, ctx, channel: discord.TextChannel):
         spam_channel = SpamChannel.get(ctx.guild.id, channel.id)
         if spam_channel:
@@ -476,7 +484,7 @@ class Admin(commands.Cog):
         )
 
     @commands.check(check.acl)
-    @spamchannel.command(name="list")
+    @channel.command(name="list")
     async def spamchannel_list(self, ctx):
         spam_channels = SpamChannel.get_all(ctx.guild.id)
         if not spam_channels:
@@ -498,7 +506,7 @@ class Admin(commands.Cog):
         await ctx.reply("```" + "\n".join(result) + "```")
 
     @commands.check(check.acl)
-    @spamchannel.command(name="remove", aliases=["rem"])
+    @channel.command(name="remove", aliases=["rem"])
     async def spamchannel_remove(self, ctx, channel: discord.TextChannel):
         if SpamChannel.remove(ctx.guild.id, channel.id):
             message = _(ctx, "Spam channel {channel} removed.")
@@ -512,7 +520,7 @@ class Admin(commands.Cog):
         )
 
     @commands.check(check.acl)
-    @spamchannel.command(name="primary")
+    @channel.command(name="primary")
     async def spamchannel_primary(self, ctx, channel: discord.TextChannel):
         primary = SpamChannel.set_primary(ctx.guild.id, channel.id)
 
@@ -534,6 +542,105 @@ class Admin(commands.Cog):
             ctx.channel,
             f"Channel #{channel.name} set as primary spam channel.",
         )
+
+    @commands.guild_only()
+    @commands.check(check.acl)
+    @botspam.group(name="limit")
+    async def limit(self, ctx):
+        await utils.Discord.send_help(ctx)
+
+    @commands.check(check.acl)
+    @limit.command(name="set")
+    async def spamlimit_set(self, ctx, limit: int, channel: discord.TextChannel = None):
+
+        channel_id = 0 if channel == None else channel.id
+
+        if limit < 0:
+            await ctx.send(_(ctx, "Limit must be higher or equal 0."))
+            return
+
+        if channel_id == 0:
+            response = _(ctx, "Global spam limit set to {limit}.").format(limit=limit)
+            log_message = f"Global spam limit set to {limit}"
+        else:
+            response = _(ctx, "Spam limit for {channel} set to {limit}.").format(
+                channel=channel.mention, limit=limit
+            )
+            log_message = f"Spam limit for #{channel.name} set to {limit}."
+
+        SpamLimit.set(ctx.guild.id, channel_id, limit)
+
+        await ctx.send(response)
+        await guild_log.info(
+            ctx.author,
+            ctx.channel,
+            log_message,
+        )
+
+    @commands.check(check.acl)
+    @limit.command(name="list")
+    async def spamlimit_list(self, ctx):
+        spam_limits = SpamLimit.get_all(ctx.guild.id)
+        if not spam_limits:
+            await ctx.reply(_(ctx, "This server has no spam limits."))
+            return
+        spam_limits = sorted(spam_limits, key=lambda c: c.channel_id)
+
+        channels = [ctx.guild.get_channel(c.channel_id) for c in spam_limits]
+        if len(channels) < 1:
+            column_name_width: int = max([len(c.name) for c in channels if c]) + 1
+        else:
+            column_name_width: int = len(_(ctx, "GLOBAL"))
+
+        result = []
+        for spam_limit, channel in zip(spam_limits, channels):
+            if spam_limit.channel_id == 0:
+                name = _(ctx, "GLOBAL")
+            else:
+                name = "#" + getattr(channel, "name", "???")
+            line = f"{name:<{column_name_width}} {spam_limit.channel_id} {spam_limit.limit}"
+
+            result.append(line)
+
+        await ctx.reply("```" + "\n".join(result) + "```")
+
+    @commands.check(check.acl)
+    @limit.command(name="remove", aliases=["rem"])
+    async def spamlimit_remove(self, ctx, channel: discord.TextChannel = None):
+        channel_id = 0 if channel == None else channel.id
+
+        if SpamLimit.remove(ctx.guild.id, channel_id):
+            if channel_id != 0:
+                message = _(ctx, "Spam limit for {channel} removed.").format(
+                    channel=channel.mention
+                )
+                log_message = f"Spam limit for channel #{channel.name} removed."
+            else:
+                message = _(ctx, "Global spam limit removed.")
+                log_message = f"Global spam limit removed."
+
+            await guild_log.info(
+                ctx.author,
+                ctx.channel,
+                log_message,
+            )
+        else:
+            if channel_id != 0:
+                message = _(ctx, "Channel {channel} has no spam limit set.").format(
+                    channel=channel.mention
+                )
+            else:
+                message = _(ctx, "There's no global spam limit set.")
+
+        await ctx.reply(message)
+
+    # Tasks
+
+    @tasks.loop(seconds=60.0)
+    async def decrease_spam_cache(self):
+        for key in check.SPAM_CACHE.keys():
+            if check.SPAM_CACHE[key] > 0:
+                check.SPAM_CACHE[key] -= 1
 
 
 def setup(bot) -> None:

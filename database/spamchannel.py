@@ -78,3 +78,93 @@ class SpamChannel(database.base):
             "channel_id": self.channel_id,
             "primary": self.primary,
         }
+
+
+class SpamLimit(database.base):
+    __tablename__ = "spamlimits"
+
+    idx = Column(Integer, primary_key=True, autoincrement=True)
+    guild_id = Column(BigInteger)
+    channel_id = Column(BigInteger)
+    limit = Column(Integer)
+
+    @staticmethod
+    def set(guild_id: int, channel_id: int, limit: int):
+        if not channel_id:
+            channel_id = 0
+
+        spam_limit = (
+            session.query(SpamLimit)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .one_or_none()
+        )
+
+        if not spam_limit:
+            spam_limit = SpamLimit(guild_id=guild_id, channel_id=channel_id)
+
+        spam_limit.limit = limit
+
+        session.merge(spam_limit)
+        session.commit()
+
+    @staticmethod
+    def get(guild_id: int, channel_id: int) -> SpamLimit:
+        spam_limit = (
+            session.query(SpamLimit)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .one_or_none()
+        )
+
+        return spam_limit
+
+    @staticmethod
+    def get_limit(guild_id: int, channel_id: int) -> int:
+        spam_limit = (
+            session.query(SpamLimit)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .one_or_none()
+        )
+
+        if spam_limit:
+            return spam_limit.limit
+
+        spam_limit = (
+            session.query(SpamLimit)
+            .filter_by(guild_id=guild_id, channel_id=0)
+            .one_or_none()
+        )
+
+        if not spam_limit:
+            return -1
+
+        return spam_limit.limit
+
+    @staticmethod
+    def get_all(guild_id: int) -> List[SpamLimit]:
+        query = session.query(SpamLimit).filter_by(guild_id=guild_id).all()
+        return query
+
+    @staticmethod
+    def remove(guild_id: int, channel_id: int):
+        query = (
+            session.query(SpamLimit)
+            .filter_by(guild_id=guild_id, channel_id=channel_id)
+            .delete()
+        )
+
+        session.commit()
+        return query
+
+    def __repr__(self) -> str:
+        return (
+            f'<{self.__class__.__name__} idx="{self.idx}" '
+            f'guild_id="{self.guild_id}" channel_id="{self.channel_id}" '
+            f'limit="{self.primary}">'
+        )
+
+    def dump(self) -> Dict[str, Union[int, str]]:
+        return {
+            "guild_id": self.guild_id,
+            "channel_id": self.channel_id,
+            "limit": self.primary,
+        }

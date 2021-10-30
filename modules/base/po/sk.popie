@@ -1,21 +1,3 @@
-msgid Logging is not enabled on this server.
-msgstr
-
-msgid Invalid scope.
-msgstr
-
-msgid Invalid level.
-msgstr
-
-msgid Logging settings succesfully updated.
-msgstr
-
-msgid Logging target unset.
-msgstr
-
-msgid Supplied arguments didn't match any entries.
-msgstr
-
 msgid Pong: **{delay}** 🏓
 msgstr
 
@@ -347,6 +329,51 @@ msgid Channel {channel} is not marked as spam channel, it cannot be made primary
 msgstr
 
 msgid Channel {channel} set as primary.
+msgstr
+
+msgid Limit must be higher or equal 0.
+msgstr
+
+msgid Global spam limit set to {limit}.
+msgstr
+
+msgid Spam limit for {channel} set to {limit}.
+msgstr
+
+msgid This server has no spam limits.
+msgstr
+
+msgid GLOBAL
+msgstr
+
+msgid Spam limit for {channel} removed.
+msgstr
+
+msgid Global spam limit removed.
+msgstr
+
+msgid Channel {channel} has no spam limit set.
+msgstr
+
+msgid There's no global spam limit set.
+msgstr
+
+msgid Logging is not enabled on this server.
+msgstr
+
+msgid Invalid scope.
+msgstr
+
+msgid Invalid level.
+msgstr
+
+msgid Logging settings succesfully updated.
+msgstr
+
+msgid Logging target unset.
+msgstr
+
+msgid Supplied arguments didn't match any entries.
 msgstr
 
 msgid You didn't define any ACL groups yet.

@@ -4,11 +4,13 @@ from typing import Optional
 from discord.ext import commands
 
 from database import acl as acldb
-from database.spamchannel import SpamChannel
+from database.spamchannel import SpamChannel, SpamLimit
 
-from core import i18n
+from core import i18n, exceptions
 
 _ = i18n.Translator(__file__).translate
+
+SPAM_CACHE = {}
 
 
 def acl(ctx: commands.Context) -> bool:
@@ -124,10 +126,6 @@ def acl(ctx: commands.Context) -> bool:
 
 
 async def spamchannel(ctx: commands.Context) -> bool:
-    # TODO Add soft & hard blocking
-    #
-    # Only allow three (?) invocations in five (?) minutes per TextChannel.
-    # If this limit is exceeded, return False.
 
     if getattr(ctx.bot, "owner_id", 0) == ctx.author.id:
         return True
@@ -155,5 +153,18 @@ async def spamchannel(ctx: commands.Context) -> bool:
             user=ctx.author.id, channel=primary.channel_id
         )
     )
+
+    limit = SpamLimit.get_limit(ctx.guild.id, ctx.channel.id)
+
+    if limit < 0:
+        return True
+
+    if not ctx.channel.id in SPAM_CACHE:
+        SPAM_CACHE[ctx.channel.id] = 0
+
+    if SPAM_CACHE[ctx.channel.id] >= limit:
+        raise exceptions.SpamChannelException()
+
+    SPAM_CACHE[ctx.channel.id] += 1
 
     return True

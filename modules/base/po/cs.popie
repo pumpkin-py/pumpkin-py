@@ -1,21 +1,3 @@
-msgid Logging is not enabled on this server.
-msgstr Logování není na tomto serveru zapnuto.
-
-msgid Invalid scope.
-msgstr Neplatný rozsah.
-
-msgid Invalid level.
-msgstr Neplatná úroveň.
-
-msgid Logging settings succesfully updated.
-msgstr Nastavení logování bylo úspěšně aktualizováno.
-
-msgid Logging target unset.
-msgstr
-
-msgid Supplied arguments didn't match any entries.
-msgstr Dodané argumenty nesouhlasí s žádnými vstupy.
-
 msgid Pong: **{delay}** 🏓
 msgstr Pong: **{delay}** 🏓
 
@@ -348,6 +330,51 @@ msgstr Kanál {channel} není spam kanál, nemůže být označen jako primárn�
 
 msgid Channel {channel} set as primary.
 msgstr Kanál {channel} byl označen jako primární.
+
+msgid Limit must be higher or equal 0.
+msgstr Limit musí být větší nebo roven 0.
+
+msgid Global spam limit set to {limit}.
+msgstr Globální spam limit nastaven na {limit}.
+
+msgid Spam limit for {channel} set to {limit}.
+msgstr Spam limit kanálu {channel} nastaven na {limit}.
+
+msgid This server has no spam limits.
+msgstr Tento server nemá žádný spam limit.
+
+msgid GLOBAL
+msgstr GLOBÁLNÍ
+
+msgid Spam limit for {channel} removed.
+msgstr Spam limit kanálu {channel} odstraněn.
+
+msgid Global spam limit removed.
+msgstr Globální spam limit odstraněn.
+
+msgid Channel {channel} has no spam limit set.
+msgstr Kanál {channel} nemá nastaven žádný spam limit.
+
+msgid There's no global spam limit set.
+msgstr Není nastaven žádný globální spam limit.
+
+msgid Logging is not enabled on this server.
+msgstr Logování není na tomto serveru zapnuto.
+
+msgid Invalid scope.
+msgstr Neplatný rozsah.
+
+msgid Invalid level.
+msgstr Neplatná úroveň.
+
+msgid Logging settings succesfully updated.
+msgstr Nastavení logování bylo úspěšně aktualizováno.
+
+msgid Logging target unset.
+msgstr
+
+msgid Supplied arguments didn't match any entries.
+msgstr Dodané argumenty nesouhlasí s žádnými vstupy.
 
 msgid You didn't define any ACL groups yet.
 msgstr Zatím jste nedefinovali žádné ACL skupiny.
