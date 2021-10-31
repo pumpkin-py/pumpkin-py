@@ -9,3 +9,6 @@ msgstr Příkaz **{name}** nemá podpříkaz **{subcommand}**
 
 msgid Command **{name}** has no subcommand
 msgstr Příkaz **{name}** nemá žádný podpříkaz
+
+msgid Page
+msgstr Strana

@@ -1,5 +1,6 @@
+import asyncio
 import datetime
-from typing import List, Union, Optional
+from typing import Iterable, List, Union, Optional
 
 import discord
 from discord.ext import commands
@@ -285,3 +286,72 @@ class Discord:
             return True
         except discord.HTTPException:
             return False
+
+
+class ScrollableEmbed:
+    def __init__(self):
+        self.pages = []
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} "
+            f"page_count='{len(self.pages)}' pages='[{self.pages}]'>"
+        )
+
+    def from_iter(
+        self, ctx: discord.ext.commands.Context, iterable: Iterable[discord.Embed]
+    ):
+        for idx, embed in enumerate(iterable):
+            if type(embed) is not discord.Embed:
+                raise ValueError("Items in iterable must be of type discord.Embed")
+            embed.add_field(
+                name=_(ctx, "Page"),
+                value="{curr}/{total}".format(curr=idx + 1, total=len(iterable)),
+                inline=False,
+            )
+            self.pages.append(embed)
+
+    async def scroll(self, ctx: discord.ext.commands.Context):
+        if self.pages == []:
+            raise IndexError("Cannot scroll empty page list")
+
+        message = await ctx.send(embed=self.pages[0])
+        pagenum = 0
+        await message.add_reaction("◀️")
+        await message.add_reaction("▶️")
+        while True:
+
+            @staticmethod
+            def check(reaction, user):
+                return (
+                    reaction.message.id == message.id
+                    and (str(reaction.emoji) == "◀️" or str(reaction.emoji) == "▶️")
+                    and user == ctx.message.author
+                )
+
+            try:
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add", check=check, timeout=300.0
+                )
+            except asyncio.TimeoutError:
+                await message.clear_reactions()
+                break
+            else:
+                if str(reaction.emoji) == "◀️":
+                    pagenum -= 1
+                    if pagenum < 0:
+                        pagenum = len(self.pages) - 1
+                    try:
+                        await message.remove_reaction("◀️", user)
+                    except discord.errors.Forbidden:
+                        pass
+                    await message.edit(embed=self.pages[pagenum])
+                if str(reaction.emoji) == "▶️":
+                    pagenum += 1
+                    if pagenum >= len(self.pages):
+                        pagenum = 0
+                    try:
+                        await message.remove_reaction("▶️", user)
+                    except discord.errors.Forbidden:
+                        pass
+                    await message.edit(embed=self.pages[pagenum])
