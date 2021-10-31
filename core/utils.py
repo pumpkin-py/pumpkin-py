@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import contextlib
 from typing import Iterable, List, Union, Optional
 
 import discord
@@ -341,17 +342,13 @@ class ScrollableEmbed:
                     pagenum -= 1
                     if pagenum < 0:
                         pagenum = len(self.pages) - 1
-                    try:
+                    with contextlib.suppress(discord.Forbidden):
                         await message.remove_reaction("◀️", user)
-                    except discord.errors.Forbidden:
-                        pass
                     await message.edit(embed=self.pages[pagenum])
                 if str(reaction.emoji) == "▶️":
                     pagenum += 1
                     if pagenum >= len(self.pages):
                         pagenum = 0
-                    try:
+                    with contextlib.suppress(discord.Forbidden):
                         await message.remove_reaction("▶️", user)
-                    except discord.errors.Forbidden:
-                        pass
                     await message.edit(embed=self.pages[pagenum])
