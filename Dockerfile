@@ -1,11 +1,11 @@
-FROM python:3.9.5-slim
+FROM python:3.10.0-slim
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update && apt-get -y --no-install-recommends install \
-    make=4.2.1-1.2 automake=1:1.16.1-4 gcc=4:8.3.0-1 g++=4:8.3.0-1 \
-    tzdata=2021a-0+deb10u1 git=1:2.20.1-2+deb10u3
+    make>=4.3-4.1 automake>=1:1.16.3-2 gcc>=4:10.2.1-1 g++>=4:10.2.1-1 \
+    tzdata>=2021a-1+deb11u1 git>=1:2.30.2-1
 
 ENV TZ=Europe/Prague
 

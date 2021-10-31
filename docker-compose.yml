@@ -10,12 +10,29 @@ services:
       POSTGRES_LOG_MIN_LEVEL: "fatal"
     command: ["postgres", "-c", "log_min_messages=fatal"]
     restart: unless-stopped
+  backup:
+    image: prodrigestivill/postgres-backup-local:13-alpine
+    restart: unless-stopped
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ${DOCKER_DB_BACKUP_PATH}:/backups/:z
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
+      - SCHEDULE=@every 3h00m00s
   bot:
     build: .
     env_file: .env
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - ./:/Pumpkin/
+      - ./:/pumpkin-py/:z
     command: python pumpkin.py
     depends_on:
       - db
