@@ -9,12 +9,15 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
 
 ENV TZ=Europe/Prague
 
-VOLUME /Pumpkin
-WORKDIR /Pumpkin
+VOLUME /pumpkin-py
+WORKDIR /pumpkin-py
 
 RUN /usr/local/bin/python -m pip install --upgrade pip
 COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt --user --no-warn-script-location
+RUN python3 -m pip install -r requirements.txt --user --no-warn-script-location
+
+COPY modules modules
+RUN find ./modules/*/ -type f -name requirements.txt -exec python3 -m pip install -r {} --user --no-warn-script-location \;
 
 RUN apt-get -y remove make automake gcc g++ \
     && apt-get clean \
