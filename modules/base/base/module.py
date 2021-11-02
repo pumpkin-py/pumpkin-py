@@ -30,7 +30,7 @@ class Base(commands.Cog):
     async def ping(self, ctx):
         """Return latency information."""
         delay: str = "{:.2f}".format(self.bot.latency)
-        await ctx.reply(_(ctx, "Pong: **{delay}** 🏓".format(delay=delay)))
+        await ctx.reply(_(ctx, "Pong: **{delay}** 🏓").format(delay=delay))
 
     @commands.command()
     async def uptime(self, ctx):

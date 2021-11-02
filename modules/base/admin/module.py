@@ -149,11 +149,8 @@ class Admin(commands.Cog):
         if repository.name in [r.name for r in manager.repositories]:
             tempdir.cleanup()
             await ctx.send(
-                _(
-                    ctx,
-                    "Repository named `{name}` already exists.".format(
-                        name=repository.name
-                    ),
+                _(ctx, "Repository named `{name}` already exists.").format(
+                    name=repository.name,
                 )
             )
             return
