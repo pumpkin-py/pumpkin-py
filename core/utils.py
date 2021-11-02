@@ -322,7 +322,6 @@ class ScrollableEmbed:
         await message.add_reaction("▶️")
         while True:
 
-            @staticmethod
             def check(reaction, user):
                 return (
                     reaction.message.id == message.id
