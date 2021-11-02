@@ -34,7 +34,7 @@ class Help(commands.MinimalHelpCommand):
 
         This override changes the language from english to l10n version.
         """
-        return _(ctx, "I don't know the **{name}** command".format(name=string))
+        return _(ctx, "I don't know the **{name}** command").format(name=string)
 
     def subcommand_not_found(self, command: commands.Command, string: str) -> str:
         ctx = self.context

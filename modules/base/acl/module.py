@@ -112,7 +112,7 @@ class ACL(commands.Cog):
         RE_NAME = r"[a-zA-Z-]+"
         if re.fullmatch(RE_NAME, name) is None:
             await ctx.reply(
-                _(ctx, "Bad group name (regex `{regex}`)".format(regex=RE_NAME))
+                _(ctx, "Bad group name (regex `{regex}`)").format(regex=RE_NAME)
             )
             return
 

@@ -109,11 +109,8 @@ class Errors(commands.Cog):
         if type(error) == commands.MissingRequiredArgument:
             return (
                 _(ctx, "Command error"),
-                _(
-                    ctx,
-                    "The command has to have an argument `{arg}`".format(
-                        arg=error.param.name
-                    ),
+                _(ctx, "The command has to have an argument `{arg}`").format(
+                    arg=error.param.name,
                 ),
                 False,
             )
