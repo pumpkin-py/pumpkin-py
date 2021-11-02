@@ -535,7 +535,10 @@ class Base(commands.Cog):
         self, payload: discord.RawReactionActionEvent, message: discord.Message
     ):
         """Handle bookmark functionality."""
-        if not Bookmark.get(payload.guild_id, payload.channel_id).enabled:
+        bookmark = Bookmark.get(payload.guild_id, payload.channel_id)
+        if bookmark is None:
+            bookmark = Bookmark.get(payload.guild_id, None)
+        if not bookmark or not bookmark.enabled:
             return
 
         tc = TranslationContext(payload.guild_id, payload.user_id)
@@ -546,19 +549,17 @@ class Base(commands.Cog):
             description=message.content[:2000],
         )
         embed.set_author(
-            name=message.author.display_name, icon_url=message.author.avatar_url
+            name=message.author.display_name,
+            icon_url=message.author.display_avatar.replace(size=64).url,
         )
 
         timestamp = utils.Time.datetime(message.created_at)
         embed.add_field(
             name=f"{timestamp} UTC",
-            value=_(
-                tc,
-                "[Server {guild}, channel #{channel}]({link})".format(
-                    guild=utils.Text.sanitise(message.guild.name),
-                    channel=utils.Text.sanitise(message.channel.name),
-                    link=message.jump_url,
-                ),
+            value=_(tc, "[Server {guild}, channel #{channel}]({link})").format(
+                guild=utils.Text.sanitise(message.guild.name),
+                channel=utils.Text.sanitise(message.channel.name),
+                link=message.jump_url,
             ),
             inline=False,
         )
