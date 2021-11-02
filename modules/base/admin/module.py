@@ -169,10 +169,10 @@ class Admin(commands.Cog):
         await ctx.send(
             _(
                 ctx,
-                "Repository has been installed to `{path}`. It includes the following modules: {modules}.".format(
-                    path="modules/" + repository.name,
-                    modules=", ".join(f"**{m}**" for m in repository.module_names),
-                ),
+                "Repository has been installed to `{path}`. It includes the following modules: {modules}.",
+            ).format(
+                path="modules/" + repository.name,
+                modules=", ".join(f"**{m}**" for m in repository.module_names),
             )
         )
         tempdir.cleanup()
@@ -301,7 +301,7 @@ class Admin(commands.Cog):
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
         self.bot.load_extension("modules." + name + ".module")
-        await ctx.send(_(ctx, "Module **{name}** has been loaded.".format(name=name)))
+        await ctx.send(_(ctx, "Module **{name}** has been loaded.").format(name=name))
         Module.add(name, enabled=True)
         await bot_log.info(ctx.author, ctx.channel, "Loaded " + name)
 
@@ -310,11 +310,11 @@ class Admin(commands.Cog):
     async def module_unload(self, ctx, name: str):
         if name in ("base.admin",):
             await ctx.send(
-                _(ctx, "Module **{name}** cannot be unloaded.".format(name=name))
+                _(ctx, "Module **{name}** cannot be unloaded.").format(name=name)
             )
             return
         self.bot.unload_extension("modules." + name + ".module")
-        await ctx.send(_(ctx, "Module **{name}** has been unloaded.".format(name=name)))
+        await ctx.send(_(ctx, "Module **{name}** has been unloaded.").format(name=name))
         Module.add(name, enabled=False)
         await bot_log.info(ctx.author, ctx.channel, "Unloaded " + name)
 
@@ -322,7 +322,7 @@ class Admin(commands.Cog):
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
         self.bot.reload_extension("modules." + name + ".module")
-        await ctx.send(_(ctx, "Module **{name}** has been reloaded.".format(name=name)))
+        await ctx.send(_(ctx, "Module **{name}** has been reloaded.").format(name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
 
     @commands.check(check.acl)
@@ -380,21 +380,15 @@ class Admin(commands.Cog):
         genders = ("m", "f")
         if key == "gender" and value not in genders:
             return await ctx.send(
-                _(
-                    ctx,
-                    "Valid genders values are: {genders}".format(
-                        genders=", ".join(f"`{g}`" for g in genders)
-                    ),
+                _(ctx, "Valid genders values are: {genders}").format(
+                    genders=", ".join(f"`{g}`" for g in genders),
                 )
             )
         states = ("online", "idle", "dnd", "invisible", "auto")
         if key == "status" and value not in states:
             return await ctx.send(
-                _(
-                    ctx,
-                    "Valid status values are: {states}".format(
-                        states=", ".join(f"`{s}`" for s in states)
-                    ),
+                _(ctx, "Valid status values are: {states}").format(
+                    states=", ".join(f"`{s}`" for s in states),
                 )
             )
 

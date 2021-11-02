@@ -72,11 +72,8 @@ class Language(commands.Cog):
             ctx.author, ctx.channel, f"Language preference set to '{language}'."
         )
         await ctx.reply(
-            _(
-                ctx,
-                "I'll remember the preference of **{language}**.".format(
-                    language=language
-                ),
+            _(ctx, "I'll remember the preference of **{language}**.").format(
+                language=language,
             )
             + " "
             + _(ctx, "You may need to wait two minutes for the change to take effect.")
@@ -112,11 +109,8 @@ class Language(commands.Cog):
             f"Guild language preference set to '{language}'.",
         )
         await ctx.reply(
-            _(
-                ctx,
-                "I'll be using **{language}** on this server now.".format(
-                    language=language
-                ),
+            _(ctx, "I'll be using **{language}** on this server now.").format(
+                language=language,
             )
             + " "
             + _(ctx, "You may need to wait two minutes for the change to take effect.")

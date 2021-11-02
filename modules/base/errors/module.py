@@ -124,7 +124,7 @@ class Errors(commands.Cog):
             time = utils.Time.seconds(error.retry_after)
             return (
                 _(ctx, "Slow down"),
-                _(ctx, "Wait **{time}**".format(time=time)),
+                _(ctx, "Wait **{time}**").format(time=time),
                 False,
             )
         if type(error) == commands.MaxConcurrencyReached:
@@ -132,31 +132,25 @@ class Errors(commands.Cog):
                 _(ctx, "Too much concurrency"),
                 _(ctx, "This command is already running multiple times")
                 + "\n"
-                + _(
-                    ctx,
-                    "The limit is **{num}**/**{per}**".format(
-                        num=error.number, per=error.per.name
-                    ),
+                + _(ctx, "The limit is **{num}**/**{per}**").format(
+                    num=error.number,
+                    per=error.per.name,
                 ),
                 False,
             )
         if type(error) == commands.MissingRole:
             return (
                 _(ctx, "Permission error"),
-                _(
-                    ctx,
-                    "You have to have a {role} role for that".format(
-                        role=f"`{error.missing_role!r}`"
-                    ),
+                _(ctx, "You have to have a {role} role for that").format(
+                    role=f"`{error.missing_role!r}`",
                 ),
                 False,
             )
         if type(error) == commands.BotMissingRole:
             return (
                 _(ctx, "Permission error"),
-                _(
-                    ctx,
-                    "I lack the role {role}".format(role=f"`{error.missing_role!r}`"),
+                _(ctx, "I lack the role {role}").format(
+                    role=f"`{error.missing_role!r}`"
                 ),
                 False,
             )
@@ -164,66 +158,57 @@ class Errors(commands.Cog):
             roles = ", ".join(f"**{r!r}**" for r in error.missing_roles)
             return (
                 _(ctx, "Permission error"),
-                _(ctx, "You have to have one role of {roles}".format(roles=roles)),
+                _(ctx, "You have to have one role of {roles}").format(roles=roles),
                 False,
             )
         if type(error) == commands.BotMissingAnyRole:
             roles = ", ".join(f"**{r!r}**" for r in error.missing_roles)
             return (
                 _(ctx, "Permission error"),
-                _(ctx, "I need one of roles {roles}".format(roles=roles)),
+                _(ctx, "I need one of roles {roles}").format(roles=roles),
                 False,
             )
         if type(error) == commands.MissingPermissions:
             perms = ", ".join(f"**{p}**" for p in error.missing_perms)
             return (
                 _(ctx, "Permission error"),
-                _(ctx, "You lack some of {perms} permissions".format(perms=perms)),
+                _(ctx, "You lack some of {perms} permissions").format(perms=perms),
                 False,
             )
         if type(error) == commands.BotMissingPermissions:
             perms = ", ".join(f"`{p}`" for p in error.missing_perms)
             return (
                 _(ctx, "Permission error"),
-                _(ctx, "I lack the {perms} permission".format(perms=perms)),
+                _(ctx, "I lack the {perms} permission").format(perms=perms),
                 False,
             )
         if type(error) == commands.BadUnionArgument:
             return (
                 _(ctx, "Argument error"),
-                _(
-                    ctx,
-                    "Bad data type in the `{param}` parameter".format(
-                        param=error.param.name
-                    ),
+                _(ctx, "Bad data type in the `{param}` parameter").format(
+                    param=error.param.name,
                 ),
                 False,
             )
         if type(error) == commands.BadBoolArgument:
             return (
                 _(ctx, "Bad Boolean Argument"),
-                _(ctx, "Argument `{arg}` is not binary".format(arg=error.argument)),
+                _(ctx, "Argument `{arg}` is not binary").format(arg=error.argument),
                 False,
             )
         if type(error) == commands.ConversionError:
             return (
                 _(ctx, "Command error"),
-                _(
-                    ctx,
-                    "An error occurred in converter `{converter}`".format(
-                        converter=type(error.converter).__name__
-                    ),
+                _(ctx, "An error occurred in converter `{converter}`").format(
+                    converter=type(error.converter).__name__,
                 ),
                 False,
             )
         if type(error) == commands.ChannelNotReadable:
             return (
                 _(ctx, "Not found"),
-                _(
-                    ctx,
-                    "I can't see the **{channel}** channel".format(
-                        channel=error.argument.name
-                    ),
+                _(ctx, "I can't see the **{channel}** channel").format(
+                    channel=error.argument.name,
                 ),
                 False,
             )
@@ -240,11 +225,8 @@ class Errors(commands.Cog):
             name = error.name[8:-7]
             return (
                 _(ctx, "Extension Error"),
-                _(
-                    ctx,
-                    "An error occurred inside of **{extension}** extension".format(
-                        extension=name
-                    ),
+                _(ctx, "An error occurred inside of **{extension}** extension").format(
+                    extension=name,
                 ),
                 True,
             )
@@ -258,37 +240,33 @@ class Errors(commands.Cog):
                 key = type(error).__name__
             error_message = {
                 "ExtensionAlreadyLoaded": _(
-                    ctx,
-                    "Extension **{extension}** is already loaded".format(
-                        extension=name
-                    ),
+                    ctx, "Extension **{extension}** is already loaded"
+                ).format(
+                    extension=name,
                 ),
                 "ExtensionError": _(
-                    ctx,
-                    "An error occurred inside of **{extension}** extension".format(
-                        extension=name
-                    ),
+                    ctx, "An error occurred inside of **{extension}** extension"
+                ).format(
+                    extension=name,
                 ),
-                "ExtensionFailed": _(
-                    ctx, "**{extension}** failed".format(extension=name)
+                "ExtensionFailed": _(ctx, "**{extension}** failed").format(
+                    extension=name
                 ),
                 "ExtensionNotFound": _(
-                    ctx,
-                    "The extension **{extension}** could not be found".format(
-                        extension=name
-                    ),
+                    ctx, "The extension **{extension}** could not be found"
+                ).format(
+                    extension=name,
                 ),
                 "ExtensionNotFound_hint": _(
                     ctx,
-                    "The extension **{extension}** could not be found. It should be in `repository.module` format".format(
-                        extension=name
-                    ),
+                    "The extension **{extension}** could not be found. It should be in `repository.module` format",
+                ).format(
+                    extension=name,
                 ),
                 "ExtensionNotLoaded": _(
-                    ctx,
-                    "The extension **{extension}** is not loaded".format(
-                        extension=name
-                    ),
+                    ctx, "The extension **{extension}** is not loaded"
+                ).format(
+                    extension=name,
                 ),
             }
             return (
@@ -303,9 +281,8 @@ class Errors(commands.Cog):
         if type(error) == commands.CommandRegistrationError:
             return (
                 _(ctx, "Error"),
-                _(
-                    ctx,
-                    "Error on registering the command `{cmd}`".format(cmd=error.name),
+                _(ctx, "Error on registering the command `{cmd}`").format(
+                    cmd=error.name
                 ),
                 False,
             )
