@@ -156,10 +156,9 @@ class ACL(commands.Cog):
             if re.fullmatch(RE_NAME, name) is None:
                 await ctx.reply(
                     _(
-                        ctx,
-                        "ACL group can't be named like that (regex `{regex}`).".format(
-                            regex=RE_NAME
-                        ),
+                        ctx, "ACL group can't be named like that (regex `{regex}`)."
+                    ).format(
+                        regex=RE_NAME,
                     )
                 )
                 return
@@ -222,7 +221,7 @@ class ACL(commands.Cog):
 
         file.seek(0)
         await ctx.reply(
-            _(ctx, "**{count} rules** exported.".format(count=len(export))),
+            _(ctx, "**{count} rules** exported.").format(count=len(export)),
             file=discord.File(fp=file, filename=filename),
         )
         file.close()
@@ -249,7 +248,7 @@ class ACL(commands.Cog):
 
         file.seek(0)
         await ctx.reply(
-            _(ctx, "**{count} rules** exported.".format(count=len(rules))),
+            _(ctx, "**{count} rules** exported.").format(count=len(rules)),
             file=discord.File(fp=file, filename=filename),
         )
         file.close()
@@ -277,7 +276,7 @@ class ACL(commands.Cog):
 
         # delete all
         count = ACL_rule.remove_all(ctx.guild.id)
-        await ctx.send(_(ctx, "I've removed add {count} rules.".format(count=count)))
+        await ctx.send(_(ctx, "I've removed add {count} rules.").format(count=count))
         await guild_log.info(ctx.author, ctx.channel, "ACL rules flushed.")
 
     @commands.check(check.acl)
@@ -311,10 +310,10 @@ class ACL(commands.Cog):
 
         await ctx.reply(
             _(
-                ctx,
-                "I've imported **{new}** new and **{updated}** updated rules.".format(
-                    new=len(new), updated=len(updated)
-                ),
+                ctx, "I've imported **{new}** new and **{updated}** updated rules."
+            ).format(
+                new=len(new),
+                updated=len(updated),
             )
         )
 
@@ -369,13 +368,13 @@ class ACL(commands.Cog):
     async def command_disable(self, ctx, *, command: str):
         if ACL_rule.get(guild_id=0, command=command) is not None:
             await ctx.reply(
-                _(ctx, "Command **{name}** is not enabled.".format(name=command))
+                _(ctx, "Command **{name}** is not enabled.").format(name=command)
             )
             return
 
         ACL_rule.add(guild_id=0, command=command, default=False)
         await ctx.reply(
-            _(ctx, "Command **{name}** has been disabled.".format(name=command))
+            _(ctx, "Command **{name}** has been disabled.").format(name=command)
         )
         await bot_log.info(ctx.author, ctx.channel, f"Command {command} disabled.")
 
@@ -384,13 +383,13 @@ class ACL(commands.Cog):
     async def command_enable(self, ctx, *, command: str):
         if ACL_rule.get(guild_id=0, command=command) is None:
             await ctx.reply(
-                _(ctx, "Command **{name}** is not disabled.".format(name=command))
+                _(ctx, "Command **{name}** is not disabled.").format(name=command)
             )
             return
 
         ACL_rule.remove(guild_id=0, command=command)
         await ctx.reply(
-            _(ctx, "Command **{name}** has been enabled.".format(name=command))
+            _(ctx, "Command **{name}** has been enabled.").format(name=command)
         )
         await bot_log.info(ctx.author, ctx.channel, f"Command {command} enabled.")
 
@@ -402,7 +401,7 @@ class ACL(commands.Cog):
 
         embed = utils.Discord.create_embed(
             author=ctx.author,
-            title=_(ctx, "ACL group {name}".format(name=group_dict["name"])),
+            title=_(ctx, "ACL group {name}").format(name=group_dict["name"]),
         )
 
         role = ctx.guild.get_role(group_dict["role_id"])

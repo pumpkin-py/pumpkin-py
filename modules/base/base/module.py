@@ -78,7 +78,7 @@ class Base(commands.Cog):
         channel_pref = UserPin.get(ctx.guild.id, channel.id)
         if channel_pref is not None:
             embed.add_field(
-                name=_(ctx, "Channel #{channel}".format(channel=channel.name)),
+                name=_(ctx, "Channel #{channel}").format(channel=channel.name),
                 value=f"{channel_pref.limit}"
                 if channel_pref.limit > 0
                 else _(ctx, "Function is disabled"),
@@ -150,7 +150,7 @@ class Base(commands.Cog):
         channel_pref = Bookmark.get(ctx.guild.id, channel.id)
         if channel_pref is not None:
             embed.add_field(
-                name=_(ctx, "Channel #{channel}".format(channel=channel.name)),
+                name=_(ctx, "Channel #{channel}").format(channel=channel.name),
                 value=_(ctx, "Enabled") if channel_pref.enabled else _(ctx, "Disabled"),
             )
 
@@ -238,7 +238,7 @@ class Base(commands.Cog):
         channel_pref = UserThread.get(ctx.guild.id, channel.id)
         if channel_pref is not None:
             embed.add_field(
-                name=_(ctx, "Channel #{channel}".format(channel=channel.name)),
+                name=_(ctx, "Channel #{channel}").format(channel=channel.name),
                 value=f"{channel_pref.limit}"
                 if channel_pref.limit > 0
                 else _(ctx, "Function is disabled"),
@@ -567,12 +567,12 @@ class Base(commands.Cog):
         if len(message.attachments):
             embed.add_field(
                 name=_(tc, "Files"),
-                value=_(tc, "Total {count}".format(count=len(message.attachments))),
+                value=_(tc, "Total {count}").format(count=len(message.attachments)),
             )
         if len(message.embeds):
             embed.add_field(
                 name=_(tc, "Embeds"),
-                value=_(tc, "Total {count}".format(count=len(message.embeds))),
+                value=_(tc, "Total {count}").format(count=len(message.embeds)),
             )
 
         await utils.Discord.remove_reaction(message, payload.emoji, payload.member)
@@ -639,8 +639,8 @@ class Base(commands.Cog):
             # create a new thread
             try:
                 users = await reaction.users().flatten()
-                thread_name = _(
-                    tc, "Thread by {author}".format(author=message.author.name)
+                thread_name = _(tc, "Thread by {author}").format(
+                    author=message.author.name
                 )
                 await message.create_thread(name=thread_name)
                 await guild_log.info(
