@@ -1,3 +1,10 @@
+FROM alpine as builder
+
+WORKDIR /temp
+COPY modules modules
+RUN find /temp/modules/*/ -type f -name requirements.txt -exec cat {} \; > /temp/requirements.txt
+
+
 FROM python:3.10.0-slim
 
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -9,15 +16,14 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
 
 ENV TZ=Europe/Prague
 
-VOLUME /pumpkin-py
 WORKDIR /pumpkin-py
 
 RUN /usr/local/bin/python -m pip install --upgrade pip
 COPY requirements.txt requirements.txt
 RUN python3 -m pip install -r requirements.txt --user --no-warn-script-location
 
-COPY modules modules
-RUN find ./modules/*/ -type f -name requirements.txt -exec python3 -m pip install -r {} --user --no-warn-script-location \;
+COPY --from=builder /temp/requirements.txt /temp/requirements.txt
+RUN python3 -m pip install -r /temp/requirements.txt --user --no-warn-script-location
 
 RUN apt-get -y remove make automake gcc g++ \
     && apt-get clean \
