@@ -47,6 +47,7 @@ LogActor = Optional[Union[discord.Member, discord.User]]
 
 LogSource = Optional[
     Union[
+        discord.Guild,
         discord.DMChannel,
         discord.GroupChannel,
         discord.TextChannel,
@@ -78,8 +79,12 @@ class LogEntry:
         self.scope = scope
         self.level = level
         self.actor = actor
-        self.channel = source
-        self.guild = getattr(source, "guild", None)
+        if isinstance(source, discord.Guild):
+            self.channel = None
+            self.guild = source
+        else:
+            self.channel = source
+            self.guild = getattr(source, "guild", None)
         self.message = message
         self.content = content
         self.exception = exception
