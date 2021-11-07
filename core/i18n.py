@@ -99,7 +99,13 @@ class Translator:
         user_id: Optional[int]
         if ctx.__class__ == TranslationContext:
             guild_id, user_id = ctx.guild_id, ctx.user_id
-        elif ctx.__class__ == discord.ext.commands.Context:
+        elif ctx.__class__ == discord.ext.commands.Context and isinstance(
+            ctx.channel, discord.abc.PrivateChannel
+        ):
+            guild_id, user_id = None, ctx.author.id
+        elif ctx.__class__ == discord.ext.commands.Context and not isinstance(
+            ctx.channel, discord.abc.PrivateChannel
+        ):
             guild_id, user_id = ctx.guild.id, ctx.author.id
         else:
             guild_id, user_id = None, None
