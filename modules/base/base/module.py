@@ -383,6 +383,8 @@ class Base(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
+        if isinstance(message.channel, discord.abc.PrivateChannel):
+            return
         thread_settings = AutoThread.get(message.guild.id, message.channel.id)
         if thread_settings is None:
             return
