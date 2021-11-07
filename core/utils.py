@@ -364,7 +364,8 @@ class ScrollableEmbed:
                     "reaction_add", check=check, timeout=300.0
                 )
             except asyncio.TimeoutError:
-                await message.clear_reactions()
+                with contextlib.suppress(discord.NotFound, discord.Forbidden):
+                    await message.clear_reactions()
                 break
             else:
                 if str(reaction.emoji) == "◀️":
