@@ -302,13 +302,6 @@ class ScrollableEmbed:
     def __init__(
         self, ctx: commands.Context, iterable: Iterable[discord.Embed]
     ) -> ScrollableEmbed:
-        """[summary]
-
-
-
-        Returns:
-            ScrollableEmbed: [description]
-        """
         self.pages = self._pages_from_iter(ctx, iterable)
         self.ctx = ctx
 
