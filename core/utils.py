@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import datetime
 import contextlib
@@ -290,8 +292,18 @@ class Discord:
 
 
 class ScrollableEmbed:
-    def __init__(self):
-        self.pages = []
+    """Class for making scrollable embeds easy.
+
+    Args:
+        ctx (:class:`discord.ext.commands.Context`): The context for translational purposes.
+        iterable (:class:`Iterable[discord.Embed]`): Iterable which to build the ScrollableEmbed from.
+    """
+
+    def __init__(
+        self, ctx: commands.Context, iterable: Iterable[discord.Embed]
+    ) -> ScrollableEmbed:
+        self.pages = self._pages_from_iter(ctx, iterable)
+        self.ctx = ctx
 
     def __repr__(self):
         return (
@@ -299,9 +311,10 @@ class ScrollableEmbed:
             f"page_count='{len(self.pages)}' pages='[{self.pages}]'>"
         )
 
-    def from_iter(
-        self, ctx: discord.ext.commands.Context, iterable: Iterable[discord.Embed]
-    ):
+    def _pages_from_iter(
+        self, ctx: commands.Context, iterable: Iterable[discord.Embed]
+    ) -> list[discord.Embed]:
+        pages = []
         for idx, embed in enumerate(iterable):
             if type(embed) is not discord.Embed:
                 raise ValueError("Items in iterable must be of type discord.Embed")
@@ -310,14 +323,24 @@ class ScrollableEmbed:
                 value="{curr}/{total}".format(curr=idx + 1, total=len(iterable)),
                 inline=False,
             )
-            self.pages.append(embed)
+            pages.append(embed)
+        return pages
 
-    async def scroll(self, ctx: discord.ext.commands.Context):
+    async def scroll(self):
+        """Make them embeds move.
+
+        Sends the first page to the context and handles scrolling.
+        """
+        ctx = self.ctx
         if self.pages == []:
-            raise IndexError("Cannot scroll empty page list")
+            await ctx.reply(_(ctx, "No results were found."))
+            return
 
         message = await ctx.send(embed=self.pages[0])
         pagenum = 0
+        if len(self.pages) == 1:
+            return
+
         await message.add_reaction("◀️")
         await message.add_reaction("▶️")
         while True:
@@ -334,7 +357,8 @@ class ScrollableEmbed:
                     "reaction_add", check=check, timeout=300.0
                 )
             except asyncio.TimeoutError:
-                await message.clear_reactions()
+                with contextlib.suppress(discord.NotFound, discord.Forbidden):
+                    await message.clear_reactions()
                 break
             else:
                 if str(reaction.emoji) == "◀️":
