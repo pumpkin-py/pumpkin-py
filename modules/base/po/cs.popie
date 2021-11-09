@@ -28,17 +28,17 @@ msgstr Čas spuštění
 msgid Run time
 msgstr Doba od spuštění
 
-msgid Message pinning 📌
-msgstr Připínání zpráv 📌
+msgid User pinning is not enabled on this server.
+msgstr Připínání zpráv uživateli na tomto serveru není povoleno.
 
-msgid Function is disabled
-msgstr Funkce je vypnutá
+msgid (server)
+msgstr (server)
 
-msgid Global limit
-msgstr Globální limit
+msgid Channel name
+msgstr Název kanálu
 
-msgid Channel #{channel}
-msgstr Kanál #{channel}
+msgid Reaction limit
+msgstr Limit reakcí
 
 msgid Pinning was disabled.
 msgstr Připínání bylo vypnuto.
@@ -49,26 +49,32 @@ msgstr Preference připínání byla aktualizována.
 msgid The preference was unset.
 msgstr Preference zrušena.
 
-msgid Bookmarks 🔖
-msgstr Záložky 🔖
+msgid Bookmarks are not enabled on this server.
+msgstr Záložky nejsou na tomto serveru povoleny.
 
-msgid Global settings
-msgstr Globální nastavení
+msgid Yes
+msgstr Ano
 
-msgid Limit
-msgstr Limit
+msgid No
+msgstr Ne
 
-msgid Channel
-msgstr Kanál
+msgid Enabled
+msgstr Zapnuto
 
-msgid No userthreads are defined.
-msgstr Vlastní vlákna nejsou povolena.
-
-msgid (server)
-msgstr (server)
+msgid User threads are not enabled on this server.
+msgstr Otevírání vláken uživateli není na tomto serveru povoleno.
 
 msgid Userthread 🧵
 msgstr Vlastní vlákna 🧵
+
+msgid Function is disabled
+msgstr Funkce je vypnutá
+
+msgid Global limit
+msgstr Globální limit
+
+msgid Channel #{channel}
+msgstr Kanál #{channel}
 
 msgid Limit has to be positive integer or zero (if you want the feature disabled).
 msgstr Limit musí být kladné celé číslo nebo nula (pokud má být funkce vypnuta).
@@ -447,6 +453,9 @@ msgstr Nenastaveno
 
 msgid Server settings
 msgstr Nastavení serveru
+
+msgid Global settings
+msgstr Globální nastavení
 
 msgid I can't speak that language.
 msgstr Neumím tento jazyk.

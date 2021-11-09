@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import datetime
 import contextlib
-from typing import Iterable, List, Union, Optional
+from typing import Dict, Iterable, List, Union, Optional
 
 import discord
 from discord.ext import commands
@@ -85,6 +85,54 @@ class Text:
         if string.lower() in ("0", "false", "no"):
             return False
         return None
+
+    @staticmethod
+    def create_table(
+        iterable: Iterable, header: Dict[str, str], *, limit: int = 1990
+    ) -> List[str]:
+        """Create table from any iterable.
+
+        This is useful mainly for '<command> list' situations.
+
+        Args:
+            iterable: Any iterable of items to create the table from.
+            header: Dictionary of item attributes and their translations.
+            limit: Character limit, at which the table is split.
+        """
+        matrix: List[List[str]] = []
+        matrix.append(list(header.values()))
+        column_widths = [len(v) for v in header.values()]
+
+        for item in iterable:
+            line: List[str] = []
+            for i, attr in enumerate(header.keys()):
+                line.append(str(getattr(item, attr, "")))
+
+                item_width: int = len(line[i])
+                if column_widths[i] < item_width:
+                    column_widths[i] = item_width
+
+            matrix.append(line)
+
+        pages: List[str] = []
+        page: str = ""
+        for matrix_line in matrix:
+            line = ""
+            for i in range(len(header) - 1):
+                line += matrix_line[i].ljust(column_widths[i] + 1)
+            # don't ljust the last item, it's a waste of characters
+            line += matrix_line[-1]
+
+            if len(page) + len(line) > limit:
+                pages.append(page)
+                page = ""
+            page += line + "\n"
+        pages.append(page)
+
+        # strip extra newline at the end of each page
+        pages = [page[:-1] for page in pages]
+
+        return pages
 
 
 class Time:
