@@ -36,6 +36,11 @@ class UserPin(database.base):
         return query
 
     @staticmethod
+    def get_all(guild_id: int) -> List[UserPin]:
+        query = session.query(UserPin).filter_by(guild_id=guild_id).all()
+        return query
+
+    @staticmethod
     def remove(guild_id: int, channel_id: Optional[int]) -> int:
         query = (
             session.query(UserPin)
@@ -140,6 +145,11 @@ class Bookmark(database.base):
             .filter_by(guild_id=guild_id, channel_id=channel_id)
             .one_or_none()
         )
+        return query
+
+    @staticmethod
+    def get_all(guild_id: int) -> List[Bookmark]:
+        query = session.query(Bookmark).filter_by(guild_id=guild_id).all()
         return query
 
     @staticmethod

@@ -28,16 +28,16 @@ msgstr
 msgid Run time
 msgstr
 
-msgid Message pinning 📌
+msgid User pinning is not enabled on this server.
 msgstr
 
-msgid Function is disabled
+msgid (server)
 msgstr
 
-msgid Global limit
+msgid Channel name
 msgstr
 
-msgid Channel #{channel}
+msgid Reaction limit
 msgstr
 
 msgid Pinning was disabled.
@@ -49,25 +49,31 @@ msgstr
 msgid The preference was unset.
 msgstr
 
-msgid Bookmarks 🔖
+msgid Bookmarks are not enabled on this server.
 msgstr
 
-msgid Global settings
+msgid Yes
 msgstr
 
-msgid Limit
+msgid No
 msgstr
 
-msgid Channel
+msgid Enabled
 msgstr
 
-msgid No userthreads are defined.
-msgstr
-
-msgid (server)
+msgid User threads are not enabled on this server.
 msgstr
 
 msgid Userthread 🧵
+msgstr
+
+msgid Function is disabled
+msgstr
+
+msgid Global limit
+msgstr
+
+msgid Channel #{channel}
 msgstr
 
 msgid Limit has to be positive integer or zero (if you want the feature disabled).
@@ -446,6 +452,9 @@ msgid Not set
 msgstr
 
 msgid Server settings
+msgstr
+
+msgid Global settings
 msgstr
 
 msgid I can't speak that language.

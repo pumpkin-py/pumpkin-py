@@ -59,32 +59,35 @@ class Base(commands.Cog):
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
-    @userpin.command(name="get")
-    async def userpin_get(self, ctx, channel: discord.TextChannel = None):
-        embed = utils.Discord.create_embed(
-            author=ctx.author,
-            title=_(ctx, "Message pinning 📌"),
+    @userpin.command(name="list")
+    async def userpin_list(self, ctx):
+        db_channels = UserPin.get_all(ctx.guild.id)
+        if not db_channels:
+            await ctx.reply(_(ctx, "User pinning is not enabled on this server."))
+            return
+
+        class Item:
+            def __init__(self, db_channel):
+                if db_channel.channel_id:
+                    dc_channel = ctx.guild.get_channel(db_channel.channel_id)
+                    self.name = (
+                        dc_channel.name if dc_channel else str(db_channel.channel_id)
+                    )
+                else:
+                    self.name = _(ctx, "(server)")
+                self.limit = db_channel.limit
+
+        channels = [Item(db_channel) for db_channel in db_channels]
+        table: List[str] = utils.Text.create_table(
+            channels,
+            header={
+                "name": _(ctx, "Channel name"),
+                "limit": _(ctx, "Reaction limit"),
+            },
         )
-        limit: int = getattr(UserPin.get(ctx.guild.id, None), "limit", 0)
-        value: str = f"{limit}" if limit > 0 else _(ctx, "Function is disabled")
-        embed.add_field(
-            name=_(ctx, "Global limit"),
-            value=value,
-        )
 
-        if channel is None:
-            channel = ctx.channel
-
-        channel_pref = UserPin.get(ctx.guild.id, channel.id)
-        if channel_pref is not None:
-            embed.add_field(
-                name=_(ctx, "Channel #{channel}").format(channel=channel.name),
-                value=f"{channel_pref.limit}"
-                if channel_pref.limit > 0
-                else _(ctx, "Function is disabled"),
-            )
-
-        await ctx.send(embed=embed)
+        for page in table:
+            await ctx.send("```" + page + "```")
 
     @commands.check(check.acl)
     @userpin.command(name="set")
@@ -133,28 +136,35 @@ class Base(commands.Cog):
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
-    @bookmarks.command(name="get")
-    async def bookmarks_get(self, ctx, channel: discord.TextChannel = None):
-        embed = utils.Discord.create_embed(
-            author=ctx.author, title=_(ctx, "Bookmarks 🔖")
+    @bookmarks.command(name="list")
+    async def bookmarks_list(self, ctx):
+        db_channels = Bookmark.get_all(ctx.guild.id)
+        if not db_channels:
+            await ctx.reply(_(ctx, "Bookmarks are not enabled on this server."))
+            return
+
+        class Item:
+            def __init__(self, db_channel):
+                if db_channel.channel_id:
+                    dc_channel = ctx.guild.get_channel(db_channel.channel_id)
+                    self.name = (
+                        dc_channel.name if dc_channel else str(db_channel.channel_id)
+                    )
+                else:
+                    self.name = _(ctx, "(server)")
+                self.enabled = _(ctx, "Yes") if db_channel.enabled else _(ctx, "No")
+
+        channels = [Item(db_channel) for db_channel in db_channels]
+        table: List[str] = utils.Text.create_table(
+            channels,
+            header={
+                "name": _(ctx, "Channel name"),
+                "enabled": _(ctx, "Enabled"),
+            },
         )
-        enabled: int = getattr(Bookmark.get(ctx.guild.id, None), "enabled", False)
-        embed.add_field(
-            name=_(ctx, "Global settings"),
-            value=_(ctx, "Enabled") if enabled else _(ctx, "Disabled"),
-        )
 
-        if channel is None:
-            channel = ctx.channel
-
-        channel_pref = Bookmark.get(ctx.guild.id, channel.id)
-        if channel_pref is not None:
-            embed.add_field(
-                name=_(ctx, "Channel #{channel}").format(channel=channel.name),
-                value=_(ctx, "Enabled") if channel_pref.enabled else _(ctx, "Disabled"),
-            )
-
-        await ctx.send(embed=embed)
+        for page in table:
+            await ctx.send("```" + page + "```")
 
     @commands.check(check.acl)
     @bookmarks.command(name="set")
@@ -199,25 +209,33 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @userthread.command(name="list")
     async def userthread_list(self, ctx):
-        prefs = UserThread.get_all(ctx.guild.id)
-        limit: str = _(ctx, "Limit")
-        channel: str = _(ctx, "Channel")
-        result: str = f"{limit} {channel}\n"
-
-        if not prefs:
-            await ctx.reply(_(ctx, "No userthreads are defined."))
+        db_channels = UserThread.get_all(ctx.guild.id)
+        if not db_channels:
+            await ctx.reply(_(ctx, "User threads are not enabled on this server."))
             return
 
-        for p in prefs:
-            if p.channel_id is not None:
-                channel = ctx.guild.get_channel(p.channel_id)
-                if channel is None:
-                    continue
-                result += f"{p.limit:<{len(limit)}} #{channel.name}\n"
-            else:
-                result += f"{p.limit:<{len(limit)}} " + _(ctx, "(server)") + "\n"
+        class Item:
+            def __init__(self, db_channel):
+                if db_channel.channel_id:
+                    dc_channel = ctx.guild.get_channel(db_channel.channel_id)
+                    self.name = (
+                        dc_channel.name if dc_channel else str(db_channel.channel_id)
+                    )
+                else:
+                    self.name = _(ctx, "(server)")
+                self.limit = db_channel.limit
 
-        await ctx.reply(f"```{result}```")
+        channels = [Item(db_channel) for db_channel in db_channels]
+        table: List[str] = utils.Text.create_table(
+            channels,
+            header={
+                "name": _(ctx, "Channel name"),
+                "limit": _(ctx, "Reaction limit"),
+            },
+        )
+
+        for page in table:
+            await ctx.send("```" + page + "```")
 
     @commands.check(check.acl)
     @userthread.command(name="get")
