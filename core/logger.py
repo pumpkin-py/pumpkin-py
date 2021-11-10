@@ -211,7 +211,8 @@ class LogEntry:
 
     def format_to_discord(self) -> str:
         """Format the event so it can be sent to Discord channel."""
-        return self._format_as_string(extended=False)
+        extended: bool = self.scope == LogScope.BOT
+        return self._format_as_string(extended=extended)
         # TODO Include embeds and 'content' if there is any
 
     def format_to_file(self) -> str:
