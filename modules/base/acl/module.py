@@ -124,8 +124,7 @@ class ACL(commands.Cog):
         await guild_log.warning(
             ctx.author,
             ctx.channel,
-            f'New ACL group "{name}".',
-            group=group.dump(),
+            f"New ACL group '{name}' (parent '{parent}', role ID '{role_id}').",
         )
 
     @commands.check(check.acl)
