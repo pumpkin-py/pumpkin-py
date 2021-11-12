@@ -407,7 +407,7 @@ class Base(commands.Cog):
         if thread_settings is None:
             return
 
-        tc = TranslationContext(message.guild.id, message.author.id)
+        utx = TranslationContext(message.guild.id, message.author.id)
 
         # ensure we're creating thread that does not take longer than
         # the current guild level allows us to
@@ -419,7 +419,7 @@ class Base(commands.Cog):
 
         try:
             await message.create_thread(
-                name=_(tc, "Automatic thread"), auto_archive_duration=duration
+                name=_(utx, "Automatic thread"), auto_archive_duration=duration
             )
             await guild_log.debug(
                 message.author,
@@ -500,11 +500,11 @@ class Base(commands.Cog):
         emoji: str,
     ):
         """Handle userpin functionality."""
-        tc = TranslationContext(payload.guild_id, payload.user_id)
+        utx = TranslationContext(payload.guild_id, payload.user_id)
 
         if emoji == "📍" and not payload.member.bot:
             await payload.member.send(
-                _(tc, "I'm using 📍 to mark the pinned message, use 📌.")
+                _(utx, "I'm using 📍 to mark the pinned message, use 📌.")
             )
             await utils.Discord.remove_reaction(message, emoji, payload.member)
             return
@@ -561,11 +561,11 @@ class Base(commands.Cog):
         if not bookmark or not bookmark.enabled:
             return
 
-        tc = TranslationContext(payload.guild_id, payload.user_id)
+        utx = TranslationContext(payload.guild_id, payload.user_id)
 
         embed = utils.Discord.create_embed(
             author=payload.member,
-            title=_(tc, "🔖 Bookmark created"),
+            title=_(utx, "🔖 Bookmark created"),
             description=message.content[:2000],
         )
         embed.set_author(
@@ -576,7 +576,7 @@ class Base(commands.Cog):
         timestamp = utils.Time.datetime(message.created_at)
         embed.add_field(
             name=f"{timestamp} UTC",
-            value=_(tc, "[Server {guild}, channel #{channel}]({link})").format(
+            value=_(utx, "[Server {guild}, channel #{channel}]({link})").format(
                 guild=utils.Text.sanitise(message.guild.name),
                 channel=utils.Text.sanitise(message.channel.name),
                 link=message.jump_url,
@@ -586,13 +586,13 @@ class Base(commands.Cog):
 
         if len(message.attachments):
             embed.add_field(
-                name=_(tc, "Files"),
-                value=_(tc, "Total {count}").format(count=len(message.attachments)),
+                name=_(utx, "Files"),
+                value=_(utx, "Total {count}").format(count=len(message.attachments)),
             )
         if len(message.embeds):
             embed.add_field(
-                name=_(tc, "Embeds"),
-                value=_(tc, "Total {count}").format(count=len(message.embeds)),
+                name=_(utx, "Embeds"),
+                value=_(utx, "Total {count}").format(count=len(message.embeds)),
             )
 
         await utils.Discord.remove_reaction(message, payload.emoji, payload.member)
@@ -608,7 +608,7 @@ class Base(commands.Cog):
         message: discord.Message,
     ):
         """Handle userthread functionality."""
-        tc = TranslationContext(payload.guild_id, payload.user_id)
+        utx = TranslationContext(payload.guild_id, payload.user_id)
 
         for reaction in message.reactions:
             if reaction.emoji != "🧵":
@@ -659,7 +659,7 @@ class Base(commands.Cog):
             # create a new thread
             try:
                 users = await reaction.users().flatten()
-                thread_name = _(tc, "Thread by {author}").format(
+                thread_name = _(utx, "Thread by {author}").format(
                     author=message.author.name
                 )
                 await message.create_thread(name=thread_name)
