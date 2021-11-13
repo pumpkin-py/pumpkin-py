@@ -385,8 +385,8 @@ msgstr Takové ACL pravidlo neexistuje.
 msgid Rule removed.
 msgstr Pravidlo odstraněno.
 
-msgid I've removed add {count} rules.
-msgstr
+msgid I've removed {count} rules.
+msgstr {count} pravidel bylo odebráno.
 
 msgid I'm expecting one JSON file.
 msgstr Očekávám jeden JSON soubor.
