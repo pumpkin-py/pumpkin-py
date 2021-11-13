@@ -68,7 +68,7 @@ class Language(commands.Cog):
         MemberLanguage.add(
             guild_id=ctx.guild.id, member_id=ctx.author.id, language=language
         )
-        await guild_log.info(
+        await guild_log.debug(
             ctx.author, ctx.channel, f"Language preference set to '{language}'."
         )
         await ctx.reply(
@@ -86,7 +86,7 @@ class Language(commands.Cog):
         if ok == 0:
             await ctx.reply(_(ctx, "You don't have any language preference."))
             return
-        await guild_log.info(ctx.author, ctx.channel, "Language preference unset.")
+        await guild_log.debug(ctx.author, ctx.channel, "Language preference unset.")
         await ctx.reply(
             _(ctx, "You may need to wait two minutes for the change to take effect.")
         )
