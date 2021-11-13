@@ -264,7 +264,9 @@ class ACL(commands.Cog):
             return
 
         await ctx.reply(_(ctx, "Rule removed."))
-        await guild_log.warning(ctx.author, ctx.channel, f"ACL rule {command} removed.")
+        await guild_log.warning(
+            ctx.author, ctx.channel, f"ACL rule '{command}' removed."
+        )
 
     @commands.check(check.acl)
     @acl_rule.command(name="flush")
@@ -276,8 +278,10 @@ class ACL(commands.Cog):
 
         # delete all
         count = ACL_rule.remove_all(ctx.guild.id)
-        await ctx.send(_(ctx, "I've removed add {count} rules.").format(count=count))
-        await guild_log.info(ctx.author, ctx.channel, "ACL rules flushed.")
+        await ctx.send(_(ctx, "I've removed {count} rules.").format(count=count))
+        await guild_log.warning(
+            ctx.author, ctx.channel, f"All {count} ACL rules flushed."
+        )
 
     @commands.check(check.acl)
     @acl_rule.command(name="import")
@@ -376,7 +380,7 @@ class ACL(commands.Cog):
         await ctx.reply(
             _(ctx, "Command **{name}** has been disabled.").format(name=command)
         )
-        await bot_log.info(ctx.author, ctx.channel, f"Command {command} disabled.")
+        await bot_log.warning(ctx.author, ctx.channel, f"Command {command} disabled.")
 
     @commands.check(check.acl)
     @command.command(name="enable")
@@ -391,7 +395,7 @@ class ACL(commands.Cog):
         await ctx.reply(
             _(ctx, "Command **{name}** has been enabled.").format(name=command)
         )
-        await bot_log.info(ctx.author, ctx.channel, f"Command {command} enabled.")
+        await bot_log.warning(ctx.author, ctx.channel, f"Command {command} enabled.")
 
     #
 

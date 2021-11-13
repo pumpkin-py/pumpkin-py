@@ -385,7 +385,7 @@ msgstr
 msgid Rule removed.
 msgstr
 
-msgid I've removed add {count} rules.
+msgid I've removed {count} rules.
 msgstr
 
 msgid I'm expecting one JSON file.
