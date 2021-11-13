@@ -16,6 +16,31 @@ The user, its password and database will be your connection string:
 
 	postgresql://<username>:<password>@localhost:5432/<database>
 
+To allow access to the database to newly created user, alter your ``/etc/postgresql/<version>/main/pg_hba.conf``:
+
+.. code-block::
+
+	# TYPE  DATABASE        USER            ADDRESS                 METHOD
+	local   all             pumpkin                                 md5
+
+And restart the database:
+
+.. code-block::
+
+	systemctl restart postgresql
+
+To allow passwordless access to the database (in the non-docker situation), create file ``~/.pgpass`` with the following content: ``hostname:port:database:username:password``
+
+.. code-block::
+
+	localhost:*:<database>:<username>:<password>
+
+The file has to be readable only by the owner:
+
+.. code-block:: bash
+
+	chmod 600 ~/.pgpass
+
 SQLite requires no installation and no setup and saves its data into a file. It is much slower and it shouldn't be used in production (really small servers shouldn't be a big problem, though). The connection string is just a pointer to the file:
 
 .. code-block::
