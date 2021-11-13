@@ -54,18 +54,6 @@ The following script makes backup of the database and saves it. If it is the fir
 
 	exit 0
 
-To allow passwordless access to the database (in the non-docker situation), create file ``~/.pgpass`` with the following content: ``hostname:port:database:username:password``
-
-.. code-block::
-
-	localhost:*:<database>:<username>:<password>
-
-The file has to be readable only by the owner:
-
-.. code-block:: bash
-
-	chmod 600 ~/.pgpass
-
 ..
 	The Docker backup is not tested!
 
