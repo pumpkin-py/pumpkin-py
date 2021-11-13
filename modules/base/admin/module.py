@@ -93,11 +93,13 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="repository", aliases=["repo"])
     async def repository(self, ctx):
+        """Manage module repositories."""
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
     @repository.command(name="list")
     async def repository_list(self, ctx):
+        """List module repositories."""
         repositories = manager.repositories
 
         result = ">>> "
@@ -124,6 +126,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @repository.command(name="install")
     async def repository_install(self, ctx, url: str, branch: Optional[str] = None):
+        """Install module repository."""
         tempdir = tempfile.TemporaryDirectory()
         workdir = Path(tempdir.name) / "pumpkin-module"
 
@@ -186,6 +189,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @repository.command(name="update", aliases=["fetch", "pull"])
     async def repository_update(self, ctx, name: str):
+        """Update module repository."""
         repository: Optional[Repository] = manager.get_repository(name)
         if repository is None:
             await ctx.reply(_(ctx, "No such repository."))
@@ -255,6 +259,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @repository.command(name="uninstall")
     async def repository_uninstall(self, ctx, name: str):
+        """Uninstall module repository."""
         if name == "base":
             await ctx.reply(_(ctx, "This repository is protected."))
             return
@@ -295,11 +300,13 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="module")
     async def module(self, ctx):
+        """Manage modules."""
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
+        """Load module: <repository>.<module>"""
         self.bot.load_extension("modules." + name + ".module")
         await ctx.send(_(ctx, "Module **{name}** has been loaded.").format(name=name))
         Module.add(name, enabled=True)
@@ -308,6 +315,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
+        """Unload module: <repository>.<module>"""
         if name in ("base.admin",):
             await ctx.send(
                 _(ctx, "Module **{name}** cannot be unloaded.").format(name=name)
@@ -321,6 +329,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
+        """Reload bot module: <repository>.<module>"""
         self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(_(ctx, "Module **{name}** has been reloaded.").format(name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
@@ -328,11 +337,13 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="config")
     async def config_(self, ctx):
+        """Manage core bot configuration."""
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
     @config_.command(name="get")
     async def config_get(self, ctx):
+        """Display core bot configuration."""
         embed = utils.Discord.create_embed(
             author=ctx.author,
             title=_(ctx, "Global configuration"),
@@ -400,17 +411,19 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="pumpkin")
     async def pumpkin_(self, ctx):
+        """Manage bot instance."""
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
     @pumpkin_.command(name="restart")
     async def pumpkin_restart(self, ctx):
-        """This won't work without system-level error detection."""
+        """Restart bot instance with the help of host system."""
         exit(1)
 
     @commands.check(check.acl)
     @pumpkin_.command(name="shutdown")
     async def pumpkin_shutdown(self, ctx):
+        """Shutdown bot instance."""
         exit(0)
 
     @commands.guild_only()
