@@ -310,23 +310,14 @@ msgstr Bot prefix
 msgid Language
 msgstr Jazyk
 
-msgid Lexical gender
-msgstr
-
 msgid Status
 msgstr Stav
 
 msgid Key has to be one of: {keys}
 msgstr Klíč musí být jeden z: {keys}
 
-msgid Invalid value
-msgstr Neplatná hodnota
-
 msgid Unsupported language
 msgstr Nepodporovaný jazyk
-
-msgid Valid genders values are: {genders}
-msgstr
 
 msgid Valid status values are: {states}
 msgstr Možné hodnoty pro status jsou: {states}

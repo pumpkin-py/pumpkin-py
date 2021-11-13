@@ -339,17 +339,12 @@ class Admin(commands.Cog):
         )
         embed.add_field(
             name=_(ctx, "Bot prefix"),
-            value=str(config.prefix)
-            + ((" " + _(ctx, "or by mention")) if config.mention_as_prefix else ""),
+            value=str(config.prefix),
             inline=False,
         )
         embed.add_field(
             name=_(ctx, "Language"),
             value=config.language,
-        )
-        embed.add_field(
-            name=_(ctx, "Lexical gender"),
-            value=config.gender,
         )
         embed.add_field(
             name=_(ctx, "Status"),
@@ -360,7 +355,8 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @config_.command(name="set")
     async def config_set(self, ctx, key: str, value: str):
-        keys = ("prefix", "mention_as_prefix", "language", "gender", "status")
+        """Alter core bot configuration."""
+        keys = ("prefix", "language", "status")
         if key not in keys:
             return await ctx.send(
                 _(
@@ -370,20 +366,9 @@ class Admin(commands.Cog):
                     ),
                 )
             )
-        if key == "mention_as_prefix":
-            bool_value: Optional[bool] = utils.Text.parse_bool(value)
-            if bool_value is None:
-                return await ctx.send(_(ctx, "Invalid value"))
 
         if key == "language" and value not in LANGUAGES:
             return await ctx.send(_(ctx, "Unsupported language"))
-        genders = ("m", "f")
-        if key == "gender" and value not in genders:
-            return await ctx.send(
-                _(ctx, "Valid genders values are: {genders}").format(
-                    genders=", ".join(f"`{g}`" for g in genders),
-                )
-            )
         states = ("online", "idle", "dnd", "invisible", "auto")
         if key == "status" and value not in states:
             return await ctx.send(
@@ -394,14 +379,8 @@ class Admin(commands.Cog):
 
         if key == "prefix":
             config.prefix = value
-        elif key == "mention_as_prefix":
-            # FIXME This requires you to to know the internal implementation.
-            # We should hint it somewhere or change the key.
-            config.mention_as_prefix = bool_value
         elif key == "language":
             config.language = value
-        elif key == "gender":
-            config.gender = value
         elif key == "status":
             config.status = value
         await bot_log.info(ctx.author, ctx.channel, f"Updating config: {key}={value}.")

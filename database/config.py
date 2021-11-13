@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Dict, Union
 
-from sqlalchemy import Boolean, Column, String, Integer
+from sqlalchemy import Column, String, Integer
 
 from database import database
 from database import session
@@ -14,9 +14,7 @@ class Config(database.base):
 
     idx = Column(Integer, primary_key=True, autoincrement=True)
     prefix = Column(String, default="!")
-    mention_as_prefix = Column(Boolean, default=True)
     language = Column(String, default="en")
-    gender = Column(String, default="m")
     status = Column(String, default="online")
 
     @staticmethod
@@ -35,15 +33,9 @@ class Config(database.base):
            * - prefix
              - :class:`str`
              - ``!``
-           * - mention_as_prefix
-             - :class:`bool`
-             - ``True``
            * - language
              - :class:`str`
              - ``en``
-           * - gender
-             - :class:`str`
-             - ``m``
            * - status
              - :class:`str`
              - ``online``
@@ -63,16 +55,12 @@ class Config(database.base):
     def __repr__(self) -> str:
         return (
             f'<Config status="{self.status}" '
-            f'prefix="{self.prefix}" mention_as_prefix="{self.mention_as_prefix}" '
-            f'language="{self.language}" gender="{self.gender}">'
+            f'prefix="{self.prefix}" language="{self.language}">'
         )
 
     def dump(self) -> Dict[str, Union[bool, str]]:
-        """Return object representation as dictionary for easy serialisation."""
         return {
             "prefix": self.prefix,
-            "mention_as_prefix": self.mention_as_prefix,
             "language": self.language,
-            "gender": self.gender,
             "status": self.status,
         }
