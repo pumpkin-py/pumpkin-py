@@ -310,22 +310,13 @@ msgstr
 msgid Language
 msgstr
 
-msgid Lexical gender
-msgstr
-
 msgid Status
 msgstr
 
 msgid Key has to be one of: {keys}
 msgstr
 
-msgid Invalid value
-msgstr
-
 msgid Unsupported language
-msgstr
-
-msgid Valid genders values are: {genders}
 msgstr
 
 msgid Valid status values are: {states}

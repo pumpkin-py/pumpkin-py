@@ -93,11 +93,13 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="repository", aliases=["repo"])
     async def repository(self, ctx):
+        """Manage module repositories."""
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
     @repository.command(name="list")
     async def repository_list(self, ctx):
+        """List module repositories."""
         repositories = manager.repositories
 
         result = ">>> "
@@ -124,6 +126,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @repository.command(name="install")
     async def repository_install(self, ctx, url: str, branch: Optional[str] = None):
+        """Install module repository."""
         tempdir = tempfile.TemporaryDirectory()
         workdir = Path(tempdir.name) / "pumpkin-module"
 
@@ -186,6 +189,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @repository.command(name="update", aliases=["fetch", "pull"])
     async def repository_update(self, ctx, name: str):
+        """Update module repository."""
         repository: Optional[Repository] = manager.get_repository(name)
         if repository is None:
             await ctx.reply(_(ctx, "No such repository."))
@@ -255,6 +259,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @repository.command(name="uninstall")
     async def repository_uninstall(self, ctx, name: str):
+        """Uninstall module repository."""
         if name == "base":
             await ctx.reply(_(ctx, "This repository is protected."))
             return
@@ -295,11 +300,13 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="module")
     async def module(self, ctx):
+        """Manage modules."""
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
+        """Load module: <repository>.<module>"""
         self.bot.load_extension("modules." + name + ".module")
         await ctx.send(_(ctx, "Module **{name}** has been loaded.").format(name=name))
         Module.add(name, enabled=True)
@@ -308,6 +315,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
+        """Unload module: <repository>.<module>"""
         if name in ("base.admin",):
             await ctx.send(
                 _(ctx, "Module **{name}** cannot be unloaded.").format(name=name)
@@ -321,6 +329,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
+        """Reload bot module: <repository>.<module>"""
         self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(_(ctx, "Module **{name}** has been reloaded.").format(name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
@@ -328,28 +337,25 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="config")
     async def config_(self, ctx):
+        """Manage core bot configuration."""
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
     @config_.command(name="get")
     async def config_get(self, ctx):
+        """Display core bot configuration."""
         embed = utils.Discord.create_embed(
             author=ctx.author,
             title=_(ctx, "Global configuration"),
         )
         embed.add_field(
             name=_(ctx, "Bot prefix"),
-            value=str(config.prefix)
-            + ((" " + _(ctx, "or by mention")) if config.mention_as_prefix else ""),
+            value=str(config.prefix),
             inline=False,
         )
         embed.add_field(
             name=_(ctx, "Language"),
             value=config.language,
-        )
-        embed.add_field(
-            name=_(ctx, "Lexical gender"),
-            value=config.gender,
         )
         embed.add_field(
             name=_(ctx, "Status"),
@@ -360,7 +366,8 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @config_.command(name="set")
     async def config_set(self, ctx, key: str, value: str):
-        keys = ("prefix", "mention_as_prefix", "language", "gender", "status")
+        """Alter core bot configuration."""
+        keys = ("prefix", "language", "status")
         if key not in keys:
             return await ctx.send(
                 _(
@@ -370,20 +377,9 @@ class Admin(commands.Cog):
                     ),
                 )
             )
-        if key == "mention_as_prefix":
-            bool_value: Optional[bool] = utils.Text.parse_bool(value)
-            if bool_value is None:
-                return await ctx.send(_(ctx, "Invalid value"))
 
         if key == "language" and value not in LANGUAGES:
             return await ctx.send(_(ctx, "Unsupported language"))
-        genders = ("m", "f")
-        if key == "gender" and value not in genders:
-            return await ctx.send(
-                _(ctx, "Valid genders values are: {genders}").format(
-                    genders=", ".join(f"`{g}`" for g in genders),
-                )
-            )
         states = ("online", "idle", "dnd", "invisible", "auto")
         if key == "status" and value not in states:
             return await ctx.send(
@@ -394,14 +390,8 @@ class Admin(commands.Cog):
 
         if key == "prefix":
             config.prefix = value
-        elif key == "mention_as_prefix":
-            # FIXME This requires you to to know the internal implementation.
-            # We should hint it somewhere or change the key.
-            config.mention_as_prefix = bool_value
         elif key == "language":
             config.language = value
-        elif key == "gender":
-            config.gender = value
         elif key == "status":
             config.status = value
         await bot_log.info(ctx.author, ctx.channel, f"Updating config: {key}={value}.")
@@ -421,17 +411,19 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="pumpkin")
     async def pumpkin_(self, ctx):
+        """Manage bot instance."""
         await utils.Discord.send_help(ctx)
 
     @commands.check(check.acl)
     @pumpkin_.command(name="restart")
     async def pumpkin_restart(self, ctx):
-        """This won't work without system-level error detection."""
+        """Restart bot instance with the help of host system."""
         exit(1)
 
     @commands.check(check.acl)
     @pumpkin_.command(name="shutdown")
     async def pumpkin_shutdown(self, ctx):
+        """Shutdown bot instance."""
         exit(0)
 
     @commands.guild_only()
