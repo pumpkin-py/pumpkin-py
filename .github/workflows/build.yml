@@ -55,7 +55,7 @@ jobs:
 
       - name: Run PoPie
         run: |
-          popie modules/base core/
+          popie --strict modules/base core/
 
       - name: Run pytest
         run: |

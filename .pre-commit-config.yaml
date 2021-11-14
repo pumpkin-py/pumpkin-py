@@ -24,6 +24,6 @@ repos:
       args: [--skip=B101]
 
   - repo: https://github.com/pumpkin-py/pumpkin-tools
-    rev: v1.3.1
+    rev: v1.4.1
     hooks:
     - id: popie
