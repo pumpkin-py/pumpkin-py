@@ -112,8 +112,9 @@ from modules.base.admin.database import BaseAdminModule
 modules = {
     "base.acl",
     "base.admin",
-    "base.base",
+    "base.baseinfo",
     "base.errors",
+    "base.language",
     "base.logging",
 }
 db_modules = BaseAdminModule.get_all()
@@ -124,7 +125,7 @@ for module in modules:
         # This module is managed by database
         continue
     bot.load_extension(f"modules.{module}.module")
-    print("Loaded module " + module, file=sys.stdout)  # noqa: T001
+    print("Loaded default module " + module, file=sys.stdout)  # noqa: T001
 
 for module in db_modules:
     if not module.enabled:

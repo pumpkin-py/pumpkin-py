@@ -1,4 +1,3 @@
-import datetime
 from math import ceil
 from typing import List, Tuple
 
@@ -21,36 +20,9 @@ class Base(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.boot = datetime.datetime.now().replace(microsecond=0)
         self.durations = {"1h": 60, "1d": 1440, "3d": 4320, "7d": 10080}
 
     #
-
-    @commands.command()
-    async def ping(self, ctx):
-        """Return latency information."""
-        delay: str = "{:.2f}".format(self.bot.latency)
-        await ctx.reply(_(ctx, "Pong: **{delay}** 🏓").format(delay=delay))
-
-    @commands.command()
-    async def uptime(self, ctx):
-        """Return uptime information."""
-        now = datetime.datetime.now().replace(microsecond=0)
-        delta = now - self.boot
-
-        embed = utils.Discord.create_embed(author=ctx.author, title=_(ctx, "Uptime"))
-        embed.add_field(
-            name=_(ctx, "Boot time"),
-            value=utils.Time.datetime(self.boot),
-            inline=False,
-        )
-        embed.add_field(
-            name=_(ctx, "Run time"),
-            value=str(delta),
-            inline=False,
-        )
-
-        await ctx.send(embed=embed)
 
     @commands.guild_only()
     @commands.check(check.acl)

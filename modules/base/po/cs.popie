@@ -1,32 +1,179 @@
-msgid Logging is not enabled on this server.
-msgstr Logování není na tomto serveru zapnuto.
+msgid You didn't define any ACL groups yet.
+msgstr Zatím jste nedefinovali žádné ACL skupiny.
 
-msgid Invalid scope.
-msgstr Neplatný rozsah.
+msgid No such group exists.
+msgstr Taková skupina neexistuje.
 
-msgid Invalid level.
-msgstr Neplatná úroveň.
+msgid Bad group name (regex `{regex}`)
+msgstr Chybné jméno skupny (regex `{regex}`)
 
-msgid Logging settings succesfully updated.
-msgstr Nastavení logování bylo úspěšně aktualizováno.
+msgid ACL group can't be named like that (regex `{regex}`).
+msgstr ACL skupina takto být pojmenována nemůže (regex `{regex}`).
 
-msgid Logging target unset.
-msgstr
+msgid Bad parameter.
+msgstr Špatný parametr.
 
-msgid Supplied arguments didn't match any entries.
-msgstr Dodané argumenty nesouhlasí s žádnými vstupy.
+msgid No such group.
+msgstr Taková skupina neexistuje.
 
-msgid Pong: **{delay}** 🏓
-msgstr Pong: **{delay}** 🏓
+msgid ACL group removed.
+msgstr ACL skupina odstraněna.
 
-msgid Uptime
-msgstr Uptime
+msgid **{count} rules** exported.
+msgstr **{count} pravidel** bylo exportováno.
 
-msgid Boot time
-msgstr Čas spuštění
+msgid No such ACL rule.
+msgstr Takové ACL pravidlo neexistuje.
 
-msgid Run time
-msgstr Doba od spuštění
+msgid Rule removed.
+msgstr Pravidlo odstraněno.
+
+msgid I've removed {count} rules.
+msgstr {count} pravidel bylo odebráno.
+
+msgid I'm expecting one JSON file.
+msgstr Očekávám jeden JSON soubor.
+
+msgid You have to upload the JSON file.
+msgstr Musíš nahrát JSON soubor.
+
+msgid Your JSON file contains errors.
+msgstr Tvůj JSON soubor obsahuje chyby.
+
+msgid I've imported **{new}** new and **{updated}** updated rules.
+msgstr Bylo importováno **{new}** nových a **{updated}** aktualizovaných pravidel.
+
+msgid Skipping:
+msgstr Přeskakuji:
+
+msgid expected `bool`
+msgstr očekáván `bool`
+
+msgid expected `list`
+msgstr očekáván `list`
+
+msgid invalid group
+msgstr neplatná skupina
+
+msgid expected `int`
+msgstr očekáván `int`
+
+msgid duplicate
+msgstr duplikovat
+
+msgid An unexpected error occurred
+msgstr Nastala nečekaná chyba
+
+msgid Command **{name}** is not enabled.
+msgstr Příkaz **{name}** není zapnutý.
+
+msgid Command **{name}** has been disabled.
+msgstr Příkaz **{name}** byl vypnutý.
+
+msgid Command **{name}** is not disabled.
+msgstr Příkaz **{name}** nebyl vypnutý.
+
+msgid Command **{name}** has been enabled.
+msgstr Příkaz **{name}** byl zapnutý.
+
+msgid ACL group {name}
+msgstr ACL skupina {name}
+
+msgid Discord role
+msgstr Discord role
+
+msgid Parent ACL group
+msgstr Rodičovská ACL skupina
+
+msgid Repository initialization aborted: {exc}
+msgstr Inicializace repozitáře se nezdařila: {exc}
+
+msgid Repository named `{name}` already exists.
+msgstr Repozitář pojmenovaný `{name}` už existuje.
+
+msgid Repository has been installed to `{path}`. It includes the following modules: {modules}.
+msgstr Repozitář byl nainstalován do `{path}`. Obsahuje následující moduly: {modules}.
+
+msgid No such repository.
+msgstr Takový repozitář neexistuje.
+
+msgid File `requirements.txt` changed, running `pip`.
+msgstr Soubor `requirements.txt` byl změněn, spouštím `pip`.
+
+msgid Could not change branch: {exc}
+msgstr Nebylo možné změnit větev: {exc}
+
+msgid Branch changed to **{branch}**.
+msgstr Větev byla změněna na **{branch}**.
+
+msgid This repository is protected.
+msgstr Repozitář je chráněn.
+
+msgid Could not find the repository at {path}.
+msgstr Nebyl nalezen repozitář na {path}.
+
+msgid Repository **{name}** uninstalled.
+msgstr Repozitář **{name}** odinstalován.
+
+msgid Please note that the modules have not been unloaded. When I start next time I'll attempt to load them. If they are not found, they will be silently skipped.
+msgstr Vezmi prosím na vědomí, že moduly nebyly uvolněny. Až se příště spustím, pokusím se je načíst. Pokud nebudou nalezeny, budou tiše přeskočeny.
+
+msgid Module **{name}** has been loaded.
+msgstr Modul **{name}** byl načten.
+
+msgid Module **{name}** cannot be unloaded.
+msgstr Modul **{name}** nemůže být uvolněn.
+
+msgid Module **{name}** has been unloaded.
+msgstr Modul **{name}** byl uvolněn.
+
+msgid Module **{name}** has been reloaded.
+msgstr Modul **{name}** byl znovu načten.
+
+msgid Global configuration
+msgstr Globální konfigurace
+
+msgid Bot prefix
+msgstr Bot prefix
+
+msgid Language
+msgstr Jazyk
+
+msgid Status
+msgstr Stav
+
+msgid Key has to be one of: {keys}
+msgstr Klíč musí být jeden z: {keys}
+
+msgid Unsupported language
+msgstr Nepodporovaný jazyk
+
+msgid Valid status values are: {states}
+msgstr Možné hodnoty pro status jsou: {states}
+
+msgid {channel} is already spam channel.
+msgstr {channel} už je spam kanál
+
+msgid Channel {channel} added as spam channel.
+msgstr Kanál {channel} byl označen jako spam kanál
+
+msgid This server has no spam channels.
+msgstr Tento server nemá žádné spam kanály.
+
+msgid primary
+msgstr primární
+
+msgid Spam channel {channel} removed.
+msgstr Spam kanál {channel} byl odebrán.
+
+msgid {channel} is not spam channel.
+msgstr {channel} není spam kanál.
+
+msgid Channel {channel} is not marked as spam channel, it cannot be made primary.
+msgstr Kanál {channel} není spam kanál, nemůže být označen jako primární.
+
+msgid Channel {channel} set as primary.
+msgstr Kanál {channel} byl označen jako primární.
 
 msgid User pinning is not enabled on this server.
 msgstr Připínání zpráv uživateli na tomto serveru není povoleno.
@@ -130,6 +277,18 @@ msgstr Tabulky
 msgid Thread by {author}
 msgstr Vlákno od {author}
 
+msgid Pong: **{delay}** 🏓
+msgstr Pong: **{delay}** 🏓
+
+msgid Uptime
+msgstr Uptime
+
+msgid Boot time
+msgstr Čas spuštění
+
+msgid Run time
+msgstr Doba od spuštění
+
 msgid Error content
 msgstr
 
@@ -144,9 +303,6 @@ msgstr Výjimka modulu
 
 msgid Translation error
 msgstr Chyba překladu
-
-msgid An unexpected error occurred
-msgstr Nastala nečekaná chyba
 
 msgid Command error
 msgstr Chyba příkazu
@@ -256,180 +412,6 @@ msgstr Chyba klienta
 msgid discord.py library error
 msgstr Chyba knihovny discord.py
 
-msgid Repository initialization aborted: {exc}
-msgstr Inicializace repozitáře se nezdařila: {exc}
-
-msgid Repository named `{name}` already exists.
-msgstr Repozitář pojmenovaný `{name}` už existuje.
-
-msgid Repository has been installed to `{path}`. It includes the following modules: {modules}.
-msgstr Repozitář byl nainstalován do `{path}`. Obsahuje následující moduly: {modules}.
-
-msgid No such repository.
-msgstr Takový repozitář neexistuje.
-
-msgid File `requirements.txt` changed, running `pip`.
-msgstr Soubor `requirements.txt` byl změněn, spouštím `pip`.
-
-msgid Could not change branch: {exc}
-msgstr Nebylo možné změnit větev: {exc}
-
-msgid Branch changed to **{branch}**.
-msgstr Větev byla změněna na **{branch}**.
-
-msgid This repository is protected.
-msgstr Repozitář je chráněn.
-
-msgid Could not find the repository at {path}.
-msgstr Nebyl nalezen repozitář na {path}.
-
-msgid Repository **{name}** uninstalled.
-msgstr Repozitář **{name}** odinstalován.
-
-msgid Please note that the modules have not been unloaded. When I start next time I'll attempt to load them. If they are not found, they will be silently skipped.
-msgstr Vezmi prosím na vědomí, že moduly nebyly uvolněny. Až se příště spustím, pokusím se je načíst. Pokud nebudou nalezeny, budou tiše přeskočeny.
-
-msgid Module **{name}** has been loaded.
-msgstr Modul **{name}** byl načten.
-
-msgid Module **{name}** cannot be unloaded.
-msgstr Modul **{name}** nemůže být uvolněn.
-
-msgid Module **{name}** has been unloaded.
-msgstr Modul **{name}** byl uvolněn.
-
-msgid Module **{name}** has been reloaded.
-msgstr Modul **{name}** byl znovu načten.
-
-msgid Global configuration
-msgstr Globální konfigurace
-
-msgid Bot prefix
-msgstr Bot prefix
-
-msgid Language
-msgstr Jazyk
-
-msgid Status
-msgstr Stav
-
-msgid Key has to be one of: {keys}
-msgstr Klíč musí být jeden z: {keys}
-
-msgid Unsupported language
-msgstr Nepodporovaný jazyk
-
-msgid Valid status values are: {states}
-msgstr Možné hodnoty pro status jsou: {states}
-
-msgid {channel} is already spam channel.
-msgstr {channel} už je spam kanál
-
-msgid Channel {channel} added as spam channel.
-msgstr Kanál {channel} byl označen jako spam kanál
-
-msgid This server has no spam channels.
-msgstr Tento server nemá žádné spam kanály.
-
-msgid primary
-msgstr primární
-
-msgid Spam channel {channel} removed.
-msgstr Spam kanál {channel} byl odebrán.
-
-msgid {channel} is not spam channel.
-msgstr {channel} není spam kanál.
-
-msgid Channel {channel} is not marked as spam channel, it cannot be made primary.
-msgstr Kanál {channel} není spam kanál, nemůže být označen jako primární.
-
-msgid Channel {channel} set as primary.
-msgstr Kanál {channel} byl označen jako primární.
-
-msgid You didn't define any ACL groups yet.
-msgstr Zatím jste nedefinovali žádné ACL skupiny.
-
-msgid No such group exists.
-msgstr Taková skupina neexistuje.
-
-msgid Bad group name (regex `{regex}`)
-msgstr Chybné jméno skupny (regex `{regex}`)
-
-msgid ACL group can't be named like that (regex `{regex}`).
-msgstr ACL skupina takto být pojmenována nemůže (regex `{regex}`).
-
-msgid Bad parameter.
-msgstr Špatný parametr.
-
-msgid No such group.
-msgstr Taková skupina neexistuje.
-
-msgid ACL group removed.
-msgstr ACL skupina odstraněna.
-
-msgid **{count} rules** exported.
-msgstr **{count} pravidel** bylo exportováno.
-
-msgid No such ACL rule.
-msgstr Takové ACL pravidlo neexistuje.
-
-msgid Rule removed.
-msgstr Pravidlo odstraněno.
-
-msgid I've removed {count} rules.
-msgstr {count} pravidel bylo odebráno.
-
-msgid I'm expecting one JSON file.
-msgstr Očekávám jeden JSON soubor.
-
-msgid You have to upload the JSON file.
-msgstr Musíš nahrát JSON soubor.
-
-msgid Your JSON file contains errors.
-msgstr Tvůj JSON soubor obsahuje chyby.
-
-msgid I've imported **{new}** new and **{updated}** updated rules.
-msgstr Bylo importováno **{new}** nových a **{updated}** aktualizovaných pravidel.
-
-msgid Skipping:
-msgstr Přeskakuji:
-
-msgid expected `bool`
-msgstr očekáván `bool`
-
-msgid expected `list`
-msgstr očekáván `list`
-
-msgid invalid group
-msgstr neplatná skupina
-
-msgid expected `int`
-msgstr očekáván `int`
-
-msgid duplicate
-msgstr duplikovat
-
-msgid Command **{name}** is not enabled.
-msgstr Příkaz **{name}** není zapnutý.
-
-msgid Command **{name}** has been disabled.
-msgstr Příkaz **{name}** byl vypnutý.
-
-msgid Command **{name}** is not disabled.
-msgstr Příkaz **{name}** nebyl vypnutý.
-
-msgid Command **{name}** has been enabled.
-msgstr Příkaz **{name}** byl zapnutý.
-
-msgid ACL group {name}
-msgstr ACL skupina {name}
-
-msgid Discord role
-msgstr Discord role
-
-msgid Parent ACL group
-msgstr Rodičovská ACL skupina
-
 msgid Localization
 msgstr Lokalizace
 
@@ -468,3 +450,21 @@ msgstr Tento server nemá žádné jazykové preference.
 
 msgid I'll be using the global settings from now on.
 msgstr Odteď budu používat globální nastavení.
+
+msgid Logging is not enabled on this server.
+msgstr Logování není na tomto serveru zapnuto.
+
+msgid Invalid scope.
+msgstr Neplatný rozsah.
+
+msgid Invalid level.
+msgstr Neplatná úroveň.
+
+msgid Logging settings succesfully updated.
+msgstr Nastavení logování bylo úspěšně aktualizováno.
+
+msgid Logging target unset.
+msgstr
+
+msgid Supplied arguments didn't match any entries.
+msgstr Dodané argumenty nesouhlasí s žádnými vstupy.

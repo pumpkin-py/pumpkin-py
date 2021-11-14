@@ -1,31 +1,178 @@
-msgid Logging is not enabled on this server.
+msgid You didn't define any ACL groups yet.
 msgstr
 
-msgid Invalid scope.
+msgid No such group exists.
 msgstr
 
-msgid Invalid level.
+msgid Bad group name (regex `{regex}`)
 msgstr
 
-msgid Logging settings succesfully updated.
+msgid ACL group can't be named like that (regex `{regex}`).
 msgstr
 
-msgid Logging target unset.
+msgid Bad parameter.
 msgstr
 
-msgid Supplied arguments didn't match any entries.
+msgid No such group.
 msgstr
 
-msgid Pong: **{delay}** 🏓
+msgid ACL group removed.
 msgstr
 
-msgid Uptime
+msgid **{count} rules** exported.
 msgstr
 
-msgid Boot time
+msgid No such ACL rule.
 msgstr
 
-msgid Run time
+msgid Rule removed.
+msgstr
+
+msgid I've removed {count} rules.
+msgstr
+
+msgid I'm expecting one JSON file.
+msgstr
+
+msgid You have to upload the JSON file.
+msgstr
+
+msgid Your JSON file contains errors.
+msgstr
+
+msgid I've imported **{new}** new and **{updated}** updated rules.
+msgstr
+
+msgid Skipping:
+msgstr
+
+msgid expected `bool`
+msgstr
+
+msgid expected `list`
+msgstr
+
+msgid invalid group
+msgstr
+
+msgid expected `int`
+msgstr
+
+msgid duplicate
+msgstr
+
+msgid An unexpected error occurred
+msgstr
+
+msgid Command **{name}** is not enabled.
+msgstr
+
+msgid Command **{name}** has been disabled.
+msgstr
+
+msgid Command **{name}** is not disabled.
+msgstr
+
+msgid Command **{name}** has been enabled.
+msgstr
+
+msgid ACL group {name}
+msgstr
+
+msgid Discord role
+msgstr
+
+msgid Parent ACL group
+msgstr
+
+msgid Repository initialization aborted: {exc}
+msgstr
+
+msgid Repository named `{name}` already exists.
+msgstr
+
+msgid Repository has been installed to `{path}`. It includes the following modules: {modules}.
+msgstr
+
+msgid No such repository.
+msgstr
+
+msgid File `requirements.txt` changed, running `pip`.
+msgstr
+
+msgid Could not change branch: {exc}
+msgstr
+
+msgid Branch changed to **{branch}**.
+msgstr
+
+msgid This repository is protected.
+msgstr
+
+msgid Could not find the repository at {path}.
+msgstr
+
+msgid Repository **{name}** uninstalled.
+msgstr
+
+msgid Please note that the modules have not been unloaded. When I start next time I'll attempt to load them. If they are not found, they will be silently skipped.
+msgstr
+
+msgid Module **{name}** has been loaded.
+msgstr
+
+msgid Module **{name}** cannot be unloaded.
+msgstr
+
+msgid Module **{name}** has been unloaded.
+msgstr
+
+msgid Module **{name}** has been reloaded.
+msgstr
+
+msgid Global configuration
+msgstr
+
+msgid Bot prefix
+msgstr
+
+msgid Language
+msgstr
+
+msgid Status
+msgstr
+
+msgid Key has to be one of: {keys}
+msgstr
+
+msgid Unsupported language
+msgstr
+
+msgid Valid status values are: {states}
+msgstr
+
+msgid {channel} is already spam channel.
+msgstr
+
+msgid Channel {channel} added as spam channel.
+msgstr
+
+msgid This server has no spam channels.
+msgstr
+
+msgid primary
+msgstr
+
+msgid Spam channel {channel} removed.
+msgstr
+
+msgid {channel} is not spam channel.
+msgstr
+
+msgid Channel {channel} is not marked as spam channel, it cannot be made primary.
+msgstr
+
+msgid Channel {channel} set as primary.
 msgstr
 
 msgid User pinning is not enabled on this server.
@@ -130,6 +277,18 @@ msgstr
 msgid Thread by {author}
 msgstr
 
+msgid Pong: **{delay}** 🏓
+msgstr
+
+msgid Uptime
+msgstr
+
+msgid Boot time
+msgstr
+
+msgid Run time
+msgstr
+
 msgid Error content
 msgstr
 
@@ -143,9 +302,6 @@ msgid Module exception
 msgstr
 
 msgid Translation error
-msgstr
-
-msgid An unexpected error occurred
 msgstr
 
 msgid Command error
@@ -256,180 +412,6 @@ msgstr
 msgid discord.py library error
 msgstr
 
-msgid Repository initialization aborted: {exc}
-msgstr
-
-msgid Repository named `{name}` already exists.
-msgstr
-
-msgid Repository has been installed to `{path}`. It includes the following modules: {modules}.
-msgstr
-
-msgid No such repository.
-msgstr
-
-msgid File `requirements.txt` changed, running `pip`.
-msgstr
-
-msgid Could not change branch: {exc}
-msgstr
-
-msgid Branch changed to **{branch}**.
-msgstr
-
-msgid This repository is protected.
-msgstr
-
-msgid Could not find the repository at {path}.
-msgstr
-
-msgid Repository **{name}** uninstalled.
-msgstr
-
-msgid Please note that the modules have not been unloaded. When I start next time I'll attempt to load them. If they are not found, they will be silently skipped.
-msgstr
-
-msgid Module **{name}** has been loaded.
-msgstr
-
-msgid Module **{name}** cannot be unloaded.
-msgstr
-
-msgid Module **{name}** has been unloaded.
-msgstr
-
-msgid Module **{name}** has been reloaded.
-msgstr
-
-msgid Global configuration
-msgstr
-
-msgid Bot prefix
-msgstr
-
-msgid Language
-msgstr
-
-msgid Status
-msgstr
-
-msgid Key has to be one of: {keys}
-msgstr
-
-msgid Unsupported language
-msgstr
-
-msgid Valid status values are: {states}
-msgstr
-
-msgid {channel} is already spam channel.
-msgstr
-
-msgid Channel {channel} added as spam channel.
-msgstr
-
-msgid This server has no spam channels.
-msgstr
-
-msgid primary
-msgstr
-
-msgid Spam channel {channel} removed.
-msgstr
-
-msgid {channel} is not spam channel.
-msgstr
-
-msgid Channel {channel} is not marked as spam channel, it cannot be made primary.
-msgstr
-
-msgid Channel {channel} set as primary.
-msgstr
-
-msgid You didn't define any ACL groups yet.
-msgstr
-
-msgid No such group exists.
-msgstr
-
-msgid Bad group name (regex `{regex}`)
-msgstr
-
-msgid ACL group can't be named like that (regex `{regex}`).
-msgstr
-
-msgid Bad parameter.
-msgstr
-
-msgid No such group.
-msgstr
-
-msgid ACL group removed.
-msgstr
-
-msgid **{count} rules** exported.
-msgstr
-
-msgid No such ACL rule.
-msgstr
-
-msgid Rule removed.
-msgstr
-
-msgid I've removed {count} rules.
-msgstr
-
-msgid I'm expecting one JSON file.
-msgstr
-
-msgid You have to upload the JSON file.
-msgstr
-
-msgid Your JSON file contains errors.
-msgstr
-
-msgid I've imported **{new}** new and **{updated}** updated rules.
-msgstr
-
-msgid Skipping:
-msgstr
-
-msgid expected `bool`
-msgstr
-
-msgid expected `list`
-msgstr
-
-msgid invalid group
-msgstr
-
-msgid expected `int`
-msgstr
-
-msgid duplicate
-msgstr
-
-msgid Command **{name}** is not enabled.
-msgstr
-
-msgid Command **{name}** has been disabled.
-msgstr
-
-msgid Command **{name}** is not disabled.
-msgstr
-
-msgid Command **{name}** has been enabled.
-msgstr
-
-msgid ACL group {name}
-msgstr
-
-msgid Discord role
-msgstr
-
-msgid Parent ACL group
-msgstr
-
 msgid Localization
 msgstr
 
@@ -467,4 +449,22 @@ msgid This server doesn't have any language preference.
 msgstr
 
 msgid I'll be using the global settings from now on.
+msgstr
+
+msgid Logging is not enabled on this server.
+msgstr
+
+msgid Invalid scope.
+msgstr
+
+msgid Invalid level.
+msgstr
+
+msgid Logging settings succesfully updated.
+msgstr
+
+msgid Logging target unset.
+msgstr
+
+msgid Supplied arguments didn't match any entries.
 msgstr
