@@ -175,8 +175,7 @@ class ACL(commands.Cog):
         await guild_log.warning(
             ctx.author,
             ctx.channel,
-            f'ACL group "{group.name}" updated.',
-            group=group.dump(),
+            f"ACL group '{group.name}' updated ({param} = '{value}')",
         )
 
     @commands.check(check.acl)
