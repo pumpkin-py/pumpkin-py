@@ -4,7 +4,7 @@ import sys
 from typing import List
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base, Session
 
 
 class Database:
@@ -20,7 +20,7 @@ class Database:
 
 
 database = Database()
-session = sessionmaker(database.db, future=True)()
+session: Session = sessionmaker(database.db, future=True)()
 
 
 def init_core():
