@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import asyncio
-import datetime
 import contextlib
+import re
+import dateutil.parser as dparser
 from typing import Dict, Iterable, List, Union, Optional
+from datetime import datetime, timedelta
+
 
 import discord
 from discord.ext import commands
@@ -139,21 +142,43 @@ class Time:
     """Time manipulation functions"""
 
     @staticmethod
-    def id_to_datetime(snowflake_id: int) -> datetime.datetime:
+    def id_to_datetime(snowflake_id: int) -> datetime:
         """Convert snowflake ID to timestamp."""
-        return datetime.datetime.fromtimestamp(
-            ((snowflake_id >> 22) + 1420070400000) / 1000
-        )
+        return datetime.fromtimestamp(((snowflake_id >> 22) + 1420070400000) / 1000)
 
     @staticmethod
-    def date(timestamp: datetime.datetime) -> str:
+    def date(timestamp: datetime) -> str:
         """Convert timestamp to date."""
         return timestamp.strftime("%Y-%m-%d")
 
     @staticmethod
-    def datetime(timestamp: datetime.datetime) -> str:
+    def datetime(timestamp: datetime) -> str:
         """Convert timestamp to date and time."""
         return timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
+    @staticmethod
+    def parse_datetime(datetime_str: str) -> datetime:
+        """Converts string to datetime.
+
+        Example 1: '1w2d3h4m' => 1 week, 2 days, 3 hours 4 minutes from now
+        Example 2: '2026-12-24 20:00' => December 24th 2026, 20:00"""
+        regex = re.compile(
+            r"(?!\s*$)(?:(?P<weeks>\d+)(?: )?(?:w)(?: )?)?(?:(?P<days>\d+)(?: )?(?:d)(?: )?)?(?:(?P<hours>\d+)(?: )?(?:h)(?: )?)?(?:(?P<minutes>\d+)(?: )?(?:m)(?: )?)?"
+        )
+        result = re.fullmatch(regex, datetime_str)
+        if result is not None:
+            match_dict = result.groupdict(default=0)
+            end_time = datetime.now() + timedelta(
+                weeks=int(match_dict["weeks"]),
+                days=int(match_dict["days"]),
+                hours=int(match_dict["hours"]),
+                minutes=int(match_dict["minutes"]),
+            )
+            return end_time
+
+        end_time = dparser.parse(timestr=datetime_str, dayfirst=True, yearfirst=False)
+
+        return end_time
 
     @staticmethod
     def seconds(time: int) -> str:
@@ -255,7 +280,7 @@ class Discord:
             icon_url=getattr(author, "avatar_url", discord.Embed.Empty),
             text=base_footer,
         )
-        embed.timestamp = datetime.datetime.now(tz=datetime.timezone.utc)
+        embed.timestamp = datetime.now(tz=datetime.timezone.utc)
 
         return embed
 
@@ -318,7 +343,7 @@ class Discord:
         await bot.change_presence(
             status=getattr(discord.Status, config.status if status is None else status),
             activity=discord.Game(
-                start=datetime.datetime.utcnow(),
+                start=datetime.utcnow(),
                 name=config.prefix + "help",
             ),
         )
