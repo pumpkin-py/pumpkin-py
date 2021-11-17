@@ -132,29 +132,11 @@ def test_parse_datetime():
     assert full_datetime == utils.Time.parse_datetime("20211231235958")
 
     # test time portion only
-    now = datetime.now()
-    now_plus_two_hours = now.replace(minute=0, second=0, microsecond=0) + timedelta(
-        hours=2
-    )
-    now_minus_two_hours = now.replace(minute=0, second=0, microsecond=0) - timedelta(
-        hours=2
-    )
-    now_plus_twenty_minutes = now.replace(
-        minute=0, second=0, microsecond=0
-    ) + timedelta(minutes=20)
-    now_minus_twenty_minutes = now.replace(
-        minute=0, second=0, microsecond=0
-    ) - timedelta(minutes=20)
+    now = datetime.now().replace(minute=0, second=0, microsecond=0)
+    now_plus = now + timedelta(hours=2, minutes=20)
+    now_minus = now - timedelta(hours=2, minutes=20)
 
-    assert now_plus_two_hours == utils.Time.parse_datetime(
-        f"{now_plus_two_hours.hour}:{now_plus_two_hours.minute}"
-    )
-    assert now_minus_two_hours + timedelta(days=1) == utils.Time.parse_datetime(
-        f"{now_minus_two_hours.hour}:{now_minus_two_hours.minute}"
-    )
-    assert now_plus_twenty_minutes == utils.Time.parse_datetime(
-        f"{now_plus_twenty_minutes.hour}:{now_plus_twenty_minutes.minute}"
-    )
-    assert now_minus_twenty_minutes + timedelta(days=1) == utils.Time.parse_datetime(
-        f"{now_minus_twenty_minutes.hour}:{now_minus_twenty_minutes.minute}"
+    assert now_plus == utils.Time.parse_datetime(f"{now_plus.hour}:{now_plus.minute}")
+    assert now_minus + timedelta(days=1) == utils.Time.parse_datetime(
+        f"{now_minus.hour}:{now_minus.minute}"
     )
