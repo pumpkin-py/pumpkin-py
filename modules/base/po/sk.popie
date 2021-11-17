@@ -409,8 +409,8 @@ msgstr Nesprávny vstup
 msgid Client error
 msgstr Chyba klienta
 
-msgid discord.py library error
-msgstr Chyba knižnice discord.py
+msgid nextcord library error
+msgstr Chyba knižnice nextcord
 
 msgid Localization
 msgstr Lokalizácia

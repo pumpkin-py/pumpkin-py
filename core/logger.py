@@ -9,7 +9,7 @@ import traceback
 from enum import IntEnum
 from typing import Optional, List, Union
 
-import discord
+import nextcord
 
 from core import utils
 from database.logger import LogConf
@@ -43,17 +43,17 @@ class LogScope(IntEnum):
     GUILD = 1
 
 
-LogActor = Optional[Union[discord.Member, discord.User]]
+LogActor = Optional[Union[nextcord.Member, nextcord.User]]
 
 LogSource = Optional[
     Union[
-        discord.Guild,
-        discord.DMChannel,
-        discord.GroupChannel,
-        discord.TextChannel,
-        discord.StageChannel,
-        discord.StoreChannel,
-        discord.VoiceChannel,
+        nextcord.Guild,
+        nextcord.DMChannel,
+        nextcord.GroupChannel,
+        nextcord.TextChannel,
+        nextcord.StageChannel,
+        nextcord.StoreChannel,
+        nextcord.VoiceChannel,
     ]
 ]
 
@@ -72,14 +72,14 @@ class LogEntry:
         *,
         content: Optional[str] = None,
         exception: Optional[Exception] = None,
-        embed: Optional[discord.Embed] = None,
+        embed: Optional[nextcord.Embed] = None,
     ):
         self.timestamp = datetime.datetime.now()
         self.stack = stack
         self.scope = scope
         self.level = level
         self.actor = actor
-        if isinstance(source, discord.Guild):
+        if isinstance(source, nextcord.Guild):
             self.channel = None
             self.guild = source
         else:
@@ -224,13 +224,13 @@ class AbstractLogger:
     bot = None
     scope = NotImplemented
 
-    def __init__(self, bot: discord.ext.commands.bot):
+    def __init__(self, bot: nextcord.ext.commands.bot):
         raise NotImplementedError(
             f"Class {self.__class__.__name__} cannot be instantiated."
         )
 
     @staticmethod
-    def logger(bot: discord.ext.commands.bot):
+    def logger(bot: nextcord.ext.commands.bot):
         raise NotImplementedError("This function has to be subclassed.")
 
     async def _log(
@@ -242,7 +242,7 @@ class AbstractLogger:
         *,
         content: Optional[str] = None,
         exception: Optional[Exception] = None,
-        embed: Optional[discord.Embed] = None,
+        embed: Optional[nextcord.Embed] = None,
     ):
         entry = LogEntry(
             stack=traceback.extract_stack()[:-2],
@@ -314,7 +314,7 @@ class AbstractLogger:
         *,
         exception: Optional[Exception] = None,
         content: Optional[str] = None,
-        embed: Optional[discord.Embed] = None,
+        embed: Optional[nextcord.Embed] = None,
     ):
         await self._log(
             LogLevel.DEBUG, actor, source, message, exception=exception, embed=embed
@@ -328,7 +328,7 @@ class AbstractLogger:
         *,
         exception: Optional[Exception] = None,
         content: Optional[str] = None,
-        embed: Optional[discord.Embed] = None,
+        embed: Optional[nextcord.Embed] = None,
     ):
         await self._log(
             LogLevel.INFO, actor, source, message, exception=exception, embed=embed
@@ -342,7 +342,7 @@ class AbstractLogger:
         *,
         exception: Optional[Exception] = None,
         content: Optional[str] = None,
-        embed: Optional[discord.Embed] = None,
+        embed: Optional[nextcord.Embed] = None,
     ):
         await self._log(
             LogLevel.WARNING, actor, source, message, exception=exception, embed=embed
@@ -356,7 +356,7 @@ class AbstractLogger:
         *,
         exception: Optional[Exception] = None,
         content: Optional[str] = None,
-        embed: Optional[discord.Embed] = None,
+        embed: Optional[nextcord.Embed] = None,
     ):
         await self._log(
             LogLevel.ERROR, actor, source, message, exception=exception, embed=embed
@@ -370,7 +370,7 @@ class AbstractLogger:
         *,
         exception: Optional[Exception] = None,
         content: Optional[str] = None,
-        embed: Optional[discord.Embed] = None,
+        embed: Optional[nextcord.Embed] = None,
     ):
         await self._log(
             LogLevel.CRITICAL, actor, source, message, exception=exception, embed=embed
@@ -384,7 +384,7 @@ class Bot(AbstractLogger):
     bot = None
     scope = LogScope.BOT
 
-    def __init__(self, bot: Optional[discord.ext.commands.bot] = None):
+    def __init__(self, bot: Optional[nextcord.ext.commands.bot] = None):
         if Bot.__instance is not None:
             raise Exception("Logger has to be a singleton, use '.logger()' instead.")
 
@@ -393,7 +393,7 @@ class Bot(AbstractLogger):
             self.bot = bot
 
     @staticmethod
-    def logger(bot: Optional[discord.ext.commands.bot] = None):
+    def logger(bot: Optional[nextcord.ext.commands.bot] = None):
         if Bot.__instance is None:
             Bot(bot)
         return Bot.__instance
@@ -406,7 +406,7 @@ class Guild(AbstractLogger):
     bot = None
     scope = LogScope.GUILD
 
-    def __init__(self, bot: Optional[discord.ext.commands.bot] = None):
+    def __init__(self, bot: Optional[nextcord.ext.commands.bot] = None):
         if Guild.__instance is not None:
             raise Exception("Logger has to be a singleton, use '.logger()' instead.")
 
@@ -415,7 +415,7 @@ class Guild(AbstractLogger):
             self.bot = bot
 
     @staticmethod
-    def logger(bot: Optional[discord.ext.commands.bot] = None):
+    def logger(bot: Optional[nextcord.ext.commands.bot] = None):
         if Guild.__instance is None:
             Guild(bot)
         return Guild.__instance

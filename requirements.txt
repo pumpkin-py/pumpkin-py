@@ -1,5 +1,5 @@
 wheel
-git+https://github.com/Rapptz/discord.py
+nextcord>=2.0.0a3,<3.0.0
 GitPython>=3.1.18,<4.0.0
 psycopg2-binary>=2.9.1,<3.0.0
 requests>=2.26.0,<3.0.0

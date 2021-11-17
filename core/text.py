@@ -5,7 +5,7 @@ from typing import Optional, Union
 
 import ring
 
-import discord
+import nextcord
 
 from core import TranslationContext
 from core.exceptions import BadTranslation
@@ -62,7 +62,7 @@ class Translator:
         self,
         command: str,
         string: str,
-        ctx: Union[discord.ext.commands.Context, TranslationContext] = None,
+        ctx: Union[nextcord.ext.commands.Context, TranslationContext] = None,
         **values,
     ) -> str:
         """Get translation for requested key.
@@ -127,7 +127,7 @@ class Translator:
         return text
 
     def get_language_preference(
-        self, ctx: Union[discord.ext.commands.Context, TranslationContext]
+        self, ctx: Union[nextcord.ext.commands.Context, TranslationContext]
     ) -> str:
         """Get language for the string.
 
@@ -141,7 +141,7 @@ class Translator:
         user_id: Optional[int]
         if ctx.__class__ == TranslationContext:
             guild_id, user_id = ctx.guild_id, ctx.user_id
-        elif ctx.__class__ == discord.ext.commands.Context:
+        elif ctx.__class__ == nextcord.ext.commands.Context:
             guild_id, user_id = ctx.guild.id, ctx.author.id
         else:
             guild_id, user_id = None, None

@@ -75,7 +75,7 @@ class ACL_group(database.base):
         :param guild_id: Guild ID.
         :param name: Permission group name.
         :param parent: Name of parent permission group. May be ``None``.
-        :param role_id: ID for the Discord :class:`~discord.Role`. May be ``None`` to
+        :param role_id: ID for the Discord :class:`~nextcord.Role`. May be ``None`` to
             disable mapping from role to the group.
         :return: New group.
         """
@@ -204,7 +204,7 @@ class ACL_rule(database.base):
 
         :param guild_id: Guild ID.
         :param command: Qualified command name (see
-            :attr:`~discord.ext.commands.Command.qualified_name` attribute).
+            :attr:`~nextcord.ext.commands.Command.qualified_name` attribute).
         :param default: ``True`` if the command should be usable by anyone by
             default, ``False`` otherwise.
         :return: New rule.
@@ -223,7 +223,7 @@ class ACL_rule(database.base):
 
         :param guild_id: Guild ID.
         :param command: Qualified command name (see
-            :attr:`~discord.ext.commands.Command.qualified_name` attribute).
+            :attr:`~nextcord.ext.commands.Command.qualified_name` attribute).
         :return: Found permission rule or ``None``.
         """
 
@@ -250,7 +250,7 @@ class ACL_rule(database.base):
 
         :param guild_id: Guild ID.
         :param command: Qualified command name (see
-            :attr:`~discord.ext.commands.Command.qualified_name` attribute).
+            :attr:`~nextcord.ext.commands.Command.qualified_name` attribute).
         :return: Number of deleted rules, always ``0`` or ``1``.
         """
         query = (

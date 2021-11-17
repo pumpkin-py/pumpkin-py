@@ -1,4 +1,4 @@
-from discord.ext import commands
+from nextcord.ext import commands
 
 import database.config
 from core import check, logger, utils, i18n
