@@ -12,7 +12,6 @@ bandit>=1.7.0,<2.0.0
 
 # type checking
 mypy==0.910
-discord.py-stubs
 sqlalchemy-stubs
 types-requests
 

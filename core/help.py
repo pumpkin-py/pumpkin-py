@@ -44,15 +44,13 @@ class Help(commands.MinimalHelpCommand):
         """
         if type(command) == commands.Group and len(command.all_commands) > 0:
             return _(
-                ctx,
-                "Command **{name}** does not have subcommand **{subcommand}**".format(
-                    name=command.qualified_name,
-                    subcommand=string,
-                ),
+                ctx, "Command **{name}** does not have subcommand **{subcommand}**"
+            ).format(
+                name=command.qualified_name,
+                subcommand=string,
             )
-        return _(
-            ctx,
-            "Command **{name}** has no subcommand".format(name=command.qualified_name),
+        return _(ctx, "Command **{name}** has no subcommand").format(
+            name=command.qualified_name
         )
 
     def get_command_signature(self, command: commands.Command) -> str:
