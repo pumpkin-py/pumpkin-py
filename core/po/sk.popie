@@ -1,17 +1,17 @@
 msgid <@{user}> 👉 <#{channel}>
-msgstr
+msgstr <@{user}> 👉 <#{channel}>
 
 msgid I don't know the **{name}** command
-msgstr
+msgstr Nepoznám príkaz **{name}**
 
 msgid Command **{name}** does not have subcommand **{subcommand}**
-msgstr
+msgstr Príkaz **{name}** nemá podpríkaz **{subcommand}**
 
 msgid Command **{name}** has no subcommand
-msgstr
+msgstr Príkaz **{subcommand}** nemá žiaden podpríkaz
 
 msgid Page
-msgstr
+msgstr Strana
 
 msgid No results were found.
-msgstr
+msgstr Nenašiel sa žiaden výsledok
