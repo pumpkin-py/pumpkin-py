@@ -59,7 +59,7 @@ msgid expected `int`
 msgstr očakávam `int`
 
 msgid duplicate
-msgstr duplikovať
+msgstr duplikát
 
 msgid An unexpected error occurred
 msgstr Nastala nečakaná chyba
@@ -161,7 +161,7 @@ msgid This server has no spam channels.
 msgstr Tento server nemá žiadne spam kanály.
 
 msgid primary
-msgstr primárne
+msgstr primárny
 
 msgid Spam channel {channel} removed.
 msgstr Spam kanál {channel} bol odobraný.
