@@ -2,7 +2,7 @@
 
 This document serves as a reference.
 
-Below are full exception lists as of `discord.py 1.6.0`. Because it is hard to track exception
+Below are full exception lists as of `discord.py 1.6.0`. Because it is hard to track exception. TODO: UPDATE THIS TO NEXTCORD
 changes, it has been copypasted from the documentation:
 
 - https://discordpy.readthedocs.io/en/v1.6.0/api.html#exception-hierarchy
