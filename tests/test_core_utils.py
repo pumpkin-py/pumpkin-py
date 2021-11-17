@@ -1,5 +1,7 @@
 from typing import List
 
+from datetime import datetime, timedelta
+
 from core import utils
 
 
@@ -108,4 +110,51 @@ def test_time_seconds():
     assert "1:23:45" == utils.Time.seconds(3600 + 23 * 60 + 45)
     assert "12 d, 13:14:15" == utils.Time.seconds(
         12 * 24 * 3600 + 13 * 3600 + 14 * 60 + 15
+    )
+
+
+def test_parse_datetime():
+    # test the relative time format (ignoring seconds and microseconds as they can't be input and just computation can make them differ a bit)
+    temp = datetime.now() + timedelta(weeks=2, days=3, hours=4, minutes=5)
+    assert temp.replace(second=0, microsecond=0) == utils.Time.parse_datetime(
+        "2w3d4h5m"
+    ).replace(second=0, microsecond=0)
+
+    # test full date formats
+    full_datetime = datetime(2021, 12, 31, 23, 59, 58)
+    assert full_datetime == utils.Time.parse_datetime("2021-12-31 23:59:58")
+    assert full_datetime == utils.Time.parse_datetime("2021/12/31 23:59:58")
+    assert full_datetime == utils.Time.parse_datetime("2021.12.31 23:59:58")
+    assert full_datetime == utils.Time.parse_datetime("31.12.2021 23:59:58")
+    assert full_datetime == utils.Time.parse_datetime("31-12-2021 23:59:58")
+    assert full_datetime == utils.Time.parse_datetime("31/12/2021 23:59:58")
+    assert full_datetime == utils.Time.parse_datetime("20211231 235958")
+    assert full_datetime == utils.Time.parse_datetime("20211231235958")
+
+    # test time portion only
+    now = datetime.now()
+    now_plus_two_hours = now.replace(minute=0, second=0, microsecond=0) + timedelta(
+        hours=2
+    )
+    now_minus_two_hours = now.replace(minute=0, second=0, microsecond=0) - timedelta(
+        hours=2
+    )
+    now_plus_twenty_minutes = now.replace(
+        minute=0, second=0, microsecond=0
+    ) + timedelta(minutes=20)
+    now_minus_twenty_minutes = now.replace(
+        minute=0, second=0, microsecond=0
+    ) - timedelta(minutes=20)
+
+    assert now_plus_two_hours == utils.Time.parse_datetime(
+        f"{now_plus_two_hours.hour}:{now_plus_two_hours.minute}"
+    )
+    assert now_minus_two_hours + timedelta(days=1) == utils.Time.parse_datetime(
+        f"{now_minus_two_hours.hour}:{now_minus_two_hours.minute}"
+    )
+    assert now_plus_twenty_minutes == utils.Time.parse_datetime(
+        f"{now_plus_twenty_minutes.hour}:{now_plus_twenty_minutes.minute}"
+    )
+    assert now_minus_twenty_minutes + timedelta(days=1) == utils.Time.parse_datetime(
+        f"{now_minus_twenty_minutes.hour}:{now_minus_twenty_minutes.minute}"
     )
