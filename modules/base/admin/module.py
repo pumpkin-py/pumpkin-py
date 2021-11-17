@@ -370,11 +370,8 @@ class Admin(commands.Cog):
         keys = ("prefix", "language", "status")
         if key not in keys:
             return await ctx.send(
-                _(
-                    ctx,
-                    "Key has to be one of: {keys}".format(
-                        keys=", ".join(f"`{k}`" for k in keys)
-                    ),
+                _(ctx, "Key has to be one of: {keys}").format(
+                    keys=", ".join(f"`{k}`" for k in keys),
                 )
             )
 
