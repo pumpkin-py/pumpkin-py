@@ -1,6 +1,5 @@
 import importlib
 import os
-import sys
 from typing import List
 
 from sqlalchemy import create_engine
@@ -28,11 +27,21 @@ def init_core():
 
     This function is responsible for creation of all core tables.
     """
+    # Everything depends on config, we have to initiate it first
     importlib.import_module("pie.database.config")
-    importlib.import_module("pie.acl.database")
-    importlib.import_module("pie.i18n.database")
-    importlib.import_module("pie.logger.database")
-    importlib.import_module("pie.spamchannel.database")
+    database.base.metadata.create_all(database.db)
+
+    for module in ("acl", "i18n", "logger", "spamchannel"):
+        import_stub: str = f"pie.{module}.database"
+        try:
+            importlib.import_module(import_stub)
+            print(f"Imported database models in '{import_stub}'.")  # noqa: T001
+        except Exception as exc:
+            print(
+                f"Could not import database models in '{import_stub}': {exc}."
+            )  # noqa: T001
+            raise
+
     database.base.metadata.create_all(database.db)
     session.commit()
 
@@ -93,12 +102,9 @@ def _import_database_tables():
             try:
                 import_stub: str = database_stub.replace("/", ".")
                 importlib.import_module(import_stub)
-                print(
-                    f"Imported database models in {import_stub}.", file=sys.stderr
-                )  # noqa: T001
+                print(f"Imported database models in '{import_stub}'.")  # noqa: T001
             except ModuleNotFoundError as exc:
                 # TODO How to properly log errors?
-                print(  # noqa: T001
-                    f"Could not import database models in {import_stub}: {exc}.",
-                    file=sys.stderr,
-                )
+                print(
+                    f"Could not import database models in '{import_stub}': {exc}."
+                )  # noqa: T001

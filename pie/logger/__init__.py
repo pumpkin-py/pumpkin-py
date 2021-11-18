@@ -19,8 +19,10 @@ from pie.logger.database import LogConf
 
 
 def _get_main_directory() -> str:
-    main_py = sys.modules["__main__"].__file__
-    return os.path.abspath(os.path.join(main_py, os.pardir))
+    main_py = getattr(sys.modules["__main__"], "__file__", None)
+    if main_py:
+        return os.path.abspath(os.path.join(main_py, os.pardir))
+    return os.getcwd()
 
 
 MAIN_DIRECTORY = _get_main_directory()
