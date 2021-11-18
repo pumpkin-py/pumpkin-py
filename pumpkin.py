@@ -1,8 +1,8 @@
 import os
 import sys
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 from core import exceptions
 
@@ -47,15 +47,15 @@ database.init_modules()
 config = database.config.Config.get()
 
 
-# Setup discord.py
+# Setup nextcord
 
-intents = discord.Intents.all()
+intents = nextcord.Intents.all()
 
 from core import utils
 from core.help import Help
 
 bot = commands.Bot(
-    allowed_mentions=discord.AllowedMentions(roles=False, everyone=False, users=True),
+    allowed_mentions=nextcord.AllowedMentions(roles=False, everyone=False, users=True),
     command_prefix=config.prefix,
     help_command=Help(),
     intents=intents,
@@ -77,7 +77,7 @@ already_loaded: bool = False
 
 async def update_app_info(bot: commands.Bot):
     # Update bot information
-    app: discord.AppInfo = await bot.application_info()
+    app: nextcord.AppInfo = await bot.application_info()
     if app.team:
         bot.owner_ids = {m.id for m in app.team.members}
     else:

@@ -1,8 +1,8 @@
 from math import ceil
 from typing import List, Tuple
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 from core import TranslationContext
 from core import check, i18n, logger, utils
@@ -63,7 +63,7 @@ class Base(commands.Cog):
 
     @commands.check(check.acl)
     @userpin.command(name="set")
-    async def userpin_set(self, ctx, limit: int, channel: discord.TextChannel = None):
+    async def userpin_set(self, ctx, limit: int, channel: nextcord.TextChannel = None):
         """Set userpin limit."""
         if limit < 1:
             raise commands.BadArgument("Limit has to be at least one.")
@@ -90,7 +90,7 @@ class Base(commands.Cog):
 
     @commands.check(check.acl)
     @userpin.command(name="unset")
-    async def userpin_unset(self, ctx, channel: discord.TextChannel = None):
+    async def userpin_unset(self, ctx, channel: nextcord.TextChannel = None):
         if channel is None:
             UserPin.remove(ctx.guild.id, None)
             await guild_log.info(ctx.author, ctx.channel, "Userpin unset globally.")
@@ -141,7 +141,7 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @bookmarks.command(name="set")
     async def bookmarks_set(
-        self, ctx, enabled: bool, channel: discord.TextChannel = None
+        self, ctx, enabled: bool, channel: nextcord.TextChannel = None
     ):
         """Enable or disable bookmarking."""
         if channel is None:
@@ -160,7 +160,7 @@ class Base(commands.Cog):
 
     @commands.check(check.acl)
     @bookmarks.command(name="unset")
-    async def bookmarks_unset(self, ctx, channel: discord.TextChannel = None):
+    async def bookmarks_unset(self, ctx, channel: nextcord.TextChannel = None):
         """Remove bookmark settings."""
         if channel is None:
             Bookmark.remove(ctx.guild.id, None)
@@ -211,7 +211,7 @@ class Base(commands.Cog):
 
     @commands.check(check.acl)
     @userthread.command(name="get")
-    async def userthread_get(self, ctx, channel: discord.TextChannel = None):
+    async def userthread_get(self, ctx, channel: nextcord.TextChannel = None):
         embed = utils.Discord.create_embed(
             author=ctx.author, title=_(ctx, "Userthread 🧵")
         )
@@ -239,7 +239,7 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @userthread.command(name="set")
     async def userthread_set(
-        self, ctx, limit: int, channel: discord.TextChannel = None
+        self, ctx, limit: int, channel: nextcord.TextChannel = None
     ):
         if limit < 0:
             await ctx.reply(
@@ -273,7 +273,7 @@ class Base(commands.Cog):
 
     @commands.check(check.acl)
     @userthread.command(name="unset")
-    async def userthread_unset(self, ctx, channel: discord.TextChannel = None):
+    async def userthread_unset(self, ctx, channel: nextcord.TextChannel = None):
         if channel is None:
             UserThread.remove(ctx.guild.id, None)
             await guild_log.info(ctx.author, ctx.channel, "Userthread unset globally.")
@@ -293,7 +293,7 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @autothread.command(name="list")
     async def autothread_list(self, ctx):
-        channels: List[Tuple[discord.TextChannel, AutoThread]] = []
+        channels: List[Tuple[nextcord.TextChannel, AutoThread]] = []
 
         for item in AutoThread.get_all(ctx.guild.id):
             channel = ctx.guild.get_channel(item.channel_id)
@@ -327,7 +327,7 @@ class Base(commands.Cog):
 
     @commands.check(check.acl)
     @autothread.command(name="set")
-    async def autothread_set(self, ctx, channel: discord.TextChannel, duration: str):
+    async def autothread_set(self, ctx, channel: nextcord.TextChannel, duration: str):
         try:
             duration_translated = self.durations[duration]
         except KeyError:
@@ -350,7 +350,7 @@ class Base(commands.Cog):
 
     @commands.check(check.acl)
     @autothread.command(name="unset")
-    async def autothread_unset(self, ctx, channel: discord.TextChannel = None):
+    async def autothread_unset(self, ctx, channel: nextcord.TextChannel = None):
         if channel is None:
             channel = ctx.channel
         result = AutoThread.remove(ctx.guild.id, channel.id)
@@ -370,10 +370,10 @@ class Base(commands.Cog):
     #
 
     @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message: nextcord.Message):
         if message.author.bot:
             return
-        if isinstance(message.channel, discord.abc.PrivateChannel):
+        if isinstance(message.channel, nextcord.abc.PrivateChannel):
             return
         thread_settings = AutoThread.get(message.guild.id, message.channel.id)
         if thread_settings is None:
@@ -398,7 +398,7 @@ class Base(commands.Cog):
                 message.channel,
                 "A new thread created automatically.",
             )
-        except discord.HTTPException as exc:
+        except nextcord.HTTPException as exc:
             await guild_log.error(
                 message.author,
                 message.channel,
@@ -406,7 +406,7 @@ class Base(commands.Cog):
             )
 
     @commands.Cog.listener()
-    async def on_raw_message_delete(self, payload: discord.RawMessageDeleteEvent):
+    async def on_raw_message_delete(self, payload: nextcord.RawMessageDeleteEvent):
         """Handle thread deletion if parental message is deleted."""
         if payload.guild_id is None:
             return
@@ -432,7 +432,7 @@ class Base(commands.Cog):
                 return
 
     @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+    async def on_raw_reaction_add(self, payload: nextcord.RawReactionActionEvent):
         """Handle message pinning."""
         if payload.guild_id is None or payload.member is None:
             return
@@ -455,7 +455,10 @@ class Base(commands.Cog):
             return
 
         # do not allow the actions on system messages (boost announcements etc.)
-        if message.type not in (discord.MessageType.default, discord.MessageType.reply):
+        if message.type not in (
+            nextcord.MessageType.default,
+            nextcord.MessageType.reply,
+        ):
             return
 
         if emoji == "📌" or emoji == "📍":
@@ -467,8 +470,8 @@ class Base(commands.Cog):
 
     async def _userpin(
         self,
-        payload: discord.RawReactionActionEvent,
-        message: discord.Message,
+        payload: nextcord.RawReactionActionEvent,
+        message: nextcord.Message,
         emoji: str,
     ):
         """Handle userpin functionality."""
@@ -514,7 +517,7 @@ class Base(commands.Cog):
                     f"Pinned message {message.jump_url}. "
                     f"Reacted by users: {', '.join(user.name for user in users)}",
                 )
-            except discord.errors.HTTPException:
+            except nextcord.errors.HTTPException:
                 await guild_log.error(
                     payload.member, message.channel, "Could not pin message."
                 )
@@ -524,7 +527,7 @@ class Base(commands.Cog):
             await message.add_reaction("📍")
 
     async def _bookmark(
-        self, payload: discord.RawReactionActionEvent, message: discord.Message
+        self, payload: nextcord.RawReactionActionEvent, message: nextcord.Message
     ):
         """Handle bookmark functionality."""
         bookmark = Bookmark.get(payload.guild_id, payload.channel_id)
@@ -576,8 +579,8 @@ class Base(commands.Cog):
 
     async def _userthread(
         self,
-        payload: discord.RawReactionActionEvent,
-        message: discord.Message,
+        payload: nextcord.RawReactionActionEvent,
+        message: nextcord.Message,
     ):
         """Handle userthread functionality."""
         utx = TranslationContext(payload.guild_id, payload.user_id)
@@ -587,7 +590,7 @@ class Base(commands.Cog):
                 continue
 
             # we can't open threads inside of threads
-            if isinstance(message.channel, discord.Thread):
+            if isinstance(message.channel, nextcord.Thread):
                 await reaction.clear()
                 return
 
@@ -600,7 +603,7 @@ class Base(commands.Cog):
                 limit = getattr(UserThread.get(payload.guild_id, None), "limit", 0)
 
             # get message's existing thread
-            thread_of_message: discord.Thread = None  # used globally in this loop
+            thread_of_message: nextcord.Thread = None  # used globally in this loop
             if message.flags.has_thread:
                 for thread in message.channel.threads:
                     if thread.id == message.id:
@@ -641,7 +644,7 @@ class Base(commands.Cog):
                     f"Thread opened on a message {message.jump_url}. "
                     f"Reacted by users: {', '.join(user.name for user in users)}",
                 )
-            except discord.errors.HTTPException:
+            except nextcord.errors.HTTPException:
                 await guild_log.error(
                     payload.member,
                     message.channel,

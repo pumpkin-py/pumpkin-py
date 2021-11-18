@@ -2,8 +2,8 @@ import re
 import traceback
 from typing import Tuple
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 import core.exceptions
 from core import logger, utils, i18n
@@ -293,7 +293,7 @@ class Errors(commands.Cog):
                 False,
             )
         if isinstance(error, commands.CommandError) or isinstance(
-            error, discord.ClientException
+            error, nextcord.ClientException
         ):
             error_message = {
                 "CommandError": _(ctx, "Command error"),
@@ -307,9 +307,9 @@ class Errors(commands.Cog):
                 True,
             )
 
-        # non-critical discord.py exceptions
-        if type(error) == discord.NoMoreItems or isinstance(
-            error, discord.HTTPException
+        # non-critical nextcord exceptions
+        if type(error) == nextcord.NoMoreItems or isinstance(
+            error, nextcord.HTTPException
         ):
             error_message = {
                 "NoMoreItems": _(ctx, "pumpkin.py exception"),
@@ -323,11 +323,11 @@ class Errors(commands.Cog):
                 True,
             )
 
-        # critical discord.py exceptions
-        if isinstance(error, discord.DiscordException):
+        # critical nextcord exceptions
+        if isinstance(error, nextcord.DiscordException):
             return (
                 _(ctx, "Error"),
-                _(ctx, "discord.py library error"),
+                _(ctx, "nextcord library error"),
                 True,
             )
 

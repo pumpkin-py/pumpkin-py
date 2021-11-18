@@ -3,7 +3,7 @@ from typing import Dict, Optional, Union
 
 import ring
 
-import discord
+import nextcord
 
 from core import TranslationContext, LANGUAGES
 from database.config import Config
@@ -59,7 +59,7 @@ class Translator:
 
     def translate(
         self,
-        ctx: Union[discord.ext.commands.Context, TranslationContext],
+        ctx: Union[nextcord.ext.commands.Context, TranslationContext],
         string: str,
     ) -> str:
         """Get translation for requested key.
@@ -85,7 +85,7 @@ class Translator:
         return self.strings[langcode][string]
 
     def get_language_preference(
-        self, ctx: Union[discord.ext.commands.Context, TranslationContext]
+        self, ctx: Union[nextcord.ext.commands.Context, TranslationContext]
     ) -> str:
         """Get language for the string.
 
@@ -99,12 +99,12 @@ class Translator:
         user_id: Optional[int]
         if ctx.__class__ == TranslationContext:
             guild_id, user_id = ctx.guild_id, ctx.user_id
-        elif ctx.__class__ == discord.ext.commands.Context and isinstance(
-            ctx.channel, discord.abc.PrivateChannel
+        elif ctx.__class__ == nextcord.ext.commands.Context and isinstance(
+            ctx.channel, nextcord.abc.PrivateChannel
         ):
             guild_id, user_id = None, ctx.author.id
-        elif ctx.__class__ == discord.ext.commands.Context and not isinstance(
-            ctx.channel, discord.abc.PrivateChannel
+        elif ctx.__class__ == nextcord.ext.commands.Context and not isinstance(
+            ctx.channel, nextcord.abc.PrivateChannel
         ):
             guild_id, user_id = ctx.guild.id, ctx.author.id
         else:

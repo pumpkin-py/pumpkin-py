@@ -7,8 +7,8 @@ import dateutil.parser as dparser
 import contextlib
 from typing import Dict, Iterable, List, Union, Optional
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 from core import text, i18n
 from database.config import Config
@@ -32,7 +32,7 @@ class Text:
         :return: Sanitised string.
         """
         if escape:
-            string = discord.utils.escape_markdown(string)
+            string = nextcord.utils.escape_markdown(string)
         return string.replace("@", "@\u200b")[:limit]
 
     @staticmethod
@@ -231,13 +231,13 @@ class Discord:
     @staticmethod
     async def get_message(
         bot: commands.Bot, guild_id: int, channel_id: int, message_id: int
-    ) -> Optional[discord.Message]:
+    ) -> Optional[nextcord.Message]:
         """Get message.
 
         If the message is contained in bot cache, it is returned from it, to
         save API calls. Otherwise it is fetched.
 
-        :param bot: The :class:`~discord.ext.commands.Bot` object.
+        :param bot: The :class:`~nextcord.ext.commands.Bot` object.
         :param guild_id: Guild ID.
         :param channel_id: Channel ID.
         :param message_id: Message ID.
@@ -252,11 +252,11 @@ class Discord:
             if channel is None:
                 return None
             return await channel.fetch_message(message_id)
-        except discord.errors.HTTPException:
+        except nextcord.errors.HTTPException:
             return None
 
     @staticmethod
-    def message_url_from_reaction_payload(payload: discord.RawReactionActionEvent):
+    def message_url_from_reaction_payload(payload: nextcord.RawReactionActionEvent):
         guild_id = payload.guild_id if payload.guild_id is not None else "@me"
         return f"https://discord.com/channels/{guild_id}/{payload.channel_id}/{payload.message_id}"
 
@@ -264,13 +264,13 @@ class Discord:
     def create_embed(
         *,
         error: bool = False,
-        author: Union[discord.Member, discord.User] = None,
-        title: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
-        description: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
+        author: Union[nextcord.Member, nextcord.User] = None,
+        title: Union[str, nextcord.embeds._EmptyEmbed] = nextcord.Embed.Empty,
+        description: Union[str, nextcord.embeds._EmptyEmbed] = nextcord.Embed.Empty,
         footer: Optional[str] = None,
-        color: Optional[Union[int, discord.Colour]] = None,
-        url: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
-    ) -> discord.Embed:
+        color: Optional[Union[int, nextcord.Colour]] = None,
+        url: Union[str, nextcord.embeds._EmptyEmbed] = nextcord.Embed.Empty,
+    ) -> nextcord.Embed:
         """Create discord embed.
 
         :param error: Whether the embed reports an error.
@@ -286,9 +286,9 @@ class Discord:
         will be included in the embed.
         """
         if color is None:
-            color = discord.Color.red() if error else discord.Color.green()
+            color = nextcord.Color.red() if error else nextcord.Color.green()
 
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title=title,
             description=description,
             color=color,
@@ -302,7 +302,7 @@ class Discord:
         if footer is not None:
             base_footer += " | " + footer
         embed.set_footer(
-            icon_url=getattr(author, "avatar_url", discord.Embed.Empty),
+            icon_url=getattr(author, "avatar_url", nextcord.Embed.Empty),
             text=base_footer,
         )
         embed.timestamp = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -325,7 +325,7 @@ class Discord:
         return True
 
     @staticmethod
-    async def delete_message(message: discord.Message, delay: float = 0.0) -> bool:
+    async def delete_message(message: nextcord.Message, delay: float = 0.0) -> bool:
         """Try to remove message.
 
         :param message: The message to be deleted.
@@ -334,13 +334,13 @@ class Discord:
         """
         try:
             await message.delete(delay=delay)
-        except discord.HTTPException:
+        except nextcord.HTTPException:
             return False
         return True
 
     @staticmethod
     async def remove_reaction(
-        message: discord.Message, emoji, member: discord.Member
+        message: nextcord.Message, emoji, member: nextcord.Member
     ) -> bool:
         """Try to remove reaction.
 
@@ -352,7 +352,7 @@ class Discord:
         """
         try:
             await message.remove_reaction(emoji, member)
-        except discord.HTTPException:
+        except nextcord.HTTPException:
             return False
         return True
 
@@ -366,8 +366,10 @@ class Discord:
         :param status: Overwrite presence status.
         """
         await bot.change_presence(
-            status=getattr(discord.Status, config.status if status is None else status),
-            activity=discord.Game(
+            status=getattr(
+                nextcord.Status, config.status if status is None else status
+            ),
+            activity=nextcord.Game(
                 start=datetime.datetime.utcnow(),
                 name=config.prefix + "help",
             ),
@@ -375,17 +377,17 @@ class Discord:
 
     @staticmethod
     async def send_dm(
-        user: Union[discord.Member, discord.User],
+        user: Union[nextcord.Member, nextcord.User],
         text: Optional[str] = None,
         *,
-        embed: Optional[discord.Embed] = None,
+        embed: Optional[nextcord.Embed] = None,
     ) -> bool:
         if text is None and embed is None:
             raise ValueError("Could not send an empty message.")
         try:
             await user.send(text, embed=embed)
             return True
-        except discord.HTTPException:
+        except nextcord.HTTPException:
             return False
 
 
@@ -393,12 +395,12 @@ class ScrollableEmbed:
     """Class for making scrollable embeds easy.
 
     Args:
-        ctx (:class:`discord.ext.commands.Context`): The context for translational purposes.
-        iterable (:class:`Iterable[discord.Embed]`): Iterable which to build the ScrollableEmbed from.
+        ctx (:class:`nextcord.ext.commands.Context`): The context for translational purposes.
+        iterable (:class:`Iterable[nextcord.Embed]`): Iterable which to build the ScrollableEmbed from.
     """
 
     def __init__(
-        self, ctx: commands.Context, iterable: Iterable[discord.Embed]
+        self, ctx: commands.Context, iterable: Iterable[nextcord.Embed]
     ) -> ScrollableEmbed:
         self.pages = self._pages_from_iter(ctx, iterable)
         self.ctx = ctx
@@ -410,12 +412,12 @@ class ScrollableEmbed:
         )
 
     def _pages_from_iter(
-        self, ctx: commands.Context, iterable: Iterable[discord.Embed]
-    ) -> list[discord.Embed]:
+        self, ctx: commands.Context, iterable: Iterable[nextcord.Embed]
+    ) -> list[nextcord.Embed]:
         pages = []
         for idx, embed in enumerate(iterable):
-            if type(embed) is not discord.Embed:
-                raise ValueError("Items in iterable must be of type discord.Embed")
+            if type(embed) is not nextcord.Embed:
+                raise ValueError("Items in iterable must be of type nextcord.Embed")
             embed.add_field(
                 name=_(ctx, "Page"),
                 value="{curr}/{total}".format(curr=idx + 1, total=len(iterable)),
@@ -455,7 +457,7 @@ class ScrollableEmbed:
                     "reaction_add", check=check, timeout=300.0
                 )
             except asyncio.TimeoutError:
-                with contextlib.suppress(discord.NotFound, discord.Forbidden):
+                with contextlib.suppress(nextcord.NotFound, nextcord.Forbidden):
                     await message.clear_reactions()
                 break
             else:
@@ -463,13 +465,13 @@ class ScrollableEmbed:
                     pagenum -= 1
                     if pagenum < 0:
                         pagenum = len(self.pages) - 1
-                    with contextlib.suppress(discord.Forbidden):
+                    with contextlib.suppress(nextcord.Forbidden):
                         await message.remove_reaction("◀️", user)
                     await message.edit(embed=self.pages[pagenum])
                 if str(reaction.emoji) == "▶️":
                     pagenum += 1
                     if pagenum >= len(self.pages):
                         pagenum = 0
-                    with contextlib.suppress(discord.Forbidden):
+                    with contextlib.suppress(nextcord.Forbidden):
                         await message.remove_reaction("▶️", user)
                     await message.edit(embed=self.pages[pagenum])

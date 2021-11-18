@@ -4,8 +4,8 @@ import re
 import tempfile
 from typing import Any, Dict, List, Set, Tuple
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 from core import check, logger, utils, i18n
 from database.acl import ACL_group, ACL_rule
@@ -220,7 +220,7 @@ class ACL(commands.Cog):
         file.seek(0)
         await ctx.reply(
             _(ctx, "**{count} rules** exported.").format(count=len(export)),
-            file=discord.File(fp=file, filename=filename),
+            file=nextcord.File(fp=file, filename=filename),
         )
         file.close()
         await guild_log.debug(ctx.author, ctx.channel, "ACL rules defaults exported.")
@@ -247,7 +247,7 @@ class ACL(commands.Cog):
         file.seek(0)
         await ctx.reply(
             _(ctx, "**{count} rules** exported.").format(count=len(rules)),
-            file=discord.File(fp=file, filename=filename),
+            file=nextcord.File(fp=file, filename=filename),
         )
         file.close()
         await guild_log.info(ctx.author, ctx.channel, "ACL rules exported.")
@@ -397,7 +397,7 @@ class ACL(commands.Cog):
 
     #
 
-    def get_group_embed(self, ctx, group: ACL_group) -> discord.Embed:
+    def get_group_embed(self, ctx, group: ACL_group) -> nextcord.Embed:
         """Get embed with group information."""
         group_dict: dict = group.dump()
 
