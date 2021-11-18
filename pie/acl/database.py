@@ -24,7 +24,7 @@ class ACL_group(database.base):
 
     .. note::
 
-        See the ACL check function at :meth:`core.acl.check`.
+        See the ACL check function at :meth:`pie.acl.acl`.
 
         See the command API at :class:`modules.base.acl.module.ACL`.
     """
@@ -158,7 +158,7 @@ class ACL_rule(database.base):
 
     .. note::
 
-        See the ACL check function at :meth:`core.acl.check`.
+        See the ACL check function at :meth:`pie.acl.acl`.
 
         See the command API at :class:`modules.base.acl.module.ACL`.
     """
