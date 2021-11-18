@@ -65,7 +65,7 @@ def acl(ctx: commands.Context) -> bool:
         @commands.check(acl.check)
         @commands.command()
         async def repeat(self, ctx, *, input: str):
-            await ctx.reply(utils.Text.sanitise(input, escape=False))
+            await ctx.reply(utils.text.sanitise(input, escape=False))
 
     .. note::
 

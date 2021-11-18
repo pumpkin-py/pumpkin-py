@@ -351,7 +351,7 @@ class ACL(commands.Cog):
                 )
 
         if send_errors:
-            for stub in utils.Text.split(result):
+            for stub in utils.text.split(result):
                 await ctx.send(stub)
 
         if len(new) > 0 or len(updated) > 0:

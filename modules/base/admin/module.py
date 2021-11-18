@@ -134,7 +134,7 @@ class Admin(commands.Cog):
             stderr: Optional[str] = Repository.git_clone(workdir, url)
         if stderr is not None:
             tempdir.cleanup()
-            for output in utils.Text.split(stderr):
+            for output in utils.text.split(stderr):
                 await ctx.send(">>> ```" + output + "```")
             return
 
@@ -161,7 +161,7 @@ class Admin(commands.Cog):
         async with ctx.typing():
             install: Optional[str] = repository.install_requirements()
             if install is not None:
-                for output in utils.Text.split(install):
+                for output in utils.text.split(install):
                     await ctx.send("```" + output + "```")
 
         # move to modules/
@@ -198,7 +198,7 @@ class Admin(commands.Cog):
 
         async with ctx.typing():
             pull: str = repository.git_pull()
-        for output in utils.Text.split(pull):
+        for output in utils.text.split(pull):
             await ctx.send("```" + output + "```")
 
         manager.refresh()
@@ -211,7 +211,7 @@ class Admin(commands.Cog):
             async with ctx.typing():
                 install: str = repository.install_requirements()
                 if install is not None:
-                    for output in utils.Text.split(install):
+                    for output in utils.text.split(install):
                         await ctx.send("```" + output + "```")
 
         log_message: str = f"Repository {name} updated."
@@ -244,7 +244,7 @@ class Admin(commands.Cog):
             async with ctx.typing():
                 install: str = repository.install_requirements()
                 if install is not None:
-                    for output in utils.Text.split(install):
+                    for output in utils.text.split(install):
                         await ctx.send("```" + output + "```")
 
         await bot_log.info(

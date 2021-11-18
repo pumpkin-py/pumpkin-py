@@ -32,7 +32,7 @@ class BaseInfo(commands.Cog):
         embed = utils.discord.create_embed(author=ctx.author, title=_(ctx, "Uptime"))
         embed.add_field(
             name=_(ctx, "Boot time"),
-            value=utils.Time.datetime(self.boot),
+            value=utils.time.format_datetime(self.boot),
             inline=False,
         )
         embed.add_field(

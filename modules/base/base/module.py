@@ -49,7 +49,7 @@ class Base(commands.Cog):
                 self.limit = db_channel.limit
 
         channels = [Item(db_channel) for db_channel in db_channels]
-        table: List[str] = utils.Text.create_table(
+        table: List[str] = utils.text.create_table(
             channels,
             header={
                 "name": _(ctx, "Channel name"),
@@ -126,7 +126,7 @@ class Base(commands.Cog):
                 self.enabled = _(ctx, "Yes") if db_channel.enabled else _(ctx, "No")
 
         channels = [Item(db_channel) for db_channel in db_channels]
-        table: List[str] = utils.Text.create_table(
+        table: List[str] = utils.text.create_table(
             channels,
             header={
                 "name": _(ctx, "Channel name"),
@@ -197,7 +197,7 @@ class Base(commands.Cog):
                 self.limit = db_channel.limit
 
         channels = [Item(db_channel) for db_channel in db_channels]
-        table: List[str] = utils.Text.create_table(
+        table: List[str] = utils.text.create_table(
             channels,
             header={
                 "name": _(ctx, "Channel name"),
@@ -547,12 +547,12 @@ class Base(commands.Cog):
             icon_url=message.author.display_avatar.replace(size=64).url,
         )
 
-        timestamp = utils.Time.datetime(message.created_at)
+        timestamp = utils.time.format_datetime(message.created_at)
         embed.add_field(
             name=f"{timestamp} UTC",
             value=_(utx, "[Server {guild}, channel #{channel}]({link})").format(
-                guild=utils.Text.sanitise(message.guild.name),
-                channel=utils.Text.sanitise(message.channel.name),
+                guild=utils.text.sanitise(message.guild.name),
+                channel=utils.text.sanitise(message.channel.name),
                 link=message.jump_url,
             ),
             inline=False,

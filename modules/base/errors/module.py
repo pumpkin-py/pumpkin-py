@@ -121,7 +121,7 @@ class Errors(commands.Cog):
                 False,
             )
         if type(error) == commands.CommandOnCooldown:
-            time = utils.Time.seconds(error.retry_after)
+            time = utils.time.seconds(error.retry_after)
             return (
                 _(ctx, "Slow down"),
                 _(ctx, "Wait **{time}**").format(time=time),

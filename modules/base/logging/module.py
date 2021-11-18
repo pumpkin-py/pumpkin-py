@@ -47,7 +47,7 @@ class Logging(commands.Cog):
 
         output = "\n".join([format_entry(c) for c in confs])
         if len(output):
-            for stub in utils.Text.split(output):
+            for stub in utils.text.split(output):
                 await ctx.reply(f"```{stub}```")
         else:
             await ctx.reply(_(ctx, "Logging is not enabled on this server."))
