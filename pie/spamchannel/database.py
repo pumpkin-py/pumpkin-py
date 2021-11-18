@@ -3,8 +3,7 @@ from typing import Dict, Union, List, Optional
 
 from sqlalchemy import BigInteger, Boolean, Column, Integer, UniqueConstraint
 
-from database import database
-from database import session
+from pie.database import database, session
 
 
 class SpamChannel(database.base):

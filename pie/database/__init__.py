@@ -26,15 +26,13 @@ session: Session = sessionmaker(database.db, future=True)()
 def init_core():
     """Load core models and create their tables.
 
-    This function is responsible for creation of all core tables (see the
-    sumodules of this class).
+    This function is responsible for creation of all core tables.
     """
-    importlib.import_module("database.config")
-    importlib.import_module("database.acl")
-    importlib.import_module("database.language")
-    importlib.import_module("database.logger")
-    importlib.import_module("database.spamchannel")
-
+    importlib.import_module("pie.database.config")
+    importlib.import_module("pie.acl.database")
+    importlib.import_module("pie.i18n.database")
+    importlib.import_module("pie.logger.database")
+    importlib.import_module("pie.spamchannel.database")
     database.base.metadata.create_all(database.db)
     session.commit()
 

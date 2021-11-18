@@ -4,8 +4,7 @@ from typing import Dict, Optional, List, Union
 from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String, Integer
 from sqlalchemy.orm import relationship
 
-from database import database
-from database import session
+from pie.database import database, session
 
 
 class ACL_group(database.base):

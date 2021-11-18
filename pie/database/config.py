@@ -3,8 +3,7 @@ from typing import Dict, Union
 
 from sqlalchemy import Column, String, Integer
 
-from database import database
-from database import session
+from pie.database import database, session
 
 
 class Config(database.base):

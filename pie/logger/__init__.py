@@ -11,8 +11,8 @@ from typing import Optional, List, Union
 
 import nextcord
 
-from core import utils
-from database.logger import LogConf
+from pie import utils
+from pie.logger.database import LogConf
 
 
 # Globals
@@ -92,7 +92,7 @@ class LogEntry:
 
     def __str__(self):
         return (
-            f"{utils.Time.datetime(self.timestamp)} "
+            f"{utils.time.format_datetime(self.timestamp)} "
             f"{self.level.name} {self.stack[-1].name} ("
             f"{getattr(self.actor, 'name', '?')} in "
             f"{getattr(self.channel, 'name', '?')}"
@@ -206,7 +206,7 @@ class LogEntry:
 
     def format_to_console(self) -> str:
         """Format the event so it can be printed to the console."""
-        timestamp = utils.Time.datetime(self.timestamp)
+        timestamp = utils.time.format_datetime(self.timestamp)
         return timestamp + " " + self._format_as_string(extended=True)
 
     def format_to_discord(self) -> str:
@@ -284,7 +284,7 @@ class AbstractLogger:
         if not confs:
             return
 
-        output: List[str] = utils.Text.split(entry.format_to_discord())
+        output: List[str] = utils.text.split(entry.format_to_discord())
         for conf in confs:
             try:
                 channel = self.bot.get_guild(conf.guild_id).get_channel(conf.channel_id)

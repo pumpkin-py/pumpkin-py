@@ -1,15 +1,38 @@
+import ring
 from pathlib import Path
 from typing import Dict, Optional, Union
 
-import ring
-
 import nextcord
 
-from core import TranslationContext, LANGUAGES
-from database.config import Config
-from database.language import GuildLanguage, MemberLanguage
+from pie.database.config import Config
+from pie.i18n.database import GuildLanguage, MemberLanguage
 
 config = Config.get()
+
+LANGUAGES = ("cs", "sk")
+
+
+class TranslationContext:
+    """Fake class used for translation.
+
+    There are some situations where there is no command context, e.g. when a
+    reaction is added, especially when it is
+    :class:`nextcord.RawReactionActionEvent`. This may be used to get around.
+
+    See :class:`Translator` for more details.
+    """
+
+    __slots__ = ("guild_id", "user_id")
+
+    def __init__(self, guild_id: int, user_id: int):
+        self.guild_id = guild_id
+        self.user_id = user_id
+
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__name__} "
+            f"guild_id='{self.guild_id}' user_id='{self.user_id}'>"
+        )
 
 
 class Translator:
@@ -18,7 +41,7 @@ class Translator:
     .. code-block:: python
         :linenos:
 
-        from core import i18n
+        from pie import i18n
 
         _ = i18n.Translator("modules/base").translate
     """

@@ -4,9 +4,7 @@ import sys
 import nextcord
 from nextcord.ext import commands
 
-from core import exceptions
-
-__version__ = "0.0.0"
+from pie import exceptions
 
 
 # Setup checks
@@ -33,8 +31,7 @@ del root_path
 # Database
 
 
-import database
-import database.config
+from pie import database
 
 
 database.init_core()
@@ -51,8 +48,8 @@ config = database.config.Config.get()
 
 intents = nextcord.Intents.all()
 
-from core import utils
-from core.help import Help
+from pie import utils
+from pie.help import Help
 
 bot = commands.Bot(
     allowed_mentions=nextcord.AllowedMentions(roles=False, everyone=False, users=True),
@@ -64,7 +61,7 @@ bot = commands.Bot(
 
 # Setup logging
 
-from core import logger
+from pie import logger
 
 bot_log = logger.Bot.logger(bot)
 guild_log = logger.Guild.logger(bot)
@@ -94,7 +91,7 @@ async def on_ready():
 
     # If the status is set to "auto", let the loop in Admin module take care of it
     status = "invisible" if config.status == "auto" else config.status
-    await utils.Discord.update_presence(bot, status=status)
+    await utils.discord.update_presence(bot, status=status)
 
     if already_loaded:
         await bot_log.info(None, None, "Reconnected")
