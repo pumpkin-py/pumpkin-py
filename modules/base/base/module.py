@@ -410,6 +410,8 @@ class Base(commands.Cog):
         if payload.guild_id is None:
             return
         channel = self.bot.get_guild(payload.guild_id).get_channel(payload.channel_id)
+        if not channel:
+            return
         threads = channel.threads
         for thread in threads:
             if thread.id == payload.message_id:
