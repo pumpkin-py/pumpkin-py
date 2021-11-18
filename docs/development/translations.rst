@@ -53,7 +53,7 @@ Sometimes context isn't available, though -- e.g. in raw reaction. These times y
 	async def on_raw_reaction_add(self, payload: nextcord.RawReactionActionEvent):
 	    tc = TranslationContext(payload.guild_id, payload.user_id)
 
-	    message = await utils.Discord.get_message(
+	    message = await utils.discord.get_message(
 	        self.bot,
 	        payload.guild_id,
 	        payload.channel_id,
