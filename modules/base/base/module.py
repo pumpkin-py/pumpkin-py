@@ -4,7 +4,6 @@ from typing import List, Tuple
 import nextcord
 from nextcord.ext import commands
 
-from pie import TranslationContext
 from pie import check, i18n, logger, utils
 
 from .database import AutoThread, UserPin, UserThread, Bookmark
@@ -379,7 +378,7 @@ class Base(commands.Cog):
         if thread_settings is None:
             return
 
-        utx = TranslationContext(message.guild.id, message.author.id)
+        utx = i18n.TranslationContext(message.guild.id, message.author.id)
 
         # ensure we're creating thread that does not take longer than
         # the current guild level allows us to
@@ -475,7 +474,7 @@ class Base(commands.Cog):
         emoji: str,
     ):
         """Handle userpin functionality."""
-        utx = TranslationContext(payload.guild_id, payload.user_id)
+        utx = i18n.TranslationContext(payload.guild_id, payload.user_id)
 
         if emoji == "📍" and not payload.member.bot:
             await payload.member.send(
@@ -536,7 +535,7 @@ class Base(commands.Cog):
         if not bookmark or not bookmark.enabled:
             return
 
-        utx = TranslationContext(payload.guild_id, payload.user_id)
+        utx = i18n.TranslationContext(payload.guild_id, payload.user_id)
 
         embed = utils.discord.create_embed(
             author=payload.member,
@@ -583,7 +582,7 @@ class Base(commands.Cog):
         message: nextcord.Message,
     ):
         """Handle userthread functionality."""
-        utx = TranslationContext(payload.guild_id, payload.user_id)
+        utx = i18n.TranslationContext(payload.guild_id, payload.user_id)
 
         for reaction in message.reactions:
             if reaction.emoji != "🧵":
