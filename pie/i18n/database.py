@@ -3,7 +3,7 @@ from typing import Dict, Optional, Union
 
 from sqlalchemy import BigInteger, Column, Integer, String
 
-from database import database, session
+from pie.database import database, session
 
 
 class GuildLanguage(database.base):

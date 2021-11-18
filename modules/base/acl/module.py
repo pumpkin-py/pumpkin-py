@@ -7,10 +7,11 @@ from typing import Any, Dict, List, Set, Tuple
 import nextcord
 from nextcord.ext import commands
 
-from core import check, logger, utils, i18n
-from database.acl import ACL_group, ACL_rule
+from pie import check, i18n, logger, utils
 
-_ = i18n.Translator(__file__).translate
+from pie.acl.database import ACL_group, ACL_rule
+
+_ = i18n.Translator("modules/base").translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
 
@@ -28,13 +29,13 @@ class ACL(commands.Cog):
     @commands.group(name="acl")
     async def acl_(self, ctx):
         """Permission control."""
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @acl_.group(name="group")
     async def acl_group(self, ctx):
         """Permission group control."""
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @acl_group.command(name="list")
@@ -196,7 +197,7 @@ class ACL(commands.Cog):
     @acl_.group(name="rule")
     async def acl_rule(self, ctx):
         """Permission rules."""
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @acl_rule.command(name="template")
@@ -363,7 +364,7 @@ class ACL(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="command")
     async def command(self, ctx):
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @command.command(name="disable")
@@ -401,7 +402,7 @@ class ACL(commands.Cog):
         """Get embed with group information."""
         group_dict: dict = group.dump()
 
-        embed = utils.Discord.create_embed(
+        embed = utils.discord.create_embed(
             author=ctx.author,
             title=_(ctx, "ACL group {name}").format(name=group_dict["name"]),
         )

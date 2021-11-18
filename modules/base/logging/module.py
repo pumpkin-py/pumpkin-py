@@ -2,8 +2,8 @@ from typing import Optional
 
 from nextcord.ext import commands
 
-from core import check, logger, utils, i18n
-from database.logger import LogConf
+from pie import check, logger, utils, i18n
+from pie.logger.database import LogConf
 
 _ = i18n.Translator(__file__).translate
 bot_log = logger.Bot.logger()
@@ -22,7 +22,7 @@ class Logging(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="logging")
     async def logging_(self, ctx):
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @logging_.command(name="list")

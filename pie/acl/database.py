@@ -4,8 +4,7 @@ from typing import Dict, Optional, List, Union
 from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String, Integer
 from sqlalchemy.orm import relationship
 
-from database import database
-from database import session
+from pie.database import database, session
 
 
 class ACL_group(database.base):
@@ -25,7 +24,7 @@ class ACL_group(database.base):
 
     .. note::
 
-        See the ACL check function at :meth:`core.acl.check`.
+        See the ACL check function at :meth:`pie.acl.acl`.
 
         See the command API at :class:`modules.base.acl.module.ACL`.
     """
@@ -159,7 +158,7 @@ class ACL_rule(database.base):
 
     .. note::
 
-        See the ACL check function at :meth:`core.acl.check`.
+        See the ACL check function at :meth:`pie.acl.acl`.
 
         See the command API at :class:`modules.base.acl.module.ACL`.
     """

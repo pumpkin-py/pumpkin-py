@@ -1,12 +1,8 @@
-import contextlib
-from typing import Optional
-
 from nextcord.ext import commands
 
-from database import acl as acldb
-from database.spamchannel import SpamChannel
+from pie.acl.database import ACL_rule, ACL_group
 
-from core import i18n
+from pie import i18n
 
 _ = i18n.Translator(__file__).translate
 
@@ -87,10 +83,10 @@ def acl(ctx: commands.Context) -> bool:
         return False
 
     # do not allow invocations of disabled commands
-    if acldb.ACL_rule.get(0, ctx.command.qualified_name) is not None:
+    if ACL_rule.get(0, ctx.command.qualified_name) is not None:
         return False
 
-    rule = acldb.ACL_rule.get(ctx.guild.id, ctx.command.qualified_name)
+    rule = ACL_rule.get(ctx.guild.id, ctx.command.qualified_name)
 
     # do not allow invocations of unknown functions
     if rule is None:
@@ -107,7 +103,7 @@ def acl(ctx: commands.Context) -> bool:
 
     # get ACL group corresponding user's roles, ordered "from the top"
     for role in ctx.author.roles[::-1]:
-        group = acldb.ACL_group.get_by_role(ctx.guild.id, role.id)
+        group = ACL_group.get_by_role(ctx.guild.id, role.id)
         if group is not None:
             break
     else:
@@ -117,43 +113,7 @@ def acl(ctx: commands.Context) -> bool:
         for rule_group in rule.groups:
             if rule_group.group == group and rule_group.allow is not None:
                 return rule_group.allow
-        group = acldb.ACL_group.get(ctx.guild.id, group.parent)
+        group = ACL_group.get(ctx.guild.id, group.parent)
 
     # user's roles are not mapped to any ACL group, return default
     return rule.default
-
-
-async def spamchannel(ctx: commands.Context) -> bool:
-    # TODO Add soft & hard blocking
-    #
-    # Only allow three (?) invocations in five (?) minutes per TextChannel.
-    # If this limit is exceeded, return False.
-
-    if getattr(ctx.bot, "owner_id", 0) == ctx.author.id:
-        return True
-    if ctx.author.id in getattr(ctx.bot, "owner_ids", set()):
-        return True
-
-    if ctx.guild is None:
-        return True
-
-    spamchannels = SpamChannel.get_all(ctx.guild.id)
-    if not spamchannels:
-        return True
-
-    if ctx.channel.id in [c.channel_id for c in spamchannels]:
-        return True
-
-    primary: Optional[SpamChannel] = None
-    with contextlib.suppress(IndexError):
-        primary = [s for s in spamchannels if s.primary][0]
-    if not primary:
-        primary = spamchannels[0]
-
-    await ctx.send(
-        _(ctx, "<@{user}> 👉 <#{channel}>").format(
-            user=ctx.author.id, channel=primary.channel_id
-        )
-    )
-
-    return True

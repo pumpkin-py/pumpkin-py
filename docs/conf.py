@@ -22,14 +22,7 @@ project = "pumpkin.py core"
 copyright = "2021, Czechbol, sinus-x"
 author = "Czechbol, sinus-x"
 
-with open("../pumpkin.py", "r") as handle:
-    version = "UNKNOWN"
-    for line in handle.readlines():
-        if line.startswith("__version__"):
-            version = line.split(" = ")[1].strip(' \n"')
-            break
-
-release = version
+release = "unversioned"
 
 # -- General configuration ---------------------------------------------------
 
@@ -77,9 +70,7 @@ autodoc_default_options = {
 }
 
 autoapi_dirs = [
-    "../core",
-    "../database",
-    "../modules",
+    "../pie/",
     "../pumpkin.py",
 ]
 autoapi_type = "python"

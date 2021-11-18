@@ -4,8 +4,8 @@ from typing import List, Tuple
 import nextcord
 from nextcord.ext import commands
 
-from core import TranslationContext
-from core import check, i18n, logger, utils
+from pie import TranslationContext
+from pie import check, i18n, logger, utils
 
 from .database import AutoThread, UserPin, UserThread, Bookmark
 
@@ -28,7 +28,7 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="userpin")
     async def userpin(self, ctx):
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @userpin.command(name="list")
@@ -105,7 +105,7 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="bookmarks")
     async def bookmarks(self, ctx):
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @bookmarks.command(name="list")
@@ -176,7 +176,7 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="userthread")
     async def userthread(self, ctx):
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @userthread.command(name="list")
@@ -212,7 +212,7 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @userthread.command(name="get")
     async def userthread_get(self, ctx, channel: nextcord.TextChannel = None):
-        embed = utils.Discord.create_embed(
+        embed = utils.discord.create_embed(
             author=ctx.author, title=_(ctx, "Userthread 🧵")
         )
         limit: int = getattr(UserThread.get(ctx.guild.id, None), "limit", 0)
@@ -288,7 +288,7 @@ class Base(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="autothread")
     async def autothread(self, ctx):
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @autothread.command(name="list")
@@ -312,7 +312,7 @@ class Base(commands.Cog):
             return
 
         inverse_durations = {v: k for k, v in self.durations.items()}
-        embed = utils.Discord.create_embed(
+        embed = utils.discord.create_embed(
             author=ctx.author, title=_(ctx, "Autothread 🧵")
         )
         embed.add_field(
@@ -441,7 +441,7 @@ class Base(commands.Cog):
         if emoji not in ("📌", "📍", "🔖", "🧵"):
             return
 
-        message = await utils.Discord.get_message(
+        message = await utils.discord.get_message(
             self.bot, payload.guild_id, payload.channel_id, payload.message_id
         )
         if message is None:
@@ -449,7 +449,7 @@ class Base(commands.Cog):
                 payload.member,
                 None,
                 "Could not find message "
-                + utils.Discord.message_url_from_reaction_payload(payload)
+                + utils.discord.message_url_from_reaction_payload(payload)
                 + f", {emoji} functionality not triggered.",
             )
             return
@@ -481,7 +481,7 @@ class Base(commands.Cog):
             await payload.member.send(
                 _(utx, "I'm using 📍 to mark the pinned message, use 📌.")
             )
-            await utils.Discord.remove_reaction(message, emoji, payload.member)
+            await utils.discord.remove_reaction(message, emoji, payload.member)
             return
 
         for reaction in message.reactions:
@@ -538,7 +538,7 @@ class Base(commands.Cog):
 
         utx = TranslationContext(payload.guild_id, payload.user_id)
 
-        embed = utils.Discord.create_embed(
+        embed = utils.discord.create_embed(
             author=payload.member,
             title=_(utx, "🔖 Bookmark created"),
             description=message.content[:2000],
@@ -570,7 +570,7 @@ class Base(commands.Cog):
                 value=_(utx, "Total {count}").format(count=len(message.embeds)),
             )
 
-        await utils.Discord.remove_reaction(message, payload.emoji, payload.member)
+        await utils.discord.remove_reaction(message, payload.emoji, payload.member)
         await payload.member.send(embed=embed)
 
         await guild_log.debug(

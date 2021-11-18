@@ -2,9 +2,9 @@ from typing import Sequence
 
 from nextcord.ext import commands
 
-from core import i18n
+from pie import i18n
 
-_ = i18n.Translator(__file__).translate
+_ = i18n.Translator("pie").translate
 
 
 class Help(commands.MinimalHelpCommand):
