@@ -3,7 +3,7 @@ from typing import Optional, List
 
 from sqlalchemy import Column, String, Boolean
 
-from database import database, session
+from pie.database import database, session
 
 
 class BaseAdminModule(database.base):

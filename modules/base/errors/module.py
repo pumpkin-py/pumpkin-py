@@ -5,11 +5,11 @@ from typing import Tuple
 import nextcord
 from nextcord.ext import commands
 
-import core.exceptions
-from core import logger, utils, i18n
+import pie.exceptions
+from pie import logger, utils, i18n
 
 
-_ = i18n.Translator(__file__).translate
+_ = i18n.Translator("modules/base").translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
 
@@ -55,7 +55,7 @@ class Errors(commands.Cog):
 
         # Get information
         title, content, log_error = Errors.__get_error_message(ctx, error)
-        embed = utils.Discord.create_embed(
+        embed = utils.discord.create_embed(
             author=ctx.author, error=True, title=title, description=content
         )
         if log_error:
@@ -90,7 +90,7 @@ class Errors(commands.Cog):
         """
 
         # pumpkin.py own exceptions
-        if isinstance(error, core.exceptions.PumpkinException):
+        if isinstance(error, pie.exceptions.PumpkinException):
             error_message = {
                 "PumpkinException": _(ctx, "pumpkin.py exception"),
                 "DotEnvException": _(ctx, "An environment variable is missing"),

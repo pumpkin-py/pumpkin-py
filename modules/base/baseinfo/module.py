@@ -2,7 +2,7 @@ import datetime
 
 from nextcord.ext import commands
 
-from core import i18n, utils
+from pie import i18n, utils
 
 _ = i18n.Translator("modules/base").translate
 
@@ -29,7 +29,7 @@ class BaseInfo(commands.Cog):
         now = datetime.datetime.now().replace(microsecond=0)
         delta = now - self.boot
 
-        embed = utils.Discord.create_embed(author=ctx.author, title=_(ctx, "Uptime"))
+        embed = utils.discord.create_embed(author=ctx.author, title=_(ctx, "Uptime"))
         embed.add_field(
             name=_(ctx, "Boot time"),
             value=utils.Time.datetime(self.boot),

@@ -6,19 +6,18 @@ from typing import Optional, List
 import nextcord
 from nextcord.ext import commands, tasks
 
-import database.config
-from core import check, i18n, logger, utils
-from core import LANGUAGES as I18N_LANGUAGES
-from database.spamchannel import SpamChannel
+import pie.database.config
+from pie import check, i18n, logger, utils
+from pie.spamchannel.database import SpamChannel
 from .database import BaseAdminModule as Module
 from .objects import RepositoryManager, Repository
 
 _ = i18n.Translator(__file__).translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
-config = database.config.Config.get()
+config = pie.database.config.Config.get()
 
-LANGUAGES = ("en",) + I18N_LANGUAGES
+LANGUAGES = ("en",) + i18n.LANGUAGES
 
 manager = RepositoryManager()
 
@@ -81,7 +80,7 @@ class Admin(commands.Cog):
                 None,
                 f"Latency is {self.bot.latency:.2f}, setting status to {status}.",
             )
-            await utils.Discord.update_presence(self.bot, status=status)
+            await utils.discord.update_presence(self.bot, status=status)
 
     @status_loop.before_loop
     async def before_status_loop(self):
@@ -94,7 +93,7 @@ class Admin(commands.Cog):
     @commands.group(name="repository", aliases=["repo"])
     async def repository(self, ctx):
         """Manage module repositories."""
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @repository.command(name="list")
@@ -301,7 +300,7 @@ class Admin(commands.Cog):
     @commands.group(name="module")
     async def module(self, ctx):
         """Manage modules."""
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @module.command(name="load")
@@ -338,13 +337,13 @@ class Admin(commands.Cog):
     @commands.group(name="config")
     async def config_(self, ctx):
         """Manage core bot configuration."""
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @config_.command(name="get")
     async def config_get(self, ctx):
         """Display core bot configuration."""
-        embed = utils.Discord.create_embed(
+        embed = utils.discord.create_embed(
             author=ctx.author,
             title=_(ctx, "Global configuration"),
         )
@@ -403,13 +402,13 @@ class Admin(commands.Cog):
             self.status_loop.cancel()
 
         if key in ("prefix", "status"):
-            await utils.Discord.update_presence(self.bot)
+            await utils.discord.update_presence(self.bot)
 
     @commands.check(check.acl)
     @commands.group(name="pumpkin")
     async def pumpkin_(self, ctx):
         """Manage bot instance."""
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @pumpkin_.command(name="restart")
@@ -427,7 +426,7 @@ class Admin(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="spamchannel", aliases=["spam"])
     async def spamchannel(self, ctx):
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @spamchannel.command(name="add")

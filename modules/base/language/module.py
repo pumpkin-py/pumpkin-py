@@ -1,15 +1,14 @@
 from nextcord.ext import commands
 
-import database.config
-from core import check, logger, utils, i18n
-from core import LANGUAGES as I18N_LANGUAGES
-from database.language import GuildLanguage, MemberLanguage
+import pie.database.config
+from pie import i18n, check, logger, utils
+from pie.i18n.database import GuildLanguage, MemberLanguage
 
 _ = i18n.Translator("modules/base").translate
 guild_log = logger.Guild.logger()
-config = database.config.Config.get()
+config = pie.database.config.Config.get()
 
-LANGUAGES = ("en",) + I18N_LANGUAGES
+LANGUAGES = ("en",) + i18n.LANGUAGES
 
 
 class Language(commands.Cog):
@@ -24,12 +23,12 @@ class Language(commands.Cog):
     @commands.check(check.acl)
     @commands.group(name="language")
     async def language(self, ctx):
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @language.command(name="get")
     async def language_get(self, ctx):
-        embed = utils.Discord.create_embed(
+        embed = utils.discord.create_embed(
             author=ctx.author,
             title=_(ctx, "Localization"),
             description=_(ctx, "Available languages:") + "\n> " + ", ".join(LANGUAGES),
@@ -94,7 +93,7 @@ class Language(commands.Cog):
     @commands.check(check.acl)
     @language.group(name="guild")
     async def language_guild(self, ctx):
-        await utils.Discord.send_help(ctx)
+        await utils.discord.send_help(ctx)
 
     @commands.check(check.acl)
     @language_guild.command(name="set")
