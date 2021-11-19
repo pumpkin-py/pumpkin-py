@@ -1,6 +1,3 @@
-msgid <@{user}> 👉 <#{channel}>
-msgstr <@{user}> 👉 <#{channel}>
-
 msgid I don't know the **{name}** command
 msgstr Nepoznám príkaz **{name}**
 
@@ -9,6 +6,9 @@ msgstr Príkaz **{name}** nemá podpríkaz **{subcommand}**
 
 msgid Command **{name}** has no subcommand
 msgstr Príkaz **{subcommand}** nemá žiaden podpríkaz
+
+msgid <@{user}> 👉 <#{channel}>
+msgstr <@{user}> 👉 <#{channel}>
 
 msgid Page
 msgstr Strana
