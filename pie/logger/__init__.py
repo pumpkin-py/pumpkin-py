@@ -82,7 +82,10 @@ class LogEntry:
         self.level = level
         self.actor = actor
         if isinstance(source, nextcord.Guild):
-            self.channel = None
+            # We'll belive a guild has at least one TextChannel.
+            # Of course there will be edge cases, but we can forget them.
+            # So if we don't know the channel, we can use the first one.
+            self.channel = source.text_channels[0]
             self.guild = source
         else:
             self.channel = source
@@ -300,7 +303,7 @@ class AbstractLogger:
                 bot_logger = Bot.logger()
                 await bot_logger.warning(
                     entry.actor,
-                    entry.source,
+                    entry.channel,
                     f"{message}: {exc!s}.",
                 )
                 continue
@@ -398,6 +401,8 @@ class Bot(AbstractLogger):
     def logger(bot: Optional[nextcord.ext.commands.bot] = None):
         if Bot.__instance is None:
             Bot(bot)
+        if Bot.__instance.bot is None:
+            raise Exception("Bot logger is missing 'bot' attribute.")
         return Bot.__instance
 
 
@@ -420,4 +425,6 @@ class Guild(AbstractLogger):
     def logger(bot: Optional[nextcord.ext.commands.bot] = None):
         if Guild.__instance is None:
             Guild(bot)
+        if Guild.__instance.bot is None:
+            raise Exception("Guild logger is missing 'bot' attribute.")
         return Guild.__instance
