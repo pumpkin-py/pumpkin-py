@@ -1,8 +1,8 @@
 wheel
 nextcord>=2.0.0a3,<3.0.0
-GitPython>=3.1.18,<4.0.0
-psycopg2-binary>=2.9.1,<3.0.0
+GitPython>=3.1.24,<4.0.0
+psycopg2-binary>=2.9.2,<3.0.0
 requests>=2.26.0,<3.0.0
-SQLAlchemy>=1.4.21,<2.0.0
-ring>=0.8.4,<1.0.0
+SQLAlchemy>=1.4.27,<2.0.0
+ring>=0.9.1,<1.0.0
 python-dateutil>=2.8.2,<3.0.0
