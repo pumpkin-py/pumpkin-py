@@ -96,3 +96,62 @@ class ScrollableEmbed:
                     with contextlib.suppress(nextcord.Forbidden):
                         await message.remove_reaction("▶️", user)
                     await message.edit(embed=self.pages[pagenum])
+
+
+class ConfirmView(nextcord.ui.View):
+    """Class for making confirmation embeds easy.
+    The right way of getting response is first calling wait() on instance,
+    then checking instance attribute `value`.
+
+    Attributes:
+        value: True if confirmed, False if declined, None if timed out
+        ctx: Context of command
+        message: Confirmation message
+
+    Args:
+        ctx (:class:`nextcord.ext.commands.Context`): The context for translational and sending purposes.
+        embed (:class:`nextcord.Embed`): Embed to send.
+    """
+
+    def __init__(self, ctx: commands.Context, embed: nextcord.Embed):
+        super().__init__()
+        self.value = None
+        self.ctx = ctx
+        self.embed = embed
+
+    async def send(self):
+        """Sends message to channel defined by command context.
+
+        Returns:
+            True if confirmed, False if declined, None if timed out
+        """
+        self.message = await self.ctx.send(embed=self.embed, view=self)
+        await self.wait()
+        return self.value
+
+    # When the confirm button is pressed, set the inner value to `True` and
+    # stop the View from listening to more input.
+    # We also send the user an ephemeral message that we're confirming their choice.
+    @nextcord.ui.button(label="✅", style=nextcord.ButtonStyle.green)
+    async def confirm(
+        self, button: nextcord.ui.Button, interaction: nextcord.Interaction
+    ):
+        await self._process(True, interaction)
+
+    # This one is similar to the confirmation button except sets the inner value to `False`
+    @nextcord.ui.button(label="❎", style=nextcord.ButtonStyle.red)
+    async def cancel(
+        self, button: nextcord.ui.Button, interaction: nextcord.Interaction
+    ):
+        await self._process(False, interaction)
+
+    async def _process(self, value, interaction):
+        if interaction.user.id is not self.ctx.author.id:
+            return
+
+        try:
+            await self.message.delete()
+        except (nextcord.errors.NotFound, nextcord.errors.Forbidden):
+            pass
+        self.value = value
+        self.stop()
