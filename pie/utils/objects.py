@@ -102,56 +102,78 @@ class ConfirmView(nextcord.ui.View):
     """Class for making confirmation embeds easy.
     The right way of getting response is first calling wait() on instance,
     then checking instance attribute `value`.
-
     Attributes:
         value: True if confirmed, False if declined, None if timed out
         ctx: Context of command
         message: Confirmation message
-
     Args:
-        ctx (:class:`nextcord.ext.commands.Context`): The context for translational and sending purposes.
-        embed (:class:`nextcord.Embed`): Embed to send.
+        ctx: The context for translational and sending purposes.
+        embed: Embed to send.
+        timeout: Number of seconds before timeout. `None` if no timeout
     """
 
-    def __init__(self, ctx: commands.Context, embed: nextcord.Embed):
-        super().__init__()
-        self.value = None
+    def __init__(
+        self,
+        ctx: commands.Context,
+        embed: nextcord.Embed,
+        timeout: Union[int, float, None] = 300,
+        delete: bool = False,
+    ):
+        super().__init__(timeout=timeout)
+        self.value: Optional[bool] = None
         self.ctx = ctx
         self.embed = embed
+        self.delete = delete
 
     async def send(self):
         """Sends message to channel defined by command context.
-
         Returns:
             True if confirmed, False if declined, None if timed out
         """
-        self.message = await self.ctx.send(embed=self.embed, view=self)
+        self.add_item(
+            nextcord.ui.Button(
+                label=_(self.ctx, "Confirm"),
+                style=nextcord.ButtonStyle.green,
+                custom_id="confirm-button",
+            )
+        )
+        self.add_item(
+            nextcord.ui.Button(
+                label=_(self.ctx, "Reject"),
+                style=nextcord.ButtonStyle.red,
+                custom_id="reject-button",
+            )
+        )
+        message = await self.ctx.reply(embed=self.embed, view=self)
         await self.wait()
+
+        if not self.delete:
+            self.clear_items()
+            await message.edit(embed=self.embed, view=self)
+        else:
+            try:
+                await message.delete()
+            except (
+                nextcord.errors.HTTPException,
+                nextcord.errors.Forbidden,
+                nextcord.errors.NotFound,
+            ):
+                self.clear_items()
+                await message.edit(embed=self.embed, view=self)
         return self.value
 
-    # When the confirm button is pressed, set the inner value to `True` and
-    # stop the View from listening to more input.
-    # We also send the user an ephemeral message that we're confirming their choice.
-    @nextcord.ui.button(label="✅", style=nextcord.ButtonStyle.green)
-    async def confirm(
-        self, button: nextcord.ui.Button, interaction: nextcord.Interaction
-    ):
-        await self._process(True, interaction)
-
-    # This one is similar to the confirmation button except sets the inner value to `False`
-    @nextcord.ui.button(label="❎", style=nextcord.ButtonStyle.red)
-    async def cancel(
-        self, button: nextcord.ui.Button, interaction: nextcord.Interaction
-    ):
-        await self._process(False, interaction)
-
-    async def _process(self, value, interaction):
+    async def interaction_check(self, interaction: nextcord.Interaction) -> None:
+        """Gets called when interaction with any of the Views buttons happens."""
         if interaction.user.id is not self.ctx.author.id:
             return
 
-        try:
-            await self.message.delete()
-        except (nextcord.errors.NotFound, nextcord.errors.Forbidden):
-            pass
-        self.value = value
+        if interaction.data["custom_id"] == "confirm-button":
+            self.value = True
+        else:
+            self.value = False
+        self.stop()
+
+    async def on_timeout(self) -> None:
+        """Gets called when the view timeouts."""
+        self.value = None
         self.stop()
