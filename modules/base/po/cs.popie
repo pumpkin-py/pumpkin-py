@@ -376,6 +376,18 @@ msgstr Nesprávný argument
 msgid Error in argument
 msgstr Chyba v argumentu
 
+msgid No Private Message
+msgstr Nelze použít v soukromém kanálu
+
+msgid This command cannot be used in private messages.
+msgstr Tenhle příkaz nemůže být použit v soukromém kanálu.
+
+msgid NSFW Channel Required
+msgstr Vyžadován NSFW kanál
+
+msgid This command can be used only in NSFW channels.
+msgstr Tenhle příkaz může být použit pouze v NSFW kanálech.
+
 msgid Extension Error
 msgstr Chyba rozšíření
 

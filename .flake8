@@ -8,6 +8,7 @@ per-file-ignores =
 	pie/__init__.py:F401
 	pie/check.py:F401
 	pie/utils/__init__.py:F401
+	modules/base/errors/module.py:C901
 exclude = .git,.venv
 count = True
 max-complexity = 25

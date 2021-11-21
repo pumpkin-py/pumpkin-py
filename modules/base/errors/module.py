@@ -219,6 +219,20 @@ class Errors(commands.Cog):
                 False,
             )
 
+        if isinstance(error, commands.NoPrivateMessage):
+            return (
+                _(ctx, "No Private Message"),
+                _(ctx, "This command cannot be used in private messages."),
+                False,
+            )
+
+        if isinstance(error, commands.NSFWChannelRequired):
+            return (
+                _(ctx, "NSFW Channel Required"),
+                _(ctx, "This command can be used only in NSFW channels."),
+                False,
+            )
+
         # extensions
         if type(error) == commands.ExtensionFailed:
             # return friendly name, e.g. strip "modules.{module}.module"
