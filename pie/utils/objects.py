@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from typing import Iterable
+from typing import Iterable, Optional, Union
 
 import nextcord
 from nextcord.ext import commands
@@ -102,14 +102,41 @@ class ConfirmView(nextcord.ui.View):
     """Class for making confirmation embeds easy.
     The right way of getting response is first calling wait() on instance,
     then checking instance attribute `value`.
+
     Attributes:
         value: True if confirmed, False if declined, None if timed out
         ctx: Context of command
         message: Confirmation message
+
     Args:
         ctx: The context for translational and sending purposes.
         embed: Embed to send.
         timeout: Number of seconds before timeout. `None` if no timeout
+        delete: Delete message after answering / timeout
+
+
+    To use import this object and create new instance:
+    .. code-block:: python
+        :linenos:
+
+        from pie.utils.objects import ConfirmView
+
+        ...
+
+        embed = utils.discord.create_embed(
+            author=reminder_user,
+            title=Confirm your action.",
+        )
+        view = ConfirmView(ctx, embed)
+
+        value = await view.send()
+
+        if value is None:
+            await ctx.send(_(ctx, "Confirmation timed out."))
+        elif value:
+            await ctx.send(_(ctx, "Confirmed."))
+        else:
+            await ctx.send(_(ctx, "Aborted."))
     """
 
     def __init__(
@@ -117,7 +144,7 @@ class ConfirmView(nextcord.ui.View):
         ctx: commands.Context,
         embed: nextcord.Embed,
         timeout: Union[int, float, None] = 300,
-        delete: bool = False,
+        delete: bool = True,
     ):
         super().__init__(timeout=timeout)
         self.value: Optional[bool] = None
