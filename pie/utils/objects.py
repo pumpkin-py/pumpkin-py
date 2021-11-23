@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from typing import Iterable
+from typing import Iterable, Optional, Union
 
 import nextcord
 from nextcord.ext import commands
@@ -96,3 +96,111 @@ class ScrollableEmbed:
                     with contextlib.suppress(nextcord.Forbidden):
                         await message.remove_reaction("▶️", user)
                     await message.edit(embed=self.pages[pagenum])
+
+
+class ConfirmView(nextcord.ui.View):
+    """Class for making confirmation embeds easy.
+    The right way of getting response is first calling wait() on instance,
+    then checking instance attribute `value`.
+
+    Attributes:
+        value: True if confirmed, False if declined, None if timed out
+        ctx: Context of command
+        message: Confirmation message
+
+    Args:
+        ctx: The context for translational and sending purposes.
+        embed: Embed to send.
+        timeout: Number of seconds before timeout. `None` if no timeout
+        delete: Delete message after answering / timeout
+
+
+    To use import this object and create new instance:
+    .. code-block:: python
+        :linenos:
+
+        from pie.utils.objects import ConfirmView
+
+        ...
+
+        embed = utils.discord.create_embed(
+            author=reminder_user,
+            title=Confirm your action.",
+        )
+        view = ConfirmView(ctx, embed)
+
+        value = await view.send()
+
+        if value is None:
+            await ctx.send(_(ctx, "Confirmation timed out."))
+        elif value:
+            await ctx.send(_(ctx, "Confirmed."))
+        else:
+            await ctx.send(_(ctx, "Aborted."))
+    """
+
+    def __init__(
+        self,
+        ctx: commands.Context,
+        embed: nextcord.Embed,
+        timeout: Union[int, float, None] = 300,
+        delete: bool = True,
+    ):
+        super().__init__(timeout=timeout)
+        self.value: Optional[bool] = None
+        self.ctx = ctx
+        self.embed = embed
+        self.delete = delete
+
+    async def send(self):
+        """Sends message to channel defined by command context.
+        Returns:
+            True if confirmed, False if declined, None if timed out
+        """
+        self.add_item(
+            nextcord.ui.Button(
+                label=_(self.ctx, "Confirm"),
+                style=nextcord.ButtonStyle.green,
+                custom_id="confirm-button",
+            )
+        )
+        self.add_item(
+            nextcord.ui.Button(
+                label=_(self.ctx, "Reject"),
+                style=nextcord.ButtonStyle.red,
+                custom_id="reject-button",
+            )
+        )
+        message = await self.ctx.reply(embed=self.embed, view=self)
+        await self.wait()
+
+        if not self.delete:
+            self.clear_items()
+            await message.edit(embed=self.embed, view=self)
+        else:
+            try:
+                await message.delete()
+            except (
+                nextcord.errors.HTTPException,
+                nextcord.errors.Forbidden,
+                nextcord.errors.NotFound,
+            ):
+                self.clear_items()
+                await message.edit(embed=self.embed, view=self)
+        return self.value
+
+    async def interaction_check(self, interaction: nextcord.Interaction) -> None:
+        """Gets called when interaction with any of the Views buttons happens."""
+        if interaction.user.id is not self.ctx.author.id:
+            return
+
+        if interaction.data["custom_id"] == "confirm-button":
+            self.value = True
+        else:
+            self.value = False
+        self.stop()
+
+    async def on_timeout(self) -> None:
+        """Gets called when the view timeouts."""
+        self.value = None
+        self.stop()
