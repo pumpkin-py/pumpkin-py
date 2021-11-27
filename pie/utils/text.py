@@ -3,7 +3,7 @@ from typing import Dict, Iterable, List, Optional
 import nextcord
 
 
-def sanitise(string: str, *, limit: int = 2000, escape: bool = True) -> str:
+def sanitise(string: str, *, limit: int = 2000, escape: bool = True, tag_escape = True) -> str:
     """Sanitise string.
 
     Args:
@@ -16,7 +16,11 @@ def sanitise(string: str, *, limit: int = 2000, escape: bool = True) -> str:
     """
     if escape:
         string = nextcord.utils.escape_markdown(string)
-    return string.replace("@", "@\u200b")[:limit]
+    
+    if tag_escape:
+        return string.replace("@", "@\u200b")[:limit]
+    else:
+        return string[:limit]
 
 
 def split(string: str, limit: int = 1990) -> List[str]:
