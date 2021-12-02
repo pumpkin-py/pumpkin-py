@@ -164,7 +164,10 @@ class LogEntry:
         return f"{repo}.{module}"
 
     def dump(self):
+        # The easiest way to include only one decimal is to cut the string
+        formatted_timestamp: str = self.timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-5]
         result = {
+            "timestamp": formatted_timestamp,
             "file": self.filename,
         }
         for attr in (
