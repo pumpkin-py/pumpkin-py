@@ -100,7 +100,7 @@ class ScrollableEmbed:
 
 class ConfirmView(nextcord.ui.View):
     """Class for making confirmation embeds easy.
-    The right way of getting response is first calling wait() on instance,
+    The right way of getting response is first calling send() on instance,
     then checking instance attribute `value`.
 
     Attributes:
@@ -171,22 +171,22 @@ class ConfirmView(nextcord.ui.View):
                 custom_id="reject-button",
             )
         )
-        message = await self.ctx.reply(embed=self.embed, view=self)
+        self.message = await self.ctx.reply(embed=self.embed, view=self)
         await self.wait()
 
         if not self.delete:
             self.clear_items()
-            await message.edit(embed=self.embed, view=self)
+            await self.message.edit(embed=self.embed, view=self)
         else:
             try:
-                await message.delete()
+                await self.message.delete()
             except (
                 nextcord.errors.HTTPException,
                 nextcord.errors.Forbidden,
                 nextcord.errors.NotFound,
             ):
                 self.clear_items()
-                await message.edit(embed=self.embed, view=self)
+                await self.message.edit(embed=self.embed, view=self)
         return self.value
 
     async def interaction_check(self, interaction: nextcord.Interaction) -> None:
