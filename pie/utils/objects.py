@@ -179,14 +179,16 @@ class ConfirmView(nextcord.ui.View):
             await self.message.edit(embed=self.embed, view=self)
         else:
             try:
-                await self.message.delete()
-            except (
-                nextcord.errors.HTTPException,
-                nextcord.errors.Forbidden,
-                nextcord.errors.NotFound,
-            ):
-                self.clear_items()
-                await self.message.edit(embed=self.embed, view=self)
+                try:
+                    await self.message.delete()
+                except (
+                    nextcord.errors.HTTPException,
+                    nextcord.errors.Forbidden,
+                ):
+                    self.clear_items()
+                    await self.message.edit(embed=self.embed, view=self)
+            except nextcord.errors.NotFound:
+                pass
         return self.value
 
     async def interaction_check(self, interaction: nextcord.Interaction) -> None:
