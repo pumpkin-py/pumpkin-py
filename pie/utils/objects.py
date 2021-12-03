@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import asyncio
-import contextlib
 from typing import Iterable, Optional, Union
 
 import nextcord
@@ -12,19 +10,43 @@ from pie import i18n
 _ = i18n.Translator("pie").translate
 
 
-class ScrollableEmbed:
+class ScrollableEmbed(nextcord.ui.View):
     """Class for making scrollable embeds easy.
 
     Args:
         ctx (:class:`nextcord.ext.commands.Context`): The context for translational purposes.
         iterable (:class:`Iterable[nextcord.Embed]`): Iterable which to build the ScrollableEmbed from.
+        timeout (:class:'int'): Timeout (in seconds, default 300) from last interaction with the UI before no longer accepting input. If None then there is no timeout.
+        delete_message (:class:'bool'): True - remove message after timeout. False - remove only View controls.
     """
 
     def __init__(
-        self, ctx: commands.Context, iterable: Iterable[nextcord.Embed]
+        self,
+        ctx: commands.Context,
+        iterable: Iterable[nextcord.Embed],
+        timeout: int = 300,
+        delete_message: bool = False,
     ) -> ScrollableEmbed:
+        super().__init__(timeout=timeout)
         self.pages = self._pages_from_iter(ctx, iterable)
         self.ctx = ctx
+        self.pagenum = 0
+        self.delete_message = delete_message
+
+        self.add_item(
+            nextcord.ui.Button(
+                label="\u25c1",
+                style=nextcord.ButtonStyle.green,
+                custom_id="left-button",
+            )
+        )
+        self.add_item(
+            nextcord.ui.Button(
+                label="\u25b7",
+                style=nextcord.ButtonStyle.green,
+                custom_id="right-button",
+            )
+        )
 
     def __repr__(self):
         return (
@@ -48,59 +70,68 @@ class ScrollableEmbed:
         return pages
 
     async def scroll(self):
-        """Make them embeds move.
+        """Make embeds move.
 
-        Sends the first page to the context and handles scrolling.
+        Sends the first page to the context.
         """
         ctx = self.ctx
         if self.pages == []:
+            self.clear_items()
             await ctx.reply(_(ctx, "No results were found."))
+            self.stop()
             return
 
-        message = await ctx.send(embed=self.pages[0])
-        pagenum = 0
         if len(self.pages) == 1:
+            self.clear_items()
+            await ctx.send(embed=self.pages[0])
+            self.stop()
             return
 
-        await message.add_reaction("◀️")
-        await message.add_reaction("▶️")
-        while True:
+        self.message = await ctx.send(embed=self.pages[0], view=self)
 
-            def check(reaction, user):
-                return (
-                    reaction.message.id == message.id
-                    and (str(reaction.emoji) == "◀️" or str(reaction.emoji) == "▶️")
-                    and user == ctx.message.author
-                )
+    async def interaction_check(self, interaction: nextcord.Interaction) -> None:
+        """Gets called when interaction with any of the Views buttons happens."""
+        if interaction.user.id is not self.ctx.author.id:
+            await interaction.response.send_message(
+                _(self.ctx, "Only command issuer can scroll."), ephemeral=True
+            )
+            return
 
+        if interaction.data["custom_id"] == "left-button":
+            self.pagenum -= 1
+        else:
+            self.pagenum += 1
+
+        if self.pagenum < 0:
+            self.pagenum = len(self.pages) - 1
+
+        if self.pagenum >= len(self.pages):
+            self.pagenum = 0
+
+        await interaction.response.edit_message(embed=self.pages[self.pagenum])
+
+    async def on_timeout(self) -> None:
+        """Gets called when the view timeouts."""
+        if not self.delete_message:
+            self.clear_items()
+            await self.message.edit(embed=self.pages[self.pagenum], view=self)
+        else:
             try:
-                reaction, user = await ctx.bot.wait_for(
-                    "reaction_add", check=check, timeout=300.0
-                )
-            except asyncio.TimeoutError:
-                with contextlib.suppress(nextcord.NotFound, nextcord.Forbidden):
-                    await message.clear_reactions()
-                break
-            else:
-                if str(reaction.emoji) == "◀️":
-                    pagenum -= 1
-                    if pagenum < 0:
-                        pagenum = len(self.pages) - 1
-                    with contextlib.suppress(nextcord.Forbidden):
-                        await message.remove_reaction("◀️", user)
-                    await message.edit(embed=self.pages[pagenum])
-                if str(reaction.emoji) == "▶️":
-                    pagenum += 1
-                    if pagenum >= len(self.pages):
-                        pagenum = 0
-                    with contextlib.suppress(nextcord.Forbidden):
-                        await message.remove_reaction("▶️", user)
-                    await message.edit(embed=self.pages[pagenum])
+                try:
+                    await self.message.delete()
+                except (
+                    nextcord.errors.HTTPException,
+                    nextcord.errors.Forbidden,
+                ):
+                    self.clear_items()
+                    await self.message.edit(embed=self.pages[self.pagenum], view=self)
+            except nextcord.errors.NotFound:
+                pass
 
 
 class ConfirmView(nextcord.ui.View):
     """Class for making confirmation embeds easy.
-    The right way of getting response is first calling send() on instance,
+    The right way of getting response is first calling wait() on instance,
     then checking instance attribute `value`.
 
     Attributes:

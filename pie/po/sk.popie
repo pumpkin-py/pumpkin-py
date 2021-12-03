@@ -16,6 +16,9 @@ msgstr Strana
 msgid No results were found.
 msgstr Nenašiel sa žiaden výsledok
 
+msgid Only command issuer can scroll.
+msgstr Iba odosielateľ príkazu môže posúvať stránky.
+
 msgid Confirm
 msgstr Potvrdiť
 
