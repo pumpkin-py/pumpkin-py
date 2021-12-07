@@ -10,7 +10,7 @@ config = Config.get()
 
 
 async def get_message(
-    bot: commands.Bot, guild_id: int, channel_id: int, message_id: int
+    bot: commands.Bot, guild_or_user_id: int, channel_id: int, message_id: int
 ) -> Optional[nextcord.Message]:
     """Get message.
 
@@ -18,7 +18,7 @@ async def get_message(
     save API calls. Otherwise it is fetched.
 
     :param bot: The :class:`~nextcord.ext.commands.Bot` object.
-    :param guild_id: Guild ID.
+    :param guild_or_user_id: Guild ID or User ID (if the message is in DMs).
     :param channel_id: Channel ID.
     :param message_id: Message ID.
     :return: Found message or ``None``.
@@ -28,9 +28,16 @@ async def get_message(
         return query[0]
 
     try:
-        channel = bot.get_guild(guild_id).get_channel(channel_id)
-        if channel is None:
-            return None
+        guild = bot.get_guild(guild_or_user_id)
+        if guild is not None:
+            channel = guild.get_channel(channel_id)
+            if channel is None:
+                return None
+        else:
+            # DMs?
+            channel = bot.get_user(guild_or_user_id)
+            if channel is None:
+                return
         return await channel.fetch_message(message_id)
     except nextcord.errors.HTTPException:
         return None
@@ -38,7 +45,7 @@ async def get_message(
 
 def message_url_from_reaction_payload(payload: nextcord.RawReactionActionEvent):
     guild_id = payload.guild_id if payload.guild_id is not None else "@me"
-    return f"https://nextcord.com/channels/{guild_id}/{payload.channel_id}/{payload.message_id}"
+    return f"https://discord.com/channels/{guild_id}/{payload.channel_id}/{payload.message_id}"
 
 
 def create_embed(
@@ -123,7 +130,6 @@ async def remove_reaction(
     message: nextcord.Message, emoji, member: nextcord.Member
 ) -> bool:
     """Try to remove reaction.
-
 
     :param message: The message of the reaction.
     :param emoji: Emoji, Reaction, PartialEmoji or string.
