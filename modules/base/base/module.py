@@ -435,23 +435,28 @@ class Base(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: nextcord.RawReactionActionEvent):
         """Handle message pinning."""
-        if payload.guild_id is None or payload.member is None:
+        emoji = getattr(payload.emoji, "name", None)
+        if emoji not in ("📌", "📍", "🔖", "🧵", "🗑️"):
             return
 
-        emoji = getattr(payload.emoji, "name", None)
-        if emoji not in ("📌", "📍", "🔖", "🧵"):
+        if payload.guild_id is None and emoji != "🗑️":
+            return
+        if payload.guild_id is not None and emoji == "🗑️":
             return
 
         message = await utils.discord.get_message(
-            self.bot, payload.guild_id, payload.channel_id, payload.message_id
+            self.bot,
+            payload.guild_id or payload.user_id,
+            payload.channel_id,
+            payload.message_id,
         )
         if message is None:
             await bot_log.error(
-                payload.member,
+                self.bot.get_user(payload.user_id),
                 None,
                 "Could not find message "
                 + utils.discord.message_url_from_reaction_payload(payload)
-                + f", {emoji} functionality not triggered.",
+                + f", functionality '{emoji}' not triggered.",
             )
             return
 
@@ -468,6 +473,8 @@ class Base(commands.Cog):
             await self._bookmark(payload, message)
         elif emoji == "🧵":
             await self._userthread(payload, message)
+        elif emoji == "🗑️":
+            await self._remove_bot_dm(payload, message)
 
     async def _userpin(
         self,
@@ -577,6 +584,11 @@ class Base(commands.Cog):
         await guild_log.debug(
             payload.member, message.channel, f"Bookmarked message {message.jump_url}."
         )
+
+    async def _remove_bot_dm(self, payload, message):
+        """Delete bot's message in DM."""
+        if message.author.id == self.bot.user.id:
+            await utils.discord.delete_message(message)
 
     async def _userthread(
         self,
