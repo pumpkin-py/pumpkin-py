@@ -409,6 +409,9 @@ class Base(commands.Cog):
         """Handle thread deletion if parental message is deleted."""
         if payload.guild_id is None:
             return
+        if AutoThread.get(payload.guild_id, payload.channel_id) is None:
+            # only handle channels where the threads are created automatically
+            return
         channel = self.bot.get_guild(payload.guild_id).get_channel(payload.channel_id)
         if not channel:
             return
