@@ -24,7 +24,7 @@ class TranslationContext:
 
     __slots__ = ("guild_id", "user_id")
 
-    def __init__(self, guild_id: int, user_id: int):
+    def __init__(self, guild_id: Optional[int], user_id: Optional[int]):
         self.guild_id = guild_id
         self.user_id = user_id
 

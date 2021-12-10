@@ -92,8 +92,14 @@ class ScrollableEmbed(nextcord.ui.View):
     async def interaction_check(self, interaction: nextcord.Interaction) -> None:
         """Gets called when interaction with any of the Views buttons happens."""
         if interaction.user.id is not self.ctx.author.id:
+            if self.ctx.guild is not None:
+                gtx = i18n.TranslationContext(self.ctx.guild.id, interaction.user.id)
+            else:
+                # TranslationContext does not know how to use user without guild,
+                # this will result in bot preference being used.
+                gtx = i18n.TranslationContext(None, interaction.user.id)
             await interaction.response.send_message(
-                _(self.ctx, "Only command issuer can scroll."), ephemeral=True
+                _(gtx, "Only command issuer can scroll."), ephemeral=True
             )
             return
 
