@@ -164,6 +164,13 @@ class Admin(commands.Cog):
                 for output in utils.text.split(install):
                     await ctx.send("```" + output + "```")
 
+        # check if the repository uses database
+        has_database: bool = False
+        for module in repository.module_names:
+            if (repository.path / module / "database.py").is_file():
+                has_database = True
+                break
+
         # move to modules/
         repository_location = str(Path.cwd() / "modules" / repository.name)
         shutil.move(str(workdir), repository_location)
@@ -183,6 +190,16 @@ class Admin(commands.Cog):
             ctx.channel,
             f"Repository {repository.name} installed.",
         )
+
+        if has_database:
+            await ctx.send(
+                _(
+                    ctx,
+                    "Repository contains at least one database file. "
+                    "Make sure you restart the bot before you load the modules "
+                    "to ensure database tables were created.",
+                ),
+            )
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.check(check.acl)
