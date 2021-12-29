@@ -1,12 +1,20 @@
 from __future__ import annotations
 
-from nextcord.ext import commands
+from typing import Callable, TypeVar
 
-from pie.acl.database import ACL_rule, ACL_group
+from nextcord.ext import commands
 
 from pie import i18n
 
+# Old ACL
+from pie.acl.database import ACL_rule, ACL_group
+
+# ACL 2
+from pie.acl.database import ACLevel, ACLevelMappping
+from pie.acl.database import UserOverwrite, ChannelOverwrite, RoleOverwrite
+
 _ = i18n.Translator(__file__).translate
+T = TypeVar("T")
 
 
 def acl(ctx: commands.Context) -> bool:
@@ -54,6 +62,7 @@ def acl(ctx: commands.Context) -> bool:
     can be made.
 
     If none of user's roles are found, the default permission is returned.
+
 
     To use the check function, import it and include it as decorator:
 
@@ -107,6 +116,7 @@ def acl(ctx: commands.Context) -> bool:
     for role in ctx.author.roles[::-1]:
         group = ACL_group.get_by_role(ctx.guild.id, role.id)
         if group is not None:
+
             break
     else:
         group = None
@@ -119,3 +129,48 @@ def acl(ctx: commands.Context) -> bool:
 
     # user's roles are not mapped to any ACL group, return default
     return rule.default
+
+
+def acl2(level: ACLevel) -> Callable[[T], T]:
+    """A decorator that adds ACL check to a command.
+
+    Each command has its preferred ACL group set in the decorator. Bot owner
+    can add user and channel overwrites to these decorators, to allow detailed
+    controll over the system with sane defaults provided by the system itself.
+    """
+
+    def predicate(ctx: commands.Context) -> bool:
+        return _acl2(ctx, level)
+
+    return commands.check(predicate)
+
+
+def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
+    """Check function based on Access Control."""
+    # Allow invocations in DM.
+    # Wrap the function in `@commands.guild_only()` to change this behavior.
+    if ctx.guild is None:
+        return True
+
+    command: str = ctx.command.qualified_name
+
+    uo = UserOverwrite.get(ctx.guild.id, ctx.author.id, command)
+    if uo is not None:
+        return uo.allow
+
+    co = ChannelOverwrite.get(ctx.guild.id, ctx.channel.id, command)
+    if co is not None:
+        return co.allow
+
+    ro = RoleOverwrite.get(ctx.guild.id, ctx.author.id, command)
+    if ro is not None:
+        return uo.allow
+
+    mapped_level = ACLevel.EVERYONE
+    for role in ctx.author.roles[::-1]:
+        m = ACLevelMappping.get(ctx.guild.id, role.id)
+        if m is not None:
+            mapped_level = m.level
+            break
+
+    return mapped_level >= level

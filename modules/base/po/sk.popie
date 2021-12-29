@@ -1,90 +1,3 @@
-msgid You didn't define any ACL groups yet.
-msgstr Zatiaľ si nedefinoval žiadne ACL skupiny.
-
-msgid No such group exists.
-msgstr Takáto skipina neexistuje.
-
-msgid Bad group name (regex `{regex}`)
-msgstr Chybné meno skupiny (regex `{regex}`)
-
-msgid ACL group can't be named like that (regex `{regex}`).
-msgstr ACL skupina takto nemôže byť pomenovaná (regex `{regex}`).
-
-msgid Bad parameter.
-msgstr Zlý parameter.
-
-msgid No such group.
-msgstr Takáto skupina neexistuje.
-
-msgid ACL group removed.
-msgstr ACL skupina bola odstránená.
-
-msgid **{count} rules** exported.
-msgstr Bolo exportovaných **{count} pravidiel**.
-
-msgid No such ACL rule.
-msgstr Takéto ACL pravidlo neexistuje.
-
-msgid Rule removed.
-msgstr Pravidlo odstránené.
-
-msgid I've removed {count} rules.
-msgstr {count} pravidiel bolo odstránených.
-
-msgid I'm expecting one JSON file.
-msgstr Očakávam jeden JSON súbor.
-
-msgid You have to upload the JSON file.
-msgstr Musíš nahrať JSON súbor.
-
-msgid Your JSON file contains errors.
-msgstr Tvoj JSON súbor obsahuje chyby.
-
-msgid I've imported **{new}** new and **{updated}** updated rules.
-msgstr Bolo importovaných **{new}** nových a **{updated}** aktualizovaných pravidiel.
-
-msgid Skipping:
-msgstr Preskakujem:
-
-msgid expected `bool`
-msgstr očakávam `bool`
-
-msgid expected `list`
-msgstr očakávam `list`
-
-msgid invalid group
-msgstr neplatná skupina
-
-msgid expected `int`
-msgstr očakávam `int`
-
-msgid duplicate
-msgstr duplikát
-
-msgid An unexpected error occurred
-msgstr Nastala nečakaná chyba
-
-msgid Command **{name}** is not enabled.
-msgstr Príkaz **{name}** nie je zapnutý.
-
-msgid Command **{name}** has been disabled.
-msgstr Príkaz **{name}** bol vypnutý.
-
-msgid Command **{name}** is not disabled.
-msgstr Príkaz **{name}** nebol vypnutý.
-
-msgid Command **{name}** has been enabled.
-msgstr Príkaz **{name}** bol zapnutý.
-
-msgid ACL group {name}
-msgstr ACL skupina {name}
-
-msgid Discord role
-msgstr Discord rola
-
-msgid Parent ACL group
-msgstr Rodičovská ACL skupina
-
 msgid Repository initialization aborted: {exc}
 msgstr Inicializácia repozitáru sa nepodarila: {exc}
 
@@ -294,6 +207,9 @@ msgstr Čas spustenia
 
 msgid Run time
 msgstr Doba od spustenia
+
+msgid An unexpected error occurred
+msgstr Nastala nečakaná chyba
 
 msgid pumpkin.py exception
 msgstr Výnimka pumpkin.py
