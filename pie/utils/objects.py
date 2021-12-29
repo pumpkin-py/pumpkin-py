@@ -26,12 +26,14 @@ class ScrollableEmbed(nextcord.ui.View):
         iterable: Iterable[nextcord.Embed],
         timeout: int = 300,
         delete_message: bool = False,
+        locked: bool = False,
     ) -> ScrollableEmbed:
         super().__init__(timeout=timeout)
         self.pages = self._pages_from_iter(ctx, iterable)
         self.ctx = ctx
         self.pagenum = 0
         self.delete_message = delete_message
+        self.locked = locked
 
         self.add_item(
             nextcord.ui.Button(
@@ -47,6 +49,19 @@ class ScrollableEmbed(nextcord.ui.View):
                 custom_id="right-button",
             )
         )
+        if self.locked:
+            self.lock_button = nextcord.ui.Button(
+                label="🔒",
+                style=nextcord.ButtonStyle.red,
+                custom_id="lock-button",
+            )
+        else:
+            self.lock_button = nextcord.ui.Button(
+                label="🔓",
+                style=nextcord.ButtonStyle.green,
+                custom_id="lock-button",
+            )
+        self.add_item(self.lock_button)
 
     def __repr__(self):
         return (
@@ -68,6 +83,28 @@ class ScrollableEmbed(nextcord.ui.View):
             )
             pages.append(embed)
         return pages
+
+    def _toggle_lock(self) -> None:
+        if self.locked:
+            self.locked = False
+            self.lock_button.label = "🔓"
+            self.lock_button.style = nextcord.ButtonStyle.green
+        else:
+            self.locked = True
+            self.lock_button.label = "🔒"
+            self.lock_button.style = nextcord.ButtonStyle.red
+
+    def __get_gtx(
+        self,
+        interaction: nextcord.Interaction,
+    ) -> i18n.TranslationContext:
+        if self.ctx.guild is not None:
+            gtx = i18n.TranslationContext(self.ctx.guild.id, interaction.user.id)
+        else:
+            # TranslationContext does not know how to use user without guild,
+            # this will result in bot preference being used.
+            gtx = i18n.TranslationContext(None, interaction.user.id)
+        return gtx
 
     async def scroll(self):
         """Make embeds move.
@@ -91,13 +128,19 @@ class ScrollableEmbed(nextcord.ui.View):
 
     async def interaction_check(self, interaction: nextcord.Interaction) -> None:
         """Gets called when interaction with any of the Views buttons happens."""
-        if interaction.user.id is not self.ctx.author.id:
-            if self.ctx.guild is not None:
-                gtx = i18n.TranslationContext(self.ctx.guild.id, interaction.user.id)
+        if interaction.data["custom_id"] == "lock-button":
+            if interaction.user.id is self.ctx.author.id:
+                self._toggle_lock()
+                await interaction.response.edit_message(view=self)
+                return
             else:
-                # TranslationContext does not know how to use user without guild,
-                # this will result in bot preference being used.
-                gtx = i18n.TranslationContext(None, interaction.user.id)
+                gtx = self.__get_gtx(interaction)
+                await interaction.response.send_message(
+                    _(gtx, "Only command issuer can toggle the lock."), ephemeral=True
+                )
+                return
+        elif interaction.user.id is not self.ctx.author.id and self.locked:
+            gtx = self.__get_gtx(interaction)
             await interaction.response.send_message(
                 _(gtx, "Only command issuer can scroll."), ephemeral=True
             )
