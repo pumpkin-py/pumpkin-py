@@ -23,7 +23,7 @@ Especially when working on the bot (debugging, development) it is easier if you 
 .. code-block::
 
 	set -o allexport
-	source ~/pumpkin/.env
+	source ./.env
 	set +o allexport
 
 This way the variables will be set whenever you enter the virtual environment with the ``source .venv/bin/activate`` command. You can leave by running ``deactivate``.
