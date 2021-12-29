@@ -32,6 +32,9 @@ async def get_message(
         if guild is not None:
             channel = guild.get_channel(channel_id)
             if channel is None:
+                # The 'channel' may also be a thread
+                channel = nextcord.utils.get(guild.threads, id=channel_id)
+            if channel is None:
                 return None
         else:
             # DMs?
