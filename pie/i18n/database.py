@@ -124,14 +124,15 @@ class MemberLanguage(database.base):
             responsibility to make sure it has correct value.
         :return: Created member language preference.
         """
-        preference = MemberLanguage(
-            guild_id=guild_id, member_id=member_id, language=language
-        )
+        preference = MemberLanguage.get(guild_id, member_id)
+        if preference:
+            preference.language = language
+        else:
+            preference = MemberLanguage(
+                guild_id=guild_id, member_id=member_id, language=language
+            )
+            session.add(preference)
 
-        # remove old language preference
-        MemberLanguage.remove(guild_id, member_id)
-
-        session.add(preference)
         session.commit()
         return preference
 
@@ -158,6 +159,10 @@ class MemberLanguage(database.base):
         :param member_id: Member ID.
         :return: Number of deleted preferences, always ``0`` or ``1``.
         """
-        query = session.query(MemberLanguage).filter_by(guild_id=guild_id).delete()
+        query = (
+            session.query(MemberLanguage)
+            .filter_by(guild_id=guild_id, member_id=member_id)
+            .delete()
+        )
         session.commit()
         return query
