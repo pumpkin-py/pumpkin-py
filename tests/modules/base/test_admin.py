@@ -86,7 +86,7 @@ def test_module_check__more_modules():
     _create_repo(tempdir.name)
 
     info = {
-        "all": ("test_a", "test_b"),
+        "all": ("test_a", "test_b", "test1"),
         "name": "test",
     }
     _update_init(
@@ -140,6 +140,17 @@ def test_module_check_failures():
     with pytest.raises(ValueError) as excinfo:
         Repository(temppath)
     assert str(excinfo.value) == "Module 'missing' is missing its init file."
+
+    # The regex extraction is not perfect and will report '1' for module name '1abc'.
+    # There was no easy fix and we'd have to rewrite the detection, I decided to leave
+    # it as it is. It fine well when there are only well-named modules.
+    _update_init(tempdir.name, modules=("1test"))
+    with pytest.raises(ValueError) as excinfo:
+        Repository(temppath)
+    assert str(excinfo.value) == (
+        f"Repository at '{temppath}' specification "
+        "contains invalid name for included module '1'."
+    )
 
     tempdir.cleanup()
 
