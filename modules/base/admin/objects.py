@@ -10,8 +10,8 @@ from typing import List, Tuple, Optional
 
 
 RE_QUOTE = r"(\"|\"\"\"|')"
-RE_NAME = r"[a-z_]+"
-RE_NAMES = r"[a-z_,\s" + RE_QUOTE + r"]+"
+RE_NAME = r"[a-z_][0-9a-z_]+"
+RE_NAMES = r"[a-z0-9_,\s" + RE_QUOTE + r"]+"
 
 
 class RepositoryManager:
