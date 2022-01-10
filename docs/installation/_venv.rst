@@ -18,6 +18,9 @@ Create the virtual environment and load it. Then you can install all bot depende
 	source .venv/bin/activate
 	python3 -m pip install -r requirements.txt
 
+	# During development, in addition to normal packages also install dev packages
+	python3 -m pip install -r requirements-dev.txt
+
 Especially when working on the bot (debugging, development) it is easier if you speed up environment variable import. Open the venv file (``.venv/bin/activate``) and insert to the end of it:
 
 .. code-block::
