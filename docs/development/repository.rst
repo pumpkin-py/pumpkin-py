@@ -5,7 +5,7 @@ How to create a repository
 
 Let's write a simple repository with just one module. We're gonna name it ``bistro``, because we'll gonna be making some delicious snacks.
 
-You can start with an empty directory (named ``pumpkin-bistro``, for example), or you can use our `template repository <https://github.com/pumpkin-py/pumpkin-template>`_, it doesn't matter.
+You can start with an empty directory (named ``pumpkin-bistro``, for example).
 
 Repository metadata
 -------------------
@@ -20,9 +20,9 @@ In our case, the file might look like this:
 
 .. code-block:: python3
 
-	__name__ = "bistro"
-	__version__ = "0.0.1"
-	__all__ = ("bistro", )
+    __name__ = "bistro"
+    __version__ = "0.0.1"
+    __all__ = ("bistro", )
 
 Next file that SHOULD be present in your repository is ``README.md`` or ``README.rst``. This file should contain the information about the repository and its modules. It should also link to the pumpkin.py project, so the visitors aren't confused about the meaning of it.
 
@@ -30,31 +30,11 @@ Our README may start like this:
 
 .. code-block:: markdown
 
-	# Bistro
+    # Bistro
 
-	An unofficial [pumpkin.py](https://github.com/pumpkin-py) extension.
+    An unofficial [pumpkin.py](https://github.com/pumpkin-py) extension.
 
-	The module allows you to ...
-
-The last metadata file is ``CHANGELOG.rst``, which SHOULD be present in your repository. For each version you create you MUST add a second-level heading with a version number and a text content, which SHOULD be a list of points describing the changes in the version.
-
-.. code-block:: rst
-
-	CHANGELOG
-	=========
-
-	Unreleased
-	----------
-	- Fix for #14: Don't allow infinite cakes
-
-	0.0.2
-	-----
-	- Add dynamic prices
-	- Add option to close the bistro
-
-	0.0.1
-	-----
-	- Initial release
+    The module allows you to ...
 
 Resource files
 --------------
@@ -63,7 +43,7 @@ Resource files
 
 .. note::
 
-	Use ``requiremens-dev.txt`` for development packages.
+    Use ``requiremens-dev.txt`` for development packages.
 
 The module
 ----------
@@ -74,28 +54,28 @@ In our case, we only have one module specified, so we have to create a file ``bi
 
 .. code-block:: python3
 
-	import nextcord
-	from nextcord.ext import commands
+    import nextcord
+    from nextcord.ext import commands
 
-	from core import acl, text, logger
+    from pie import check, i18n, logger
 
-	_ = i18n.Translator(__file__).translate
-	bot_log = logger.Bot.logger()
-	guild_log = logger.Guild.logger()
+    _ = i18n.Translator(__file__).translate
+    bot_log = logger.Bot.logger()
+    guild_log = logger.Guild.logger()
 
 
-	class Bistro(commands.Cog):
-		def __init__(self, bot):
-			self.bot = bot
+    class Bistro(commands.Cog):
+        def __init__(self, bot):
+            self.bot = bot
 
-		...
+        ...
 
-	def setup(bot) -> None:
-		bot.add_cog(Bistro(bot))
+    def setup(bot) -> None:
+        bot.add_cog(Bistro(bot))
 
 .. note::
 
-	See subarticles on logging and text translation.
+    See subarticles on logging and text translation.
 
 Module database
 ---------------
@@ -110,70 +90,70 @@ All database tables SHOULD have a ``__repr__`` representation and SHOULD have a 
 
 .. note::
 
-	Always use ``remove()`` over ``delete()``, for consinstency reasons.
+    Always use ``remove()`` over ``delete()``, for consinstency reasons.
 
 An example database file ``bistro/database.py`` may look like this:
 
 .. code-block:: python3
 
-	from __future__ import annotations
-	from typing import Optional
+    from __future__ import annotations
+    from typing import Optional
 
-	from sqlalchemy import Column, Integer, BigInteger, String
+    from sqlalchemy import Column, Integer, BigInteger, String
 
-	from database import database, session
+    from pie.database import database, session
 
-	class Item(database.base):
-	    __tablename__ = "bistro_bistro_item"
+    class Item(database.base):
+        __tablename__ = "bistro_bistro_item"
 
-	    idx = Column(Integer, primary_key=True)
-	    guild_id = Column(BigInteger)
-	    name = Column(String)
-	    description = Column(String)
+        idx = Column(Integer, primary_key=True)
+        guild_id = Column(BigInteger)
+        name = Column(String)
+        description = Column(String)
 
-	    @staticmethod
-	    def add(guild_id: int, name: str, description: str) -> Item:
-	        query = Item(
-	            guild_id=guild_id,
-	            name=name,
-	            description=description
-	        )
-	        session.add(query)
-	        session.commit()
-	        return query
+        @staticmethod
+        def add(guild_id: int, name: str, description: str) -> Item:
+            query = Item(
+                guild_id=guild_id,
+                name=name,
+                description=description
+            )
+            session.add(query)
+            session.commit()
+            return query
 
-	    @staticmethod
-	    def get(guild_id: int, name: str) -> Optional[Item]:
-	        query = session.query(Item).filter_by(
-	            guild_id=guild_id,
-	            name=name,
-	        ).one_or_none()
-	        return query
+        @staticmethod
+        def get(guild_id: int, name: str) -> Optional[Item]:
+            query = session.query(Item).filter_by(
+                guild_id=guild_id,
+                name=name,
+            ).one_or_none()
+            return query
 
-	    @staticmethod
-	    def remove(guild_id: int, name: str) -> int:
-	        query = session.query(Item).filter_by(
-	            guild_id=guild_id,
-	            name=name,
-	        ).delete()
-	        return query
+        @staticmethod
+        def remove(guild_id: int, name: str) -> int:
+            query = session.query(Item).filter_by(
+                guild_id=guild_id,
+                name=name,
+            ).delete()
+            return query
 
-	    def save(self):
-	        session.commit()
+        def save(self):
+            session.commit()
 
-	    def __repr__(self) -> str:
-	        return (
-	            f'<{self.__class__.__name__} idx="{self.idx}" '
-	            f'guild_id="{self.guild_id}" name="{self.name}" '
-	            f'description="{self.description}">'
-	        )
+        def __repr__(self) -> str:
+            return (
+                f'<{self.__class__.__name__} idx="{self.idx}" '
+                f'guild_id="{self.guild_id}" name="{self.name}" '
+                f'description="{self.description}">'
+            )
 
-	    def dump(self) -> dict:
-	    	return {
-	    	    "guild_id": self.guild_id,
-	    	    "name": self.name,
-	    	    "description": self.description,
-	    	}
+        def dump(self) -> dict:
+            return {
+                "guild_id": self.guild_id,
+                "name": self.name,
+                "description": self.description,
+            }
 
 Testing
 -------

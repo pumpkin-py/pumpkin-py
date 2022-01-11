@@ -25,7 +25,7 @@ All the imports MUST be at the top of the file (flake8 won't let you). For the s
 	import nextcord
 	from nextcord.ext import commands
 
-	from core import i18n, text, utils
+	from pie import i18n, text, utils
 	from .database import RepoModuleTable as Table
 
 	_ = i18n.Translator(__file__).translate
