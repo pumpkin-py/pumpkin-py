@@ -99,6 +99,7 @@ class Repository:
         """
         is_base: bool = getattr(self, "name", "") == "base"
         repo = git.repo.base.Repo(str(self.path), search_parent_directories=is_base)
+        repo.remotes.origin.fetch()
         try:
             repo.git.checkout(branch)
         except git.exc.GitCommandError as exc:
@@ -192,14 +193,28 @@ class Repository:
             stderr: str = str(exc)[str(exc).find("stderr: ") + 8 :]
             return stderr
 
-    def git_pull(self) -> str:
+    def git_pull(self, force: bool = False) -> str:
         """Perform 'git pull' over the repository.
 
         :return: Git output
         """
         is_base: bool = self.name == "base"
         repo = git.repo.base.Repo(str(self.path), search_parent_directories=is_base)
-        result: str = repo.git.pull(force=True)
+        result: str = repo.git.pull(force=force)
+        return result
+
+    def git_reset_pull(self) -> str:
+        """Perform 'git reset --hard' and 'git pull' over the repository.
+
+        :return: Git output
+        """
+        is_base: bool = self.name == "base"
+
+        repo = git.repo.base.Repo(str(self.path), search_parent_directories=is_base)
+
+        repo.remotes.origin.fetch()
+        result = str(repo.git.reset("--hard", f"origin/{repo.active_branch.name}"))
+        result += "\n" + str(repo.git.pull(force=True))
         return result
 
     @property

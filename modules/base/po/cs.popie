@@ -97,6 +97,9 @@ msgstr Repozitář byl nainstalován do `{path}`. Obsahuje následující moduly
 msgid Repository contains at least one database file. Make sure you restart the bot before you load the modules to ensure database tables were created.
 msgstr Repozitář obsahuje alespoň jeden soubor databáze. Před načtením modulů proveďte restart bota, aby byly všechny tabulky databáze aktualizovány.
 
+msgid Option variable must be `force`, `reset` or empty.
+msgstr Proměnná Option musí být `force`, `reset`nebo prázdná.
+
 msgid No such repository.
 msgstr Takový repozitář neexistuje.
 
