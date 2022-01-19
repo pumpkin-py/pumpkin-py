@@ -1,5 +1,4 @@
 import re
-import traceback
 from typing import Tuple
 
 import nextcord
@@ -29,11 +28,6 @@ class Errors(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
-    @commands.Cog.listener()
-    async def on_error(event, *args, **kwargs):
-        tb = traceback.format_exc()
-        await bot_log.error(None, None, traceback=tb)
 
     @commands.Cog.listener()
     async def on_command_error(
