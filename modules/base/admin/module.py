@@ -204,8 +204,21 @@ class Admin(commands.Cog):
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.check(check.acl)
     @repository.command(name="update", aliases=["fetch", "pull"])
-    async def repository_update(self, ctx, name: str):
-        """Update module repository."""
+    async def repository_update(self, ctx, name: str, option: Optional[str]):
+        """Update module repository.
+
+        Args:
+            name: Repository name
+            option: Optional update type (FORCE = force pull, RESET = hard reset)
+        """
+        if option:
+            option = option.lower()
+            if option not in ["reset", "force"]:
+                await ctx.reply(
+                    _(ctx, "Option variable must be `force`, `reset` or empty.")
+                )
+                return
+
         repository: Optional[Repository] = manager.get_repository(name)
         if repository is None:
             await ctx.reply(_(ctx, "No such repository."))
@@ -214,7 +227,10 @@ class Admin(commands.Cog):
         requirements_txt_hash: str = repository.requirements_txt_hash
 
         async with ctx.typing():
-            pull: str = repository.git_pull()
+            if option == "reset":
+                pull: str = repository.git_reset_pull()
+            else:
+                pull: str = repository.git_pull(option == "force")
         for output in utils.text.split(pull):
             await ctx.send("```" + output + "```")
 
