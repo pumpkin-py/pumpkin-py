@@ -28,7 +28,9 @@ services:
       - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
       - SCHEDULE=@every 3h00m00s
   bot:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file: .env
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
