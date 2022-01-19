@@ -295,9 +295,6 @@ msgstr Čas spuštění
 msgid Run time
 msgstr Doba od spuštění
 
-msgid Error content
-msgstr
-
 msgid pumpkin.py exception
 msgstr Výjimka pumpkin.py
 
@@ -310,98 +307,59 @@ msgstr Výjimka modulu
 msgid Translation error
 msgstr Chyba překladu
 
-msgid Command error
-msgstr Chyba příkazu
+msgid Error
+msgstr Chyba
 
-msgid The command has to have an argument `{arg}`
-msgstr Příkaz musí mít argument `{arg}`
+msgid Gateway not found
+msgstr Brána nebyla nalezena
 
-msgid Permission error
-msgstr Chyba oprávnění
+msgid Nextcord library error
+msgstr Chyba nextcord knihovny
 
-msgid Insufficient permission
-msgstr Nedostatečné oprávnění
+msgid Client error
+msgstr Chyba klienta
 
-msgid Slow down
-msgstr Zpomal
+msgid Invalid data
+msgstr Chybná data
 
-msgid Wait **{time}**
-msgstr Počkej **{time}**
+msgid Invalid argument
+msgstr Chybný argument
 
-msgid Too much concurrency
-msgstr
+msgid Login failure
+msgstr Přihlašovací chyba
 
-msgid This command is already running multiple times
-msgstr Tento příkaz už několikrát běží
+msgid Connection closed
+msgstr Spojení ukončeno
 
-msgid The limit is **{num}**/**{per}**
-msgstr Limit je **{num}**/**{per}**
+msgid Privileged intents required
+msgstr Privilegované záměry požadovány
 
-msgid You have to have a {role} role for that
-msgstr Na toto musíš mít roli {role}
+msgid Error on registering the command `{cmd}`
+msgstr Chyba při registraci příkazu `{cmd}`
 
-msgid I lack the role {role}
-msgstr Chybí mi role {role}
+msgid HTTP Exception
+msgstr HTTP chyba
 
-msgid You have to have one role of {roles}
-msgstr Musíš mít jednu z rolí {roles}
+msgid Forbidden
+msgstr Zakázáno
 
-msgid I need one of roles {roles}
-msgstr Potřebuji jednu z rolí {roles}
-
-msgid You lack some of {perms} permissions
-msgstr Chybí ti některá z těchto oprávnění {perms}
-
-msgid I lack the {perms} permission
-msgstr Chybí mi oprávnění {perms}
-
-msgid Argument error
-msgstr Chyba argumentu
-
-msgid Bad data type in the `{param}` parameter
-msgstr Nesprávný datový typ v parametru `{param}`
-
-msgid Bad Boolean Argument
-msgstr Nesprávný binární argument
-
-msgid Argument `{arg}` is not binary
-msgstr Argument `{arg}` není binární
-
-msgid An error occurred in converter `{converter}`
-msgstr Stala se chyba v konvertoru `{converter}`
-
-msgid Not found
+msgid NotFound
 msgstr Nenalezeno
 
-msgid I can't see the **{channel}** channel
-msgstr Nevidím kanál **{channel}**
+msgid Discord Server Error
+msgstr Chyba Discord serveru
 
-msgid Bad Argument
-msgstr Nesprávný argument
-
-msgid Error in argument
-msgstr Chyba v argumentu
-
-msgid No Private Message
-msgstr Nelze použít v soukromém kanálu
-
-msgid This command cannot be used in private messages.
-msgstr Tenhle příkaz nemůže být použit v soukromém kanálu.
-
-msgid NSFW Channel Required
-msgstr Vyžadován NSFW kanál
-
-msgid This command can be used only in NSFW channels.
-msgstr Tenhle příkaz může být použit pouze v NSFW kanálech.
-
-msgid Extension Error
-msgstr Chyba rozšíření
-
-msgid An error occurred inside of **{extension}** extension
-msgstr Stala se chyba v rozšíření **{extension}**
+msgid The extension **{extension}** could not be found. It should be in `repository.module` format
+msgstr Rozšíření **{extension}** nebylo nalezeno. Mělo by to být ve formátu `repository.module`
 
 msgid Extension **{extension}** is already loaded
 msgstr Rozšíření **{extension}** je už načteno
+
+msgid The extension **{extension}** is not loaded
+msgstr Rozšíření **{extension}** není načteno
+
+msgid Extension **{extension}** doesn't have a setup entry function
+msgstr Rozšíření **{extension}** nemá vstupní setup funkci
 
 msgid **{extension}** failed
 msgstr **{extension}** selhalo
@@ -409,26 +367,131 @@ msgstr **{extension}** selhalo
 msgid The extension **{extension}** could not be found
 msgstr Nebylo nalezeno rozšíření **{extension}**
 
-msgid The extension **{extension}** could not be found. It should be in `repository.module` format
-msgstr Rozšíření **{extension}** nebylo nalezeno. Mělo by to být ve formátu `repository.module`
+msgid Extension error
+msgstr Chyba rozšíření
 
-msgid The extension **{extension}** is not loaded
-msgstr Rozšíření **{extension}** není načteno
+msgid Extension Error
+msgstr Chyba rozšíření
 
-msgid Error
-msgstr Chyba
+msgid Command error
+msgstr Chyba příkazu
 
-msgid Error on registering the command `{cmd}`
-msgstr Chyba při registraci příkazu `{cmd}`
+msgid An error occurred in converter `{converter}`
+msgstr Stala se chyba v konvertoru `{converter}`
 
-msgid Bad input
-msgstr Nesprávný vstup
+msgid Command not found
+msgstr Příkaz nenalezen
 
-msgid Client error
-msgstr Chyba klienta
+msgid Disabled command
+msgstr Příkaz deaktivován
 
-msgid nextcord library error
-msgstr Chyba knihovny nextcord
+msgid Command invoke error
+msgstr Chyba ve volání příkazy
+
+msgid Slow down. Wait **{time}**
+msgstr Zpomal. Počkej **{time}**
+
+msgid This command is already running multiple times
+msgstr Tento příkaz už několikrát běží.
+
+msgid The limit is **{num}**/**{per}**
+msgstr Limit je **{num}**/**{per}**
+
+msgid Check failure
+msgstr Chyba kontroly
+
+msgid You do not have any of the possible permissions to access this command
+msgstr Nemáš žádné z možných oprávnění k tomuto příkazu
+
+msgid This command can only be used in private messages.
+msgstr Tento příkaz lze pouze použít v privátních zprávách
+
+msgid This command cannot be used in private messages.
+msgstr Tento příkaz nelze pouze použít v privátních zprávách
+
+msgid You are not the bot owner
+msgstr Nejsi vlastník bota
+
+msgid You lack some of {perms} permissions
+msgstr Chybí ti některé z {perms} oprávnění
+
+msgid I lack the {perms} permission
+msgstr Chybí mi  {perms} oprávnění
+
+msgid You have to have a {role} role for that
+msgstr K tomuto potřebuješ roli {role}
+
+msgid I lack the role {role}
+msgstr Chybí mi role {role}
+
+msgid You have to have one role of {roles}
+msgstr K tomuto potřebuješ některou roli z {roles}
+
+msgid I need one of roles {roles}
+msgstr Potřebuji některou roli z {roles}
+
+msgid This command can be used only in NSFW channels.
+msgstr Tento příkaz nelze pouze použít v NSFW kanálech
+
+msgid User input error
+msgstr Chyba uživatelského vstupu
+
+msgid The command has to have an argument `{arg}`
+msgstr Příkaz musí mít argument `{arg}`
+
+msgid The command doesn't have that many arguments.
+msgstr Příkaz nemá tolik argumentů
+
+msgid Bad argument
+msgstr Špatný argument
+
+msgid Message not found
+msgstr Zpráva nenalezena
+
+msgid Member not found
+msgstr Člen nenalezen
+
+msgid User not found
+msgstr Uživatel nenalezen
+
+msgid Channel not found
+msgstr Kanál nenalezen
+
+msgid I can't see the **{channel}** channel
+msgstr Nevidím kanál **{channel}**
+
+msgid Bad colour argument
+msgstr Špatný argument barvy
+
+msgid Role not found
+msgstr Role nenalezena
+
+msgid Bad invite argument
+msgstr Špatný argument pozvánky
+
+msgid Emoji not found
+msgstr Emoji nenalezeno
+
+msgid PartialEmoji conversion failure
+msgstr Chyba převodu na PartialEmoji
+
+msgid Bad bool argument
+msgstr Špatný True/False argument
+
+msgid Bad Union argument
+msgstr Špatný argument sjednocení
+
+msgid Argument parsing error
+msgstr Chyba čtení argumentu
+
+msgid Unexpected quote error
+msgstr Neočekávané uvozovky
+
+msgid Invalid end of quoted string error
+msgstr Chybný konec textu v uvozovkách
+
+msgid Error content
+msgstr
 
 msgid Localization
 msgstr Lokalizace
