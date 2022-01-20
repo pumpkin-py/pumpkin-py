@@ -20,7 +20,16 @@ guild_log = logger.Guild.logger()
 # TODO This is just a weird list of errors. Maybe we should make it somehow
 # simpler, e.g. split the "get translation" from "should we log this?".
 
-IGNORED_EXCEPTIONS = [commands.CommandNotFound]
+IGNORED_EXCEPTIONS = [
+    commands.CommandNotFound,
+    # See pie/spamchannel/
+    # This function ensures that the check function fails AND YET does not return
+    # information that the user does not have permission to invoke the command.
+    # They most likely do, but they have exceeded the limit for spam channel controlled
+    # commands (soft version), or are not allowed to run this kind of command in general
+    # (hard version).
+    pie.exceptions.SpamChannelException,
+]
 
 
 class Errors(commands.Cog):

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from nextcord.ext import commands
 
 from pie.acl.database import ACL_rule, ACL_group
