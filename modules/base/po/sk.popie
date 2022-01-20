@@ -311,43 +311,43 @@ msgid Error
 msgstr Chyba
 
 msgid Gateway not found
-msgstr
+msgstr Brána nebola nájdená
 
 msgid Nextcord library error
-msgstr
+msgstr Chyba nexcord knižnice
 
 msgid Client error
 msgstr Chyba klienta
 
 msgid Invalid data
-msgstr
+msgstr Chybné dáta
 
 msgid Invalid argument
-msgstr
+msgstr Chýbný argument
 
 msgid Login failure
-msgstr
+msgstr Prihlasovacia chyba
 
 msgid Connection closed
-msgstr
+msgstr Spojenie ukončené
 
 msgid Privileged intents required
-msgstr
+msgstr Požadované privilegované zámery
 
 msgid Error on registering the command `{cmd}`
 msgstr Chyba pri registrácii príkazu `{cmd}`
 
 msgid HTTP Exception
-msgstr
+msgstr HTTP chyba
 
 msgid Forbidden
-msgstr
+msgstr Zakázané
 
 msgid NotFound
-msgstr
+msgstr Nenájdené
 
 msgid Discord Server Error
-msgstr
+msgstr Chyba Discord servera
 
 msgid The extension **{extension}** could not be found. It should be in `repository.module` format
 msgstr Rozšírenie **{extension}** nebolo nájdené. Malo by byť vo formáte `repository.module`
@@ -368,7 +368,7 @@ msgid The extension **{extension}** could not be found
 msgstr Nebolo nájdené rozšírenie **{extension}**
 
 msgid Extension error
-msgstr
+msgstr Chyba rozšírenia
 
 msgid Extension Error
 msgstr Chyba rozšírenia
@@ -380,115 +380,115 @@ msgid An error occurred in converter `{converter}`
 msgstr Stala se chyba v konvertori `{converter}`
 
 msgid Command not found
-msgstr
+msgstr Príkaz nenájdený
 
 msgid Disabled command
-msgstr
+msgstr Príkaz deaktivovaný
 
 msgid Command invoke error
-msgstr
+msgstr Chyba pri volaní príkazu
 
 msgid Slow down. Wait **{time}**
-msgstr
+msgstr Spomal. Počkaj **{time}**
 
 msgid This command is already running multiple times
-msgstr
+msgstr Tento príkaz už beží niekoľko krát
 
 msgid The limit is **{num}**/**{per}**
-msgstr
+msgstr Limit je **{num}**/**{per}**
 
 msgid Check failure
-msgstr
+msgstr Chyba kontroly
 
 msgid You do not have any of the possible permissions to access this command
-msgstr
+msgstr Nemáš žiadne z možných oprávnení k tomuto príkazu
 
 msgid This command can only be used in private messages.
-msgstr
+msgstr Tento príkaz je možné použiť len v súkromých správach.
 
 msgid This command cannot be used in private messages.
-msgstr
+msgstr Tento príkaz nie je možné použiť v súkromných správach.
 
 msgid You are not the bot owner
-msgstr
+msgstr Nie si vlastník bota
 
 msgid You lack some of {perms} permissions
-msgstr
+msgstr Chýba ti niektoré z {perms} oprávnení
 
 msgid I lack the {perms} permission
-msgstr
+msgstr Chýba mi {perms} oprávnenie
 
 msgid You have to have a {role} role for that
-msgstr
+msgstr K tomuto potrebuješ rolu {role}
 
 msgid I lack the role {role}
-msgstr
+msgstr Chýba mi rola {role}
 
 msgid You have to have one role of {roles}
-msgstr
+msgstr K tomuto potrebuješ niektorú z rolí {roles}
 
 msgid I need one of roles {roles}
-msgstr
+msgstr Potrebujem niektorú rolu z {roles}
 
 msgid This command can be used only in NSFW channels.
-msgstr
+msgstr Tento príkaz môže byť použitý len v NSFW kanáloch.
 
 msgid User input error
-msgstr
+msgstr Chyba užívateľského vstupu
 
 msgid The command has to have an argument `{arg}`
-msgstr
+msgstr Príkaz musí mať argument `{arg}`
 
 msgid The command doesn't have that many arguments.
-msgstr
+msgstr Príkaz nemá toľko argumentov.
 
 msgid Bad argument
-msgstr
+msgstr Zlý argument
 
 msgid Message not found
-msgstr
+msgstr Správa nenájdená
 
 msgid Member not found
-msgstr
+msgstr Člen nenájdený
 
 msgid User not found
-msgstr
+msgstr Užívateľ nenájdený
 
 msgid Channel not found
-msgstr
+msgstr Kanál nenájdený
 
 msgid I can't see the **{channel}** channel
-msgstr
+msgstr Nevidím kanál **{channel}**
 
 msgid Bad colour argument
-msgstr
+msgstr Zlý argument farby
 
 msgid Role not found
-msgstr
+msgstr Rola nenájdená
 
 msgid Bad invite argument
-msgstr
+msgstr Zlý argument pozvánky
 
 msgid Emoji not found
-msgstr
+msgstr Emoji nenájdený
 
 msgid PartialEmoji conversion failure
-msgstr
+msgstr Chyba prevodu na PartialEmoji
 
 msgid Bad bool argument
-msgstr
+msgstr Zlý True/False argument
 
 msgid Bad Union argument
-msgstr
+msgstr Zlý argument zjednotenia
 
 msgid Argument parsing error
-msgstr
+msgstr Chyba čítania argumentu
 
 msgid Unexpected quote error
-msgstr
+msgstr Neočakávané úvodzovky
 
 msgid Invalid end of quoted string error
-msgstr
+msgstr Chybný koniec textu v úvodzovkách
 
 msgid Error content
 msgstr Obsah chyby
