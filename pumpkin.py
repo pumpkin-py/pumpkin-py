@@ -1,5 +1,6 @@
 import os
 import sys
+import sqlalchemy
 
 import nextcord
 from nextcord.ext import commands
@@ -98,6 +99,24 @@ async def on_ready():
     else:
         await bot_log.info(None, None, "The pie is ready.")
         already_loaded = True
+
+
+async def on_error(event, *args, **kwargs):
+    error_type, error, tb = sys.exc_info()
+
+    # Make sure we rollback the database session if we encounter an error
+    if isinstance(error, sqlalchemy.exc.SQLAlchemyError):
+        database.session.rollback()
+        database.session.commit()
+        await bot_log.critical(
+            None,
+            None,
+            "pumpkin.py database session rolled back. The bubbled-up cause is:\n"
+            + "\n".join([f"| {line}" for line in str(error).split("\n")]),
+        )
+
+
+commands.Bot.on_error = on_error
 
 
 # Add required modules

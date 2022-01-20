@@ -1,5 +1,4 @@
 import re
-import traceback
 from typing import Tuple
 
 import nextcord
@@ -31,11 +30,6 @@ class Errors(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_error(event, *args, **kwargs):
-        tb = traceback.format_exc()
-        await bot_log.error(None, None, traceback=tb)
-
-    @commands.Cog.listener()
     async def on_command_error(
         self, ctx: commands.Context, error: commands.CommandError
     ):
@@ -45,11 +39,13 @@ class Errors(commands.Cog):
             return
 
         # Get original exception
-        while True:
-            new_error = getattr(error, "original", error)
-            if new_error == error:
-                break
-            error = new_error
+        error = getattr(error, "original", error)
+
+        # Getting the *original* exception is difficult.
+        # Because of how the library is built, walking up the stacktrace gets messy
+        # by entering '_run_event' and other internal functions. This means that this
+        # 'error' is the last line that raised an exception, not the initial cause.
+        # Tracebacks are logged, this is good enough.
 
         if type(error) in IGNORED_EXCEPTIONS:
             return
