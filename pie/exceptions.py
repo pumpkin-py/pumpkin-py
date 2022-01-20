@@ -29,6 +29,14 @@ class ModuleException(PumpkinException):
         return f"Error in module {self.repository}.{self.module}: {self.message}"
 
 
+class SpamChannelException(PumpkinException):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self) -> str:
+        return "SpamChannel limit reached."
+
+
 class BadTranslation(PumpkinException):
     """Raised when translation file is not valid or contains errors.
 
