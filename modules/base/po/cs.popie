@@ -433,6 +433,9 @@ msgstr Potřebuji některou roli z {roles}
 msgid This command can be used only in NSFW channels.
 msgstr Tento příkaz nelze pouze použít v NSFW kanálech
 
+msgid You don't have permission for this.
+msgstr Na to nemáš oprávnění.
+
 msgid User input error
 msgstr Chyba uživatelského vstupu
 

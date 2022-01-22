@@ -499,12 +499,12 @@ class Errors(commands.Cog):
                 _(ctx, "This command can be used only in NSFW channels."),
                 True,
             )
-        # Just in case we missed something
+        # CheckFailure and possibly other check errors
         else:
             return (
-                _(ctx, "Nextcord library error"),
                 _(ctx, "Check failure"),
-                False,
+                _(ctx, "You don't have permission for this."),
+                True,
             )
 
     @staticmethod
