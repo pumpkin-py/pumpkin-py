@@ -486,6 +486,16 @@ class Base(commands.Cog):
         emoji: str,
     ):
         """Handle userpin functionality."""
+        # Has this feature been even activated in this channel?
+        limit: int = getattr(
+            UserPin.get(payload.guild_id, payload.channel_id), "limit", -1
+        )
+        # overwrite for channel doesn't exist, use guild preference
+        if limit < 0:
+            limit = getattr(UserPin.get(payload.guild_id, None), "limit", 0)
+        if limit < 1:
+            return
+
         utx = i18n.TranslationContext(payload.guild_id, payload.user_id)
 
         if emoji == "📍" and not payload.member.bot:
@@ -510,12 +520,6 @@ class Base(commands.Cog):
                 return
 
             # stop if there isn't enough pins
-            limit: int = getattr(
-                UserPin.get(payload.guild_id, payload.channel_id), "limit", -1
-            )
-            # overwrite for channel doesn't exist, use guild preference
-            if limit < 0:
-                limit = getattr(UserPin.get(payload.guild_id, None), "limit", 0)
             if limit == 0 or reaction.count < limit:
                 return
 
