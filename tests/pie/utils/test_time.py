@@ -18,6 +18,14 @@ def test_parse_datetime():
     assert temp.replace(second=0, microsecond=0) == utils.time.parse_datetime(
         "2w3d4h5m"
     ).replace(second=0, microsecond=0)
+    temp = datetime.now() + timedelta(hours=17, minutes=6)
+    assert temp.replace(second=0, microsecond=0) == utils.time.parse_datetime(
+        "17 hours, 6 minutes"
+    ).replace(second=0, microsecond=0)
+    temp = datetime.now() + timedelta(weeks=1, days=4, hours=7, minutes=17)
+    assert temp.replace(second=0, microsecond=0) == utils.time.parse_datetime(
+        "1w; 4 dny, 7 hodin | 17 minut"
+    ).replace(second=0, microsecond=0)
 
     # test full date formats
     full_datetime = datetime(2021, 12, 31, 23, 59, 58)
