@@ -139,7 +139,7 @@ class ScrollableEmbed(nextcord.ui.View):
                     _(gtx, "Only command issuer can toggle the lock."), ephemeral=True
                 )
                 return
-        elif interaction.user.id is not self.ctx.author.id and self.locked:
+        elif interaction.user.id != self.ctx.author.id and self.locked:
             gtx = self.__get_gtx(interaction)
             await interaction.response.send_message(
                 _(gtx, "Only command issuer can scroll."), ephemeral=True
@@ -273,7 +273,7 @@ class ConfirmView(nextcord.ui.View):
 
     async def interaction_check(self, interaction: nextcord.Interaction) -> None:
         """Gets called when interaction with any of the Views buttons happens."""
-        if interaction.user.id is not self.ctx.author.id:
+        if interaction.user.id != self.ctx.author.id:
             return
 
         if interaction.data["custom_id"] == "confirm-button":
