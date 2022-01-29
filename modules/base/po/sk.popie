@@ -22,6 +22,78 @@ msgstr
 msgid Role mapping was sucessfully removed.
 msgstr
 
+msgid role
+msgstr
+
+msgid channel
+msgstr
+
+msgid user
+msgstr
+
+msgid unsupported
+msgstr
+
+msgid yes
+msgstr
+
+msgid no
+msgstr
+
+msgid No ACL overwrites have been set.
+msgstr
+
+msgid Overwrite type
+msgstr
+
+msgid Command
+msgstr
+
+msgid Value
+msgstr
+
+msgid Allow
+msgstr
+
+msgid I don't know this command.
+msgstr
+
+msgid Role overwrite for '{command}' and '{role}' already exists.
+msgstr
+
+msgid Role overwrite for command '{command}' and role '{role}' sucessfully created.
+msgstr
+
+msgid Overwrite for this role and command does not exist.
+msgstr
+
+msgid Role overwrite for command '{command}' and role '{role}' sucessfully removed.
+msgstr
+
+msgid User overwrite for '{command}' and '{user}' already exists.
+msgstr
+
+msgid User overwrite for command '{command}' and user '{user}' sucessfully created.
+msgstr
+
+msgid Overwrite for this user and command does not exist.
+msgstr
+
+msgid User overwrite for command '{command}' and user '{user}' sucessfully removed.
+msgstr
+
+msgid Channel overwrite for '{command}' and '#{channel}' already exists.
+msgstr
+
+msgid Channel overwrite for command '{command}' and channel '#{channel}' sucessfully created.
+msgstr
+
+msgid Overwrite for this command and channel does not exist.
+msgstr
+
+msgid Channel overwrite for command '{command}' and channel '#{channel}' sucessfully removed.
+msgstr
+
 msgid Repository initialization aborted: {exc}
 msgstr Inicializácia repozitáru sa nepodarila: {exc}
 
