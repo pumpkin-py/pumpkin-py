@@ -226,6 +226,38 @@ class ACL(commands.Cog):
             f"Role overwrite removed for command '{command}' and role '{role}'.",
         )
 
+    @acl_role_overwrite_.command(name="list")
+    async def acl_role_overwrite_list(self, ctx):
+        ros = RoleOverwrite.get_all(ctx.guild.id)
+
+        class Item:
+            def __init__(self, obj):
+                role = ctx.guild.get_role(obj.role_id)
+                self.role = getattr(role, "name", str(obj.role_id))
+                self.command = obj.command
+                self.allow = _(ctx, "yes") if obj.allow else _(ctx, "no")
+
+        items = [Item(ro) for ro in ros]
+
+        if not items:
+            await ctx.reply(_(ctx, "No role overwrites have been set."))
+            return
+
+        # sorting priority: command, role
+        items = sorted(items, key=attrgetter("role", "command"))
+
+        table: List[str] = utils.text.create_table(
+            items,
+            header={
+                "command": _(ctx, "Command"),
+                "role": _(ctx, "Role"),
+                "allow": _(ctx, "Allow"),
+            },
+        )
+
+        for page in table:
+            await ctx.send("```" + page + "```")
+
     @acl_.group(name="user-overwrite")
     async def acl_user_overwrite_(self, ctx):
         """Manage user ACL overwrites."""
@@ -282,6 +314,43 @@ class ACL(commands.Cog):
             ctx.channel,
             f"User overwrite removed for command '{command}' and role '{user.name}'.",
         )
+
+    @acl_user_overwrite_.command(name="list")
+    async def acl_user_overwrite_list(self, ctx):
+        uos = UserOverwrite.get_all(ctx.guild.id)
+
+        class Item:
+            def __init__(self, obj):
+                self.user: str
+                member = ctx.guild.get_member(obj.user_id)
+                if member:
+                    self.user = member.display_name.replace("`", "'")
+                else:
+                    self.user = str(obj.user_id)
+
+                self.command = obj.command
+                self.allow = _(ctx, "yes") if obj.allow else _(ctx, "no")
+
+        items = [Item(uo) for uo in uos]
+
+        if not items:
+            await ctx.reply(_(ctx, "No user overwrites have been set."))
+            return
+
+        # sorting priority: command, user
+        items = sorted(items, key=attrgetter("user", "command"))
+
+        table: List[str] = utils.text.create_table(
+            items,
+            header={
+                "command": _(ctx, "Command"),
+                "user": _(ctx, "User"),
+                "allow": _(ctx, "Allow"),
+            },
+        )
+
+        for page in table:
+            await ctx.send("```" + page + "```")
 
     @acl_.group(name="channel-overwrite")
     async def acl_channel_overwrite_(self, ctx):
@@ -343,6 +412,38 @@ class ACL(commands.Cog):
             "Channel overwrite removed for command "
             f"'{command}' and channel '{channel.name}'.",
         )
+
+    @acl_channel_overwrite_.command(name="list")
+    async def acl_channel_overwrite_list(self, ctx):
+        cos = ChannelOverwrite.get_all(ctx.guild.id)
+
+        class Item:
+            def __init__(self, obj):
+                channel = ctx.guild.get_channel(obj.channel_id)
+                self.channel = "#" + getattr(channel, "name", str(obj.channel_id))
+                self.command = obj.command
+                self.allow = _(ctx, "yes") if obj.allow else _(ctx, "no")
+
+        items = [Item(co) for co in cos]
+
+        if not items:
+            await ctx.reply(_(ctx, "No channel overwrites have been set."))
+            return
+
+        # sorting priority: command, channel
+        items = sorted(items, key=attrgetter("channel", "command"))
+
+        table: List[str] = utils.text.create_table(
+            items,
+            header={
+                "command": _(ctx, "Command"),
+                "channel": _(ctx, "Channel"),
+                "allow": _(ctx, "Allow"),
+            },
+        )
+
+        for page in table:
+            await ctx.send("```" + page + "```")
 
     #
 

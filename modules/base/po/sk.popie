@@ -70,6 +70,9 @@ msgstr
 msgid Role overwrite for command '{command}' and role '{role}' sucessfully removed.
 msgstr
 
+msgid No role overwrites have been set.
+msgstr
+
 msgid User overwrite for '{command}' and '{user}' already exists.
 msgstr
 
@@ -82,6 +85,12 @@ msgstr
 msgid User overwrite for command '{command}' and user '{user}' sucessfully removed.
 msgstr
 
+msgid No user overwrites have been set.
+msgstr
+
+msgid User
+msgstr
+
 msgid Channel overwrite for '{command}' and '#{channel}' already exists.
 msgstr
 
@@ -92,6 +101,12 @@ msgid Overwrite for this command and channel does not exist.
 msgstr
 
 msgid Channel overwrite for command '{command}' and channel '#{channel}' sucessfully removed.
+msgstr
+
+msgid No channel overwrites have been set.
+msgstr
+
+msgid Channel
 msgstr
 
 msgid Repository initialization aborted: {exc}
