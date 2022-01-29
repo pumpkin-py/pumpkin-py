@@ -126,10 +126,12 @@ class Help(commands.MinimalHelpCommand):
         This override renders the subcommand as en dash followed by
         qualified name.
         """
-        line = f"\N{EN DASH} **{command.qualified_name}**"
+        line = f"\N{EM DASH} **{command.qualified_name}**"
+        if type(command) is commands.Group:
+            line += " ..."
         # TODO Update we have a way to translate command descriptions
         if command.short_doc:
-            line += f": *{command.short_doc}*"
+            line += f" \N{EN DASH} *{command.short_doc}*"
 
         self.paginator.add_line(line)
 
