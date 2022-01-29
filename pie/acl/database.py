@@ -142,13 +142,32 @@ class ACLevelMappping(database.base):
     level = Column(Enum(ACLevel))
 
     def add(guild_id: int, role_id: int, level: ACLevel) -> Optional[ACLevelMappping]:
-        pass
+        if ACLevelMappping.get(guild_id, role_id):
+            return None
+        m = ACLevelMappping(guild_id=guild_id, role_id=role_id, level=level)
+        session.add(m)
+        session.commit()
+        return m
 
     def get(guild_id: int, role_id: int) -> Optional[ACLevelMappping]:
-        pass
+        m = (
+            session.query(ACLevelMappping)
+            .filter_by(guild_id=guild_id, role_id=role_id)
+            .one_or_none()
+        )
+        return m
 
     def get_all(guild_id: int) -> List[ACLevelMappping]:
-        pass
+        m = session.query(ACLevelMappping).filter_by(guild_id=guild_id).all()
+        return m
+
+    def remove(guild_id: int, role_id: int) -> bool:
+        query = (
+            session.query(ACLevelMappping)
+            .filter_by(guild_id=guild_id, role_id=role_id)
+            .delete()
+        )
+        return query > 0
 
     def __repr__(self) -> str:
         return (

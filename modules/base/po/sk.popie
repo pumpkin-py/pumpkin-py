@@ -1,3 +1,27 @@
+msgid No mappings have been set.
+msgstr
+
+msgid Role
+msgstr
+
+msgid Level
+msgstr
+
+msgid Invalid level. Possible options are: {keys}.
+msgstr
+
+msgid That role is already mapped to some level.
+msgstr
+
+msgid Role **{role}** will be mapped to **{level}**.
+msgstr
+
+msgid That role is not mapped to any level.
+msgstr
+
+msgid Role mapping was sucessfully removed.
+msgstr
+
 msgid Repository initialization aborted: {exc}
 msgstr Inicializácia repozitáru sa nepodarila: {exc}
 
