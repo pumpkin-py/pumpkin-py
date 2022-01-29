@@ -32,15 +32,37 @@ class RoleOverwrite(database.base):
     def add(
         guild_id: int, role_id: int, command: str, allow: bool
     ) -> Optional[RoleOverwrite]:
-        pass
+        if RoleOverwrite.get(guild_id, role_id, command):
+            return None
+        ro = RoleOverwrite(
+            guild_id=guild_id, role_id=role_id, command=command, allow=allow
+        )
+        session.add(ro)
+        session.commit()
+        return ro
 
     @staticmethod
     def get(guild_id: int, role_id: int, command: str) -> Optional[RoleOverwrite]:
-        pass
+        ro = (
+            session.query(RoleOverwrite)
+            .filter_by(guild_id=guild_id, role_id=role_id, command=command)
+            .one_or_none()
+        )
+        return ro
 
     @staticmethod
     def get_all(guild_id: int) -> List[RoleOverwrite]:
-        pass
+        query = session.query(RoleOverwrite).filter_by(guild_id=guild_id).all()
+        return query
+
+    @staticmethod
+    def remove(guild_id: int, role_id: int, command: str) -> bool:
+        query = (
+            session.query(RoleOverwrite)
+            .filter_by(guild_id=guild_id, role_id=role_id, command=command)
+            .delete()
+        )
+        return query > 0
 
     def __repr__(self) -> str:
         return (
@@ -70,15 +92,37 @@ class UserOverwrite(database.base):
     def add(
         guild_id: int, user_id: int, command: str, allow: bool
     ) -> Optional[UserOverwrite]:
-        pass
+        if UserOverwrite.get(guild_id, user_id, command):
+            return None
+        uo = UserOverwrite(
+            guild_id=guild_id, user_id=user_id, command=command, allow=allow
+        )
+        session.add(uo)
+        session.commit()
+        return uo
 
     @staticmethod
     def get(guild_id: int, user_id: int, command: str) -> Optional[UserOverwrite]:
-        pass
+        uo = (
+            session.query(UserOverwrite)
+            .filter_by(guild_id=guild_id, user_id=user_id, command=command)
+            .one_or_none()
+        )
+        return uo
 
     @staticmethod
     def get_all(guild_id: int) -> List[UserOverwrite]:
-        pass
+        query = session.query(UserOverwrite).filter_by(guild_id=guild_id).all()
+        return query
+
+    @staticmethod
+    def remove(guild_id: int, user_id: int, command: str) -> bool:
+        query = (
+            session.query(UserOverwrite)
+            .filter_by(guild_id=guild_id, user_id=user_id, command=command)
+            .delete()
+        )
+        return query > 0
 
     def __repr__(self) -> str:
         return (
@@ -108,15 +152,37 @@ class ChannelOverwrite(database.base):
     def add(
         guild_id: int, channel_id: int, command: str, allow: bool
     ) -> Optional[ChannelOverwrite]:
-        pass
+        if ChannelOverwrite.get(guild_id, channel_id, command):
+            return None
+        co = ChannelOverwrite(
+            guild_id=guild_id, channel_id=channel_id, command=command, allow=allow
+        )
+        session.add(co)
+        session.commit()
+        return co
 
     @staticmethod
     def get(guild_id: int, channel_id: int, command: str) -> Optional[ChannelOverwrite]:
-        pass
+        co = (
+            session.query(ChannelOverwrite)
+            .filter_by(guild_id=guild_id, channel_id=channel_id, command=command)
+            .one_or_none()
+        )
+        return co
 
     @staticmethod
     def get_all(guild_id: int) -> List[ChannelOverwrite]:
-        pass
+        query = session.query(ChannelOverwrite).filter_by(guild_id=guild_id).all()
+        return query
+
+    @staticmethod
+    def remove(guild_id: int, channel_id: int, command: str) -> bool:
+        query = (
+            session.query(ChannelOverwrite)
+            .filter_by(guild_id=guild_id, channel_id=channel_id, command=command)
+            .delete()
+        )
+        return query > 0
 
     def __repr__(self) -> str:
         return (
