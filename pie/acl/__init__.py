@@ -137,6 +137,20 @@ def acl2(level: ACLevel) -> Callable[[T], T]:
     Each command has its preferred ACL group set in the decorator. Bot owner
     can add user and channel overwrites to these decorators, to allow detailed
     controll over the system with sane defaults provided by the system itself.
+
+    Usage:
+
+    . code-block:: python
+        :linenos:
+
+        from core import check
+
+        ...
+
+        @check.acl2(check.ACLevel.SUBMOD)
+        @commands.command()
+        async def repeat(self, ctx, *, input: str):
+            await ctx.reply(utils.text.sanitise(input, escape=False))
     """
 
     def predicate(ctx: commands.Context) -> bool:
