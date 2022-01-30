@@ -22,6 +22,33 @@ msgstr
 msgid Role mapping was sucessfully removed.
 msgstr
 
+msgid No defaults have been set.
+msgstr
+
+msgid Command
+msgstr
+
+msgid I don't know this command.
+msgstr
+
+msgid Custom default for '{command}' already exists.
+msgstr
+
+msgid Custom default for '{command}' set.
+msgstr
+
+msgid Command '{command}' does not have custom default.
+msgstr
+
+msgid Custom default for '{command}' removed.
+msgstr
+
+msgid Default level
+msgstr
+
+msgid Custom level
+msgstr
+
 msgid role
 msgstr
 
@@ -46,16 +73,10 @@ msgstr
 msgid Overwrite type
 msgstr
 
-msgid Command
-msgstr
-
 msgid Value
 msgstr
 
 msgid Allow
-msgstr
-
-msgid I don't know this command.
 msgstr
 
 msgid Role overwrite for '{command}' and '{role}' already exists.

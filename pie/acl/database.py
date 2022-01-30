@@ -19,6 +19,62 @@ class ACLevel(enum.IntEnum):
     EVERYONE: int = 0
 
 
+class ACDefault(database.base):
+    __tablename__ = "pie_acl_acdefault"
+
+    idx = Column(Integer, primary_key=True, autoincrement=True)
+    guild_id = Column(BigInteger)
+    command = Column(String)
+    level = Column(Enum(ACLevel))
+
+    @staticmethod
+    def add(guild_id: int, command: str, level: ACLevel) -> Optional[ACDefault]:
+        if ACDefault.get(guild_id, command):
+            return None
+
+        default = ACDefault(guild_id=guild_id, command=command, level=level)
+        session.add(default)
+        session.commit()
+        return default
+
+    @staticmethod
+    def get(guild_id: int, command: str) -> Optional[ACDefault]:
+        default = (
+            session.query(ACDefault)
+            .filter_by(guild_id=guild_id, command=command)
+            .one_or_none()
+        )
+        return default
+
+    @staticmethod
+    def get_all(guild_id: int) -> List[ACDefault]:
+        query = session.query(ACDefault).filter_by(guild_id=guild_id).all()
+        return query
+
+    @staticmethod
+    def remove(guild_id: int, command: str) -> bool:
+        query = (
+            session.query(ACDefault)
+            .filter_by(guild_id=guild_id, command=command)
+            .delete()
+        )
+        return query > 0
+
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__name__} "
+            + " ".join(f"{key}='{value}'" for key, value in self.dump().items())
+            + ">"
+        )
+
+    def dump(self) -> Dict[str, Any]:
+        return {
+            "guild_id": self.guild_id,
+            "command": self.command,
+            "level": self.level.name,
+        }
+
+
 class RoleOverwrite(database.base):
     __tablename__ = "pie_acl_role_overwrite"
 

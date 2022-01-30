@@ -6,7 +6,7 @@ from nextcord.ext import commands
 
 from pie import check, i18n, logger, utils
 
-from pie.acl.database import ACLevel, ACLevelMappping
+from pie.acl.database import ACDefault, ACLevel, ACLevelMappping
 from pie.acl.database import UserOverwrite, ChannelOverwrite, RoleOverwrite
 
 _ = i18n.Translator("modules/base").translate
@@ -107,6 +107,143 @@ class ACL(commands.Cog):
             ctx.channel,
             f"ACLevel mapping for role '{role.name}' removed.",
         )
+
+    @acl_.group(name="default")
+    async def acl_default_(self, ctx):
+        """Manage ACLevel defaults of commands."""
+        await utils.discord.send_help(ctx)
+
+    @acl_default_.command("list")
+    async def acl_default_list(self, ctx):
+        """List currently applied default overwrites."""
+
+        class Item:
+            def __init__(self, default: ACDefault):
+                self.command = default.command
+                self.level = default.level.name
+
+        defaults = ACDefault.get_all(ctx.guild.id)
+
+        if not defaults:
+            await ctx.reply(_(ctx, "No defaults have been set."))
+            return
+
+        defaults = sorted(defaults, key=lambda d: d.command)[::-1]
+        items = [Item(default) for default in defaults]
+
+        table: List[str] = utils.text.create_table(
+            items,
+            header={
+                "command": _(ctx, "Command"),
+                "level": _(ctx, "Level"),
+            },
+        )
+
+        for page in table:
+            await ctx.send("```" + page + "```")
+
+    @acl_default_.command("add")
+    async def acl_default_add(self, ctx, command: str, level: str):
+        """Add custom ACLevel for a command."""
+        try:
+            level: ACLevel = ACLevel[level]
+        except KeyError:
+            await ctx.reply(
+                _(ctx, "Invalid level. Possible options are: {keys}.").format(
+                    keys=", ".join(f"'{key}'" for key in ACLevel.__members__.keys())
+                )
+            )
+            return
+        if command not in self._all_bot_commands:
+            await ctx.reply(_(ctx, "I don't know this command."))
+            return
+
+        default = ACDefault.add(ctx.guild.id, command, level)
+        if default is None:
+            await ctx.reply(
+                _(ctx, "Custom default for '{command}' already exists.").format(
+                    command=command
+                )
+            )
+            return
+
+        await ctx.reply(
+            _(ctx, "Custom default for '{command}' set.").format(command=command)
+        )
+        await guild_log.info(
+            ctx.author,
+            ctx.channel,
+            f"ACLevel default for '{command}' set to '{level.name}'.",
+        )
+
+    @acl_default_.command("remove")
+    async def acl_default_remove(self, ctx, command: str):
+        """Remove custom ACLevel for a command."""
+        if command not in self._all_bot_commands:
+            await ctx.reply(_(ctx, "I don't know this command."))
+            return
+
+        removed = ACDefault.remove(ctx.guild.id, command)
+        if not removed:
+            await ctx.reply(
+                _(ctx, "Command '{command}' does not have custom default.").format(
+                    command=command
+                )
+            )
+            return
+
+        await ctx.reply(
+            _(ctx, "Custom default for '{command}' removed.").format(command=command)
+        )
+        await guild_log.info(
+            ctx.author, ctx.channel, f"ACLevel for '{command}' set to default."
+        )
+
+    @acl_default_.command("audit")
+    async def acl_default_audit(self, ctx, *, query: str = ""):
+        """Display all bot commands and their defaults."""
+        if query != "this is WIP":
+            await ctx.reply(
+                "I can't do this yet."
+                "\n"
+                "I don't know how to introspect individual commands to see what their"
+                "defaults are. It's not possible to register them while I start "
+                "either. To display the table anyways, query for 'this is WIP'."
+            )
+            return
+
+        bot_commands = [c for c in self.bot.walk_commands()]
+        # TODO Do this when query is not ""
+        # bot_commands = [c for c in bot_commands if query in c.qualified_name]
+        bot_commands = sorted(bot_commands, key=lambda c: c.qualified_name)
+        defaults = {}
+        for default in ACDefault.get_all(ctx.guild.id):
+            defaults[default.command] = default.level
+
+        class Item:
+            def __init__(self, command: commands.Command):
+                self.command = command.qualified_name
+                self.level = "?"  # TODO
+                try:
+                    self.db_level = defaults[self.command].name
+                except KeyError:
+                    self.db_level = ""
+
+        items = [Item(c) for c in bot_commands]
+        # put commands with overwrites first
+        items = sorted(items, key=lambda i: i.db_level, reverse=True)
+
+        table: List[str] = utils.text.create_table(
+            items,
+            header={
+                "command": _(ctx, "Command"),
+                "level": _(ctx, "Default level"),
+                "db_level": _(ctx, "Custom level"),
+            },
+        )
+
+        for page in table:
+            await ctx.send("```" + page + "```")
 
     @acl_.command(name="overwrite-list")
     async def acl_overwrite_list(self, ctx):
@@ -454,6 +591,10 @@ class ACL(commands.Cog):
         for command in self.bot.walk_commands():
             result.append(command.qualified_name)
         return result
+
+    @classmethod
+    def _get_command_ACLevel(cls, command: commands.Command):
+        return None
 
 
 def setup(bot) -> None:

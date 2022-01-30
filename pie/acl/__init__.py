@@ -173,4 +173,8 @@ def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
             mapped_level = m.level
             break
 
+    custom_level = ACDefault.get(ctx.guild.id, command)
+    if custom_level:
+        level = custom_level.level
+
     return mapped_level >= level
