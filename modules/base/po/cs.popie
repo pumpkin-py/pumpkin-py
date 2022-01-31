@@ -448,6 +448,18 @@ msgstr Limit je **{num}**/**{per}**
 msgid Check failure
 msgstr Chyba kontroly
 
+msgid You have been denied the invocation of this command.
+msgstr
+
+msgid This command cannot be used in this channel.
+msgstr
+
+msgid This command cannot be used by the role **{role}**.
+msgstr
+
+msgid You need access permissions at least at level **{required}**. You only have **{actual}**.
+msgstr
+
 msgid You do not have any of the possible permissions to access this command
 msgstr Nemáš žádné z možných oprávnění k tomuto příkazu
 

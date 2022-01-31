@@ -420,6 +420,40 @@ class Errors(commands.Cog):
         Returns:
             Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
         """
+        # Exception raised by ACL's UserOverwrite
+        if isinstance(error, pie.exceptions.NegativeUserOverwrite):
+            return (
+                _(ctx, "Check failure"),
+                _(ctx, "You have been denied the invocation of this command."),
+                True,
+            )
+        # Exception raised by ACL's ChannelOverwrite
+        if isinstance(error, pie.exceptions.NegativeChannelOverwrite):
+            return (
+                _(ctx, "Check failure"),
+                _(ctx, "This command cannot be used in this channel."),
+                True,
+            )
+        # Exception raised by ACL's RoleOverwrite
+        if isinstance(error, pie.exceptions.NegativeRoleOverwrite):
+            return (
+                _(ctx, "Check failure"),
+                _(ctx, "This command cannot be used by the role **{role}**.").format(
+                    role=error.role.name
+                ),
+                True,
+            )
+        # Exception raised when user does not have sufficient ACLevel
+        if isinstance(error, pie.exceptions.InsufficientACLevel):
+            return (
+                _(ctx, "Check failure"),
+                _(
+                    ctx,
+                    "You need access permissions at least at level **{required}**. "
+                    "You only have **{actual}**.",
+                ).format(required=error.required.name, actual=error.actual.name),
+                True,
+            )
         # Exception raised when all predicates in check_any fail.
         if isinstance(error, commands.CheckAnyFailure):
             return (

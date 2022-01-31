@@ -11,6 +11,13 @@ from pie.acl.database import ACL_rule, ACL_group
 
 # ACL 2
 from pie.acl.database import ACLevel, ACLevelMappping
+from pie.exceptions import (
+    NegativeUserOverwrite,
+    NegativeChannelOverwrite,
+    NegativeRoleOverwrite,
+    InsufficientACLevel,
+)
+from pie.acl.database import ACDefault, ACLevel, ACLevelMappping
 from pie.acl.database import UserOverwrite, ChannelOverwrite, RoleOverwrite
 
 _ = i18n.Translator(__file__).translate
@@ -170,15 +177,22 @@ def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
 
     uo = UserOverwrite.get(ctx.guild.id, ctx.author.id, command)
     if uo is not None:
-        return uo.allow
+        if uo.allow:
+            return True
+        raise NegativeUserOverwrite()
 
     co = ChannelOverwrite.get(ctx.guild.id, ctx.channel.id, command)
     if co is not None:
-        return co.allow
+        if co.allow:
+            return True
+        raise NegativeChannelOverwrite(channel=ctx.channel)
 
-    ro = RoleOverwrite.get(ctx.guild.id, ctx.author.id, command)
-    if ro is not None:
-        return uo.allow
+    for role in ctx.author.roles:
+        ro = RoleOverwrite.get(ctx.guild.id, role.id, command)
+        if ro is not None:
+            if ro.allow:
+                return True
+            raise NegativeRoleOverwrite(role=role)
 
     mapped_level = ACLevel.EVERYONE
     for role in ctx.author.roles[::-1]:
@@ -191,4 +205,6 @@ def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
     if custom_level:
         level = custom_level.level
 
-    return mapped_level >= level
+    if mapped_level >= level:
+        return True
+    raise InsufficientACLevel(required=level, actual=mapped_level)
