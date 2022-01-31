@@ -74,7 +74,7 @@ class ScrollableEmbed(nextcord.ui.View):
     ) -> list[nextcord.Embed]:
         pages = []
         for idx, embed in enumerate(iterable):
-            if type(embed) is not nextcord.Embed:
+            if not isinstance(embed, nextcord.Embed):
                 raise ValueError("Items in iterable must be of type nextcord.Embed")
             embed.add_field(
                 name=_(ctx, "Page"),
