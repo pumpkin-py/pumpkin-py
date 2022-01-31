@@ -128,6 +128,14 @@ class ScrollableEmbed(nextcord.ui.View):
 
     async def interaction_check(self, interaction: nextcord.Interaction) -> None:
         """Gets called when interaction with any of the Views buttons happens."""
+        if interaction.data["custom_id"] not in [
+            "lock-button",
+            "left-button",
+            "right-button",
+        ]:
+            # In case of unknown interaction (eg: decorated functions in child class)
+            await super().interaction_check(interaction)
+            return
         if interaction.data["custom_id"] == "lock-button":
             if interaction.user.id is self.ctx.author.id:
                 self._toggle_lock()
