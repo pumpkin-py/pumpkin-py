@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABCMeta, abstractmethod
 from typing import Iterable, Optional, Union
 
 import nextcord
@@ -42,13 +43,7 @@ class ScrollableEmbed(nextcord.ui.View):
                 custom_id="left-button",
             )
         )
-        self.add_item(
-            nextcord.ui.Button(
-                label="\u25b7",
-                style=nextcord.ButtonStyle.green,
-                custom_id="right-button",
-            )
-        )
+
         if self.locked:
             self.lock_button = nextcord.ui.Button(
                 label="🔒",
@@ -62,6 +57,14 @@ class ScrollableEmbed(nextcord.ui.View):
                 custom_id="lock-button",
             )
         self.add_item(self.lock_button)
+
+        self.add_item(
+            nextcord.ui.Button(
+                label="\u25b7",
+                style=nextcord.ButtonStyle.green,
+                custom_id="right-button",
+            )
+        )
 
     def __repr__(self):
         return (
@@ -294,3 +297,112 @@ class ConfirmView(nextcord.ui.View):
         """Gets called when the view timeouts."""
         self.value = None
         self.stop()
+
+
+class VotableEmbed(nextcord.Embed, metaclass=ABCMeta):
+    """
+    Abrstract class extendindg Embed functionality
+    so it can be used in ScollableVotingEmbed.
+
+    Functions `vote_up`, `vote_neutral` and `vote_down`
+    must be overriden. Init takes same arguments,
+    as :class:`nextcord.Embed`.
+
+    Example of usage can be found in School.Review module.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(VotableEmbed, self).__init__(*args, **kwargs)
+
+    @abstractmethod
+    async def vote_up(interaction: nextcord.Interaction):
+        """
+        Callback when user votes UP. Must be overriden.
+        """
+        pass
+
+    @abstractmethod
+    async def vote_neutral(interaction: nextcord.Interaction):
+        """
+        Callback when user votes NEUTRAL. Must be overriden.
+        """
+        pass
+
+    @abstractmethod
+    async def vote_down(interaction: nextcord.Interaction):
+        """
+        Callback when user votes DOWNs. Must be overriden.
+        """
+        pass
+
+
+class ScrollableVotingEmbed(ScrollableEmbed):
+    """Class for making scrollable embeds with voting easy.
+
+    Args:
+        ctx (:class:`nextcord.ext.commands.Context`): The context for translational purposes.
+        iterable (:class:`Iterable[VotableEmbed]`): Iterable which to build the ScrollableVotingEmbed from.
+        timeout (:class:'int'): Timeout (in seconds, default 300) from last interaction with the UI before no longer accepting input. If None then there is no timeout.
+        delete_message (:class:'bool'): True - remove message after timeout. False - remove only View controls.
+        locked: (:class:'bool'): True if only author can scroll, False otherwise
+    """
+
+    def __init__(self, *args, **kwagrs) -> ScrollableVotingEmbed:
+        super().__init__(*args, **kwagrs)
+
+        if len(self.pages) == 1:
+            self.clear_items()
+
+        self.add_item(
+            nextcord.ui.Button(
+                label="👍",
+                style=nextcord.ButtonStyle.green,
+                custom_id="vote_up",
+                row=1,
+            )
+        )
+        self.add_item(
+            nextcord.ui.Button(
+                label="🤷‍",
+                style=nextcord.ButtonStyle.gray,
+                custom_id="vote_neutral",
+                row=1,
+            )
+        )
+        self.add_item(
+            nextcord.ui.Button(
+                label="👎",
+                style=nextcord.ButtonStyle.red,
+                custom_id="vote_down",
+                row=1,
+            )
+        )
+
+    async def scroll(self):
+        """Make embeds move. Overrides original function which
+        was stopping View when there were only 1 page.
+
+        Sends the first page to the context.
+        """
+        ctx = self.ctx
+        if self.pages == []:
+            self.clear_items()
+            await ctx.reply(_(ctx, "No results were found."))
+            self.stop()
+            return
+
+        self.message = await ctx.send(embed=self.pages[0], view=self)
+
+    async def interaction_check(self, interaction: nextcord.Interaction) -> None:
+        """
+        Gets called when interaction with any of the Views buttons happens.
+        If custom ID is not recognized, it's passed to parent.
+        """
+        if interaction.data["custom_id"] == "vote_up":
+            await self.pages[self.pagenum].vote_up(interaction)
+        elif interaction.data["custom_id"] == "vote_neutral":
+            await self.pages[self.pagenum].vote_neutral(interaction)
+        elif interaction.data["custom_id"] == "vote_down":
+            await self.pages[self.pagenum].vote_down(interaction)
+        else:
+            await super().interaction_check(interaction)
