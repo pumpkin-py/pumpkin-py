@@ -23,17 +23,19 @@ class ACL(commands.Cog):
     #
 
     @commands.guild_only()
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="acl")
     async def acl_(self, ctx):
         """Permission control."""
         await utils.discord.send_help(ctx)
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_.group(name="mapping")
     async def acl_mapping_(self, ctx):
         """Manage mapping of ACL levels to roles."""
         await utils.discord.send_help(ctx)
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_mapping_.command(name="list")
     async def acl_mapping_list(self, ctx):
         """Display ACL level to role mappings."""
@@ -64,6 +66,7 @@ class ACL(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_mapping_.command(name="add")
     async def acl_mapping_add(self, ctx, role: nextcord.Role, level: str):
         """Add ACL level to role mappings."""
@@ -93,6 +96,7 @@ class ACL(commands.Cog):
             f"New ACLevel mapping from role '{role.name}' to level '{level.name}'.",
         )
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_mapping_.command(name="remove")
     async def acl_mapping_remove(self, ctx, role: nextcord.Role):
         """Remove ACL level to role mapping."""
@@ -108,11 +112,13 @@ class ACL(commands.Cog):
             f"ACLevel mapping for role '{role.name}' removed.",
         )
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_.group(name="default")
     async def acl_default_(self, ctx):
         """Manage ACLevel defaults of commands."""
         await utils.discord.send_help(ctx)
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_default_.command("list")
     async def acl_default_list(self, ctx):
         """List currently applied default overwrites."""
@@ -142,9 +148,12 @@ class ACL(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_default_.command("add")
     async def acl_default_add(self, ctx, command: str, level: str):
         """Add custom ACLevel for a command."""
+        # TODO When we know how to access the decorators, check that
+        # we aren't lowering BOT_OWNER permissions.
         try:
             level: ACLevel = ACLevel[level]
         except KeyError:
@@ -176,6 +185,7 @@ class ACL(commands.Cog):
             f"ACLevel default for '{command}' set to '{level.name}'.",
         )
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_default_.command("remove")
     async def acl_default_remove(self, ctx, command: str):
         """Remove custom ACLevel for a command."""
@@ -199,6 +209,7 @@ class ACL(commands.Cog):
             ctx.author, ctx.channel, f"ACLevel for '{command}' set to default."
         )
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_default_.command("audit")
     async def acl_default_audit(self, ctx, *, query: str = ""):
         """Display all bot commands and their defaults."""
@@ -245,6 +256,7 @@ class ACL(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_.command(name="overwrite-list")
     async def acl_overwrite_list(self, ctx):
         """Display active overwrites."""
@@ -305,11 +317,13 @@ class ACL(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_.group(name="role-overwrite")
     async def acl_role_overwrite_(self, ctx):
         """Manage role ACL overwrites."""
         await utils.discord.send_help(ctx)
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_role_overwrite_.command(name="add")
     async def acl_role_overwrite_add(
         self, ctx, command: str, role: nextcord.Role, allow: bool
@@ -341,6 +355,7 @@ class ACL(commands.Cog):
             f"and role '{role}': " + ("allow." if allow else "deny."),
         )
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_role_overwrite_.command(name="remove")
     async def acl_role_overwrite_remove(self, ctx, command: str, role: nextcord.Role):
         removed = RoleOverwrite.remove(ctx.guild.id, role.id, command)
@@ -363,6 +378,7 @@ class ACL(commands.Cog):
             f"Role overwrite removed for command '{command}' and role '{role}'.",
         )
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_role_overwrite_.command(name="list")
     async def acl_role_overwrite_list(self, ctx):
         ros = RoleOverwrite.get_all(ctx.guild.id)
@@ -395,11 +411,13 @@ class ACL(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_.group(name="user-overwrite")
     async def acl_user_overwrite_(self, ctx):
         """Manage user ACL overwrites."""
         await utils.discord.send_help(ctx)
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_user_overwrite_.command(name="add")
     async def acl_user_overwrite_add(
         self, ctx, command: str, user: nextcord.Member, allow: bool
@@ -430,6 +448,7 @@ class ACL(commands.Cog):
             f"and user '{user.name}': " + ("allow." if allow else "deny."),
         )
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_user_overwrite_.command(name="remove")
     async def acl_user_overwrite_remove(self, ctx, command: str, user: nextcord.Member):
         removed = UserOverwrite.remove(ctx.guild.id, user.id, command)
@@ -452,6 +471,7 @@ class ACL(commands.Cog):
             f"User overwrite removed for command '{command}' and role '{user.name}'.",
         )
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_user_overwrite_.command(name="list")
     async def acl_user_overwrite_list(self, ctx):
         uos = UserOverwrite.get_all(ctx.guild.id)
@@ -489,11 +509,13 @@ class ACL(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_.group(name="channel-overwrite")
     async def acl_channel_overwrite_(self, ctx):
         """Manage channel ACL overwrites."""
         await utils.discord.send_help(ctx)
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_channel_overwrite_.command(name="add")
     async def acl_channel_overwrite_add(
         self, ctx, command: str, channel: nextcord.TextChannel, allow: bool
@@ -525,6 +547,7 @@ class ACL(commands.Cog):
             f"and channel '#{channel.name}': " + ("allow." if allow else "deny."),
         )
 
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_channel_overwrite_.command(name="remove")
     async def acl_channel_overwrite_remove(
         self, ctx, command: str, channel: nextcord.TextChannel
@@ -550,6 +573,7 @@ class ACL(commands.Cog):
             f"'{command}' and channel '{channel.name}'.",
         )
 
+    @check.acl2(check.ACLevel.SUBMOD)
     @acl_channel_overwrite_.command(name="list")
     async def acl_channel_overwrite_list(self, ctx):
         cos = ChannelOverwrite.get_all(ctx.guild.id)

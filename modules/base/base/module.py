@@ -24,12 +24,12 @@ class Base(commands.Cog):
     #
 
     @commands.guild_only()
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="userpin")
     async def userpin(self, ctx):
         await utils.discord.send_help(ctx)
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @userpin.command(name="list")
     async def userpin_list(self, ctx):
         db_channels = UserPin.get_all(ctx.guild.id)
@@ -60,7 +60,7 @@ class Base(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @userpin.command(name="set")
     async def userpin_set(self, ctx, limit: int, channel: nextcord.TextChannel = None):
         """Set userpin limit."""
@@ -87,7 +87,7 @@ class Base(commands.Cog):
         else:
             await ctx.reply(_(ctx, "Pinning preferences have been updated."))
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @userpin.command(name="unset")
     async def userpin_unset(self, ctx, channel: nextcord.TextChannel = None):
         if channel is None:
@@ -101,12 +101,12 @@ class Base(commands.Cog):
         await ctx.reply(_(ctx, "The preference was unset."))
 
     @commands.guild_only()
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="bookmarks")
     async def bookmarks(self, ctx):
         await utils.discord.send_help(ctx)
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @bookmarks.command(name="list")
     async def bookmarks_list(self, ctx):
         db_channels = Bookmark.get_all(ctx.guild.id)
@@ -137,7 +137,7 @@ class Base(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @bookmarks.command(name="set")
     async def bookmarks_set(
         self, ctx, enabled: bool, channel: nextcord.TextChannel = None
@@ -157,7 +157,7 @@ class Base(commands.Cog):
             _(ctx, "Bookmarks enabled.") if enabled else _(ctx, "Bookmarks disabled.")
         )
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @bookmarks.command(name="unset")
     async def bookmarks_unset(self, ctx, channel: nextcord.TextChannel = None):
         """Remove bookmark settings."""
@@ -172,12 +172,12 @@ class Base(commands.Cog):
         await ctx.reply(_(ctx, "The preference was unset."))
 
     @commands.guild_only()
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="userthread")
     async def userthread(self, ctx):
         await utils.discord.send_help(ctx)
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @userthread.command(name="list")
     async def userthread_list(self, ctx):
         db_channels = UserThread.get_all(ctx.guild.id)
@@ -208,7 +208,7 @@ class Base(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @userthread.command(name="get")
     async def userthread_get(self, ctx, channel: nextcord.TextChannel = None):
         embed = utils.discord.create_embed(
@@ -235,7 +235,7 @@ class Base(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @userthread.command(name="set")
     async def userthread_set(
         self, ctx, limit: int, channel: nextcord.TextChannel = None
@@ -270,7 +270,7 @@ class Base(commands.Cog):
         else:
             await ctx.reply(_(ctx, "Thread preference has been updated."))
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @userthread.command(name="unset")
     async def userthread_unset(self, ctx, channel: nextcord.TextChannel = None):
         if channel is None:
@@ -284,12 +284,12 @@ class Base(commands.Cog):
         await ctx.reply(_(ctx, "The preference was unset."))
 
     @commands.guild_only()
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="autothread")
     async def autothread(self, ctx):
         await utils.discord.send_help(ctx)
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.SUBMOD)
     @autothread.command(name="list")
     async def autothread_list(self, ctx):
         channels: List[Tuple[nextcord.TextChannel, AutoThread]] = []
@@ -324,7 +324,7 @@ class Base(commands.Cog):
         )
         await ctx.reply(embed=embed)
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @autothread.command(name="set")
     async def autothread_set(self, ctx, channel: nextcord.TextChannel, duration: str):
         try:
@@ -347,7 +347,7 @@ class Base(commands.Cog):
             f"Autothread enabled for {channel.name}.",
         )
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @autothread.command(name="unset")
     async def autothread_unset(self, ctx, channel: nextcord.TextChannel = None):
         if channel is None:
