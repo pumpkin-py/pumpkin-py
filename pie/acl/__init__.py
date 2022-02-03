@@ -4,6 +4,7 @@ from typing import Callable, TypeVar
 
 from nextcord.ext import commands
 
+import pie._tracing
 from pie import i18n
 
 # Old ACL
@@ -19,6 +20,8 @@ from pie.exceptions import (
 )
 from pie.acl.database import ACDefault, ACLevel, ACLevelMappping
 from pie.acl.database import UserOverwrite, ChannelOverwrite, RoleOverwrite
+
+_trace: Callable = pie._tracing.register("pie_acl")
 
 _ = i18n.Translator(__file__).translate
 T = TypeVar("T")
@@ -168,21 +171,44 @@ def acl2(level: ACLevel) -> Callable[[T], T]:
 
 def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
     """Check function based on Access Control."""
+    command: str = ctx.command.qualified_name
+    _acl_trace = lambda message: _trace(f"[{command}] {message}")  # noqa: E731
+
     # Allow invocations in DM.
     # Wrap the function in `@commands.guild_only()` to change this behavior.
     if ctx.guild is None:
+        _acl_trace("Non-guild context is always allowed.")
         return True
 
-    command: str = ctx.command.qualified_name
+    custom_level = ACDefault.get(ctx.guild.id, command)
+    if custom_level:
+        level = custom_level.level
+
+    _acl_trace(f"Required level '{level.name}'.")
+
+    is_bot_owner: bool = False
+    is_guild_owner: bool = False
+
+    if getattr(ctx.bot, "owner_id", 0) == ctx.author.id:
+        _acl_trace(f"Member '{ctx.author}' is bot's owner.")
+        is_bot_owner = True
+    elif ctx.author.id in getattr(ctx.bot, "owner_ids", set()):
+        _acl_trace(f"Member '{ctx.author}' is one of bot's owners.")
+        is_bot_owner = True
+    elif ctx.author.id == ctx.guild.owner.id:
+        _acl_trace(f"Member '{ctx.author}' is guild's owner.")
+        is_guild_owner = True
 
     uo = UserOverwrite.get(ctx.guild.id, ctx.author.id, command)
     if uo is not None:
+        _acl_trace(f"User overwrite [{ctx.author}, {command}] exists: {uo.allow}.")
         if uo.allow:
             return True
         raise NegativeUserOverwrite()
 
     co = ChannelOverwrite.get(ctx.guild.id, ctx.channel.id, command)
     if co is not None:
+        _acl_trace(f"Channel overwrite [{ctx.channel}, {command}] exists: {co.allow}.")
         if co.allow:
             return True
         raise NegativeChannelOverwrite(channel=ctx.channel)
@@ -190,21 +216,31 @@ def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
     for role in ctx.author.roles:
         ro = RoleOverwrite.get(ctx.guild.id, role.id, command)
         if ro is not None:
+            _acl_trace(f"Role overwrite [{role}, {command}] exists: {ro.allow}.")
             if ro.allow:
                 return True
             raise NegativeRoleOverwrite(role=role)
 
-    mapped_level = ACLevel.EVERYONE
-    for role in ctx.author.roles[::-1]:
-        m = ACLevelMappping.get(ctx.guild.id, role.id)
-        if m is not None:
-            mapped_level = m.level
-            break
+    if is_bot_owner:
+        member_level = ACLevel.BOT_OWNER
+    elif is_guild_owner:
+        member_level = ACLevel.GUILD_OWNER
+    else:
+        member_level = ACLevel.EVERYONE
+        for role in ctx.author.roles[::-1]:
+            m = ACLevelMappping.get(ctx.guild.id, role.id)
+            if m is not None:
+                member_level = m.level
+                break
 
-    custom_level = ACDefault.get(ctx.guild.id, command)
-    if custom_level:
-        level = custom_level.level
-
-    if mapped_level >= level:
+    if member_level >= level:
+        _acl_trace(
+            f"Member's level '{member_level.name}' "
+            f"higher than required '{level.name}'."
+        )
         return True
-    raise InsufficientACLevel(required=level, actual=mapped_level)
+
+    _acl_trace(
+        f"Member's level '{member_level.name}' lower than required '{level.name}'."
+    )
+    raise InsufficientACLevel(required=level, actual=member_level)

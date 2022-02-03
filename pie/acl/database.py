@@ -12,7 +12,7 @@ from pie.database import database, session
 
 class ACLevel(enum.IntEnum):
     BOT_OWNER: int = 5
-    OWNER: int = 4
+    GUILD_OWNER: int = 4
     MOD: int = 3
     SUBMOD: int = 2
     MEMBER: int = 1

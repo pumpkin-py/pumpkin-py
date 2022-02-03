@@ -2,7 +2,7 @@ import os
 from typing import Callable, Tuple
 
 
-sources: Tuple[str] = ("pie_spamchannel",)
+sources: Tuple[str] = ("pie_acl", "pie_spamchannel")
 
 
 def register(name: str) -> Callable:
