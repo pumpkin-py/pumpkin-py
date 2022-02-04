@@ -170,14 +170,14 @@ class ACL(commands.Cog):
         default = ACDefault.add(ctx.guild.id, command, level)
         if default is None:
             await ctx.reply(
-                _(ctx, "Custom default for '{command}' already exists.").format(
+                _(ctx, "Custom default for **{command}** already exists.").format(
                     command=command
                 )
             )
             return
 
         await ctx.reply(
-            _(ctx, "Custom default for '{command}' set.").format(command=command)
+            _(ctx, "Custom default for **{command}** set.").format(command=command)
         )
         await guild_log.info(
             ctx.author,
@@ -196,14 +196,14 @@ class ACL(commands.Cog):
         removed = ACDefault.remove(ctx.guild.id, command)
         if not removed:
             await ctx.reply(
-                _(ctx, "Command '{command}' does not have custom default.").format(
+                _(ctx, "Command **{command}** does not have custom default.").format(
                     command=command
                 )
             )
             return
 
         await ctx.reply(
-            _(ctx, "Custom default for '{command}' removed.").format(command=command)
+            _(ctx, "Custom default for **{command}** removed.").format(command=command)
         )
         await guild_log.info(
             ctx.author, ctx.channel, f"ACLevel for '{command}' set to default."
@@ -336,7 +336,9 @@ class ACL(commands.Cog):
         if ro is None:
             await ctx.reply(
                 _(
-                    ctx, "Role overwrite for '{command}' and '{role}' already exists."
+                    ctx,
+                    "Overwrite for command **{command}** and "
+                    "role **{role}** already exists.",
                 ).format(command=command, role=role.name)
             )
             return
@@ -344,8 +346,8 @@ class ACL(commands.Cog):
         await ctx.reply(
             _(
                 ctx,
-                "Role overwrite for command '{command}' and "
-                "role '{role}' sucessfully created.",
+                "Overwrite for command **{command}** and "
+                "role **{role}** sucessfully created.",
             ).format(command=command, role=role.name)
         )
         await guild_log.info(
@@ -361,15 +363,15 @@ class ACL(commands.Cog):
         removed = RoleOverwrite.remove(ctx.guild.id, role.id, command)
         if not removed:
             await ctx.reply(
-                _(ctx, "Overwrite for this role and command does not exist.")
+                _(ctx, "Overwrite for this command and role does not exist.")
             )
             return
 
         await ctx.reply(
             _(
                 ctx,
-                "Role overwrite for command '{command}' and "
-                "role '{role}' sucessfully removed.",
+                "Overwrite for command **{command}** and "
+                "role **{role}** sucessfully removed.",
             ).format(command=command, role=role.name)
         )
         await guild_log.info(
@@ -429,7 +431,9 @@ class ACL(commands.Cog):
         if uo is None:
             await ctx.reply(
                 _(
-                    ctx, "User overwrite for '{command}' and '{user}' already exists."
+                    ctx,
+                    "Overwrite for command **{command}** and "
+                    "user **{user}** already exists.",
                 ).format(command=command, user=utils.text.sanitise(user.display_name))
             )
             return
@@ -437,8 +441,8 @@ class ACL(commands.Cog):
         await ctx.reply(
             _(
                 ctx,
-                "User overwrite for command '{command}' and "
-                "user '{user}' sucessfully created.",
+                "Overwrite for command **{command}** and "
+                "user **{user}** sucessfully created.",
             ).format(command=command, user=utils.text.sanitise(user.display_name))
         )
         await guild_log.info(
@@ -454,15 +458,15 @@ class ACL(commands.Cog):
         removed = UserOverwrite.remove(ctx.guild.id, user.id, command)
         if not removed:
             await ctx.reply(
-                _(ctx, "Overwrite for this user and command does not exist.")
+                _(ctx, "Overwrite for this command and user does not exist.")
             )
             return
 
         await ctx.reply(
             _(
                 ctx,
-                "User overwrite for command '{command}' and "
-                "user '{user}' sucessfully removed.",
+                "Overwrite for command **{command}** and "
+                "user **{user}** sucessfully removed.",
             ).format(command=command, user=utils.text.sanitise(user.display_name))
         )
         await guild_log.info(
@@ -528,7 +532,8 @@ class ACL(commands.Cog):
             await ctx.reply(
                 _(
                     ctx,
-                    "Channel overwrite for '{command}' and '#{channel}' already exists.",
+                    "Overwrite for command **{command}** and "
+                    "channel **#{channel}** already exists.",
                 ).format(command=command, channel=channel.name)
             )
             return
@@ -536,14 +541,14 @@ class ACL(commands.Cog):
         await ctx.reply(
             _(
                 ctx,
-                "Channel overwrite for command '{command}' and "
-                "channel '#{channel}' sucessfully created.",
+                "Overwrite for command **{command}** and "
+                "channel **#{channel}** sucessfully created.",
             ).format(command=command, channel=channel.name)
         )
         await guild_log.info(
             ctx.author,
             ctx.channel,
-            f"Channel overwrite created for command '{command}' "
+            f"Overwrite created for command '{command}' "
             f"and channel '#{channel.name}': " + ("allow." if allow else "deny."),
         )
 
@@ -562,15 +567,14 @@ class ACL(commands.Cog):
         await ctx.reply(
             _(
                 ctx,
-                "Channel overwrite for command '{command}' and "
-                "channel '#{channel}' sucessfully removed.",
+                "Overwrite for command **{command}** and "
+                "channel **#{channel}** sucessfully removed.",
             ).format(command=command, channel=channel.name)
         )
         await guild_log.info(
             ctx.author,
             ctx.channel,
-            "Channel overwrite removed for command "
-            f"'{command}' and channel '{channel.name}'.",
+            "Overwrite removed for command '{command}' and channel '{channel.name}'.",
         )
 
     @check.acl2(check.ACLevel.SUBMOD)

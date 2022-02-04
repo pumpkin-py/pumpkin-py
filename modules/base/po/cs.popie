@@ -1,134 +1,134 @@
 msgid No mappings have been set.
-msgstr
+msgstr Žádné mapování nebylo nastaveno.
 
 msgid Role
-msgstr
+msgstr Role
 
 msgid Level
-msgstr
+msgstr Úroveň
 
 msgid Invalid level. Possible options are: {keys}.
-msgstr
+msgstr Neplatná úroveň. Možnosti jsou: {keys}.
 
 msgid That role is already mapped to some level.
-msgstr
+msgstr Tato role je už na nějakou úroveň mapována.
 
 msgid Role **{role}** will be mapped to **{level}**.
-msgstr
+msgstr Role **{role}** bude mapována na **{level}**.
 
 msgid That role is not mapped to any level.
-msgstr
+msgstr Tato role není mapována na žádnou úroveň.
 
 msgid Role mapping was sucessfully removed.
-msgstr
+msgstr Mapování role bylo úspěšně zrušeno.
 
 msgid No defaults have been set.
-msgstr
+msgstr Žádné výchozí hodnoty nebyly nastaveny.
 
 msgid Command
-msgstr
+msgstr Příkaz
 
 msgid I don't know this command.
-msgstr
+msgstr Takový příkaz neznám.
 
-msgid Custom default for '{command}' already exists.
-msgstr
+msgid Custom default for **{command}** already exists.
+msgstr Vlastní výchozí úroveň pro **{command}** už existuje.
 
-msgid Custom default for '{command}' set.
-msgstr
+msgid Custom default for **{command}** set.
+msgstr Vlastní výchozí úroveň pro **{command}** byla nastavena.
 
-msgid Command '{command}' does not have custom default.
-msgstr
+msgid Command **{command}** does not have custom default.
+msgstr Příkaz **{command}** nemá vlastní výchozí hodnotu.
 
-msgid Custom default for '{command}' removed.
-msgstr
+msgid Custom default for **{command}** removed.
+msgstr Vlastní výchozí úroveň pro **{command}** zrušena.
 
 msgid Default level
-msgstr
+msgstr Výchozí úroveň
 
 msgid Custom level
-msgstr
+msgstr Vlastní úroveň
 
 msgid role
-msgstr
+msgstr role
 
 msgid channel
-msgstr
+msgstr kanál
 
 msgid user
-msgstr
+msgstr uživatel
 
 msgid unsupported
-msgstr
+msgstr nepodporováno
 
 msgid yes
-msgstr
+msgstr ano
 
 msgid no
-msgstr
+msgstr ne
 
 msgid No ACL overwrites have been set.
-msgstr
+msgstr Nebyly nastaveny ACL overwrites.
 
 msgid Overwrite type
-msgstr
+msgstr Typ overwrite
 
 msgid Value
-msgstr
+msgstr Hodnota
 
 msgid Allow
-msgstr
+msgstr Povoleno
 
-msgid Role overwrite for '{command}' and '{role}' already exists.
-msgstr
+msgid Overwrite for command **{command}** and role **{role}** already exists.
+msgstr Overwrite pro příkaz **{command}** a roli **{role}** už existuje.
 
-msgid Role overwrite for command '{command}' and role '{role}' sucessfully created.
-msgstr
+msgid Overwrite for command **{command}** and role **{role}** sucessfully created.
+msgstr Overwrite pro příkaz **{command}** a roli **{role}** byl úspěšně vytvořen.
 
-msgid Overwrite for this role and command does not exist.
-msgstr
+msgid Overwrite for this command and role does not exist.
+msgstr Overwrite pro tento příkaz a roli neexistuje.
 
-msgid Role overwrite for command '{command}' and role '{role}' sucessfully removed.
-msgstr
+msgid Overwrite for command **{command}** and role **{role}** sucessfully removed.
+msgstr Overwrite pro příkaz **{command}** a roli **{role}** byl úspěšně odebrán.
 
 msgid No role overwrites have been set.
-msgstr
+msgstr Nebyly nastaveny žádné overwrites pro role.
 
-msgid User overwrite for '{command}' and '{user}' already exists.
-msgstr
+msgid Overwrite for command **{command}** and user **{user}** already exists.
+msgstr Overwrite pro příkaz **{command}** a uživatele **{user}** už existuje.
 
-msgid User overwrite for command '{command}' and user '{user}' sucessfully created.
-msgstr
+msgid Overwrite for command **{command}** and user **{user}** sucessfully created.
+msgstr Overwrite pro příkaz **{command}** a uživatele **{user}** byl úspěšně vytvořen.
 
-msgid Overwrite for this user and command does not exist.
-msgstr
+msgid Overwrite for this command and user does not exist.
+msgstr Overwrite pro tento příkaz a uživatele neexistuje.
 
-msgid User overwrite for command '{command}' and user '{user}' sucessfully removed.
-msgstr
+msgid Overwrite for command **{command}** and user **{user}** sucessfully removed.
+msgstr Overwrite pro příkaz **{command}** a uživatele **{role}** byl úspěšně odebrán.
 
 msgid No user overwrites have been set.
-msgstr
+msgstr Nebyly nastaveny žádné overwrites pro uživatele.
 
 msgid User
-msgstr
+msgstr Uživatel
 
-msgid Channel overwrite for '{command}' and '#{channel}' already exists.
-msgstr
+msgid Overwrite for command **{command}** and channel **#{channel}** already exists.
+msgstr Overwrite pro příkaz **{command}** a kanál **{channel}** už existuje.
 
-msgid Channel overwrite for command '{command}' and channel '#{channel}' sucessfully created.
-msgstr
+msgid Overwrite for command **{command}** and channel **#{channel}** sucessfully created.
+msgstr Overwrite pro příkaz **{command}** a kanál **{channel}** byl úspěšně vytvořen.
 
 msgid Overwrite for this command and channel does not exist.
-msgstr
+msgstr Overwrite pro tento příkaz a kanál neexistuje.
 
-msgid Channel overwrite for command '{command}' and channel '#{channel}' sucessfully removed.
-msgstr
+msgid Overwrite for command **{command}** and channel **#{channel}** sucessfully removed.
+msgstr Overwrite pro příkaz **{command}** a kanál **{channel}** byl úspěšně odebrán.
 
 msgid No channel overwrites have been set.
-msgstr
+msgstr Nebyly nastaveny žádné overwrites pro kanály.
 
 msgid Channel
-msgstr
+msgstr Kanál
 
 msgid Repository initialization aborted: {exc}
 msgstr Inicializace repozitáře se nezdařila: {exc}
