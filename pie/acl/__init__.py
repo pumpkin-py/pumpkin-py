@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import Callable, TypeVar
+from typing import Callable, Set, TypeVar
 
+import nextcord
 from nextcord.ext import commands
 
 import pie._tracing
@@ -141,6 +142,52 @@ def acl(ctx: commands.Context) -> bool:
     return rule.default
 
 
+def map_member_to_ACLevel(
+    *,
+    bot: commands.Bot,
+    member: nextcord.Member,
+):
+    """Map member to their ACLevel."""
+
+    _acl_trace = lambda message: _trace(f"[acl(mapping)] {message}")  # noqa: E731
+
+    # Gather information
+
+    # NOTE This relies on pumpkin.py:update_app_info()
+    bot_owner_ids: Set = getattr(bot, "owner_ids", {*()})
+    guild_owner_id: int = member.guild.owner.id
+
+    is_bot_owner: bool = False
+    is_guild_owner: bool = False
+
+    if member.id in bot_owner_ids:
+        _acl_trace(f"'{member}' is bot owner.")
+        is_bot_owner = True
+
+    elif member.id == guild_owner_id:
+        _acl_trace(f"'{member}' is guild owner.")
+        is_guild_owner = True
+
+    # Perform the mapping
+
+    if is_bot_owner:
+        member_level = ACLevel.BOT_OWNER
+    elif is_guild_owner:
+        member_level = ACLevel.GUILD_OWNER
+    else:
+        member_level = ACLevel.EVERYONE
+        for role in member.roles[::-1]:
+            mapping = ACLevelMappping.get(member.guild.id, role.id)
+            if mapping is not None:
+                _acl_trace(
+                    f"'{member}' is mapped via '{role.name}' to '{mapping.level.name}'."
+                )
+                member_level = mapping.level
+                break
+
+    return member_level
+
+
 def acl2(level: ACLevel) -> Callable[[T], T]:
     """A decorator that adds ACL check to a command.
 
@@ -186,29 +233,16 @@ def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
 
     _acl_trace(f"Required level '{level.name}'.")
 
-    is_bot_owner: bool = False
-    is_guild_owner: bool = False
-
-    if getattr(ctx.bot, "owner_id", 0) == ctx.author.id:
-        _acl_trace(f"Member '{ctx.author}' is bot's owner.")
-        is_bot_owner = True
-    elif ctx.author.id in getattr(ctx.bot, "owner_ids", set()):
-        _acl_trace(f"Member '{ctx.author}' is one of bot's owners.")
-        is_bot_owner = True
-    elif ctx.author.id == ctx.guild.owner.id:
-        _acl_trace(f"Member '{ctx.author}' is guild's owner.")
-        is_guild_owner = True
-
     uo = UserOverwrite.get(ctx.guild.id, ctx.author.id, command)
     if uo is not None:
-        _acl_trace(f"User overwrite [{ctx.author}, {command}] exists: {uo.allow}.")
+        _acl_trace(f"User overwrite for '{ctx.author}' exists: '{uo.allow}'.")
         if uo.allow:
             return True
         raise NegativeUserOverwrite()
 
     co = ChannelOverwrite.get(ctx.guild.id, ctx.channel.id, command)
     if co is not None:
-        _acl_trace(f"Channel overwrite [{ctx.channel}, {command}] exists: {co.allow}.")
+        _acl_trace(f"Channel overwrite for '#{ctx.channel.name}' exists: '{co.allow}'.")
         if co.allow:
             return True
         raise NegativeChannelOverwrite(channel=ctx.channel)
@@ -216,22 +250,12 @@ def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
     for role in ctx.author.roles:
         ro = RoleOverwrite.get(ctx.guild.id, role.id, command)
         if ro is not None:
-            _acl_trace(f"Role overwrite [{role}, {command}] exists: {ro.allow}.")
+            _acl_trace(f"Role overwrite for '{role.name}' exists: '{ro.allow}'.")
             if ro.allow:
                 return True
             raise NegativeRoleOverwrite(role=role)
 
-    if is_bot_owner:
-        member_level = ACLevel.BOT_OWNER
-    elif is_guild_owner:
-        member_level = ACLevel.GUILD_OWNER
-    else:
-        member_level = ACLevel.EVERYONE
-        for role in ctx.author.roles[::-1]:
-            m = ACLevelMappping.get(ctx.guild.id, role.id)
-            if m is not None:
-                member_level = m.level
-                break
+    member_level = map_member_to_ACLevel(bot=ctx.bot, member=ctx.author)
 
     if member_level >= level:
         _acl_trace(
