@@ -1,5 +1,7 @@
+import inspect
+import re
 from operator import attrgetter
-from typing import List
+from typing import Callable, List
 
 import nextcord
 from nextcord.ext import commands
@@ -93,7 +95,7 @@ class ACL(commands.Cog):
         await guild_log.info(
             ctx.author,
             ctx.channel,
-            f"New ACLevel mapping from role '{role.name}' to level '{level.name}'.",
+            f"New ACLevel mapping for role '{role.name}' set to level '{level.name}'.",
         )
 
     @check.acl2(check.ACLevel.GUILD_OWNER)
@@ -124,9 +126,11 @@ class ACL(commands.Cog):
         """List currently applied default overwrites."""
 
         class Item:
-            def __init__(self, default: ACDefault):
+            def __init__(self, bot: commands.Bot, default: ACDefault):
                 self.command = default.command
                 self.level = default.level.name
+                command_fn = bot.get_command(self.command).callback
+                self.default: str = ACL._get_command_ACLevel(command_fn)
 
         defaults = ACDefault.get_all(ctx.guild.id)
 
@@ -135,7 +139,7 @@ class ACL(commands.Cog):
             return
 
         defaults = sorted(defaults, key=lambda d: d.command)[::-1]
-        items = [Item(default) for default in defaults]
+        items = [Item(self.bot, default) for default in defaults]
 
         table: List[str] = utils.text.create_table(
             items,
@@ -213,34 +217,26 @@ class ACL(commands.Cog):
     @acl_default_.command("audit")
     async def acl_default_audit(self, ctx, *, query: str = ""):
         """Display all bot commands and their defaults."""
-        if query != "this is WIP":
-            await ctx.reply(
-                "I can't do this yet."
-                "\n"
-                "I don't know how to introspect individual commands to see what their"
-                "defaults are. It's not possible to register them while I start "
-                "either. To display the table anyways, query for 'this is WIP'."
-            )
-            return
-
         bot_commands = [c for c in self.bot.walk_commands()]
-        # TODO Do this when query is not ""
-        # bot_commands = [c for c in bot_commands if query in c.qualified_name]
+        if len(query):
+            bot_commands = [c for c in bot_commands if query in c.qualified_name]
         bot_commands = sorted(bot_commands, key=lambda c: c.qualified_name)
-        defaults = {}
-        for default in ACDefault.get_all(ctx.guild.id):
-            defaults[default.command] = default.level
+
+        default_overwrites = {}
+        for default_overwrite in ACDefault.get_all(ctx.guild.id):
+            default_overwrites[default_overwrite.command] = default_overwrite.level
 
         class Item:
-            def __init__(self, command: commands.Command):
+            def __init__(self, bot: commands.Bot, command: commands.Command):
                 self.command = command.qualified_name
-                self.level = "?"  # TODO
+                command_fn = bot.get_command(self.command).callback
+                self.level: str = ACL._get_command_ACLevel(command_fn)
                 try:
-                    self.db_level = defaults[self.command].name
+                    self.db_level = default_overwrites[self.command].name
                 except KeyError:
                     self.db_level = ""
 
-        items = [Item(c) for c in bot_commands]
+        items = [Item(self.bot, c) for c in bot_commands]
         # put commands with overwrites first
         items = sorted(items, key=lambda i: i.db_level, reverse=True)
 
@@ -621,8 +617,13 @@ class ACL(commands.Cog):
         return result
 
     @classmethod
-    def _get_command_ACLevel(cls, command: commands.Command):
-        return None
+    def _get_command_ACLevel(cls, command: Callable) -> str:
+        """Return the ACLevel name of function's acl2 decorator."""
+        source = inspect.getsource(command)
+        match = re.search(r"acl2\(check\.ACLevel\.(.*)\)", source)
+        if not match:
+            return "?"
+        return match.group(1)
 
 
 def setup(bot) -> None:
