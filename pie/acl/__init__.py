@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Callable, Set, TypeVar
 
+import ring
+
 import nextcord
 from nextcord.ext import commands
 
@@ -142,6 +144,7 @@ def acl(ctx: commands.Context) -> bool:
     return rule.default
 
 
+@ring.lru(expire=10)
 def map_member_to_ACLevel(
     *,
     bot: commands.Bot,

@@ -58,6 +58,9 @@ bot = commands.Bot(
     help_command=Help(),
     intents=intents,
 )
+# This is required to make the 'bot' object hashable by ring's LRU cache
+# See pie/acl/__init__.py:map_member_to_ACLevel()
+bot.__ring_key__ = lambda: "bot"
 
 
 # Setup logging
