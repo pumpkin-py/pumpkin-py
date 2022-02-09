@@ -28,7 +28,19 @@ msgstr
 msgid Command
 msgstr
 
+msgid Default level
+msgstr
+
+msgid Custom level
+msgstr
+
 msgid I don't know this command.
+msgstr
+
+msgid This command can't be controlled by ACL.
+msgstr
+
+msgid Command's ACLevel is higher than your current ACLevel.
 msgstr
 
 msgid Custom default for **{command}** already exists.
@@ -41,12 +53,6 @@ msgid Command **{command}** does not have custom default.
 msgstr
 
 msgid Custom default for **{command}** removed.
-msgstr
-
-msgid Default level
-msgstr
-
-msgid Custom level
 msgstr
 
 msgid role

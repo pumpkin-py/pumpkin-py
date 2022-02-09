@@ -28,8 +28,20 @@ msgstr Žádné výchozí hodnoty nebyly nastaveny.
 msgid Command
 msgstr Příkaz
 
+msgid Default level
+msgstr Výchozí úroveň
+
+msgid Custom level
+msgstr Vlastní úroveň
+
 msgid I don't know this command.
 msgstr Takový příkaz neznám.
+
+msgid This command can't be controlled by ACL.
+msgstr Tento příkaz nemůže být kontrolovaný pomocí ACL.
+
+msgid Command's ACLevel is higher than your current ACLevel.
+msgstr ACLevel příkazu je vyšší než tvůj aktuální ACLevel.
 
 msgid Custom default for **{command}** already exists.
 msgstr Vlastní výchozí úroveň pro **{command}** už existuje.
@@ -42,12 +54,6 @@ msgstr Příkaz **{command}** nemá vlastní výchozí hodnotu.
 
 msgid Custom default for **{command}** removed.
 msgstr Vlastní výchozí úroveň pro **{command}** zrušena.
-
-msgid Default level
-msgstr Výchozí úroveň
-
-msgid Custom level
-msgstr Vlastní úroveň
 
 msgid role
 msgstr role
@@ -449,16 +455,16 @@ msgid Check failure
 msgstr Chyba kontroly
 
 msgid You have been denied the invocation of this command.
-msgstr
+msgstr Použití tohoto příkazu ti bylo zakázáno.
 
 msgid This command cannot be used in this channel.
-msgstr
+msgstr Tento příkaz nemůže být použitý v tomto kanálu.
 
 msgid This command cannot be used by the role **{role}**.
-msgstr
+msgstr Tento příkaz nemůže být použitý rolí **{role}**.
 
 msgid You need access permissions at least at level **{required}**. You only have **{actual}**.
-msgstr
+msgstr Na to potřebuješ úroveň přístupu alespoň **{required}**. Máš jen **{actual}**.
 
 msgid You do not have any of the possible permissions to access this command
 msgstr Nemáš žádné z možných oprávnění k tomuto příkazu

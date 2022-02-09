@@ -1,13 +1,14 @@
 import inspect
 import re
 from operator import attrgetter
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import nextcord
 from nextcord.ext import commands
 
 from pie import check, i18n, logger, utils
 
+import pie.acl
 from pie.acl.database import ACDefault, ACLevel, ACLevelMappping
 from pie.acl.database import UserOverwrite, ChannelOverwrite, RoleOverwrite
 
@@ -117,7 +118,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.SUBMOD)
     @acl_.group(name="default")
     async def acl_default_(self, ctx):
-        """Manage ACLevel defaults of commands."""
+        """Manage default (hardcoded) command ACLevels."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.SUBMOD)
@@ -130,7 +131,8 @@ class ACL(commands.Cog):
                 self.command = default.command
                 self.level = default.level.name
                 command_fn = bot.get_command(self.command).callback
-                self.default: str = ACL._get_command_ACLevel(command_fn)
+                level = ACL._get_command_ACLevel(command_fn)
+                self.default: str = getattr(level, "name", "?")
 
         defaults = ACDefault.get_all(ctx.guild.id)
 
@@ -145,7 +147,8 @@ class ACL(commands.Cog):
             items,
             header={
                 "command": _(ctx, "Command"),
-                "level": _(ctx, "Level"),
+                "default": _(ctx, "Default level"),
+                "level": _(ctx, "Custom level"),
             },
         )
 
@@ -156,8 +159,6 @@ class ACL(commands.Cog):
     @acl_default_.command("add")
     async def acl_default_add(self, ctx, command: str, level: str):
         """Add custom ACLevel for a command."""
-        # TODO When we know how to access the decorators, check that
-        # we aren't lowering BOT_OWNER permissions.
         try:
             level: ACLevel = ACLevel[level]
         except KeyError:
@@ -170,6 +171,26 @@ class ACL(commands.Cog):
         if command not in self._all_bot_commands:
             await ctx.reply(_(ctx, "I don't know this command."))
             return
+
+        # Deny if the command's level is higher than user's level
+
+        command_level: ACLevel = ACDefault.get(ctx.guild.id, command)
+        if command_level is None:
+            command_obj = self.bot.get_command(command)
+            command_level = ACL._get_command_ACLevel(command_obj.callback)
+        if command_level is None:
+            await ctx.reply(_(ctx, "This command can't be controlled by ACL."))
+            return
+
+        if command_level > pie.acl.map_member_to_ACLevel(
+            bot=self.bot, member=ctx.author
+        ):
+            await ctx.reply(
+                _(ctx, "Command's ACLevel is higher than your current ACLevel.")
+            )
+            return
+
+        # Add the overwrite
 
         default = ACDefault.add(ctx.guild.id, command, level)
         if default is None:
@@ -230,7 +251,8 @@ class ACL(commands.Cog):
             def __init__(self, bot: commands.Bot, command: commands.Command):
                 self.command = command.qualified_name
                 command_fn = bot.get_command(self.command).callback
-                self.level: str = ACL._get_command_ACLevel(command_fn)
+                level = ACL._get_command_ACLevel(command_fn)
+                self.level: str = getattr(level, "name", "?")
                 try:
                     self.db_level = default_overwrites[self.command].name
                 except KeyError:
@@ -617,13 +639,14 @@ class ACL(commands.Cog):
         return result
 
     @classmethod
-    def _get_command_ACLevel(cls, command: Callable) -> str:
+    def _get_command_ACLevel(cls, command_function: Callable) -> Optional[ACLevel]:
         """Return the ACLevel name of function's acl2 decorator."""
-        source = inspect.getsource(command)
+        source = inspect.getsource(command_function)
         match = re.search(r"acl2\(check\.ACLevel\.(.*)\)", source)
         if not match:
-            return "?"
-        return match.group(1)
+            return None
+        level = match.group(1)
+        return ACLevel[level]
 
 
 def setup(bot) -> None:
