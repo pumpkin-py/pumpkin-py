@@ -31,7 +31,7 @@ def init_core():
     importlib.import_module("pie.database.config")
     database.base.metadata.create_all(database.db)
 
-    for module in ("acl", "i18n", "logger", "spamchannel"):
+    for module in ("acl", "i18n", "logger", "storage", "spamchannel"):
         import_stub: str = f"pie.{module}.database"
         try:
             importlib.import_module(import_stub)
