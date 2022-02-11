@@ -432,6 +432,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_overwrite_role_.command(name="remove")
     async def acl_overwrite_role_remove(self, ctx, command: str, role: nextcord.Role):
+        """Remove ACL role overwrite."""
         removed = RoleOverwrite.remove(ctx.guild.id, role.id, command)
         if not removed:
             await ctx.reply(
@@ -465,6 +466,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.SUBMOD)
     @acl_overwrite_role_.command(name="list")
     async def acl_overwrite_role_list(self, ctx):
+        """List ACL role overwrites."""
         ros = RoleOverwrite.get_all(ctx.guild.id)
 
         class Item:
@@ -506,6 +508,7 @@ class ACL(commands.Cog):
     async def acl_overwrite_user_add(
         self, ctx, command: str, user: nextcord.Member, allow: bool
     ):
+        """Add ACL user overwrite."""
         if command not in self._all_bot_commands:
             await ctx.reply(_(ctx, "I don't know this command."))
             return
@@ -548,6 +551,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_overwrite_user_.command(name="remove")
     async def acl_overwrite_user_remove(self, ctx, command: str, user: nextcord.Member):
+        """Remove ACL user overwrite."""
         removed = UserOverwrite.remove(ctx.guild.id, user.id, command)
         if not removed:
             await ctx.reply(
@@ -581,6 +585,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.SUBMOD)
     @acl_overwrite_user_.command(name="list")
     async def acl_overwrite_user_list(self, ctx):
+        """List ACL role overwrites."""
         uos = UserOverwrite.get_all(ctx.guild.id)
 
         class Item:
@@ -627,6 +632,7 @@ class ACL(commands.Cog):
     async def acl_overwrite_channel_add(
         self, ctx, command: str, channel: nextcord.TextChannel, allow: bool
     ):
+        """Add ACL channel overwrite."""
         if command not in self._all_bot_commands:
             await ctx.reply(_(ctx, "I don't know this command."))
             return
@@ -671,6 +677,7 @@ class ACL(commands.Cog):
     async def acl_overwrite_channel_remove(
         self, ctx, command: str, channel: nextcord.TextChannel
     ):
+        """Remove ACL channel overwrite."""
         removed = ChannelOverwrite.remove(ctx.guild.id, channel.id, command)
         if not removed:
             await ctx.reply(
@@ -704,6 +711,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.SUBMOD)
     @acl_overwrite_channel_.command(name="list")
     async def acl_overwrite_channel_list(self, ctx):
+        """List ACL channel overwrites."""
         cos = ChannelOverwrite.get_all(ctx.guild.id)
 
         class Item:
