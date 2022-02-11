@@ -135,18 +135,27 @@ class Help(commands.MinimalHelpCommand):
 
         self.paginator.add_line(line)
 
+    async def order_subcommands(self, cmds: Sequence[commands.Command]):
+        """Order commands: first groups, then finals."""
+        cmds = await self.filter_commands(cmds, sort=self.sort_commands)
+        groups = [c for c in cmds if type(c) == commands.Group]
+        finals = [c for c in cmds if c not in groups]
+        return groups, finals
+
     async def send_group_help(self, group: commands.Group) -> None:
         """Format command group output."""
         self.add_command_formatting(group)
 
-        filtered = await self.filter_commands(group.commands, sort=self.sort_commands)
-        if filtered:
+        groups, finals = await self.order_subcommands(group.commands)
+        if groups or finals:
             note = self.get_opening_note()
             if note:
                 self.paginator.add_line(note)
 
             # skip commands heading
-            for command in filtered:
+            for command in groups:
+                self.add_subcommand_formatting(command)
+            for command in finals:
                 self.add_subcommand_formatting(command)
 
             note = self.get_ending_note()
@@ -162,12 +171,12 @@ class Help(commands.MinimalHelpCommand):
         # TODO Keep module descriptions somewhere?
         # Usable as self.paginator.add_line("Module description")
 
-        filtered = await self.filter_commands(
-            cog.get_commands(), sort=self.sort_commands
-        )
-        if filtered:
+        groups, finals = await self.order_subcommands(cog.get_commands())
+        if groups or finals:
             self.paginator.add_line(f"{_(ctx, 'Module')} **__{cog.qualified_name}__**")
-            for command in filtered:
+            for command in groups:
+                self.add_subcommand_formatting(command)
+            for command in finals:
                 self.add_subcommand_formatting(command)
 
             note = self.get_ending_note()
