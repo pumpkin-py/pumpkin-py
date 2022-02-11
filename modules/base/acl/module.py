@@ -82,6 +82,16 @@ class ACL(commands.Cog):
                 )
             )
             return
+        if level in (ACLevel.BOT_OWNER, ACLevel.GUILD_OWNER):
+            await ctx.reply(_(ctx, "You can't assign OWNER levels."))
+            return
+        if level >= pie.acl.map_member_to_ACLevel(bot=self.bot, member=ctx.author):
+            await ctx.reply(
+                _(ctx, "Your ACLevel has to be higher than **{level}**.").format(
+                    level=level.name
+                )
+            )
+            return
 
         m = ACLevelMappping.add(ctx.guild.id, role.id, level)
         if m is None:
@@ -103,10 +113,22 @@ class ACL(commands.Cog):
     @acl_mapping_.command(name="remove")
     async def acl_mapping_remove(self, ctx, role: nextcord.Role):
         """Remove ACL level to role mapping."""
-        removed: bool = ACLevelMappping.remove(ctx.guild.id, role.id)
-        if not removed:
+        mapped = ACLevelMappping.get(ctx.guild.id, role.id)
+        if not mapped:
             await ctx.reply(_(ctx, "That role is not mapped to any level."))
             return
+
+        if mapped.level >= pie.acl.map_member_to_ACLevel(
+            bot=self.bot, member=ctx.author
+        ):
+            await ctx.reply(
+                _(ctx, "Your ACLevel has to be higher than **{level}**.").format(
+                    level=mapped.level.name
+                )
+            )
+            return
+
+        ACLevelMappping.remove(ctx.guild.id, role.id)
 
         await ctx.reply(_(ctx, "Role mapping was sucessfully removed."))
         await guild_log.info(
@@ -127,11 +149,11 @@ class ACL(commands.Cog):
         """List currently applied default overwrites."""
 
         class Item:
-            def __init__(self, bot: commands.Bot, default: ACDefault):
+            def __init__(self, parent: commands.Cog, default: ACDefault):
                 self.command = default.command
                 self.level = default.level.name
-                command_fn = bot.get_command(self.command).callback
-                level = ACL._get_command_ACLevel(command_fn)
+                command_fn = parent.bot.get_command(self.command).callback
+                level = parent.get_hardcoded_ACLevel(command_fn)
                 self.default: str = getattr(level, "name", "?")
 
         defaults = ACDefault.get_all(ctx.guild.id)
@@ -141,7 +163,7 @@ class ACL(commands.Cog):
             return
 
         defaults = sorted(defaults, key=lambda d: d.command)[::-1]
-        items = [Item(self.bot, default) for default in defaults]
+        items = [Item(self, default) for default in defaults]
 
         table: List[str] = utils.text.create_table(
             items,
@@ -172,14 +194,19 @@ class ACL(commands.Cog):
             await ctx.reply(_(ctx, "I don't know this command."))
             return
 
-        # Deny if the command's level is higher than user's level
-
-        command_level: ACLevel = ACDefault.get(ctx.guild.id, command)
-        if command_level is None:
-            command_obj = self.bot.get_command(command)
-            command_level = ACL._get_command_ACLevel(command_obj.callback)
+        command_level = self.get_true_ACLevel(ctx.guild.id, command)
         if command_level is None:
             await ctx.reply(_(ctx, "This command can't be controlled by ACL."))
+            return
+
+        if not self.can_invoke_command(ctx, command):
+            await ctx.reply(
+                _(
+                    ctx,
+                    "You don't have permission to run this command, "
+                    "you can't alter its permissions.",
+                )
+            )
             return
 
         if command_level > pie.acl.map_member_to_ACLevel(
@@ -218,6 +245,16 @@ class ACL(commands.Cog):
             await ctx.reply(_(ctx, "I don't know this command."))
             return
 
+        if not self.can_invoke_command(ctx, command):
+            await ctx.reply(
+                _(
+                    ctx,
+                    "You don't have permission to run this command, "
+                    "you can't alter its permissions.",
+                )
+            )
+            return
+
         removed = ACDefault.remove(ctx.guild.id, command)
         if not removed:
             await ctx.reply(
@@ -248,10 +285,10 @@ class ACL(commands.Cog):
             default_overwrites[default_overwrite.command] = default_overwrite.level
 
         class Item:
-            def __init__(self, bot: commands.Bot, command: commands.Command):
+            def __init__(self, parent: commands.Cog, command: commands.Command):
                 self.command = command.qualified_name
-                command_fn = bot.get_command(self.command).callback
-                level = ACL._get_command_ACLevel(command_fn)
+                command_fn = parent.bot.get_command(self.command).callback
+                level = parent.get_hardcoded_ACLevel(command_fn)
                 self.level: str = getattr(level, "name", "?")
                 try:
                     self.db_level = default_overwrites[self.command].name
@@ -350,6 +387,17 @@ class ACL(commands.Cog):
         if command not in self._all_bot_commands:
             await ctx.reply(_(ctx, "I don't know this command."))
             return
+
+        if not self.can_invoke_command(ctx, command):
+            await ctx.reply(
+                _(
+                    ctx,
+                    "You don't have permission to run this command, "
+                    "you can't alter its permissions.",
+                )
+            )
+            return
+
         ro = RoleOverwrite.add(ctx.guild.id, role.id, command, allow)
         if ro is None:
             await ctx.reply(
@@ -382,6 +430,16 @@ class ACL(commands.Cog):
         if not removed:
             await ctx.reply(
                 _(ctx, "Overwrite for this command and role does not exist.")
+            )
+            return
+
+        if not self.can_invoke_command(ctx, command):
+            await ctx.reply(
+                _(
+                    ctx,
+                    "You don't have permission to run this command, "
+                    "you can't alter its permissions.",
+                )
             )
             return
 
@@ -445,6 +503,17 @@ class ACL(commands.Cog):
         if command not in self._all_bot_commands:
             await ctx.reply(_(ctx, "I don't know this command."))
             return
+
+        if not self.can_invoke_command(ctx, command):
+            await ctx.reply(
+                _(
+                    ctx,
+                    "You don't have permission to run this command, "
+                    "you can't alter its permissions.",
+                )
+            )
+            return
+
         uo = UserOverwrite.add(ctx.guild.id, user.id, command, allow)
         if uo is None:
             await ctx.reply(
@@ -480,6 +549,16 @@ class ACL(commands.Cog):
             )
             return
 
+        if not self.can_invoke_command(ctx, command):
+            await ctx.reply(
+                _(
+                    ctx,
+                    "You don't have permission to run this command, "
+                    "you can't alter its permissions.",
+                )
+            )
+            return
+
         await ctx.reply(
             _(
                 ctx,
@@ -490,7 +569,7 @@ class ACL(commands.Cog):
         await guild_log.info(
             ctx.author,
             ctx.channel,
-            f"User overwrite removed for command '{command}' and role '{user.name}'.",
+            f"User overwrite removed for command '{command}' and user '{user.name}'.",
         )
 
     @check.acl2(check.ACLevel.SUBMOD)
@@ -545,6 +624,17 @@ class ACL(commands.Cog):
         if command not in self._all_bot_commands:
             await ctx.reply(_(ctx, "I don't know this command."))
             return
+
+        if not self.can_invoke_command(ctx, command):
+            await ctx.reply(
+                _(
+                    ctx,
+                    "You don't have permission to run this command, "
+                    "you can't alter its permissions.",
+                )
+            )
+            return
+
         co = ChannelOverwrite.add(ctx.guild.id, channel.id, command, allow)
         if co is None:
             await ctx.reply(
@@ -579,6 +669,16 @@ class ACL(commands.Cog):
         if not removed:
             await ctx.reply(
                 _(ctx, "Overwrite for this command and channel does not exist.")
+            )
+            return
+
+        if not self.can_invoke_command(ctx, command):
+            await ctx.reply(
+                _(
+                    ctx,
+                    "You don't have permission to run this command, "
+                    "you can't alter its permissions.",
+                )
             )
             return
 
@@ -638,8 +738,7 @@ class ACL(commands.Cog):
             result.append(command.qualified_name)
         return result
 
-    @classmethod
-    def _get_command_ACLevel(cls, command_function: Callable) -> Optional[ACLevel]:
+    def get_hardcoded_ACLevel(self, command_function: Callable) -> Optional[ACLevel]:
         """Return the ACLevel name of function's acl2 decorator."""
         source = inspect.getsource(command_function)
         match = re.search(r"acl2\(check\.ACLevel\.(.*)\)", source)
@@ -647,6 +746,28 @@ class ACL(commands.Cog):
             return None
         level = match.group(1)
         return ACLevel[level]
+
+    # TODO Make cachable
+    def get_true_ACLevel(self, guild_id: int, command: str) -> Optional[ACLevel]:
+        default_overwrite = ACDefault.get(guild_id, command)
+        if default_overwrite:
+            level = default_overwrite.level
+        else:
+            command_obj = self.bot.get_command(command)
+            level = self.get_hardcoded_ACLevel(command_obj.callback)
+        return level
+
+    def can_invoke_command(self, ctx: commands.Context, command: str) -> bool:
+        """Check if given command is invokable by the user."""
+        command_level = self.get_true_ACLevel(ctx.guild.id, command)
+        if command_level is None:
+            return False
+
+        try:
+            pie.acl.acl2_function(ctx, command_level, for_command=command)
+            return True
+        except pie.exceptions.ACLFailure:
+            return False
 
 
 def setup(bot) -> None:

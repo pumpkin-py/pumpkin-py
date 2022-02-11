@@ -10,6 +10,12 @@ msgstr
 msgid Invalid level. Possible options are: {keys}.
 msgstr
 
+msgid You can't assign OWNER levels.
+msgstr
+
+msgid Your ACLevel has to be higher than **{level}**.
+msgstr
+
 msgid That role is already mapped to some level.
 msgstr
 
@@ -38,6 +44,9 @@ msgid I don't know this command.
 msgstr
 
 msgid This command can't be controlled by ACL.
+msgstr
+
+msgid You don't have permission to run this command, you can't alter its permissions.
 msgstr
 
 msgid Command's ACLevel is higher than your current ACLevel.

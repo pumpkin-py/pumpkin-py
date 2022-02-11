@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Set, TypeVar
+from typing import Callable, Set, Optional, TypeVar
 
 import ring
 
@@ -14,14 +14,13 @@ from pie import i18n
 from pie.acl.database import ACL_rule, ACL_group
 
 # ACL 2
-from pie.acl.database import ACLevel, ACLevelMappping
+from pie.acl.database import ACDefault, ACLevel, ACLevelMappping
 from pie.exceptions import (
     NegativeUserOverwrite,
     NegativeChannelOverwrite,
     NegativeRoleOverwrite,
     InsufficientACLevel,
 )
-from pie.acl.database import ACDefault, ACLevel, ACLevelMappping
 from pie.acl.database import UserOverwrite, ChannelOverwrite, RoleOverwrite
 
 _trace: Callable = pie._tracing.register("pie_acl")
@@ -192,7 +191,7 @@ def map_member_to_ACLevel(
 
 
 def acl2(level: ACLevel) -> Callable[[T], T]:
-    """A decorator that adds ACL check to a command.
+    """A decorator that adds ACL2 check to a command.
 
     Each command has its preferred ACL group set in the decorator. Bot owner
     can add user and channel overwrites to these decorators, to allow detailed
@@ -214,15 +213,30 @@ def acl2(level: ACLevel) -> Callable[[T], T]:
     """
 
     def predicate(ctx: commands.Context) -> bool:
-        return _acl2(ctx, level)
+        return acl2_function(ctx, level)
 
     return commands.check(predicate)
 
 
-def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
-    """Check function based on Access Control."""
-    command: str = ctx.command.qualified_name
+# TODO Make cachable as well?
+def acl2_function(
+    ctx: commands.Context, level: ACLevel, *, for_command: Optional[str] = None
+) -> bool:
+    """Check function based on Access Control.
+
+    Set `for_command` to perform the check for other command
+    then the one being invoked.
+    """
+    if for_command:
+        command = for_command
+    else:
+        command: str = ctx.command.qualified_name
     _acl_trace = lambda message: _trace(f"[{command}] {message}")  # noqa: E731
+
+    member_level = map_member_to_ACLevel(bot=ctx.bot, member=ctx.author)
+    if member_level == ACLevel.BOT_OWNER:
+        _acl_trace("Bot owner is always allowed.")
+        return True
 
     # Allow invocations in DM.
     # Wrap the function in `@commands.guild_only()` to change this behavior.
@@ -257,8 +271,6 @@ def _acl2(ctx: commands.Context, level: ACLevel) -> bool:
             if ro.allow:
                 return True
             raise NegativeRoleOverwrite(role=role)
-
-    member_level = map_member_to_ACLevel(bot=ctx.bot, member=ctx.author)
 
     if member_level >= level:
         _acl_trace(

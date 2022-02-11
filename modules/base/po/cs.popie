@@ -10,6 +10,12 @@ msgstr Úroveň
 msgid Invalid level. Possible options are: {keys}.
 msgstr Neplatná úroveň. Možnosti jsou: {keys}.
 
+msgid You can't assign OWNER levels.
+msgstr OWNER úrovně nelze přiřadit.
+
+msgid Your ACLevel has to be higher than **{level}**.
+msgstr Tvůj ACLevel musí být vyšší než **{level}**.
+
 msgid That role is already mapped to some level.
 msgstr Tato role je už na nějakou úroveň mapována.
 
@@ -39,6 +45,9 @@ msgstr Takový příkaz neznám.
 
 msgid This command can't be controlled by ACL.
 msgstr Tento příkaz nemůže být kontrolovaný pomocí ACL.
+
+msgid You don't have permission to run this command, you can't alter its permissions.
+msgstr Pro spuštění tohoto příkazu nemáš právo, proto jeho oprávnění měnit nemůžeš.
 
 msgid Command's ACLevel is higher than your current ACLevel.
 msgstr ACLevel příkazu je vyšší než tvůj aktuální ACLevel.
@@ -110,7 +119,7 @@ msgid Overwrite for this command and user does not exist.
 msgstr Overwrite pro tento příkaz a uživatele neexistuje.
 
 msgid Overwrite for command **{command}** and user **{user}** sucessfully removed.
-msgstr Overwrite pro příkaz **{command}** a uživatele **{role}** byl úspěšně odebrán.
+msgstr Overwrite pro příkaz **{command}** a uživatele **{user}** byl úspěšně odebrán.
 
 msgid No user overwrites have been set.
 msgstr Nebyly nastaveny žádné overwrites pro uživatele.
