@@ -174,7 +174,10 @@ class ScrollableEmbed(nextcord.ui.View):
         """Gets called when the view timeouts."""
         if not self.delete_message:
             self.clear_items()
-            await self.message.edit(embed=self.pages[self.pagenum], view=self)
+            try:
+                await self.message.edit(embed=self.pages[self.pagenum], view=None)
+            except nextcord.errors.NotFound:
+                pass
         else:
             try:
                 try:
@@ -184,7 +187,7 @@ class ScrollableEmbed(nextcord.ui.View):
                     nextcord.errors.Forbidden,
                 ):
                     self.clear_items()
-                    await self.message.edit(embed=self.pages[self.pagenum], view=self)
+                    await self.message.edit(embed=self.pages[self.pagenum], view=None)
             except nextcord.errors.NotFound:
                 pass
 
@@ -267,7 +270,7 @@ class ConfirmView(nextcord.ui.View):
 
         if not self.delete:
             self.clear_items()
-            await self.message.edit(embed=self.embed, view=self)
+            await self.message.edit(embed=self.embed, view=None)
         else:
             try:
                 try:
@@ -277,7 +280,7 @@ class ConfirmView(nextcord.ui.View):
                     nextcord.errors.Forbidden,
                 ):
                     self.clear_items()
-                    await self.message.edit(embed=self.embed, view=self)
+                    await self.message.edit(embed=self.embed, view=None)
             except nextcord.errors.NotFound:
                 pass
         return self.value
