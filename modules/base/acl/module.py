@@ -295,7 +295,7 @@ class ACL(commands.Cog):
                 except KeyError:
                     self.db_level = ""
 
-        items = [Item(self.bot, c) for c in bot_commands]
+        items = [Item(self, c) for c in bot_commands]
         # put commands with overwrites first
         items = sorted(items, key=lambda i: i.db_level, reverse=True)
 
