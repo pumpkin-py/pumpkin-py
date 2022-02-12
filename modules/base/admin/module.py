@@ -89,6 +89,7 @@ class Admin(commands.Cog):
 
     # Commands
 
+    @commands.guild_only()
     @check.acl2(check.ACLevel.BOT_OWNER)
     @commands.group(name="repository", aliases=["repo"])
     async def repository(self, ctx):
@@ -329,6 +330,7 @@ class Admin(commands.Cog):
             ).format(name=repository.name)
         )
 
+    @commands.guild_only()
     @check.acl2(check.ACLevel.BOT_OWNER)
     @commands.group(name="module")
     async def module(self, ctx):
@@ -395,6 +397,7 @@ class Admin(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @commands.guild_only()
     @check.acl2(check.ACLevel.BOT_OWNER)
     @config_.command(name="set")
     async def config_set(self, ctx, key: str, value: str):
@@ -437,6 +440,7 @@ class Admin(commands.Cog):
         if key in ("prefix", "status"):
             await utils.discord.update_presence(self.bot)
 
+    @commands.guild_only()
     @check.acl2(check.ACLevel.BOT_OWNER)
     @commands.group(name="pumpkin")
     async def pumpkin_(self, ctx):
