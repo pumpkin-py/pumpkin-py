@@ -1,3 +1,6 @@
+from nextcord.ext.commands import CheckFailure
+
+
 class PumpkinException(Exception):
     """Common base for all pumpkin.py exceptions."""
 
@@ -76,4 +79,54 @@ class BadTranslation(PumpkinException):
         return (
             error
             + f': Command "{self.command}" string "{self.string}" has no key "{self.key}".'
+        )
+
+
+class ACLFailure(CheckFailure):
+    """Raised by ACL when invocation is blocked by some kind of settings."""
+
+    pass
+
+
+class NegativeUserOverwrite(ACLFailure):
+    """Raised by ACL when invocation is blocked for given user."""
+
+    def __str__(self) -> str:
+        return "Invocation was blocked based on user rule."
+
+
+class NegativeChannelOverwrite(ACLFailure):
+    """Raised by ACL when invocation is blocked in current channel."""
+
+    def __init__(self, channel):
+        # channel: nextcord.TextChannel
+        self.channel = channel
+
+    def __str__(self) -> str:
+        return f"Invocation was blocked based on channel {self.channel.id}."
+
+
+class NegativeRoleOverwrite(ACLFailure):
+    """Raised by ACL when invocation is blocked by user's role."""
+
+    def __init__(self, role):
+        # role: nextcord.Role
+        self.role = role
+
+    def __str__(self) -> str:
+        return f"Invocation was blocked based role {self.role.id}."
+
+
+class InsufficientACLevel(ACLFailure):
+    """Raised when user does not have required ACLevel."""
+
+    def __init__(self, required, actual):
+        # pie.database.ACLevel is not imported because of recursive imports
+        self.required = required
+        self.actual = actual
+
+    def __str__(self) -> str:
+        return (
+            f"You need access permissions at least at level {self.required.name}. "
+            f"You only have {self.actual.name}."
         )

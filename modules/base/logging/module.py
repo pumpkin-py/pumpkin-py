@@ -19,12 +19,12 @@ class Logging(commands.Cog):
     #
 
     @commands.guild_only()
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @commands.group(name="logging")
     async def logging_(self, ctx):
         await utils.discord.send_help(ctx)
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.MOD)
     @logging_.command(name="list")
     async def logging_list(self, ctx):
         confs = LogConf.get_all_subscriptions(guild_id=ctx.guild.id)
@@ -52,7 +52,7 @@ class Logging(commands.Cog):
         else:
             await ctx.reply(_(ctx, "Logging is not enabled on this server."))
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @logging_.command(name="set")
     async def logging_set(
         self, ctx, scope: str, level: str, module: Optional[str] = None
@@ -93,7 +93,7 @@ class Logging(commands.Cog):
         await ctx.reply(_(ctx, "Logging settings succesfully updated."))
         await guild_log.info(ctx.author, ctx.channel, log_message)
 
-    @commands.check(check.acl)
+    @check.acl2(check.ACLevel.GUILD_OWNER)
     @logging_.command(name="unset")
     async def logging_unset(self, ctx, scope: str, module: Optional[str] = None):
         if scope not in ("bot", "guild"):

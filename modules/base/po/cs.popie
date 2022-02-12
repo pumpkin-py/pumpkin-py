@@ -1,89 +1,149 @@
-msgid You didn't define any ACL groups yet.
-msgstr Zatím jste nedefinovali žádné ACL skupiny.
+msgid No mappings have been set.
+msgstr Žádné mapování nebylo nastaveno.
 
-msgid No such group exists.
-msgstr Taková skupina neexistuje.
+msgid Role
+msgstr Role
 
-msgid Bad group name (regex `{regex}`)
-msgstr Chybné jméno skupny (regex `{regex}`)
+msgid Level
+msgstr Úroveň
 
-msgid ACL group can't be named like that (regex `{regex}`).
-msgstr ACL skupina takto být pojmenována nemůže (regex `{regex}`).
+msgid Invalid level. Possible options are: {keys}.
+msgstr Neplatná úroveň. Možnosti jsou: {keys}.
 
-msgid Bad parameter.
-msgstr Špatný parametr.
+msgid You can't assign OWNER levels.
+msgstr OWNER úrovně nelze přiřadit.
 
-msgid No such group.
-msgstr Taková skupina neexistuje.
+msgid Your ACLevel has to be higher than **{level}**.
+msgstr Tvůj ACLevel musí být vyšší než **{level}**.
 
-msgid ACL group removed.
-msgstr ACL skupina odstraněna.
+msgid That role is already mapped to some level.
+msgstr Tato role je už na nějakou úroveň mapována.
 
-msgid **{count} rules** exported.
-msgstr **{count} pravidel** bylo exportováno.
+msgid Role **{role}** will be mapped to **{level}**.
+msgstr Role **{role}** bude mapována na **{level}**.
 
-msgid No such ACL rule.
-msgstr Takové ACL pravidlo neexistuje.
+msgid That role is not mapped to any level.
+msgstr Tato role není mapována na žádnou úroveň.
 
-msgid Rule removed.
-msgstr Pravidlo odstraněno.
+msgid Role mapping was sucessfully removed.
+msgstr Mapování role bylo úspěšně zrušeno.
 
-msgid I've removed {count} rules.
-msgstr {count} pravidel bylo odebráno.
+msgid No defaults have been set.
+msgstr Žádné výchozí hodnoty nebyly nastaveny.
 
-msgid I'm expecting one JSON file.
-msgstr Očekávám jeden JSON soubor.
+msgid Command
+msgstr Příkaz
 
-msgid You have to upload the JSON file.
-msgstr Musíš nahrát JSON soubor.
+msgid Default level
+msgstr Výchozí úroveň
 
-msgid Your JSON file contains errors.
-msgstr Tvůj JSON soubor obsahuje chyby.
+msgid Custom level
+msgstr Vlastní úroveň
 
-msgid I've imported **{new}** new and **{updated}** updated rules.
-msgstr Bylo importováno **{new}** nových a **{updated}** aktualizovaných pravidel.
+msgid I don't know this command.
+msgstr Takový příkaz neznám.
 
-msgid Skipping:
-msgstr Přeskakuji:
+msgid This command can't be controlled by ACL.
+msgstr Tento příkaz nemůže být kontrolovaný pomocí ACL.
 
-msgid expected `bool`
-msgstr očekáván `bool`
+msgid You don't have permission to run this command, you can't alter its permissions.
+msgstr Pro spuštění tohoto příkazu nemáš právo, proto jeho oprávnění měnit nemůžeš.
 
-msgid expected `list`
-msgstr očekáván `list`
+msgid Command's ACLevel is higher than your current ACLevel.
+msgstr ACLevel příkazu je vyšší než tvůj aktuální ACLevel.
 
-msgid invalid group
-msgstr neplatná skupina
+msgid Custom default for **{command}** already exists.
+msgstr Vlastní výchozí úroveň pro **{command}** už existuje.
 
-msgid expected `int`
-msgstr očekáván `int`
+msgid Custom default for **{command}** set.
+msgstr Vlastní výchozí úroveň pro **{command}** byla nastavena.
 
-msgid duplicate
-msgstr duplikát
+msgid Command **{command}** does not have custom default.
+msgstr Příkaz **{command}** nemá vlastní výchozí hodnotu.
 
-msgid An unexpected error occurred
-msgstr Nastala nečekaná chyba
+msgid Custom default for **{command}** removed.
+msgstr Vlastní výchozí úroveň pro **{command}** zrušena.
 
-msgid Command **{name}** is not enabled.
-msgstr Příkaz **{name}** není zapnutý.
+msgid role
+msgstr role
 
-msgid Command **{name}** has been disabled.
-msgstr Příkaz **{name}** byl vypnutý.
+msgid channel
+msgstr kanál
 
-msgid Command **{name}** is not disabled.
-msgstr Příkaz **{name}** nebyl vypnutý.
+msgid user
+msgstr uživatel
 
-msgid Command **{name}** has been enabled.
-msgstr Příkaz **{name}** byl zapnutý.
+msgid unsupported
+msgstr nepodporováno
 
-msgid ACL group {name}
-msgstr ACL skupina {name}
+msgid yes
+msgstr ano
 
-msgid Discord role
-msgstr Discord role
+msgid no
+msgstr ne
 
-msgid Parent ACL group
-msgstr Rodičovská ACL skupina
+msgid No ACL overwrites have been set.
+msgstr Nebyly nastaveny ACL overwrites.
+
+msgid Overwrite type
+msgstr Typ overwrite
+
+msgid Value
+msgstr Hodnota
+
+msgid Allow
+msgstr Povoleno
+
+msgid Overwrite for command **{command}** and role **{role}** already exists.
+msgstr Overwrite pro příkaz **{command}** a roli **{role}** už existuje.
+
+msgid Overwrite for command **{command}** and role **{role}** sucessfully created.
+msgstr Overwrite pro příkaz **{command}** a roli **{role}** byl úspěšně vytvořen.
+
+msgid Overwrite for this command and role does not exist.
+msgstr Overwrite pro tento příkaz a roli neexistuje.
+
+msgid Overwrite for command **{command}** and role **{role}** sucessfully removed.
+msgstr Overwrite pro příkaz **{command}** a roli **{role}** byl úspěšně odebrán.
+
+msgid No role overwrites have been set.
+msgstr Nebyly nastaveny žádné overwrites pro role.
+
+msgid Overwrite for command **{command}** and user **{user}** already exists.
+msgstr Overwrite pro příkaz **{command}** a uživatele **{user}** už existuje.
+
+msgid Overwrite for command **{command}** and user **{user}** sucessfully created.
+msgstr Overwrite pro příkaz **{command}** a uživatele **{user}** byl úspěšně vytvořen.
+
+msgid Overwrite for this command and user does not exist.
+msgstr Overwrite pro tento příkaz a uživatele neexistuje.
+
+msgid Overwrite for command **{command}** and user **{user}** sucessfully removed.
+msgstr Overwrite pro příkaz **{command}** a uživatele **{user}** byl úspěšně odebrán.
+
+msgid No user overwrites have been set.
+msgstr Nebyly nastaveny žádné overwrites pro uživatele.
+
+msgid User
+msgstr Uživatel
+
+msgid Overwrite for command **{command}** and channel **#{channel}** already exists.
+msgstr Overwrite pro příkaz **{command}** a kanál **{channel}** už existuje.
+
+msgid Overwrite for command **{command}** and channel **#{channel}** sucessfully created.
+msgstr Overwrite pro příkaz **{command}** a kanál **{channel}** byl úspěšně vytvořen.
+
+msgid Overwrite for this command and channel does not exist.
+msgstr Overwrite pro tento příkaz a kanál neexistuje.
+
+msgid Overwrite for command **{command}** and channel **#{channel}** sucessfully removed.
+msgstr Overwrite pro příkaz **{command}** a kanál **{channel}** byl úspěšně odebrán.
+
+msgid No channel overwrites have been set.
+msgstr Nebyly nastaveny žádné overwrites pro kanály.
+
+msgid Channel
+msgstr Kanál
 
 msgid Repository initialization aborted: {exc}
 msgstr Inicializace repozitáře se nezdařila: {exc}
@@ -295,6 +355,9 @@ msgstr Čas spuštění
 msgid Run time
 msgstr Doba od spuštění
 
+msgid An unexpected error occurred
+msgstr Nastala nečekaná chyba
+
 msgid pumpkin.py exception
 msgstr Výjimka pumpkin.py
 
@@ -399,6 +462,18 @@ msgstr Limit je **{num}**/**{per}**
 
 msgid Check failure
 msgstr Chyba kontroly
+
+msgid You have been denied the invocation of this command.
+msgstr Použití tohoto příkazu ti bylo zakázáno.
+
+msgid This command cannot be used in this channel.
+msgstr Tento příkaz nemůže být použitý v tomto kanálu.
+
+msgid This command cannot be used by the role **{role}**.
+msgstr Tento příkaz nemůže být použitý rolí **{role}**.
+
+msgid You need access permissions at least at level **{required}**. You only have **{actual}**.
+msgstr Na to potřebuješ úroveň přístupu alespoň **{required}**. Máš jen **{actual}**.
 
 msgid You do not have any of the possible permissions to access this command
 msgstr Nemáš žádné z možných oprávnění k tomuto příkazu

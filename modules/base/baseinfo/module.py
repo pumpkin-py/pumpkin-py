@@ -2,7 +2,7 @@ import datetime
 
 from nextcord.ext import commands
 
-from pie import i18n, utils
+from pie import check, i18n, utils
 
 _ = i18n.Translator("modules/base").translate
 
@@ -17,12 +17,14 @@ class BaseInfo(commands.Cog):
 
     #
 
+    @check.acl2(check.ACLevel.EVERYONE)
     @commands.command()
     async def ping(self, ctx):
         """Return latency information."""
         delay: str = "{:.2f}".format(self.bot.latency)
         await ctx.reply(_(ctx, "Pong: **{delay}** 🏓").format(delay=delay))
 
+    @check.acl2(check.ACLevel.EVERYONE)
     @commands.command()
     async def uptime(self, ctx):
         """Return uptime information."""

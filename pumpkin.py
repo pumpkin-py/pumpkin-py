@@ -58,6 +58,9 @@ bot = commands.Bot(
     help_command=Help(),
     intents=intents,
 )
+# This is required to make the 'bot' object hashable by ring's LRU cache
+# See pie/acl/__init__.py:map_member_to_ACLevel()
+bot.__ring_key__ = lambda: "bot"
 
 
 # Setup logging
@@ -79,7 +82,7 @@ async def update_app_info(bot: commands.Bot):
     if app.team:
         bot.owner_ids = {m.id for m in app.team.members}
     else:
-        bot.owner_id = app.owner.id
+        bot.owner_ids = {app.owner.id}
 
 
 @bot.event

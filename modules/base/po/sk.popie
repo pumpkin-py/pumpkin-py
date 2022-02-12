@@ -1,89 +1,149 @@
-msgid You didn't define any ACL groups yet.
-msgstr Zatiaľ si nedefinoval žiadne ACL skupiny.
+msgid No mappings have been set.
+msgstr
 
-msgid No such group exists.
-msgstr Takáto skipina neexistuje.
+msgid Role
+msgstr
 
-msgid Bad group name (regex `{regex}`)
-msgstr Chybné meno skupiny (regex `{regex}`)
+msgid Level
+msgstr
 
-msgid ACL group can't be named like that (regex `{regex}`).
-msgstr ACL skupina takto nemôže byť pomenovaná (regex `{regex}`).
+msgid Invalid level. Possible options are: {keys}.
+msgstr
 
-msgid Bad parameter.
-msgstr Zlý parameter.
+msgid You can't assign OWNER levels.
+msgstr
 
-msgid No such group.
-msgstr Takáto skupina neexistuje.
+msgid Your ACLevel has to be higher than **{level}**.
+msgstr
 
-msgid ACL group removed.
-msgstr ACL skupina bola odstránená.
+msgid That role is already mapped to some level.
+msgstr
 
-msgid **{count} rules** exported.
-msgstr Bolo exportovaných **{count} pravidiel**.
+msgid Role **{role}** will be mapped to **{level}**.
+msgstr
 
-msgid No such ACL rule.
-msgstr Takéto ACL pravidlo neexistuje.
+msgid That role is not mapped to any level.
+msgstr
 
-msgid Rule removed.
-msgstr Pravidlo odstránené.
+msgid Role mapping was sucessfully removed.
+msgstr
 
-msgid I've removed {count} rules.
-msgstr {count} pravidiel bolo odstránených.
+msgid No defaults have been set.
+msgstr
 
-msgid I'm expecting one JSON file.
-msgstr Očakávam jeden JSON súbor.
+msgid Command
+msgstr
 
-msgid You have to upload the JSON file.
-msgstr Musíš nahrať JSON súbor.
+msgid Default level
+msgstr
 
-msgid Your JSON file contains errors.
-msgstr Tvoj JSON súbor obsahuje chyby.
+msgid Custom level
+msgstr
 
-msgid I've imported **{new}** new and **{updated}** updated rules.
-msgstr Bolo importovaných **{new}** nových a **{updated}** aktualizovaných pravidiel.
+msgid I don't know this command.
+msgstr
 
-msgid Skipping:
-msgstr Preskakujem:
+msgid This command can't be controlled by ACL.
+msgstr
 
-msgid expected `bool`
-msgstr očakávam `bool`
+msgid You don't have permission to run this command, you can't alter its permissions.
+msgstr
 
-msgid expected `list`
-msgstr očakávam `list`
+msgid Command's ACLevel is higher than your current ACLevel.
+msgstr
 
-msgid invalid group
-msgstr neplatná skupina
+msgid Custom default for **{command}** already exists.
+msgstr
 
-msgid expected `int`
-msgstr očakávam `int`
+msgid Custom default for **{command}** set.
+msgstr
 
-msgid duplicate
-msgstr duplikát
+msgid Command **{command}** does not have custom default.
+msgstr
 
-msgid An unexpected error occurred
-msgstr Nastala nečakaná chyba
+msgid Custom default for **{command}** removed.
+msgstr
 
-msgid Command **{name}** is not enabled.
-msgstr Príkaz **{name}** nie je zapnutý.
+msgid role
+msgstr
 
-msgid Command **{name}** has been disabled.
-msgstr Príkaz **{name}** bol vypnutý.
+msgid channel
+msgstr
 
-msgid Command **{name}** is not disabled.
-msgstr Príkaz **{name}** nebol vypnutý.
+msgid user
+msgstr
 
-msgid Command **{name}** has been enabled.
-msgstr Príkaz **{name}** bol zapnutý.
+msgid unsupported
+msgstr
 
-msgid ACL group {name}
-msgstr ACL skupina {name}
+msgid yes
+msgstr
 
-msgid Discord role
-msgstr Discord rola
+msgid no
+msgstr
 
-msgid Parent ACL group
-msgstr Rodičovská ACL skupina
+msgid No ACL overwrites have been set.
+msgstr
+
+msgid Overwrite type
+msgstr
+
+msgid Value
+msgstr
+
+msgid Allow
+msgstr
+
+msgid Overwrite for command **{command}** and role **{role}** already exists.
+msgstr
+
+msgid Overwrite for command **{command}** and role **{role}** sucessfully created.
+msgstr
+
+msgid Overwrite for this command and role does not exist.
+msgstr
+
+msgid Overwrite for command **{command}** and role **{role}** sucessfully removed.
+msgstr
+
+msgid No role overwrites have been set.
+msgstr
+
+msgid Overwrite for command **{command}** and user **{user}** already exists.
+msgstr
+
+msgid Overwrite for command **{command}** and user **{user}** sucessfully created.
+msgstr
+
+msgid Overwrite for this command and user does not exist.
+msgstr
+
+msgid Overwrite for command **{command}** and user **{user}** sucessfully removed.
+msgstr
+
+msgid No user overwrites have been set.
+msgstr
+
+msgid User
+msgstr
+
+msgid Overwrite for command **{command}** and channel **#{channel}** already exists.
+msgstr
+
+msgid Overwrite for command **{command}** and channel **#{channel}** sucessfully created.
+msgstr
+
+msgid Overwrite for this command and channel does not exist.
+msgstr
+
+msgid Overwrite for command **{command}** and channel **#{channel}** sucessfully removed.
+msgstr
+
+msgid No channel overwrites have been set.
+msgstr
+
+msgid Channel
+msgstr
 
 msgid Repository initialization aborted: {exc}
 msgstr Inicializácia repozitáru sa nepodarila: {exc}
@@ -295,6 +355,9 @@ msgstr Čas spustenia
 msgid Run time
 msgstr Doba od spustenia
 
+msgid An unexpected error occurred
+msgstr Nastala nečakaná chyba
+
 msgid pumpkin.py exception
 msgstr Výnimka pumpkin.py
 
@@ -399,6 +462,18 @@ msgstr Limit je **{num}**/**{per}**
 
 msgid Check failure
 msgstr Chyba kontroly
+
+msgid You have been denied the invocation of this command.
+msgstr
+
+msgid This command cannot be used in this channel.
+msgstr
+
+msgid This command cannot be used by the role **{role}**.
+msgstr
+
+msgid You need access permissions at least at level **{required}**. You only have **{actual}**.
+msgstr
 
 msgid You do not have any of the possible permissions to access this command
 msgstr Nemáš žiadne z možných oprávnení k tomuto príkazu
