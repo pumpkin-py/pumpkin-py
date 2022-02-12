@@ -233,15 +233,15 @@ def acl2_function(
         command: str = ctx.command.qualified_name
     _acl_trace = lambda message: _trace(f"[{command}] {message}")  # noqa: E731
 
-    member_level = map_member_to_ACLevel(bot=ctx.bot, member=ctx.author)
-    if member_level == ACLevel.BOT_OWNER:
-        _acl_trace("Bot owner is always allowed.")
-        return True
-
     # Allow invocations in DM.
     # Wrap the function in `@commands.guild_only()` to change this behavior.
     if ctx.guild is None:
         _acl_trace("Non-guild context is always allowed.")
+        return True
+
+    member_level = map_member_to_ACLevel(bot=ctx.bot, member=ctx.author)
+    if member_level == ACLevel.BOT_OWNER:
+        _acl_trace("Bot owner is always allowed.")
         return True
 
     custom_level = ACDefault.get(ctx.guild.id, command)
