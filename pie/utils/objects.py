@@ -409,3 +409,127 @@ class ScrollableVotingEmbed(ScrollableEmbed):
             await self.pages[self.pagenum].vote_down(interaction)
         else:
             await super().interaction_check(interaction)
+
+
+class VoteEmbed(nextcord.ui.View):
+    """Class for making voting embeds easy.
+    The right way of getting response is first calling send() on instance,
+    then checking instance attribute `value`.
+
+    Attributes:
+        value: True if confirmed, False if declined, None if timed out
+        ctx: Context of command
+        message: Vote message
+
+    Args:
+        ctx: The context for translational and sending purposes.
+        embed: Embed to send.
+        limit: Minimal votes.
+        timeout: Number of seconds before timeout. `None` if no timeout
+        delete: Delete message after answering / timeout
+        vote_author: Auto vote for author
+
+
+    To use import this object and create new instance:
+    .. code-block:: python
+        :linenos:
+
+        from pie.utils.objects import VoteEmbed
+
+        ...
+
+        embed = utils.discord.create_embed(
+            author=reminder_user,
+            title=Vote for your action.",
+        )
+        view = VoteEmbed(ctx, embed)
+
+        value = await view.send()
+
+        if value is None:
+            await ctx.send(_(ctx, "Voted timed out."))
+        elif value:
+            await ctx.send(_(ctx, "Vote passed."))
+    """
+
+    def __init__(
+        self,
+        ctx: commands.Context,
+        embed: nextcord.Embed,
+        limit: int,
+        timeout: Union[int, float, None] = 300,
+        delete: bool = True,
+        vote_author: bool = False,
+    ):
+        super().__init__(timeout=timeout)
+        self.value: Optional[bool] = None
+        self.ctx = ctx
+        self.embed = embed
+        self.limit = limit
+        self.voted = []
+        self.delete = delete
+
+        if vote_author:
+            self.voted.append(ctx.author.id)
+
+    async def send(self):
+        """Sends message to channel defined by command context.
+        Returns:
+            True if confirmed in time, None if timed out
+        """
+
+        self.button = nextcord.ui.Button(
+            label=_(self.ctx, "Yes") + " ({})".format(len(self.voted)),
+            style=nextcord.ButtonStyle.green,
+            custom_id="yes-button",
+        )
+
+        self.add_item(self.button)
+
+        self.message = await self.ctx.send(embed=self.embed, view=self)
+        await self.wait()
+
+        if not self.delete:
+            self.clear_items()
+            await self.message.edit(embed=self.embed, view=self)
+        else:
+            try:
+                try:
+                    await self.message.delete()
+                except (
+                    nextcord.errors.HTTPException,
+                    nextcord.errors.Forbidden,
+                ):
+                    self.clear_items()
+                    await self.message.edit(embed=self.embed, view=self)
+            except nextcord.errors.NotFound:
+                pass
+        return self.value
+
+    async def interaction_check(self, interaction: nextcord.Interaction) -> None:
+        """Gets called when interaction with any of the Views buttons happens."""
+        if interaction.user.id in self.voted:
+            await interaction.response.send_message(
+                _(self.ctx, "You have already voted!"), ephemeral=True
+            )
+            return
+
+        self.voted.append(interaction.user.id)
+
+        if len(self.voted) >= self.limit:
+            self.value = True
+            self.stop()
+            return
+
+        await interaction.response.send_message(
+            _(self.ctx, "Your vote has been casted."), ephemeral=True
+        )
+
+        self.button.label = _(self.ctx, "Yes") + " ({})".format(len(self.voted))
+
+        await self.message.edit(embed=self.embed, view=self)
+
+    async def on_timeout(self) -> None:
+        """Gets called when the view timeouts."""
+        self.value = None
+        self.stop()
