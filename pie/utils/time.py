@@ -12,12 +12,12 @@ def id_to_datetime(snowflake_id: int) -> datetime.datetime:
 
 def format_date(timestamp: datetime.datetime) -> str:
     """Convert timestamp to date."""
-    return timestamp.strftime("%Y-%m-%d")
+    return timestamp.strftime("%d-%m-%Y ")
 
 
 def format_datetime(timestamp: datetime.datetime) -> str:
     """Convert timestamp to date and time."""
-    return timestamp.strftime("%Y-%m-%d %H:%M:%S")
+    return timestamp.strftime("%d-%m-%Y %H:%M:%S")
 
 
 def format_seconds(time: int) -> str:
