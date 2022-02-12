@@ -110,9 +110,10 @@ def create_table(
     for matrix_line in matrix:
         line = ""
         for i in range(len(header) - 1):
-            line += matrix_line[i].ljust(column_widths[i] + 1)
+            line += matrix_line[i].ljust(column_widths[i] + 2)
         # don't ljust the last item, it's a waste of characters
         line += matrix_line[-1]
+        line = line.rstrip()
 
         if len(page) + len(line) > limit:
             pages.append(page)

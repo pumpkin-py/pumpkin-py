@@ -36,10 +36,10 @@ def test_text_create_table():
     }
     expected = "\n".join(
         [
-            "Integer   String",
-            "1         a",
-            "123456789 b",
-            "3         abcdefghijk",
+            "Integer    String",
+            "1          a",
+            "123456789  b",
+            "3          abcdefghijk",
         ]
     )
     table: str = utils.text.create_table(iterable, header)
@@ -63,10 +63,10 @@ def test_text_create_table_noattr():
     }
     expected = "\n".join(
         [
-            "int str",
-            "1   a",
-            "2   ",
-            "3   c",
+            "int  str",
+            "1    a",
+            "2",
+            "3    c",
         ]
     )
     table: str = utils.text.create_table(iterable, header)
@@ -89,13 +89,13 @@ def test_text_create_table_wrapped():
     }
     page_1 = "\n".join(
         [
-            "Integer String",
-            "1111    aaaa",
+            "Integer  String",
+            "1111     aaaa",
         ]
     )
     page_2 = "\n".join(
         [
-            "2222    bbbb",
+            "2222     bbbb",
         ]
     )
     table: List[str] = utils.text.create_table(iterable, header, limit=32)
