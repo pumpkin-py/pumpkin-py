@@ -1,8 +1,5 @@
 import os
-from typing import Callable, Tuple
-
-
-sources: Tuple[str] = ("pie_acl", "pie_spamchannel")
+from typing import Callable
 
 
 def register(name: str) -> Callable:
@@ -44,9 +41,6 @@ def register(name: str) -> Callable:
         ...
     """
     prefix: str = f"[trace:{name}]"
-
-    if name not in sources:
-        raise ValueError(f"Unregistered tracing source '{name}'.")
 
     if not os.getenv(f"trace_{name}"):
         return lambda *args, **kwargs: None
