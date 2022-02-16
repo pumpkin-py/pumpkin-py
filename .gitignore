@@ -3,8 +3,8 @@
 .vscode/settings.json
 
 # Development
-.venv/
-.env
+.venv*/
+*.env*
 __pycache__
 .cache/
 .mypy_cache/
@@ -14,10 +14,8 @@ _local/*
 logs/*
 modules/*
 !modules/base
-pumpkin.db
-pumpkin.db-journal
-test.db
-test.db-journal
+*.db
+*.db-journal
 
 # Docs
 docs/_build
