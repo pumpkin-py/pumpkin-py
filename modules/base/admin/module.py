@@ -451,12 +451,14 @@ class Admin(commands.Cog):
     @pumpkin_.command(name="restart")
     async def pumpkin_restart(self, ctx):
         """Restart bot instance with the help of host system."""
+        await bot_log.critical(ctx.author, ctx.channel, "Restarting.")
         exit(1)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
     @pumpkin_.command(name="shutdown")
     async def pumpkin_shutdown(self, ctx):
         """Shutdown bot instance."""
+        await bot_log.critical(ctx.author, ctx.channel, "Shutting down.")
         exit(0)
 
     @commands.guild_only()

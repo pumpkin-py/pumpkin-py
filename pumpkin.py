@@ -100,7 +100,15 @@ async def on_ready():
     if already_loaded:
         await bot_log.info(None, None, "Reconnected")
     else:
-        await bot_log.info(None, None, "The pie is ready.")
+        print(
+            "     (     \n"
+            "  (   )  ) \n"
+            "   )  ( )  \n"
+            "   .....   \n"
+            ".:::::::::.\n"
+            "~\\_______/~"
+        )
+        await bot_log.critical(None, None, "The pie is ready.")
         already_loaded = True
 
 
