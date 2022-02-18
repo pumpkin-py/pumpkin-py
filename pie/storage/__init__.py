@@ -137,11 +137,6 @@ def unset(module: commands.Cog, guild_id: int, key: str):
         True if succesfuly deleted, False if not found
     """
 
-    db_value = StorageData.get(module.qualified_name, guild_id, key)
+    deleted = StorageData.remove(module.qualified_name, guild_id, key)
 
-    if not db_value:
-        return False
-
-    db_value.delete()
-
-    return True
+    return deleted

@@ -50,15 +50,22 @@ class StorageData(database.base):
         data = (
             session.query(StorageData)
             .filter_by(module=module)
-            .filter_by(key=key)
             .filter_by(guild_id=guild_id)
+            .filter_by(key=key)
             .one_or_none()
         )
         return data
 
-    def delete(self):
-        session.delete(self)
+    @classmethod
+    def remove(module: str, guild_id: int, key: str) -> bool:
+        count = (
+            session.get(StorageData)
+            .filter_by(module=module, guild_id=guild_id, key=key)
+            .delete()
+        )
         session.commit()
+
+        return count == 1
 
     def __repr__(self) -> str:
         return (
