@@ -49,4 +49,4 @@ SQLite requires no installation and no setup and saves its data into a file. It 
 
 Create a file called ``.env`` in the root directory of your cloned repo and copy the content of the ``default.env`` file into it. The ``.env`` file will hold sensitive bot information, so don't let anyone see its content, ever. Open it and paste the connection string into the ``DB_STRING`` variable.
 
-See :doc:`Configuration chapter <03-config>` to learn about database backups.
+See :doc:`Configuration chapter <04-config>` to learn about database backups.
