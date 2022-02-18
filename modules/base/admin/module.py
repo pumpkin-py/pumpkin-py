@@ -340,7 +340,7 @@ class Admin(commands.Cog):
     @check.acl2(check.ACLevel.BOT_OWNER)
     @module.command(name="load")
     async def module_load(self, ctx, name: str):
-        """Load module: <repository>.<module>"""
+        """Load module. Use format <repository>.<module>."""
         self.bot.load_extension("modules." + name + ".module")
         await ctx.send(_(ctx, "Module **{name}** has been loaded.").format(name=name))
         Module.add(name, enabled=True)
@@ -349,7 +349,7 @@ class Admin(commands.Cog):
     @check.acl2(check.ACLevel.BOT_OWNER)
     @module.command(name="unload")
     async def module_unload(self, ctx, name: str):
-        """Unload module: <repository>.<module>"""
+        """Unload module. Use format <repository>.<module>."""
         if name in ("base.admin",):
             await ctx.send(
                 _(ctx, "Module **{name}** cannot be unloaded.").format(name=name)
@@ -363,7 +363,7 @@ class Admin(commands.Cog):
     @check.acl2(check.ACLevel.BOT_OWNER)
     @module.command(name="reload")
     async def module_reload(self, ctx, name: str):
-        """Reload bot module: <repository>.<module>"""
+        """Reload bot module. Use format <repository>.<module>."""
         self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(_(ctx, "Module **{name}** has been reloaded.").format(name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
@@ -463,11 +463,13 @@ class Admin(commands.Cog):
     @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="spamchannel", aliases=["spam"])
     async def spamchannel(self, ctx):
+        """Manage bot spam channels."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.MOD)
     @spamchannel.command(name="add")
     async def spamchannel_add(self, ctx, channel: nextcord.TextChannel):
+        """Set channel as bot spam channel."""
         spam_channel = SpamChannel.get(ctx.guild.id, channel.id)
         if spam_channel:
             await ctx.send(
@@ -494,6 +496,7 @@ class Admin(commands.Cog):
     @check.acl2(check.ACLevel.SUBMOD)
     @spamchannel.command(name="list")
     async def spamchannel_list(self, ctx):
+        """List bot spam channels on this server."""
         spam_channels = SpamChannel.get_all(ctx.guild.id)
         if not spam_channels:
             await ctx.reply(_(ctx, "This server has no spam channels."))
@@ -516,6 +519,7 @@ class Admin(commands.Cog):
     @check.acl2(check.ACLevel.MOD)
     @spamchannel.command(name="remove", aliases=["rem"])
     async def spamchannel_remove(self, ctx, channel: nextcord.TextChannel):
+        """Unset channel as spam channel."""
         if SpamChannel.remove(ctx.guild.id, channel.id):
             message = _(ctx, "Spam channel {channel} removed.")
         else:
@@ -530,6 +534,14 @@ class Admin(commands.Cog):
     @check.acl2(check.ACLevel.MOD)
     @spamchannel.command(name="primary")
     async def spamchannel_primary(self, ctx, channel: nextcord.TextChannel):
+        """Set channel as primary bot channel.
+
+        When this is set, it will be used to direct users to it in an error
+        message.
+
+        When none of spam channels are set as primary, the first one defined
+        will be used as primary.
+        """
         primary = SpamChannel.set_primary(ctx.guild.id, channel.id)
 
         if not primary:

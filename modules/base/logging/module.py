@@ -22,11 +22,13 @@ class Logging(commands.Cog):
     @check.acl2(check.ACLevel.MOD)
     @commands.group(name="logging")
     async def logging_(self, ctx):
+        """Manage logging on your server."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.MOD)
     @logging_.command(name="list")
     async def logging_list(self, ctx):
+        """List logging channels on this server."""
         confs = LogConf.get_all_subscriptions(guild_id=ctx.guild.id)
         confs = sorted(confs, key=lambda c: c.channel_id)
         confs = sorted(confs, key=lambda c: c.level)
@@ -57,6 +59,7 @@ class Logging(commands.Cog):
     async def logging_set(
         self, ctx, scope: str, level: str, module: Optional[str] = None
     ):
+        """Set the current channel as logging channel."""
         if scope not in ("bot", "guild"):
             await ctx.reply(_(ctx, "Invalid scope."))
             return
@@ -96,6 +99,7 @@ class Logging(commands.Cog):
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @logging_.command(name="unset")
     async def logging_unset(self, ctx, scope: str, module: Optional[str] = None):
+        """Stop using current channel as logging channel for given filter."""
         if scope not in ("bot", "guild"):
             await ctx.reply(_(ctx, "Invalid scope."))
             return
