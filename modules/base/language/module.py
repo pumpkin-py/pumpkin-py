@@ -22,12 +22,12 @@ class Language(commands.Cog):
     @commands.guild_only()
     @check.acl2(check.ACLevel.MEMBER)
     @commands.group(name="language")
-    async def language(self, ctx):
+    async def language_(self, ctx):
         """Manage your language preferences."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.MEMBER)
-    @language.command(name="get")
+    @language_.command(name="get")
     async def language_get(self, ctx):
         """Get language preferences."""
         embed = utils.discord.create_embed(
@@ -61,7 +61,7 @@ class Language(commands.Cog):
         await ctx.reply(embed=embed)
 
     @check.acl2(check.ACLevel.MEMBER)
-    @language.command(name="set")
+    @language_.command(name="set")
     async def language_set(self, ctx, *, language: str):
         """Set your language preference."""
         if language not in LANGUAGES:
@@ -82,7 +82,7 @@ class Language(commands.Cog):
         )
 
     @check.acl2(check.ACLevel.MEMBER)
-    @language.command(name="unset")
+    @language_.command(name="unset")
     async def language_unset(self, ctx):
         """Unset your language preference.
 
@@ -98,14 +98,14 @@ class Language(commands.Cog):
         )
 
     @check.acl2(check.ACLevel.MOD)
-    @language.group(name="guild")
-    async def language_guild(self, ctx):
+    @language_.group(name="server", aliases=["guild"])
+    async def language_server_(self, ctx):
         """Manage server's language preference."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.MOD)
-    @language_guild.command(name="set")
-    async def language_guild_set(self, ctx, *, language: str):
+    @language_server_.command(name="set")
+    async def language_server_set(self, ctx, *, language: str):
         """Set server's language preference."""
         if language not in LANGUAGES:
             await ctx.reply(_(ctx, "I can't speak that language."))
@@ -125,8 +125,8 @@ class Language(commands.Cog):
         )
 
     @check.acl2(check.ACLevel.MOD)
-    @language_guild.command(name="unset")
-    async def language_guild_unset(self, ctx):
+    @language_server_.command(name="unset")
+    async def language_server_unset(self, ctx):
         """Unset server's language preference."""
         ok = GuildLanguage.remove(guild_id=ctx.guild.id)
         if ok == 0:
