@@ -26,12 +26,14 @@ class Base(commands.Cog):
     @commands.guild_only()
     @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="userpin")
-    async def userpin(self, ctx):
+    async def userpin_(self, ctx):
+        """Manage pinning by users."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @userpin.command(name="list")
+    @userpin_.command(name="list")
     async def userpin_list(self, ctx):
+        """List pin limits on this server."""
         db_channels = UserPin.get_all(ctx.guild.id)
         if not db_channels:
             await ctx.reply(_(ctx, "User pinning is not enabled on this server."))
@@ -61,9 +63,12 @@ class Base(commands.Cog):
             await ctx.send("```" + page + "```")
 
     @check.acl2(check.ACLevel.MOD)
-    @userpin.command(name="set")
+    @userpin_.command(name="set")
     async def userpin_set(self, ctx, limit: int, channel: nextcord.TextChannel = None):
-        """Set userpin limit."""
+        """Set pushpin reaction limit in given channel.
+
+        If channel is omitted, the settings applies to whole server.
+        """
         if limit < 1:
             raise commands.BadArgument("Limit has to be at least one.")
 
@@ -88,8 +93,12 @@ class Base(commands.Cog):
             await ctx.reply(_(ctx, "Pinning preferences have been updated."))
 
     @check.acl2(check.ACLevel.MOD)
-    @userpin.command(name="unset")
+    @userpin_.command(name="unset")
     async def userpin_unset(self, ctx, channel: nextcord.TextChannel = None):
+        """Set pushpin reaction limit in given channel.
+
+        If channel is omitted, the settings applies to whole server.
+        """
         if channel is None:
             UserPin.remove(ctx.guild.id, None)
             await guild_log.info(ctx.author, ctx.channel, "Userpin unset globally.")
@@ -103,12 +112,14 @@ class Base(commands.Cog):
     @commands.guild_only()
     @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="bookmarks")
-    async def bookmarks(self, ctx):
+    async def bookmarks_(self, ctx):
+        """Manage adding bookmarks by users."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @bookmarks.command(name="list")
+    @bookmarks_.command(name="list")
     async def bookmarks_list(self, ctx):
+        """List channels where bookmarks are enabled and disabled."""
         db_channels = Bookmark.get_all(ctx.guild.id)
         if not db_channels:
             await ctx.reply(_(ctx, "Bookmarks are not enabled on this server."))
@@ -138,7 +149,7 @@ class Base(commands.Cog):
             await ctx.send("```" + page + "```")
 
     @check.acl2(check.ACLevel.MOD)
-    @bookmarks.command(name="set")
+    @bookmarks_.command(name="set")
     async def bookmarks_set(
         self, ctx, enabled: bool, channel: nextcord.TextChannel = None
     ):
@@ -158,7 +169,7 @@ class Base(commands.Cog):
         )
 
     @check.acl2(check.ACLevel.MOD)
-    @bookmarks.command(name="unset")
+    @bookmarks_.command(name="unset")
     async def bookmarks_unset(self, ctx, channel: nextcord.TextChannel = None):
         """Remove bookmark settings."""
         if channel is None:
@@ -174,12 +185,14 @@ class Base(commands.Cog):
     @commands.guild_only()
     @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="userthread")
-    async def userthread(self, ctx):
+    async def userthread_(self, ctx):
+        """Manage threads created by user reactions."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @userthread.command(name="list")
+    @userthread_.command(name="list")
     async def userthread_list(self, ctx):
+        """List channels where user threads are enabled."""
         db_channels = UserThread.get_all(ctx.guild.id)
         if not db_channels:
             await ctx.reply(_(ctx, "User threads are not enabled on this server."))
@@ -208,38 +221,17 @@ class Base(commands.Cog):
         for page in table:
             await ctx.send("```" + page + "```")
 
-    @check.acl2(check.ACLevel.SUBMOD)
-    @userthread.command(name="get")
-    async def userthread_get(self, ctx, channel: nextcord.TextChannel = None):
-        embed = utils.discord.create_embed(
-            author=ctx.author, title=_(ctx, "Userthread 🧵")
-        )
-        limit: int = getattr(UserThread.get(ctx.guild.id, None), "limit", 0)
-        value: str = f"{limit}" if limit > 0 else _(ctx, "Function is disabled")
-        embed.add_field(
-            name=_(ctx, "Global limit"),
-            value=value,
-        )
-
-        if channel is None:
-            channel = ctx.channel
-
-        channel_pref = UserThread.get(ctx.guild.id, channel.id)
-        if channel_pref is not None:
-            embed.add_field(
-                name=_(ctx, "Channel #{channel}").format(channel=channel.name),
-                value=f"{channel_pref.limit}"
-                if channel_pref.limit > 0
-                else _(ctx, "Function is disabled"),
-            )
-
-        await ctx.send(embed=embed)
-
     @check.acl2(check.ACLevel.MOD)
-    @userthread.command(name="set")
+    @userthread_.command(name="set")
     async def userthread_set(
         self, ctx, limit: int, channel: nextcord.TextChannel = None
     ):
+        """Set reaction limit for creating threads.
+
+        Omit the channel to set preference for whole server.
+
+        Set to 0 to disable.
+        """
         if limit < 0:
             await ctx.reply(
                 _(
@@ -271,8 +263,12 @@ class Base(commands.Cog):
             await ctx.reply(_(ctx, "Thread preference has been updated."))
 
     @check.acl2(check.ACLevel.MOD)
-    @userthread.command(name="unset")
+    @userthread_.command(name="unset")
     async def userthread_unset(self, ctx, channel: nextcord.TextChannel = None):
+        """Unset reaction limit for creating threads.
+
+        Omit the channel to unset server settings.
+        """
         if channel is None:
             UserThread.remove(ctx.guild.id, None)
             await guild_log.info(ctx.author, ctx.channel, "Userthread unset globally.")
@@ -286,12 +282,14 @@ class Base(commands.Cog):
     @commands.guild_only()
     @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="autothread")
-    async def autothread(self, ctx):
+    async def autothread_(self, ctx):
+        """Manage automatic threads."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @autothread.command(name="list")
+    @autothread_.command(name="list")
     async def autothread_list(self, ctx):
+        """List channels where threads are created automatically."""
         channels: List[Tuple[nextcord.TextChannel, AutoThread]] = []
 
         for item in AutoThread.get_all(ctx.guild.id):
@@ -325,8 +323,9 @@ class Base(commands.Cog):
         await ctx.reply(embed=embed)
 
     @check.acl2(check.ACLevel.MOD)
-    @autothread.command(name="set")
+    @autothread_.command(name="set")
     async def autothread_set(self, ctx, channel: nextcord.TextChannel, duration: str):
+        """Start creating threads on each message in given channel."""
         try:
             duration_translated = self.durations[duration]
         except KeyError:
@@ -348,8 +347,9 @@ class Base(commands.Cog):
         )
 
     @check.acl2(check.ACLevel.MOD)
-    @autothread.command(name="unset")
+    @autothread_.command(name="unset")
     async def autothread_unset(self, ctx, channel: nextcord.TextChannel = None):
+        """Stop creating threads on each message in given channel."""
         if channel is None:
             channel = ctx.channel
         result = AutoThread.remove(ctx.guild.id, channel.id)

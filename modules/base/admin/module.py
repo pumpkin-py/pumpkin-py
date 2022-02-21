@@ -92,12 +92,12 @@ class Admin(commands.Cog):
     @commands.guild_only()
     @check.acl2(check.ACLevel.BOT_OWNER)
     @commands.group(name="repository", aliases=["repo"])
-    async def repository(self, ctx):
+    async def repository_(self, ctx):
         """Manage module repositories."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @repository.command(name="list")
+    @repository_.command(name="list")
     async def repository_list(self, ctx):
         """List module repositories."""
         repositories = manager.repositories
@@ -124,7 +124,7 @@ class Admin(commands.Cog):
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @repository.command(name="install")
+    @repository_.command(name="install")
     async def repository_install(self, ctx, url: str, branch: Optional[str] = None):
         """Install module repository."""
         tempdir = tempfile.TemporaryDirectory()
@@ -204,7 +204,7 @@ class Admin(commands.Cog):
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @repository.command(name="update", aliases=["fetch", "pull"])
+    @repository_.command(name="update", aliases=["fetch", "pull"])
     async def repository_update(self, ctx, name: str, option: Optional[str]):
         """Update module repository.
 
@@ -254,7 +254,7 @@ class Admin(commands.Cog):
         await bot_log.info(ctx.author, ctx.channel, log_message)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @repository.command(name="checkout")
+    @repository_.command(name="checkout")
     async def repository_checkout(self, ctx, name: str, branch: str):
         """Change current branch of the repository."""
         repository: Optional[Repository] = manager.get_repository(name)
@@ -290,7 +290,7 @@ class Admin(commands.Cog):
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @repository.command(name="uninstall")
+    @repository_.command(name="uninstall")
     async def repository_uninstall(self, ctx, name: str):
         """Uninstall module repository."""
         if name == "base":
@@ -333,23 +333,23 @@ class Admin(commands.Cog):
     @commands.guild_only()
     @check.acl2(check.ACLevel.BOT_OWNER)
     @commands.group(name="module")
-    async def module(self, ctx):
+    async def module_(self, ctx):
         """Manage modules."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @module.command(name="load")
+    @module_.command(name="load")
     async def module_load(self, ctx, name: str):
-        """Load module: <repository>.<module>"""
+        """Load module. Use format <repository>.<module>."""
         self.bot.load_extension("modules." + name + ".module")
         await ctx.send(_(ctx, "Module **{name}** has been loaded.").format(name=name))
         Module.add(name, enabled=True)
         await bot_log.info(ctx.author, ctx.channel, "Loaded " + name)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @module.command(name="unload")
+    @module_.command(name="unload")
     async def module_unload(self, ctx, name: str):
-        """Unload module: <repository>.<module>"""
+        """Unload module. Use format <repository>.<module>."""
         if name in ("base.admin",):
             await ctx.send(
                 _(ctx, "Module **{name}** cannot be unloaded.").format(name=name)
@@ -361,9 +361,9 @@ class Admin(commands.Cog):
         await bot_log.info(ctx.author, ctx.channel, "Unloaded " + name)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @module.command(name="reload")
+    @module_.command(name="reload")
     async def module_reload(self, ctx, name: str):
-        """Reload bot module: <repository>.<module>"""
+        """Reload bot module. Use format <repository>.<module>."""
         self.bot.reload_extension("modules." + name + ".module")
         await ctx.send(_(ctx, "Module **{name}** has been reloaded.").format(name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
@@ -451,23 +451,27 @@ class Admin(commands.Cog):
     @pumpkin_.command(name="restart")
     async def pumpkin_restart(self, ctx):
         """Restart bot instance with the help of host system."""
+        await bot_log.critical(ctx.author, ctx.channel, "Restarting.")
         exit(1)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
     @pumpkin_.command(name="shutdown")
     async def pumpkin_shutdown(self, ctx):
         """Shutdown bot instance."""
+        await bot_log.critical(ctx.author, ctx.channel, "Shutting down.")
         exit(0)
 
     @commands.guild_only()
     @check.acl2(check.ACLevel.SUBMOD)
     @commands.group(name="spamchannel", aliases=["spam"])
-    async def spamchannel(self, ctx):
+    async def spamchannel_(self, ctx):
+        """Manage bot spam channels."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.MOD)
-    @spamchannel.command(name="add")
+    @spamchannel_.command(name="add")
     async def spamchannel_add(self, ctx, channel: nextcord.TextChannel):
+        """Set channel as bot spam channel."""
         spam_channel = SpamChannel.get(ctx.guild.id, channel.id)
         if spam_channel:
             await ctx.send(
@@ -492,8 +496,9 @@ class Admin(commands.Cog):
         )
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @spamchannel.command(name="list")
+    @spamchannel_.command(name="list")
     async def spamchannel_list(self, ctx):
+        """List bot spam channels on this server."""
         spam_channels = SpamChannel.get_all(ctx.guild.id)
         if not spam_channels:
             await ctx.reply(_(ctx, "This server has no spam channels."))
@@ -514,8 +519,9 @@ class Admin(commands.Cog):
         await ctx.reply("```" + "\n".join(result) + "```")
 
     @check.acl2(check.ACLevel.MOD)
-    @spamchannel.command(name="remove", aliases=["rem"])
+    @spamchannel_.command(name="remove", aliases=["rem"])
     async def spamchannel_remove(self, ctx, channel: nextcord.TextChannel):
+        """Unset channel as spam channel."""
         if SpamChannel.remove(ctx.guild.id, channel.id):
             message = _(ctx, "Spam channel {channel} removed.")
         else:
@@ -528,8 +534,16 @@ class Admin(commands.Cog):
         )
 
     @check.acl2(check.ACLevel.MOD)
-    @spamchannel.command(name="primary")
+    @spamchannel_.command(name="primary")
     async def spamchannel_primary(self, ctx, channel: nextcord.TextChannel):
+        """Set channel as primary bot channel.
+
+        When this is set, it will be used to direct users to it in an error
+        message.
+
+        When none of spam channels are set as primary, the first one defined
+        will be used as primary.
+        """
         primary = SpamChannel.set_primary(ctx.guild.id, channel.id)
 
         if not primary:

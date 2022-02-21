@@ -31,7 +31,7 @@ Then you have to setup link back to our main repository, which is usually called
 
 	git remote add upstream https://github.com/pumpkin-py/pumpkin-py.git
 
-Discord bot token 
+Discord bot token
 --------------
 
 .. include:: _token.rst
@@ -101,7 +101,7 @@ Assuming you are in virtual environment and have everything set up, run
 
 It will print startup information and a welcome message, something like this:
 
-.. code-block:: bash
+.. code-block::
 
 	Imported database models in modules.base.base.database.
 	Imported database models in modules.base.admin.database.
@@ -111,4 +111,10 @@ It will print startup information and a welcome message, something like this:
 	Loaded module base.logging
 	Loaded module base.errors
 	Loaded module base.language
-	2021-08-01 16:00:00 INFO: The pie is ready.
+	     (
+	  (   )  )
+	   )  ( )
+	   .....
+	.:::::::::.
+	~\_______/~
+	2022-02-18 08:18:02 CRITICAL: The pie is ready.
