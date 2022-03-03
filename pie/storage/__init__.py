@@ -13,7 +13,7 @@ def get(module: commands.Cog, guild_id: int, key: str, default_value=None) -> An
     For saving global data (non-guild related) set guild_id to 0.
 
     If value is not found in DB or it's type is unknown,
-    it returns default_value, which if not set is None.
+    it returns default_value, None by default.
 
     Args:
         module (:class:`nextcord.ext.commands.Cog`): module connected with the value
