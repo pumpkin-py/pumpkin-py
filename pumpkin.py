@@ -165,6 +165,9 @@ for module in db_modules:
         continue
     print("Loaded module " + module.name, file=sys.stdout)  # noqa: T001
 
+for command in bot.walk_commands():
+    if type(command) is not commands.Group:
+        command.ignore_extra = False
 
 # Run the bot
 
