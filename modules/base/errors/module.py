@@ -329,7 +329,7 @@ class Errors(commands.Cog):
             )
         return (
             _(ctx, "Extension Error"),
-            description + ":\n" + str(error),
+            description,
             False,
         )
 

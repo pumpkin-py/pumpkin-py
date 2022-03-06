@@ -557,7 +557,7 @@ msgid Invalid end of quoted string error
 msgstr Chybný konec textu v uvozovkách
 
 msgid Error content
-msgstr
+msgstr Obsah chyby
 
 msgid Localization
 msgstr Lokalizace
@@ -617,7 +617,7 @@ msgid Logging settings succesfully updated.
 msgstr Nastavení logování bylo úspěšně aktualizováno.
 
 msgid Logging target unset.
-msgstr
+msgstr Cíl logování byl odebrán.
 
 msgid Supplied arguments didn't match any entries.
 msgstr Dodané argumenty nesouhlasí s žádnými vstupy.
