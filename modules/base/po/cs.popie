@@ -598,6 +598,12 @@ msgstr Tento server nemá žádné jazykové preference.
 msgid I'll be using the global settings from now on.
 msgstr Odteď budu používat globální nastavení.
 
+msgid Localization statistics
+msgstr Statistiky překladu
+
+msgid You can improve them by opening a PR!
+msgstr Můžeš je změnit otevřením PR!
+
 msgid Logging is not enabled on this server.
 msgstr Logování není na tomto serveru zapnuto.
 

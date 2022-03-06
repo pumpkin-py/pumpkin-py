@@ -1,3 +1,7 @@
+import operator
+from pathlib import Path
+from typing import Dict, Tuple
+
 from nextcord.ext import commands
 
 import pie.database.config
@@ -140,6 +144,57 @@ class Language(commands.Cog):
             + " "
             + _(ctx, "You may need to wait two minutes for the change to take effect.")
         )
+
+    @check.acl2(check.ACLevel.MOD)
+    @language_.command(name="audit")
+    async def language_audit(self, ctx):
+        """Display information about translation coverage."""
+        statistics: Dict[str, Dict[str, Tuple[int, int]]] = {}
+
+        modules_root = Path(".").resolve() / "modules/"
+        for module_dir in modules_root.iterdir():
+            po_dir = module_dir / "po/"
+            if not po_dir.is_dir():
+                continue
+
+            statistics[module_dir.name] = {}
+
+            po_files = list(po_dir.glob("*.popie"))
+            for po_file in po_files:
+                msgid: int = 0
+                msgstr: int = 0
+
+                with po_file.open("r") as handle:
+                    for line in handle.readlines():
+                        if line.startswith("msgid"):
+                            msgid += 1
+                            continue
+                        if line.startswith("msgstr "):
+                            msgstr += 1
+                            continue
+
+                statistics[module_dir.name][po_file.stem] = (msgid, msgstr)
+
+        statistics = {
+            k: v
+            for k, v in sorted(
+                statistics.items(),
+                key=operator.itemgetter(0),
+            )
+        }
+
+        embed = utils.discord.create_embed(
+            author=ctx.author,
+            title=_(ctx, "Localization statistics"),
+            description=_(ctx, "You can improve them by opening a PR!"),
+        )
+        for module, langs in statistics.items():
+            value = "\n".join(f"**{k}**: {v[1]}/{v[0]}" for k, v in langs.items())
+            embed.add_field(
+                name=module,
+                value=value,
+            )
+        await ctx.reply(embed=embed)
 
 
 def setup(bot) -> None:
