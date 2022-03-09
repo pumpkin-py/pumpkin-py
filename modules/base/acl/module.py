@@ -705,7 +705,7 @@ class ACL(commands.Cog):
         await guild_log.info(
             ctx.author,
             ctx.channel,
-            "Overwrite removed for command '{command}' and channel '{channel.name}'.",
+            f"Overwrite removed for command '{command}' and channel '{channel.name}'.",
         )
 
     @check.acl2(check.ACLevel.SUBMOD)
