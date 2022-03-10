@@ -30,12 +30,9 @@ release = "unversioned"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "autoapi.extension",
-    "sphinx.ext.autodoc",
     "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
-    "sphinx_autodoc_typehints",
     "sphinx_rtd_theme",
 ]
 
@@ -63,37 +60,6 @@ pygments_style = "stata-dark"
 
 # TODO Description
 todo_include_todos = True
-
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
-    "nextcord": ("https://nextcord.readthedocs.io/en/latest/", None),
-}
-
-autodoc_default_options = {
-    "members": True,
-    "members-order": "bysource",
-    "special-members": "__init__",
-    "undoc-members": True,
-}
-
-autoapi_dirs = [
-    "../pie/",
-    "../pumpkin.py",
-]
-autoapi_type = "python"
-autoapi_generate_api_docs = True
-autoapi_member_order = "bysource"
-autoapi_python_class_content = "class"
-autoapi_options = [
-    "members",
-    # "inherited-members",
-    "undoc-members",
-    "private-members",
-    # "special-members",
-    # "show-inheritance",
-    "show-module-summary",
-    "imported-members",
-]
 
 # -- Options for HTML output -------------------------------------------------
 

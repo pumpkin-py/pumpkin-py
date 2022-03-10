@@ -1,5 +1,2 @@
 Sphinx
-sphinx-autoapi
-sphinx-autodoc-typehints
-
 sphinx-rtd-theme
