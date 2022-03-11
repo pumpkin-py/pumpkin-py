@@ -1,7 +1,7 @@
 How to create a repository
 ==========================
 
-.. include:: _rfc_notice.rst
+.. include:: ../_snippets/_rfc_notice.rst
 
 Let's write a simple repository with just one module. We're gonna name it ``bistro``, because we'll gonna be making some delicious snacks.
 

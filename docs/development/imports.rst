@@ -1,7 +1,7 @@
 Import structure
 ================
 
-.. include:: _rfc_notice.rst
+.. include:: ../_snippets/_rfc_notice.rst
 
 Every file MUST be formatted as UTF-8.
 
