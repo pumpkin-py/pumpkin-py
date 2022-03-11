@@ -51,7 +51,7 @@ Sometimes context isn't available, though -- e.g. in raw reaction. These times y
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload: nextcord.RawReactionActionEvent):
-	    tc = TranslationContext(payload.guild_id, payload.user_id)
+	    utx = TranslationContext(payload.guild_id, payload.user_id)
 
 	    message = await utils.discord.get_message(
 	        self.bot,
@@ -59,4 +59,4 @@ Sometimes context isn't available, though -- e.g. in raw reaction. These times y
 	        payload.channel_id,
 	        payload.message_id,
 	    )
-	    await message.reply(_(tc, "Reaction detected!"))
+	    await message.reply(_(utx, "Reaction detected!"))
