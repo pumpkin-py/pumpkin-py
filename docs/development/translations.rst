@@ -1,7 +1,7 @@
 Translations
 ============
 
-.. include:: _rfc_notice.rst
+.. include:: ../_snippets/_rfc_notice.rst
 
 There are four **if**\ s of the text format:
 

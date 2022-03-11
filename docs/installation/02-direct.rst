@@ -101,12 +101,7 @@ Dependency setup
 
 Besides ``git``, pumpkin.py has additional system dependencies which have to be installed.
 
-.. code-block:: bash
-
-	apt install \
-		python3 python3-dev python3-pip python3-venv python3-setuptools \
-		gcc libffi-dev \
-		libjpeg-dev libtiff-dev libwebp-dev libopenjp2-7-dev
+.. include:: ../_snippets/_apt_dependencies.rst
 
 
 .. _direct_account:
@@ -227,6 +222,14 @@ Once you are in virtual environment, you can install required libraries:
 	python3 -m pip install wheel
 	python3 -m pip install -r requirements.txt
 
+Before the bot can start, you have to load the contents of ``.env`` file into your working environment.
+This can be done by running
+
+.. include:: ../_snippets/_source_env.rst
+
+.. note::
+
+	See :ref:`general_venv_tip` in ``venv``'s section in chapter General Bot Information to learn how to make this automatically.
 
 .. _direct_token:
 

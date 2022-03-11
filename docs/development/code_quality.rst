@@ -1,7 +1,7 @@
 Code quality
 ============
 
-.. include:: _rfc_notice.rst
+.. include:: ../_snippets/_rfc_notice.rst
 
 Your code has to pass the Github Actions CI before it can be merged. You can pretty much ensure this by using the **pre-commit**:
 
