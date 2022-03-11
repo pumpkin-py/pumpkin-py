@@ -1,28 +1,51 @@
+.. _docker:
+
 Docker installation
 ===================
 
-Database setup
---------------
 
-The database holds all dynamic bot data (e.g. the user content). There are multiple options, but docker is already set up with PostgreSQL with automatic backups.
+.. _docker_download:
 
-There is no need for any large setup, just create a file called ``.env`` in the root directory of your cloned repo and copy the content of the ``default.docker.env`` file into it.
-The ``.env`` file will hold sensitive bot information, so don't let anyone see its content, ever. It already contains prefilled ``DB_STRING`` and ``DOCKER_DB_BACKUP_PATH`` variables.
-Feel free to change the ``DOCKER_DB_BACKUP_PATH`` variable to any path you want the backups to end up in.
+Downloading the code
+--------------------
 
-To restore a backup, replace the backupfile name with a path to the file in following command:
+See :ref:`general_download` in chapter General Bot Information.
 
-zcat backupfile.sql.gz | docker-compose exec -T db psql --username=postgres --dbname=postgres -W
+
+.. _docker_database:
+
+Database
+--------
+
+The database holds all dynamic bot data (e.g. the user content). There are multiple options, but Docker is already set up with PostgreSQL with automatic backups.
+
+Copy the contents of ``default.docker.env`` into ``.env`` in the root directory.
+The docker environment file already contains prefilled ``DB_STRING`` and ``DOCKER_DB_BACKUP_PATH`` variables.
+You can change the ``DOCKER_DB_BACKUP_PATH`` variable to any other path where the backups should be made.
+
+To restore a backup, point ``$BACKUPFILE`` to the path of your backup and restore the database by running the following:
+
+.. code-block:: bash
+
+	BACKUPFILE=path/to/backup/file.sql.gz
+
+	zcat $BACKUPFILE | \
+	docker-compose exec -T db \
+	psql --username=postgres --dbname=postgres -W
+
+
+.. _docker_token:
 
 Discord bot token
 -----------------
 
-.. include:: _token.rst
+See :ref:`general_token` in chapter General Bot Information.
 
-.. _installation:
 
-Docker
-------
+.. _docker_installation:
+
+Docker installation
+-------------------
 
 Docker containers (bot and database) allow running the bot without touching the hosting environment. On the other hand, it is another management layer (in means of increased CPU/RAM usage on server).
 
@@ -40,7 +63,13 @@ It will probably be neccesary to add the user to the Docker group (this will tak
 
 For the next command you will probably need to log out and back in to load the group change.
 
-Change current directory to the folder where your cloned repository is and build the container:
+
+.. _docker_run:
+
+Running with Docker
+-------------------
+
+Make sure you are in the right directory (the one where ``.env`` and ``pumpkin.py`` files are) and build the container:
 
 .. code-block:: bash
 

@@ -1,10 +1,17 @@
-Configuration
-=============
+.. _config:
+
+Configuring production instance
+===============================
+
+
+.. _config_ssh:
 
 SSH connections
 ---------------
 
-Connecting to remote server by using username and password gets annoying really fast. That's why there are SSH keys. You only have to create the key and then tell the SSH to use it when connecting to your server.
+Connecting to remote server by using username and password gets annoying really fast.
+That's why there are SSH keys.
+You only have to create the key and then tell the SSH to use it when connecting to your server.
 
 .. code-block:: bash
 
@@ -22,12 +29,19 @@ Then add the key to the SSH configuration file (``~/.ssh/config``), so it knows 
 		IdentitiesOnly yes
 		IdentityFile ~/.ssh/pumpkin_server
 
-To use the SSH key on the server, you have to add the contents of the **public** key (e.g. ``/home/<username>/.ssh/pumpkin_server.pub``) to server's ``/home/discord/.ssh/authorized_keys``.
+To use the SSH key on the server, run ``ssh-copy-id discord@<remote-server>`` (see `Digital Ocean manual <https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-2>`_ for more details).
+Or you have to add the contents of the **public** key (e.g. ``/home/<username>/.ssh/pumpkin_server.pub``) to server's ``/home/discord/.ssh/authorized_keys`` directly.
+
+
+.. _config_psql_backups:
 
 PostgreSQL backups
 ------------------
 
-The following script makes backup of the database and saves it. If it is the first day of the month, it compresses the previous month, making it much more space-efficient.
+The following script makes backup of the database and saves it.
+You won't need this if you are running your bot with Docker.
+
+If it is the first day of the month, it compresses the previous month, making it much more space-efficient.
 
 .. code-block:: bash
 
@@ -38,8 +52,6 @@ The following script makes backup of the database and saves it. If it is the fir
 	mkdir -p $backups
 	cd $backups
 
-	# Database inside of Docker
-	docker exec -it pumpkin_db_1 pg_dump -c -U postgres > dump_`date +%Y-%m-%d"_"%H:%M:%S`.sql
 	# Database running directly on the system
 	pg_dump -U <database user name> pumpkin > dump_`date +%Y-%m-%d"_"%H:%M:%S`.sql
 
@@ -54,8 +66,6 @@ The following script makes backup of the database and saves it. If it is the fir
 
 	exit 0
 
-..
-	The Docker backup is not tested!
 
 Then you can set up a cron job to run the script every day.
 
@@ -71,8 +81,3 @@ To **restore** the backup, you have to drop the database first, which may requir
 	psql -U postgres -c "DROP DATABASE <database>;"
 	psql -U postgres -c "CREATE DATABASE <database>;"
 	psql -U <username> -f <backup file>
-
-Log management
---------------
-
-The logs are stored in ``logs/`` directory.

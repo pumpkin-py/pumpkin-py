@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "pumpkin.py core"
-copyright = "2021, Czechbol, sinus-x"
+project = "pumpkin.py"
+copyright = "2022; Czechbol, sinus-x and contributors"
 author = "Czechbol, sinus-x"
 
 release = "unversioned"

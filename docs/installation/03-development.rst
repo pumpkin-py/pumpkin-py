@@ -1,18 +1,63 @@
+.. _devel:
+
 Development installation
 ========================
 
 Everyone's development environment is different. This is an attempt to make it as easy as possible to setup.
 
-Please read through Direct installation first. Even if we're gonna omit most of it, it will be easier to understand.
+
+.. _devel_fork:
+
+Forking the bot
+---------------
+
+Fork is a repository that is a copy of another repository.
+By performing a fork you'll be able to experiment and alter modules withou affecting the main, official repository.
+The fork is also used for opening Pull Requests back to our repository.
+
+.. note::
+
+	This section also applies to pumpkin.py module repositories, not just main repository.
+	Just change the URLs.
+
+Open `our official GitHub page <https://github.com/pumpkin-py/pumpkin-py>`_.
+Assuming you are logged in, you should see a button named **Fork** (at the top right).
+Click it.
+
+After a while, the site will load and you'll see the content of your fork repository, which will look exactly the same as the official one -- because it's a copy.
+
+Under a colored button **Code**, you can obtain a SSH URL which will be used with ``git clone`` to copy it to your local machine.
+
+.. note::
+
+	This manual will assume you have your SSH keys set up.
+	It's out of scope of this manual to describe full steps.
+	Refer to `GitHub <https://docs.github.com/en/authentication/connecting-to-github-with-ssh>`_ documentation or use your preferred search engine.
+
+
+.. _devel_system_pre_setup:
 
 System setup
 ------------
 
-You'll need git. Obviously.
+You'll need ``git``.
+It may be on your system already.
 
 .. code-block:: bash
 
 	apt install git
+
+Besides ``git``, pumpkin.py has additional system dependencies which have to be installed.
+
+.. code-block:: bash
+
+	apt install \
+		python3 python3-dev python3-pip python3-venv python3-setuptools \
+		gcc libffi-dev \
+		libjpeg-dev libtiff-dev libwebp-dev libopenjp2-7-dev
+
+
+.. _devel_code_setup:
 
 Code setup
 ----------
@@ -21,85 +66,63 @@ Clone your fork:
 
 .. code-block:: bash
 
-	git clone https://github.com/<your username>/pumpkin.py.git
-	# or, if you have SSH keys setup
-	git clone git@github.com:<your username>/pumpkin.py.git
+	git clone git@github.com:<your username>/pumpkin-py.git pumpkin
+	cd pumpkin
 
-Then you have to setup link back to our main repository, which is usually called upstream:
+Then you have to setup a link back to our main repository, which is usually called upstream:
 
 .. code-block:: bash
 
 	git remote add upstream https://github.com/pumpkin-py/pumpkin-py.git
 
-Discord bot token
---------------
 
-.. include:: _token.rst
 
-.. _systemd service:
+.. _devel_database:
 
-Database setup
---------------
+Database
+--------
 
 Instead of high-performance PostgreSQL we are going to be using SQLite3, which has giant advantage: it requires zero setup.
 
-Create a file called ``.env`` in the root directory of your cloned repo and copy the content of the ``default.env`` file into it. The ``.env`` file will hold sensitive bot information, so don't let anyone see its content, ever. Open it and paste the connection string into the ``DB_STRING`` variable: ``sqlite:///pumpkin.db``.
+Open file ``.env`` (see :ref:`general_env` for more details) and paste the following connection string into the ``DB_STRING`` variable: ``sqlite:///pumpkin.db``.
 
 If you ever need to wipe the database, just delete the ``pumpkin.db`` file. The bot will create a new one when it starts again.
 
-Development workflow with git
------------------------------
 
-.. note::
+.. _devel_token:
 
-	Always start from ``main``, but never commit to ``main``.
+Discord bot token
+-----------------
 
-When you make new feature, create new branch from ``main``:
+See :ref:`general_token` in chapter General Bot Information.
 
-.. code-block:: bash
 
-	git checkout main
-	git checkout -b <branch name>
+.. _devel_venv:
 
-Now you can make edits to the code and commit the changes. When the feature is ready, push the commits and open a Pull request against the ``main`` branch.
+Bot environment
+---------------
 
-Your changes will be reviewed and, if you've done your work correctly, accepted.
+See :ref:`general_venv` in chapter General Bot Information for instructions on how to setup a virtual environment.
 
-To update your local repository and your fork, run the following:
+Once you are in virtual environment, you can install required libraries:
 
 .. code-block:: bash
 
-	# ensure you are in 'main'
-	git checkout main
-	# download upstream changes
-	git fetch upstream
-	# apply changes to upstream main
-	git merge upstream/main
-	# update your GitHub repository
-	git push
+	python3 -m pip install wheel
+	python3 -m pip install -r requirements.txt
+	python3 -m pip install -r requirements-dev.txt
 
-The feature branch you used to open PR will no longer be useful. Delete it (and its remote version) by running
 
-.. code-block:: bash
-
-	git branch -D <branch name>
-	git push -d origin <branch name>
-
-Development inside of virtual environment
------------------------------------------
-
-.. include:: _venv.rst
+.. _devel_run:
 
 Running the bot
 ---------------
-
-Assuming you are in virtual environment and have everything set up, run
 
 .. code-block:: bash
 
 	python3 pumpkin.py
 
-It will print startup information and a welcome message, something like this:
+If you have done everything correctly (you are in ``venv``, you have all libraries installed), the script will print startup information and a welcome message, something like this:
 
 .. code-block::
 
