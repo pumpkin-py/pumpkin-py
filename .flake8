@@ -9,7 +9,7 @@ per-file-ignores =
 	pie/check.py:F401
 	pie/utils/__init__.py:F401
 	modules/base/errors/module.py:C901
-exclude = .git,.venv
+extend-exclude = .venv*
 count = True
 max-complexity = 25
 max-line-length = 90

@@ -5,7 +5,7 @@ msgid Command **{name}** does not have subcommand **{subcommand}**
 msgstr Príkaz **{name}** nemá podpríkaz **{subcommand}**
 
 msgid Command **{name}** has no subcommand
-msgstr Príkaz **{subcommand}** nemá žiaden podpríkaz
+msgstr Príkaz **{name}** nemá žiaden podpríkaz
 
 msgid Page
 msgstr Strana
