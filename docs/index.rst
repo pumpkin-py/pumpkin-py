@@ -12,22 +12,21 @@ pumpkin.py's developer documentation
    :maxdepth: 1
    :caption: General bot information
 
-   installation/index
+   general/index
 
 .. toctree::
    :maxdepth: 1
    :caption: Production section
 
-   installation/01-docker
-   installation/02-direct
-   installation/04-config
-
+   production/docker
+   production/direct
+   production/config
 
 .. toctree::
    :maxdepth: 1
    :caption: Development section
 
-   installation/03-development
+   development/installation
    development/code_quality
    development/imports
    development/logging
@@ -39,5 +38,5 @@ pumpkin.py's developer documentation
    :maxdepth: 1
    :caption: About
 
-   legal
-   versioning
+   about/legal
+   about/versioning

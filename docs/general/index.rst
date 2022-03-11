@@ -1,7 +1,13 @@
+.. _general:
+
+I'm new to Discord bots
+=======================
+
+
 .. _general_download:
 
 Downloading the code
-====================
+--------------------
 
 Use ``git`` to download the source code:
 
@@ -20,7 +26,7 @@ To update the bot later, run
 .. _general_env:
 
 Environment file
-================
+----------------
 
 The file called ``.env`` (that's right, just these four characters, nothing more) holds information pumpkin.py needs in order to start.
 
@@ -45,7 +51,7 @@ For ``DB_STRING``, see the manual for installation that applies to your setup.
 .. _general_token:
 
 Bot token
-=========
+---------
 
 Token is equivalent to yours username & password.
 Every Discord bot uses their token to identify themselves, so it's important that you keep your bot's token on private place.
@@ -69,7 +75,7 @@ You can invite the bot only to the servers where you have Administrator privileg
 .. _general_venv:
 
 Virtual environment
-===================
+-------------------
 
 .. note::
    This section does not apply to Docker users, as their Docker container itself is virtual environment separated from the rest of the system.
@@ -87,7 +93,7 @@ To prevent clashes with those libraries, or to prevent clashes with another Pyth
 .. _general_venv_setup:
 
 venv setup
-----------
+^^^^^^^^^^
 
 You may need to install the virtual environment package first:
 
@@ -110,7 +116,7 @@ If you install newer version of Python (e.g. from 3.9 to 3.10), you may need to 
 .. _general_venv_usage:
 
 venv usage
-----------
+^^^^^^^^^^
 
 The following step has to be performed every time you want to run the bot.
 
@@ -130,18 +136,14 @@ To exit the environment, run
 See installation manuals for details on what to do once you are in virtual environment.
 
 
-.. _general_venv_patch:
+.. _general_venv_tip:
 
 A small tip
------------
+^^^^^^^^^^^
 
 When working on the bot (debugging, development) it is easier if you speed up environment variable import.
 Open the activate script (the ``.venv/bin/activate`` file) and insert to the end of it:
 
-.. code-block::
-
-	set -o allexport
-	source ./.env
-	set +o allexport
+.. include:: ../_snippets/_source_env.rst
 
 This way the variables will be set whenever you enter the virtual environment with the ``source .venv/bin/activate`` command, and you won't have to run the ``source .env`` manually.
