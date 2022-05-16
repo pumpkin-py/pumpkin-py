@@ -5,6 +5,8 @@ from typing import List
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 
+from pie.utils.cli import COLOR
+
 
 class Database:
     """Main database connector."""
@@ -35,10 +37,13 @@ def init_core():
         import_stub: str = f"pie.{module}.database"
         try:
             importlib.import_module(import_stub)
-            print(f"Imported database models in '{import_stub}'.")  # noqa: T001
+            print(
+                f"Database models {COLOR.green}{import_stub}{COLOR.none} imported."
+            )  # noqa: T001
         except Exception as exc:
             print(
-                f"Could not import database models in '{import_stub}': {exc}."
+                f"Database models {COLOR.red}{import_stub}{COLOR.none} failed: "
+                f"{COLOR.cursive}{exc}{COLOR.none}."
             )  # noqa: T001
             raise
 
@@ -102,9 +107,12 @@ def _import_database_tables():
             try:
                 import_stub: str = database_stub.replace("/", ".")
                 importlib.import_module(import_stub)
-                print(f"Imported database models in '{import_stub}'.")  # noqa: T001
+                print(
+                    f"Database models {COLOR.green}{import_stub}{COLOR.none} imported."
+                )  # noqa: T001
             except ModuleNotFoundError as exc:
                 # TODO How to properly log errors?
                 print(
-                    f"Could not import database models in '{import_stub}': {exc}."
+                    f"Database models {COLOR.red}{import_stub}{COLOR.none} failed: "
+                    f"{COLOR.cursive}{exc}{COLOR.none}."
                 )  # noqa: T001
