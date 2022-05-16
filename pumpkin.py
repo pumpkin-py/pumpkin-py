@@ -5,6 +5,7 @@ import sqlalchemy
 import nextcord
 from nextcord.ext import commands
 
+from pie.cli import COLOR
 from pie import exceptions
 
 
@@ -101,12 +102,13 @@ async def on_ready():
         await bot_log.info(None, None, "Reconnected")
     else:
         print(
+            "\n"
             "     (     \n"
             "  (   )  ) \n"
             "   )  ( )  \n"
             "   .....   \n"
             ".:::::::::.\n"
-            "~\\_______/~"
+            "~\\_______/~\n"
         )
         await bot_log.critical(None, None, "The pie is ready.")
         already_loaded = True
@@ -152,18 +154,30 @@ for module in modules:
         # This module is managed by database
         continue
     bot.load_extension(f"modules.{module}.module")
-    print("Loaded default module " + module, file=sys.stdout)  # noqa: T001
+    print(
+        f"Module {COLOR.green}{module}{COLOR.none} loaded.",
+        file=sys.stdout,
+    )  # noqa: T001
 
 for module in db_modules:
     if not module.enabled:
-        print("Skipping module " + module.name, file=sys.stdout)  # noqa: T001
+        print(
+            f"Module {COLOR.yellow}{module.name}{COLOR.none} found, but is disabled.",
+            file=sys.stdout,
+        )  # noqa: T001
         continue
     try:
         bot.load_extension(f"modules.{module.name}.module")
     except (ImportError, ModuleNotFoundError, commands.ExtensionNotFound):
-        print(f"Module not found: {module.name}", file=sys.stdout)  # noqa: T001
+        print(
+            f"Module {COLOR.red}{module.name}{COLOR.none} not found.",
+            file=sys.stdout,
+        )  # noqa: T001
         continue
-    print("Loaded module " + module.name, file=sys.stdout)  # noqa: T001
+    print(
+        f"Module {COLOR.green}{module.name}{COLOR.none} loaded.",
+        file=sys.stdout,
+    )  # noqa: T001
 
 for command in bot.walk_commands():
     if type(command) is not commands.Group:
