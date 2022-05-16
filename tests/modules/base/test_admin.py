@@ -4,8 +4,8 @@ import tempfile
 from pathlib import Path
 from typing import Union
 
-from modules.base.admin.module import Admin
-from modules.base.admin.objects import Repository
+from pie.exceptions import RepositoryMetadataError
+from pie.repository import Repository
 
 
 def _create_repo(path: str):
@@ -119,17 +119,17 @@ def test_module_check_failures():
     )
 
     _update_init(tempdir.name, name="CAPITALS")
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(RepositoryMetadataError) as excinfo:
         Repository(temppath)
     assert str(excinfo.value) == f"Repository at '{temppath}' has invalid name."
 
     _update_init(tempdir.name, name="")
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(RepositoryMetadataError) as excinfo:
         Repository(temppath)
     assert str(excinfo.value) == f"Repository at '{temppath}' has invalid name."
 
     _update_init(tempdir.name, modules=("CAPITALS",))
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(RepositoryMetadataError) as excinfo:
         Repository(temppath)
     assert (
         str(excinfo.value)
@@ -137,7 +137,7 @@ def test_module_check_failures():
     )
 
     _update_init(tempdir.name, modules=("missing",), create_modules=False)
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(RepositoryMetadataError) as excinfo:
         Repository(temppath)
     assert str(excinfo.value) == "Module 'missing' is missing its init file."
 
@@ -145,33 +145,11 @@ def test_module_check_failures():
     # There was no easy fix and we'd have to rewrite the detection, I decided to leave
     # it as it is. It fine well when there are only well-named modules.
     _update_init(tempdir.name, modules=("1test"))
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(RepositoryMetadataError) as excinfo:
         Repository(temppath)
     assert str(excinfo.value) == (
         f"Repository at '{temppath}' specification "
         "contains invalid name for included module '1'."
     )
-
-    tempdir.cleanup()
-
-
-# TODO How to trigger this test with environment variable/parameter?
-# https://docs.pytest.org/en/latest/skipping.html?highlight=skipping#id1
-@pytest.mark.skip
-def test_requirements_install():
-    # FIXME Needs updating to current system
-    tempdir = tempfile.TemporaryDirectory()
-    _create_repo(tempdir.name)
-
-    result = Admin._install_module_requirements(path=tempdir.name)
-    assert result is None
-
-    _update_requirements(tempdir.name, lines=("wheel",))
-    result = Admin._install_module_requirements(path=tempdir.name)
-    assert result.returncode == 0
-
-    _update_requirements(tempdir.name, lines=("00000000000000000",))
-    result = Admin._install_module_requirements(path=tempdir.name)
-    assert result.returncode != 0
 
     tempdir.cleanup()

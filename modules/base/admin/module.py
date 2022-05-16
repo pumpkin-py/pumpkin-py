@@ -8,9 +8,9 @@ from nextcord.ext import commands, tasks
 
 import pie.database.config
 from pie import check, i18n, logger, utils
+from pie.repository import RepositoryManager, Repository
 from pie.spamchannel.database import SpamChannel
 from .database import BaseAdminModule as Module
-from .objects import RepositoryManager, Repository
 
 _ = i18n.Translator("modules/base").translate
 bot_log = logger.Bot.logger()

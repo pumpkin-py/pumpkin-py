@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import configparser
 import git
 import hashlib
 import re
@@ -7,6 +8,8 @@ import subprocess  # nosec: B404
 import sys
 from pathlib import Path
 from typing import List, Tuple, Optional
+
+from pie.exceptions import RepositoryMetadataError
 
 
 RE_QUOTE = r"(\"|\"\"\"|')"
@@ -21,21 +24,26 @@ class RepositoryManager:
     :param log: Information about repository manager actions.
     """
 
+    __instance: Optional[RepositoryManager] = None
+
     repositories: List[Repository]
     log: List[str]
+
+    def __new__(cls, *args, **kwargs):
+        """Create singleton instance."""
+        if RepositoryManager.__instance is None:
+            RepositoryManager.__instance = object.__new__(cls, *args, **kwargs)
+        return RepositoryManager.__instance
 
     def __init__(self):
         self.log = []
         self.refresh()
 
-    def refresh(self):
-        self.repositories = self.get_repositories()
-
-    def flush_log(self):
+    def flush_log(self) -> None:
         self.log = []
 
-    def get_repositories(self) -> List[Repository]:
-        """Scan for available repositories."""
+    def refresh(self) -> None:
+        """Scan `modules/` directory and update repository list."""
         repositories: List[Repository] = []
 
         repo_dir: Path = Path("modules/").resolve()
@@ -51,7 +59,7 @@ class RepositoryManager:
             # try to initiate the repository
             try:
                 repository = Repository(directory)
-            except Exception as exc:
+            except RepositoryMetadataError as exc:
                 self.log.append(
                     f"Directory '{directory.name}' is not a repository: {exc}"
                 )
@@ -60,7 +68,7 @@ class RepositoryManager:
             # no error found, the directory is a repository
             repositories.append(repository)
 
-        return repositories
+        self.repositories = repositories
 
     def get_repository(self, name: str) -> Optional[Repository]:
         """Get repository by its name."""
@@ -107,14 +115,39 @@ class Repository:
                 f"Could not checkout branch '{branch}': {exc.stderr.strip()}"
             )
 
-    def set_facts(self):
-        """Check the __init__.py and get information from there."""
+    def set_facts(self) -> None:
+        """Check the repo.conf and get the repository information."""
+
+        conf: Path = self.path / "repo.conf"
+        if not conf.is_file():
+            return self.set_facts_legacy()
+
+        config = configparser.ConfigParser()
+        config.read(conf)
+
+        name: Optional[str] = config.get("repository", "name", fallback=None)
+        if not name:
+            raise RepositoryMetadataError("'repo.conf' does not have 'name' key.")
+
+        modules: Optional[str] = config.get("repository", "modules", fallback=None)
+        if not modules:
+            raise RepositoryMetadataError("'repo.conf' does not have 'modules' key.")
+
+        self.name = name
+        self.module_names = [m.strip() for m in modules.split()]
+
+    def set_facts_legacy(self) -> None:
+        """Check the __init__.py and get information from there.
+
+        This used to be the default and will be removed in the future.
+        """
+
         init: Path = self.path / "__init__.py"
         if not init.is_file():
-            return {}
+            return
 
         name: Optional[str] = None
-        module_names: Optional[Tuple[str]] = None
+        module_names: Tuple[str, ...] = tuple()
 
         with open(init, "r") as handle:
             for line in handle.readlines():
@@ -128,17 +161,17 @@ class Repository:
                     module_names = self._regex_get_modules(line)
 
         if name is None:
-            raise ValueError(
+            raise RepositoryMetadataError(
                 f"Specification of a repository at '{self.path}' is missing a name."
             )
         if module_names is None:
-            raise ValueError(
+            raise RepositoryMetadataError(
                 f"Specification of a repository at '{self.path}' "
                 "is missing a list of modules."
             )
         for module_name in module_names:
             if not (self.path / module_name).is_dir():
-                raise ValueError(
+                raise RepositoryMetadataError(
                     f"Specification of a repository at '{self.path}' "
                     f"includes link to invalid module '{module_name}'."
                 )
@@ -153,16 +186,18 @@ class Repository:
         )
         matched: Optional[re.Match] = re.fullmatch(regex, line)
         if matched is None:
-            raise ValueError(f"Repository at '{self.path}' has invalid name.")
+            raise RepositoryMetadataError(
+                f"Repository at '{self.path}' has invalid name."
+            )
         name: str = matched.groups()[-2]
         return name
 
-    def _regex_get_modules(self, line: str) -> Tuple[str]:
+    def _regex_get_modules(self, line: str) -> Tuple[str, ...]:
         """Get tuple of module names using regex."""
         regex: str = r"(__all__)(\s*)(=)(\s*)" + r"\((" + RE_NAMES + r")\)"
         matched: Optional[re.Match] = re.fullmatch(regex, line)
         if matched is None:
-            raise ValueError(
+            raise RepositoryMetadataError(
                 f"Repository at '{self.path}' has "
                 "invalid specification of included modules."
             )
@@ -171,14 +206,18 @@ class Repository:
         list_of_names = [n for n in list_of_names if len(n)]
         for name in list_of_names:
             if re.fullmatch(RE_NAME, name) is None:
-                raise ValueError(
+                raise RepositoryMetadataError(
                     f"Repository at '{self.path}' specification "
                     f"contains invalid name for included module '{name}'."
                 )
             if not (self.path / name / "__init__.py").is_file():
-                raise ValueError(f"Module '{name}' is missing its init file.")
+                raise RepositoryMetadataError(
+                    f"Module '{name}' is missing its init file."
+                )
             if not (self.path / name / "module.py").is_file():
-                raise ValueError(f"Module '{name}' is missing its module file.")
+                raise RepositoryMetadataError(
+                    f"Module '{name}' is missing its module file."
+                )
         return tuple(list_of_names)
 
     @staticmethod
@@ -192,6 +231,7 @@ class Repository:
         except git.exc.GitError as exc:
             stderr: str = str(exc)[str(exc).find("stderr: ") + 8 :]
             return stderr
+        return None
 
     def git_pull(self, force: bool = False) -> str:
         """Perform 'git pull' over the repository.
@@ -225,11 +265,11 @@ class Repository:
         """
         file: Path = self.path / "requirements.txt"
         if not file.is_file():
-            return
+            return None
 
         h = hashlib.sha256()
         with open(file, "rb") as handle:
-            chunk: int = 0
+            chunk: bytes = b""
             while chunk != b"":
                 # read 1kB at a time
                 chunk = handle.read(1024)

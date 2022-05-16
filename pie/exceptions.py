@@ -9,6 +9,12 @@ class PumpkinException(Exception):
         return super().__str__()
 
 
+class RepositoryMetadataError(PumpkinException):
+    """Raised when module repository file contains errors."""
+
+    pass
+
+
 class DotEnvException(PumpkinException):
     """Raised when some module requires missing ``.env`` variable."""
 

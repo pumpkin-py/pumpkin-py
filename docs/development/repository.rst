@@ -10,19 +10,22 @@ You can start with an empty directory (named ``pumpkin-bistro``, for example).
 Repository metadata
 -------------------
 
-The first file we're gonna create will be ``__init__.py``. This file MUST be present in your repository, because pumpkin.py reads its information in order to work with it. It has to contain three variables described below´:
+The first file we're gonna create will be ``repo.conf``. This file MUST be present in your repository, because pumpkin.py reads its information in order to work with it. It has to contain two variables described below:
 
-- ``__name__`` is a string representing name of the repository. It must be instance-unique and can only contain lowercase ASCII letters and a dash (``[a-z_]+``) and MUST NOT be ``core`` or ``base``. Moderators can run the **repository list** command to show installed repositories to prevent name clashes.
-- ``__version__`` is a string that MUST follow the `semver rules <https://semver.org/>`_.
-- ``__all__`` is a tuple of strings that lists all modules included in the repository.
+- ``name`` is a string representing name of the repository. It must be instance-unique and can only contain lowercase ASCII letters and a dash (``[a-z_]+``) and MUST NOT be ``core`` or ``base``. Moderators can run the **repository list** command to show installed repositories to prevent name clashes.
+- ``modules`` is a list of strings that mentions all modules included in the repository.
 
 In our case, the file might look like this:
 
-.. code-block:: python3
+.. code-block:: ini
 
-    __name__ = "bistro"
-    __version__ = "0.0.1"
-    __all__ = ("bistro", )
+    [repository]
+    name = bistro
+    modules =
+        bistro
+
+Because we're using Python, we have to tell it that this directory will contain runnable code.
+This can be achieved by creatin empty ``__init__.py`` file.
 
 Next file that SHOULD be present in your repository is ``README.md`` or ``README.rst``. This file should contain the information about the repository and its modules. It should also link to the pumpkin.py project, so the visitors aren't confused about the meaning of it.
 
