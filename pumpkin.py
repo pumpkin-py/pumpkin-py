@@ -5,7 +5,7 @@ import sqlalchemy
 import nextcord
 from nextcord.ext import commands
 
-from pie.utils.cli import COLOR
+from pie.cli import COLOR
 from pie import exceptions
 
 

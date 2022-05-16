@@ -5,7 +5,7 @@ from typing import List
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 
-from pie.utils.cli import COLOR
+from pie.cli import COLOR
 
 
 class Database:
