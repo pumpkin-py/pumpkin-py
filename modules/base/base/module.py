@@ -69,7 +69,14 @@ class Base(commands.Cog):
 
         If channel is omitted, the settings applies to whole server.
         """
-        if limit < 1:
+        if limit < 0:
+            await ctx.reply(
+                _(
+                    ctx,
+                    "Limit has to be positive integer or zero "
+                    "(if you want the feature disabled).",
+                )
+            )
             raise commands.BadArgument("Limit has to be at least one.")
 
         if channel is None:

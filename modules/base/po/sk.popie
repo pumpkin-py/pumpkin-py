@@ -253,6 +253,9 @@ msgstr Názov kanálu
 msgid Reaction limit
 msgstr Limit reakcií
 
+msgid Limit has to be positive integer or zero (if you want the feature disabled).
+msgstr Limit musí byť kladné celé číslo alebo nula (pokiaľ má byť funkcia vypnutá).
+
 msgid Pinning was disabled.
 msgstr Pripínanie bolo vypnuté.
 
@@ -276,9 +279,6 @@ msgstr Zapnuté
 
 msgid User threads are not enabled on this server.
 msgstr Otváranie vlákien uživateľmi nie je na tomto serveri povolené.
-
-msgid Limit has to be positive integer or zero (if you want the feature disabled).
-msgstr Limit musí byť kladné celé číslo alebo nula (pokiaľ má byť funkcia vypnutá).
 
 msgid Thread creation was disabled.
 msgstr Vytváranie vlákien bolo vypnuté.
