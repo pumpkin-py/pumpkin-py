@@ -1,8 +1,8 @@
 from math import ceil
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Set
 
 import nextcord
-from nextcord.ext import commands
+from nextcord.ext import commands, tasks
 
 from pie import check, i18n, logger, utils
 
@@ -21,7 +21,22 @@ class Base(commands.Cog):
 
         self.durations = {"1h": 60, "1d": 1440, "3d": 4320, "7d": 10080}
 
+        # intended structure: {message_id : {user_ids,}}
+        self.bookmark_cache: Dict[int, Set[int]] = {}
+        self.dump_cache.start()
+
     #
+
+    @tasks.loop(minutes=15)
+    async def dump_cache(self):
+        self.bookmark_cache = {}
+
+    @dump_cache.before_loop
+    async def before_dump_cache(self):
+        await self.bot.wait_until_ready()
+
+    def cog_unload(self):
+        self.dump_cache.cancel()
 
     @commands.guild_only()
     @check.acl2(check.ACLevel.SUBMOD)
@@ -552,6 +567,19 @@ class Base(commands.Cog):
         self, payload: nextcord.RawReactionActionEvent, message: nextcord.Message
     ):
         """Handle bookmark functionality."""
+        # antispam cache check and update
+        current_users_on_msg: set = self.bookmark_cache.get(message.id)
+        if current_users_on_msg is not None:
+            if payload.member.id in current_users_on_msg:
+                await utils.discord.remove_reaction(
+                    message, payload.emoji, payload.member
+                )
+                return
+        else:
+            current_users_on_msg = set()
+        current_users_on_msg.add(payload.member.id)
+        self.bookmark_cache.update({message.id: current_users_on_msg})
+
         bookmark = Bookmark.get(payload.guild_id, payload.channel_id)
         if bookmark is None:
             bookmark = Bookmark.get(payload.guild_id, None)
@@ -591,8 +619,11 @@ class Base(commands.Cog):
                 name=_(utx, "Embeds"),
                 value=_(utx, "Total {count}").format(count=len(message.embeds)),
             )
+        for reaction in message.reactions:
+            if reaction.emoji != "🔖":
+                continue
+            await reaction.clear()
 
-        await utils.discord.remove_reaction(message, payload.emoji, payload.member)
         await payload.member.send(embed=embed)
 
         await guild_log.debug(
