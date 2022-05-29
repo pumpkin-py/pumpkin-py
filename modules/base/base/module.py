@@ -712,6 +712,14 @@ class Base(commands.Cog):
 
             await reaction.clear()
 
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild: nextcord.Guild):
+        await guild_log.warning(self.bot.user, guild, "Bot has joined the server.")
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild: nextcord.Guild):
+        await guild_log.warning(self.bot.user, guild, "Bot has left the server.")
+
 
 def setup(bot) -> None:
     bot.add_cog(Base(bot))
