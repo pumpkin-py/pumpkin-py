@@ -54,7 +54,6 @@ LogSource = Optional[
         nextcord.GroupChannel,
         nextcord.TextChannel,
         nextcord.StageChannel,
-        nextcord.StoreChannel,
         nextcord.VoiceChannel,
     ]
 ]
