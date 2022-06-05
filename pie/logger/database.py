@@ -203,6 +203,7 @@ class LogConf(database.base):
             .filter_by(scope=scope, guild_id=guild_id, module=module)
             .delete()
         )
+        session.commit()
         return count > 0
 
     @staticmethod
