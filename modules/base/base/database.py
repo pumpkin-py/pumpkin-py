@@ -187,9 +187,11 @@ class AutoThread(database.base):
     def add(guild_id: int, channel_id: int, duration: int) -> AutoThread:
         query = AutoThread.get(guild_id, channel_id)
         if query:
-            return query
-
-        query = AutoThread(guild_id=guild_id, channel_id=channel_id, duration=duration)
+            query.duration = duration
+        else:
+            query = AutoThread(
+                guild_id=guild_id, channel_id=channel_id, duration=duration
+            )
         session.add(query)
         session.commit()
         return query
