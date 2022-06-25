@@ -463,7 +463,7 @@ class Admin(commands.Cog):
 
     @commands.guild_only()
     @check.acl2(check.ACLevel.SUBMOD)
-    @commands.group(name="spamchannel", aliases=["spam"])
+    @commands.group(name="spamchannel")
     async def spamchannel_(self, ctx):
         """Manage bot spam channels."""
         await utils.discord.send_help(ctx)
