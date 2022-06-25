@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from nextcord.ext import commands
 
@@ -30,29 +30,36 @@ class Logging(commands.Cog):
     async def logging_list(self, ctx):
         """List logging channels on this server."""
         confs = LogConf.get_all_subscriptions(guild_id=ctx.guild.id)
+
+        if not confs:
+            await ctx.reply(_(ctx, "Logging is not enabled on this server."))
+
         confs = sorted(confs, key=lambda c: c.channel_id)
         confs = sorted(confs, key=lambda c: c.level)
         confs = sorted(confs, key=lambda c: c.scope)
 
-        def format_entry(entry: LogConf):
-            level = logger.LogLevel(entry.level).name
-            try:
-                channel = (
-                    self.bot.get_guild(entry.guild_id)
-                    .get_channel(entry.channel_id)
-                    .name
-                )
-            except AttributeError:
-                channel = f"{entry.channel_id}"
-            text = f"{level:<8} {entry.scope:<5} | #{channel:<10}"
-            return (text + f" | {entry.module}") if entry.module else text
+        class Item:
+            def __init__(self, conf: LogConf):
+                self.level = logger.LogLevel(conf.level).name
+                self.scope = conf.scope
+                channel = ctx.guild.get_channel(conf.channel_id)
+                channel_name = getattr(channel, "name", str(conf.channel_id))
+                self.channel = f"#{channel_name}"
+                self.module = conf.module or ""
 
-        output = "\n".join([format_entry(c) for c in confs])
-        if len(output):
-            for stub in utils.text.split(output):
-                await ctx.reply(f"```{stub}```")
-        else:
-            await ctx.reply(_(ctx, "Logging is not enabled on this server."))
+        items = [Item(conf) for conf in confs]
+        table: List[str] = utils.text.create_table(
+            items,
+            header={
+                "level": _(ctx, "Log level"),
+                "scope": _(ctx, "Scope"),
+                "channel": _(ctx, "Log channel"),
+                "module": _(ctx, "Module"),
+            },
+        )
+
+        for page in table:
+            await ctx.send("```" + page + "```")
 
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @logging_.command(name="set")

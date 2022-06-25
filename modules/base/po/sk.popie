@@ -226,8 +226,14 @@ msgstr Kanál {channel} bol označený ako spam kanál
 msgid This server has no spam channels.
 msgstr Tento server nemá žiadne spam kanály.
 
-msgid primary
-msgstr primárny
+msgid Yes
+msgstr Áno
+
+msgid Channel name
+msgstr Názov kanálu
+
+msgid Primary
+msgstr Primárný
 
 msgid Spam channel {channel} removed.
 msgstr Spam kanál {channel} bol odobraný.
@@ -247,9 +253,6 @@ msgstr Pripínanie správ uživateľmi na tomto serveri nie je povolené.
 msgid (server)
 msgstr (server)
 
-msgid Channel name
-msgstr Názov kanálu
-
 msgid Reaction limit
 msgstr Limit reakcií
 
@@ -267,9 +270,6 @@ msgstr Preferencie boli zrušené.
 
 msgid Bookmarks are not enabled on this server.
 msgstr Záložky nie sú na tomto serveri povolené.
-
-msgid Yes
-msgstr Áno
 
 msgid No
 msgstr Nie
@@ -606,6 +606,18 @@ msgstr
 
 msgid Logging is not enabled on this server.
 msgstr Logovanie nie je na tomto serveri zapnuté.
+
+msgid Log level
+msgstr
+
+msgid Scope
+msgstr
+
+msgid Log channel
+msgstr
+
+msgid Module
+msgstr
 
 msgid Invalid scope.
 msgstr Neplatný rozsah.
