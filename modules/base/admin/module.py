@@ -505,18 +505,24 @@ class Admin(commands.Cog):
             return
         spam_channels = sorted(spam_channels, key=lambda c: c.primary)[::-1]
 
-        channels = [ctx.guild.get_channel(c.channel_id) for c in spam_channels]
-        column_name_width: int = max([len(c.name) for c in channels if c])
+        class Item:
+            def __init__(self, spam_channel: SpamChannel):
+                channel = ctx.guild.get_channel(spam_channel.channel_id)
+                channel_name = getattr(channel, "name", str(spam_channel.channel_id))
+                self.name = f"#{channel_name}"
+                self.primary = _(ctx, "Yes") if spam_channel.primary else ""
 
-        result = []
-        for spam_channel, channel in zip(spam_channels, channels):
-            name = getattr(channel, "name", "???")
-            line = f"#{name:<{column_name_width}} {spam_channel.channel_id}"
-            if spam_channel.primary:
-                line += " " + _(ctx, "primary")
-            result.append(line)
+        items = [Item(channel) for channel in spam_channels]
+        table: List[str] = utils.text.create_table(
+            items,
+            header={
+                "name": _(ctx, "Channel name"),
+                "primary": _(ctx, "Primary"),
+            },
+        )
 
-        await ctx.reply("```" + "\n".join(result) + "```")
+        for page in table:
+            await ctx.send("```" + page + "```")
 
     @check.acl2(check.ACLevel.MOD)
     @spamchannel_.command(name="remove", aliases=["rem"])
