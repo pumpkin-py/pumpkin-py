@@ -34,13 +34,11 @@ def test_text_create_table():
         "a": "Integer",
         "b": "String",
     }
-    expected = "\n".join(
-        [
-            "Integer    String",
-            "1          a",
-            "123456789  b",
-            "3          abcdefghijk",
-        ]
+    expected = (
+        "Integer    String\n"
+        "1          a\n"
+        "123456789  b\n"
+        "3          abcdefghijk\n"
     )
     table: str = utils.text.create_table(iterable, header)
     assert [expected] == table
@@ -61,14 +59,7 @@ def test_text_create_table_noattr():
         "a": "int",
         "b": "str",
     }
-    expected = "\n".join(
-        [
-            "int  str",
-            "1    a",
-            "2",
-            "3    c",
-        ]
-    )
+    expected = "int  str\n" "1    a\n" "2\n" "3    c\n"
     table: str = utils.text.create_table(iterable, header)
     assert [expected] == table
 
@@ -87,16 +78,7 @@ def test_text_create_table_wrapped():
         "a": "Integer",
         "b": "String",
     }
-    page_1 = "\n".join(
-        [
-            "Integer  String",
-            "1111     aaaa",
-        ]
-    )
-    page_2 = "\n".join(
-        [
-            "2222     bbbb",
-        ]
-    )
+    page_1 = "Integer  String\n" "1111     aaaa\n"
+    page_2 = "2222     bbbb\n"
     table: List[str] = utils.text.create_table(iterable, header, limit=32)
     assert [page_1, page_2] == table

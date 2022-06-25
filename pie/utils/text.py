@@ -79,7 +79,7 @@ def parse_bool(string: str) -> Optional[bool]:
 
 
 def create_table(
-    iterable: Iterable, header: Dict[str, str], *, limit: int = 1990
+    iterable: Iterable, header: Dict[str, str], *, limit: int = 1990, rich: bool = False
 ) -> List[str]:
     """Create table from any iterable.
 
@@ -89,11 +89,17 @@ def create_table(
         iterable: Any iterable of items to create the table from.
         header: Dictionary of item attributes and their translations.
         limit: Character limit, at which the table is split.
+        rich:
+            Color rows.
+            Defaults to ``False`` until Discord properly supports ANSI
+            escape codes on Android.
     """
     matrix: List[List[str]] = []
-    matrix.append(list(header.values()))
-    column_widths = [len(v) for v in header.values()]
+    pages: List[str] = []
 
+    # Compute column widths, make sure all fields have non-None values
+    matrix.append(list(header.values()))
+    column_widths: List[int] = [len(v) for v in header.values()]
     for item in iterable:
         line: List[str] = []
         for i, attr in enumerate(header.keys()):
@@ -105,23 +111,40 @@ def create_table(
 
         matrix.append(line)
 
-    pages: List[str] = []
-    page: str = ""
-    for matrix_line in matrix:
-        line = ""
-        for i in range(len(header) - 1):
-            line += matrix_line[i].ljust(column_widths[i] + 2)
-        # don't ljust the last item, it's a waste of characters
-        line += matrix_line[-1]
-        line = line.rstrip()
+    H: str = ""
+    A: str = ""
+    R: str = ""
+    P: str = ""
+    if rich:
+        H = "\u001b[1;34m"  # bold blue
+        A = "\u001b[36m"  # cyan
+        R = "\u001b[0m"  # reset
+        P = "ansi\n"
 
+    page: str = P
+    for i, matrix_line in enumerate(matrix):
+        line: str = ""
+
+        # Color heading & odd lines
+        if i == 0:
+            line += H
+        elif i % 2 == 0:
+            line += A
+
+        # Add values
+        for column_no, column_width in enumerate(column_widths):
+            line += matrix_line[column_no].ljust(column_width + 2)
+
+        # End line
+        line = line.rstrip() + R + "\n"
+
+        # Add line
         if len(page) + len(line) > limit:
             pages.append(page)
-            page = ""
-        page += line + "\n"
-    pages.append(page)
+            page = P
+        page += line
 
-    # strip extra newline at the end of each page
-    pages = [page[:-1] for page in pages]
+    # Add final non-complete page
+    pages.append(page)
 
     return pages
