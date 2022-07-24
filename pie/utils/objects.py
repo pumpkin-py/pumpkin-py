@@ -271,6 +271,9 @@ class ConfirmView(nextcord.ui.View):
     async def interaction_check(self, interaction: nextcord.Interaction) -> None:
         """Gets called when interaction with any of the Views buttons happens."""
         if interaction.user.id != self.ctx.author.id:
+            await interaction.response.send_message(
+                _(self.ctx, "Only the author can confirm the action."), ephemeral=True
+            )
             return
 
         if interaction.data["custom_id"] == "confirm-button":
