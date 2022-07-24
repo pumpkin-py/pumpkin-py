@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from abc import ABCMeta, abstractmethod
 from typing import Iterable, Optional, Union
 
@@ -176,10 +177,8 @@ class ScrollableEmbed(nextcord.ui.View):
             self.clear_items()
             await self.message.edit(embed=self.pages[self.pagenum], view=None)
         else:
-            try:
+            with contextlib.suppress(Exception):
                 await self.message.delete()
-            except Exception:
-                pass
 
 
 class ConfirmView(nextcord.ui.View):
@@ -262,10 +261,8 @@ class ConfirmView(nextcord.ui.View):
             self.clear_items()
             await self.message.edit(embed=self.embed, view=None)
         else:
-            try:
+            with contextlib.suppress(Exception):
                 await self.message.delete()
-            except Exception:
-                pass
         return self.value
 
     async def interaction_check(self, interaction: nextcord.Interaction) -> None:
@@ -479,10 +476,8 @@ class VoteEmbed(nextcord.ui.View):
             self.clear_items()
             await self.message.edit(embed=self.embed, view=self)
         else:
-            try:
+            with contextlib.suppress(Exception):
                 await self.message.delete()
-            except Exception:
-                pass
         return self.value
 
     async def interaction_check(self, interaction: nextcord.Interaction) -> None:
