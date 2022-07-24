@@ -1,3 +1,5 @@
+.. _how_to_create_repo:
+
 How to create a repository
 ==========================
 
@@ -164,3 +166,8 @@ Testing
 You MAY include a directory called `tests/` in the root of the repository (e.g. between the module directories). This directory will be ignored by pumpkin.py module checks and won't emit "Invalid module" warnings.
 
 Please note that this may be changed in the future and some pumpkin.py versions may require the modules to be subclassed in `modules/` directory, if this proves to be confusing.
+
+Load module
+-----------
+
+For import and load of the custom modules follow `User documentation <https://pumpkin-py.github.io/docs/en/module-installation.html>`_. The user documentation expected that module is available as git repository and everything required in :ref:`how_to_create_repo` is fulfilled.
