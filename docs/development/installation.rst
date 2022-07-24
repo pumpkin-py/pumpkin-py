@@ -107,6 +107,14 @@ Once you are in virtual environment, you can install required libraries:
 	python3 -m pip install -r requirements.txt
 	python3 -m pip install -r requirements-dev.txt
 
+Before the bot can start, you have to load the contents of ``.env`` file into your working environment. After any changes to ``.env``, this process must be performed for the changes to take place.
+This can be done by running
+
+.. include:: ../_snippets/_source_env.rst
+
+.. note::
+
+	See :ref:`general_venv_tip` in ``venv``'s section in chapter General Bot Information to learn how to make this automatically. For development this approach is highly recommended. For update of ``.env`` either deactivate and activate ``venv`` or update it manualy.
 
 .. _devel_run:
 
