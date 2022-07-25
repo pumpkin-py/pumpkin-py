@@ -3,6 +3,12 @@
 I'm new to Discord bots
 =======================
 
+.. note::
+
+	If you are a developer, the :ref:`devel` page may be more suitable for you.
+
+	If you want to deploy your bot instance, take a look at :ref:`docker` or :ref:`direct`.
+
 
 .. _general_download:
 
