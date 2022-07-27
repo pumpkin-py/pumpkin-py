@@ -343,6 +343,30 @@ msgstr Čas spuštění
 msgid Run time
 msgstr Doba od spuštění
 
+msgid This channel is already subscribed.
+msgstr Tento kanál je už přihlášený.
+
+msgid Channel subscribed.
+msgstr Kanál přihlášen.
+
+msgid This channel is not subscribed.
+msgstr Tento kanál není přihlášený.
+
+msgid Channel unsubscribed.
+msgstr Kanál odhlášen.
+
+msgid No channel is subscribed.
+msgstr Žádný kanál není přihlášen.
+
+msgid {count} days without an accident.
+msgstr {count} dní od poslední chyby.
+
+msgid Previous error occured on **{date}**. Resetting counter...
+msgstr Předcházející chyba nastala **{date}**. Resetuji počítadlo...
+
+msgid *This is a test embed, no error has occured yet.*
+msgstr *Toto je testovací zpráva, k žádné chybě zatím nedošlo.*
+
 msgid An unexpected error occurred
 msgstr Nastala nečekaná chyba
 
