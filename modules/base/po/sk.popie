@@ -343,6 +343,30 @@ msgstr Čas spustenia
 msgid Run time
 msgstr Doba od spustenia
 
+msgid This channel is already subscribed.
+msgstr
+
+msgid Channel subscribed.
+msgstr
+
+msgid This channel is not subscribed.
+msgstr
+
+msgid Channel unsubscribed.
+msgstr
+
+msgid No channel is subscribed.
+msgstr
+
+msgid {count} days without an accident.
+msgstr
+
+msgid Previous error occured on **{date}**. Resetting counter...
+msgstr
+
+msgid *This is a test embed, no error has occured yet.*
+msgstr
+
 msgid An unexpected error occurred
 msgstr Nastala nečakaná chyba
 

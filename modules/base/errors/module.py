@@ -1,11 +1,16 @@
+import datetime
 import re
-from typing import Tuple
+from io import BytesIO
+from pathlib import Path
+from typing import List, Tuple
 
 import nextcord
 from nextcord.ext import commands
 
 import pie.exceptions
-from pie import logger, utils, i18n
+from pie import check, i18n, logger, utils
+
+from .database import LastError, Subscription
 
 
 _ = i18n.Translator("modules/base").translate
@@ -37,6 +42,125 @@ class Errors(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.guild_only()
+    @check.acl2(check.ACLevel.SUBMOD)
+    @commands.group(name="error-meme")
+    async def error_meme_(self, ctx):
+        """Manage traceback meme."""
+        await utils.discord.send_help(ctx)
+
+    @check.acl2(check.ACLevel.MOD)
+    @error_meme_.command(name="subscribe")
+    async def error_meme_subscribe(self, ctx):
+        """Subscribe current channel to traceback meme."""
+        result = Subscription.add(ctx.guild.id, ctx.channel.id)
+        if not result:
+            await ctx.reply(_(ctx, "This channel is already subscribed."))
+            return
+
+        await guild_log.info(
+            ctx.author,
+            ctx.channel,
+            f"#{ctx.channel.name} subscribed to the error meme.",
+        )
+        await ctx.reply(_(ctx, "Channel subscribed."))
+
+    @check.acl2(check.ACLevel.MOD)
+    @error_meme_.command(name="unsubscribe")
+    async def error_meme_unsubscribe(self, ctx):
+        """Unsubscribe current channel from traceback meme."""
+        result = Subscription.remove(ctx.guild.id, ctx.channel.id)
+        if not result:
+            await ctx.reply(_(ctx, "This channel is not subscribed."))
+            return
+
+        await guild_log.info(
+            ctx.author,
+            ctx.channel,
+            f"#{ctx.channel.name} unsubscribed from the error meme.",
+        )
+        await ctx.reply(_(ctx, "Channel unsubscribed."))
+
+    @check.acl2(check.ACLevel.SUBMOD)
+    @error_meme_.command(name="list")
+    async def error_meme_list(self, ctx):
+        """List channels that are subscribed to the traceback meme."""
+        results = Subscription.get_all(ctx.guild.id)
+        if not results:
+            await ctx.reply(_(ctx, "No channel is subscribed."))
+            return
+
+        class Item:
+            def __init__(self, result: Subscription):
+                channel = ctx.guild.get_channel(result.channel_id)
+                if channel:
+                    self.channel = f"#{channel.name}"
+                else:
+                    self.channel = f"#{result.channel_id}"
+
+        channels = [Item(result) for result in results]
+        table: List[str] = utils.text.create_table(
+            channels,
+            header={"channel": _(ctx, "Channel")},
+        )
+        for page in table:
+            await ctx.send("```" + page + "```")
+
+    @check.acl2(check.ACLevel.BOT_OWNER)
+    @error_meme_.command(name="trigger")
+    async def error_meme_trigger(self, ctx):
+        """Test the error meme functionality.
+
+        This command skips the date check and will trigger the embed even if
+        the last embed occured today.
+        """
+        await self.send_error_meme(test=True)
+
+    async def send_error_meme(self, *, test: bool = False):
+        today = datetime.date.today()
+        last = LastError.get()
+        if last and today <= last.date and not test:
+            # Last error occured today, do not announce anything
+            return
+        last = last.dump()
+        count: int = (today - last["date"]).days
+
+        if not test:
+            await bot_log.debug(self.bot.user, None, "Updating day of last error.")
+            LastError.set()
+
+        image_path = Path(__file__).parent / "accident.jpg"
+        with image_path.open("rb") as handle:
+            data = BytesIO(handle.read())
+
+        for subscriber in Subscription.get_all(None):
+            channel = self.bot.get_channel(subscriber.channel_id)
+            if not channel:
+                continue
+
+            gtx = i18n.TranslationContext(guild_id=subscriber.guild_id, user_id=None)
+            embed = utils.discord.create_embed(
+                error=True,
+                title=_(gtx, "{count} days without an accident.").format(count=count),
+                description=_(
+                    gtx, "Previous error occured on **{date}**. Resetting counter..."
+                ).format(date=last["date"].strftime("%Y-%m-%d")),
+            )
+            if test:
+                embed.add_field(
+                    name="\u200b",
+                    value=_(gtx, "*This is a test embed, no error has occured yet.*"),
+                )
+            embed.set_image(url="attachment://accident.jpg")
+            data.seek(0)
+
+            await channel.send(
+                file=nextcord.File(fp=data, filename="accident.jpg"),
+                embed=embed,
+            )
+
+    #
 
     @commands.Cog.listener()
     async def on_command_error(
@@ -70,6 +194,9 @@ class Errors(commands.Cog):
             content=content,
             ignore_traceback=ignore_traceback,
         )
+
+        if not ignore_traceback:
+            await self.send_error_meme()
 
     @staticmethod
     async def handle_exceptions(ctx, error) -> Tuple[str, str, bool]:
