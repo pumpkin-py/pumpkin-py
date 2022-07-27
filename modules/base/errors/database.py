@@ -38,7 +38,7 @@ class Subscription(database.base):
     def get_all(cls, guild_id: Optional[int]) -> List[Subscription]:
         query = session.query(cls)
         if guild_id:
-            query = query.filter(guild_id=guild_id)
+            query = query.filter_by(guild_id=guild_id)
         return query.all()
 
     @classmethod
