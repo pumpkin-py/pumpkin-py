@@ -368,13 +368,13 @@ class Admin(commands.Cog):
         await ctx.send(_(ctx, "Module **{name}** has been reloaded.").format(name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
 
-    @check.acl2(check.ACLevel.MEMBER)
+    @check.acl2(check.ACLevel.BOT_OWNER)
     @commands.group(name="config")
     async def config_(self, ctx):
         """Manage core bot configuration."""
         await utils.discord.send_help(ctx)
 
-    @check.acl2(check.ACLevel.MEMBER)
+    @check.acl2(check.ACLevel.BOT_OWNER)
     @config_.command(name="get")
     async def config_get(self, ctx):
         """Display core bot configuration."""
