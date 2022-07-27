@@ -123,7 +123,10 @@ class Errors(commands.Cog):
         if last and today <= last.date and not test:
             # Last error occured today, do not announce anything
             return
-        last = last.dump()
+        if last is not None:
+            last = last.dump()
+        else:
+            last = {"date": today}
         count: int = (today - last["date"]).days
 
         if not test:
