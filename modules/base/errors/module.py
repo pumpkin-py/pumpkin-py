@@ -790,9 +790,12 @@ class Errors(commands.Cog):
                 )
         # Exception raised when a typing.Union converter fails for all its associated types.
         elif isinstance(error, commands.BadUnionArgument):
+            classes: str = "/".join([f"**{cls.__name__}**" for cls in error.converters])
             return (
                 _(ctx, "User input error"),
-                _(ctx, "Bad Union argument"),
+                _(ctx, "Argument **{argument}** has must be {classes}").format(
+                    argument=error.param.name, classes=classes
+                ),
                 True,
             )
         # Exception raised when a parsing or conversion failure is encountered on an argument to pass into a command.
