@@ -256,14 +256,6 @@ class Errors(commands.Cog):
         # Exception that's raised when an operation in the Client fails.
         if isinstance(error, discord.ClientException):
             return await Errors.handle_ClientException(ctx, error)
-        # Exception that is raised when an async iteration operation has no more items.
-        elif isinstance(error, discord.NoMoreItems):
-            # FIXME: What exactly ist this?
-            return (
-                _(ctx, "Error"),
-                _(ctx, "pumpkin.py exception"),
-                False,
-            )
         # An exception that is raised when the gateway for Discord could not be found.
         elif isinstance(error, discord.GatewayNotFound):
             return (
@@ -307,14 +299,6 @@ class Errors(commands.Cog):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Invalid data"),
-                False,
-            )
-        # Exception that's raised when an argument to a function is invalid some way (e.g. wrong value or wrong type).
-        # This could be considered the analogous of ValueError and TypeError except inherited from ClientException and thus DiscordException.
-        elif isinstance(error, discord.InvalidArgument):
-            return (
-                _(ctx, "Client error"),
-                _(ctx, "Invalid argument"),
                 False,
             )
         # Exception that's raised when the Client.login function fails to log you in from improper credentials or some other misc. failure.
