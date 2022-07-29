@@ -20,7 +20,7 @@ And to use the logger, use
 
 	try:
 	    await action_that_throws_error()
-	except nextcord.exceptions.HTTPException as exc:
+	except discord.exceptions.HTTPException as exc:
 	    await guild_log(
 	        ctx.author,
 	        ctx.channel,
