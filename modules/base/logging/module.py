@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from nextcord.ext import commands
+from discord.ext import commands
 
 from pie import check, logger, utils, i18n
 from pie.logger.database import LogConf

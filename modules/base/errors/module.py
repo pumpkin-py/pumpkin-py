@@ -4,8 +4,8 @@ from io import BytesIO
 from pathlib import Path
 from typing import List, Tuple
 
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 import pie.exceptions
 from pie import check, i18n, logger, utils
@@ -152,7 +152,7 @@ class Errors(commands.Cog):
             data.seek(0)
 
             await channel.send(
-                file=nextcord.File(fp=data, filename="accident.jpg"),
+                file=discord.File(fp=data, filename="accident.jpg"),
                 embed=embed,
             )
 
@@ -209,7 +209,7 @@ class Errors(commands.Cog):
         if isinstance(error, pie.exceptions.PumpkinException):
             return await Errors.handle_PumpkinException(ctx, error)
         # Discord errors
-        elif isinstance(error, nextcord.DiscordException):
+        elif isinstance(error, discord.DiscordException):
             return await Errors.handle_DiscordException(ctx, error)
         # Other errors
         else:
@@ -254,10 +254,10 @@ class Errors(commands.Cog):
             Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
         """
         # Exception that's raised when an operation in the Client fails.
-        if isinstance(error, nextcord.ClientException):
+        if isinstance(error, discord.ClientException):
             return await Errors.handle_ClientException(ctx, error)
         # Exception that is raised when an async iteration operation has no more items.
-        elif isinstance(error, nextcord.NoMoreItems):
+        elif isinstance(error, discord.NoMoreItems):
             # FIXME: What exactly ist this?
             return (
                 _(ctx, "Error"),
@@ -265,14 +265,14 @@ class Errors(commands.Cog):
                 False,
             )
         # An exception that is raised when the gateway for Discord could not be found.
-        elif isinstance(error, nextcord.GatewayNotFound):
+        elif isinstance(error, discord.GatewayNotFound):
             return (
                 _(ctx, "Error"),
                 _(ctx, "Gateway not found"),
                 False,
             )
         # Exception that's raised when an HTTP request operation fails.
-        elif isinstance(error, nextcord.HTTPException):
+        elif isinstance(error, discord.HTTPException):
             return await Errors.handle_HTTPException(ctx, error)
         # The base exception type for all command related errors.
         elif isinstance(error, commands.CommandError):
@@ -303,7 +303,7 @@ class Errors(commands.Cog):
         # I at least prepared this if-elif-else block if that is to change
 
         # Exception that's raised when the library encounters unknown or invalid data from Discord.
-        if isinstance(error, nextcord.InvalidData):
+        if isinstance(error, discord.InvalidData):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Invalid data"),
@@ -311,28 +311,28 @@ class Errors(commands.Cog):
             )
         # Exception that's raised when an argument to a function is invalid some way (e.g. wrong value or wrong type).
         # This could be considered the analogous of ValueError and TypeError except inherited from ClientException and thus DiscordException.
-        elif isinstance(error, nextcord.InvalidArgument):
+        elif isinstance(error, discord.InvalidArgument):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Invalid argument"),
                 False,
             )
         # Exception that's raised when the Client.login function fails to log you in from improper credentials or some other misc. failure.
-        elif isinstance(error, nextcord.LoginFailure):
+        elif isinstance(error, discord.LoginFailure):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Login failure"),
                 False,
             )
         # Exception that's raised when the gateway connection is closed for reasons that could not be handled internally.
-        elif isinstance(error, nextcord.ConnectionClosed):
+        elif isinstance(error, discord.ConnectionClosed):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Connection closed"),
                 False,
             )
         # Exception that's raised when the gateway is requesting privileged intents but they're not ticked in the developer page yet.
-        elif isinstance(error, nextcord.PrivilegedIntentsRequired):
+        elif isinstance(error, discord.PrivilegedIntentsRequired):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Privileged intents required"),
@@ -367,21 +367,21 @@ class Errors(commands.Cog):
             Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
         """
         # Exception that's raised for when status code 403 occurs.
-        if isinstance(error, nextcord.Forbidden):
+        if isinstance(error, discord.Forbidden):
             return (
                 _(ctx, "HTTP Exception"),
                 _(ctx, "Forbidden"),
                 True,
             )
         # Exception that's raised for when status code 404 occurs.
-        elif isinstance(error, nextcord.NotFound):
+        elif isinstance(error, discord.NotFound):
             return (
                 _(ctx, "HTTP Exception"),
                 _(ctx, "NotFound"),
                 True,
             )
         # Exception that's raised for when a 500 range status code occurs.
-        elif isinstance(error, nextcord.DiscordServerError):
+        elif isinstance(error, discord.DiscordServerError):
             return (
                 _(ctx, "HTTP Exception"),
                 _(ctx, "Discord Server Error"),

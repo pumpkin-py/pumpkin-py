@@ -1,4 +1,4 @@
-from nextcord.ext.commands import CheckFailure
+from discord.ext.commands import CheckFailure
 
 
 class PumpkinException(Exception):
@@ -105,7 +105,7 @@ class NegativeChannelOverwrite(ACLFailure):
     """Raised by ACL when invocation is blocked in current channel."""
 
     def __init__(self, channel):
-        # channel: nextcord.TextChannel
+        # channel: discord.TextChannel
         self.channel = channel
 
     def __str__(self) -> str:
@@ -116,7 +116,7 @@ class NegativeRoleOverwrite(ACLFailure):
     """Raised by ACL when invocation is blocked by user's role."""
 
     def __init__(self, role):
-        # role: nextcord.Role
+        # role: discord.Role
         self.role = role
 
     def __str__(self) -> str:

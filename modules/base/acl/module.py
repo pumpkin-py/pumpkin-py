@@ -3,8 +3,8 @@ import re
 from operator import attrgetter
 from typing import Callable, List, Optional
 
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 from pie import check, i18n, logger, utils
 
@@ -71,7 +71,7 @@ class ACL(commands.Cog):
 
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_mapping_.command(name="add")
-    async def acl_mapping_add(self, ctx, role: nextcord.Role, level: str):
+    async def acl_mapping_add(self, ctx, role: discord.Role, level: str):
         """Add ACL level to role mappings."""
         try:
             level: ACLevel = ACLevel[level]
@@ -111,7 +111,7 @@ class ACL(commands.Cog):
 
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_mapping_.command(name="remove")
-    async def acl_mapping_remove(self, ctx, role: nextcord.Role):
+    async def acl_mapping_remove(self, ctx, role: discord.Role):
         """Remove ACL level to role mapping."""
         mapped = ACLevelMappping.get(ctx.guild.id, role.id)
         if not mapped:
@@ -387,7 +387,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_overwrite_role_.command(name="add")
     async def acl_overwrite_role_add(
-        self, ctx, command: str, role: nextcord.Role, allow: bool
+        self, ctx, command: str, role: discord.Role, allow: bool
     ):
         """Add ACL role overwrite."""
         if command not in self._all_bot_commands:
@@ -431,7 +431,7 @@ class ACL(commands.Cog):
 
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_overwrite_role_.command(name="remove")
-    async def acl_overwrite_role_remove(self, ctx, command: str, role: nextcord.Role):
+    async def acl_overwrite_role_remove(self, ctx, command: str, role: discord.Role):
         """Remove ACL role overwrite."""
         removed = RoleOverwrite.remove(ctx.guild.id, role.id, command)
         if not removed:
@@ -506,7 +506,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_overwrite_user_.command(name="add")
     async def acl_overwrite_user_add(
-        self, ctx, command: str, user: nextcord.Member, allow: bool
+        self, ctx, command: str, user: discord.Member, allow: bool
     ):
         """Add ACL user overwrite."""
         if command not in self._all_bot_commands:
@@ -550,7 +550,7 @@ class ACL(commands.Cog):
 
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_overwrite_user_.command(name="remove")
-    async def acl_overwrite_user_remove(self, ctx, command: str, user: nextcord.Member):
+    async def acl_overwrite_user_remove(self, ctx, command: str, user: discord.Member):
         """Remove ACL user overwrite."""
         removed = UserOverwrite.remove(ctx.guild.id, user.id, command)
         if not removed:
@@ -630,7 +630,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_overwrite_channel_.command(name="add")
     async def acl_overwrite_channel_add(
-        self, ctx, command: str, channel: nextcord.TextChannel, allow: bool
+        self, ctx, command: str, channel: discord.TextChannel, allow: bool
     ):
         """Add ACL channel overwrite."""
         if command not in self._all_bot_commands:
@@ -675,7 +675,7 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_overwrite_channel_.command(name="remove")
     async def acl_overwrite_channel_remove(
-        self, ctx, command: str, channel: nextcord.TextChannel
+        self, ctx, command: str, channel: discord.TextChannel
     ):
         """Remove ACL channel overwrite."""
         removed = ChannelOverwrite.remove(ctx.guild.id, channel.id, command)

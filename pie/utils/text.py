@@ -1,6 +1,6 @@
 from typing import Dict, Iterable, List, Optional
 
-import nextcord
+import discord
 
 
 def sanitise(
@@ -17,7 +17,7 @@ def sanitise(
         Sanitised string.
     """
     if escape:
-        string = nextcord.utils.escape_markdown(string)
+        string = discord.utils.escape_markdown(string)
 
     if tag_escape:
         return string.replace("@", "@\u200b")[:limit]

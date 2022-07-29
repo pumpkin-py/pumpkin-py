@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from nextcord.ext import commands
+from discord.ext import commands
 
 from pie import i18n
 
@@ -10,8 +10,8 @@ _ = i18n.Translator("pie").translate
 class Help(commands.MinimalHelpCommand):
     """Class for **help** command construction.
 
-    It inherits from nextcord's
-    :class:`~nextcord.ext.commands.MinimalHelpCommand` and tries to alter only
+    It inherits from discord's
+    :class:`~discord.ext.commands.MinimalHelpCommand` and tries to alter only
     the minimum of its behavior.
 
     The biggest thing it changes is that it uses INI files for text resources,

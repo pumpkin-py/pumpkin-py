@@ -1,6 +1,6 @@
 import datetime
 
-from nextcord.ext import commands
+from discord.ext import commands
 
 from pie import check, i18n, utils
 
