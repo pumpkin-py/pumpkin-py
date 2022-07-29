@@ -55,11 +55,11 @@ def create_embed(
     *,
     error: bool = False,
     author: Union[discord.Member, discord.User] = None,
-    title: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
-    description: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
+    title: Optional[str] = None,
+    description: Optional[str] = None,
     footer: Optional[str] = None,
     color: Optional[Union[int, discord.Colour]] = None,
-    url: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
+    url: Optional[str] = None,
 ) -> discord.Embed:
     """Create discord embed.
 
@@ -92,7 +92,7 @@ def create_embed(
     if footer is not None:
         base_footer += " | " + footer
     embed.set_footer(
-        icon_url=getattr(author, "avatar_url", discord.Embed.Empty),
+        icon_url=getattr(author, "avatar_url", None),
         text=base_footer,
     )
     embed.timestamp = datetime.datetime.now(tz=datetime.timezone.utc)

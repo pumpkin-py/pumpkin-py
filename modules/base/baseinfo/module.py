@@ -46,5 +46,5 @@ class BaseInfo(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot) -> None:
-    bot.add_cog(BaseInfo(bot))
+async def setup(bot) -> None:
+    await bot.add_cog(BaseInfo(bot))

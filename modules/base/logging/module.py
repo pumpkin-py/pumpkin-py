@@ -133,5 +133,5 @@ class Logging(commands.Cog):
             await ctx.reply(_(ctx, "Supplied arguments didn't match any entries."))
 
 
-def setup(bot) -> None:
-    bot.add_cog(Logging(bot))
+async def setup(bot) -> None:
+    await bot.add_cog(Logging(bot))

@@ -784,5 +784,5 @@ class ACL(commands.Cog):
             return False
 
 
-def setup(bot) -> None:
-    bot.add_cog(ACL(bot))
+async def setup(bot) -> None:
+    await bot.add_cog(ACL(bot))
