@@ -30,7 +30,7 @@ All modules define the translation function on top:
 
 	...
 
-Because the members and guilds can set their language preference we have to tell the translation function the source of the context, so it can pick the right language. We do this by using the ``Context`` nextcord supplies with every command call:
+Because the members and guilds can set their language preference we have to tell the translation function the source of the context, so it can pick the right language. We do this by using the ``Context`` discord supplies with every command call:
 
 .. code-block:: python3
 
@@ -50,7 +50,7 @@ Sometimes context isn't available, though -- e.g. in raw reaction. These times y
 	...
 
 	@commands.Cog.listener()
-	async def on_raw_reaction_add(self, payload: nextcord.RawReactionActionEvent):
+	async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
 	    utx = TranslationContext(payload.guild_id, payload.user_id)
 
 	    message = await utils.discord.get_message(
