@@ -3,8 +3,8 @@ import tempfile
 from pathlib import Path
 from typing import Optional, List
 
-import nextcord
-from nextcord.ext import commands, tasks
+import discord
+from discord.ext import commands, tasks
 
 import pie.database.config
 from pie import check, i18n, logger, utils
@@ -470,7 +470,7 @@ class Admin(commands.Cog):
 
     @check.acl2(check.ACLevel.MOD)
     @spamchannel_.command(name="add")
-    async def spamchannel_add(self, ctx, channel: nextcord.TextChannel):
+    async def spamchannel_add(self, ctx, channel: discord.TextChannel):
         """Set channel as bot spam channel."""
         spam_channel = SpamChannel.get(ctx.guild.id, channel.id)
         if spam_channel:
@@ -526,7 +526,7 @@ class Admin(commands.Cog):
 
     @check.acl2(check.ACLevel.MOD)
     @spamchannel_.command(name="remove", aliases=["rem"])
-    async def spamchannel_remove(self, ctx, channel: nextcord.TextChannel):
+    async def spamchannel_remove(self, ctx, channel: discord.TextChannel):
         """Unset channel as spam channel."""
         if SpamChannel.remove(ctx.guild.id, channel.id):
             message = _(ctx, "Spam channel {channel} removed.")
@@ -541,7 +541,7 @@ class Admin(commands.Cog):
 
     @check.acl2(check.ACLevel.MOD)
     @spamchannel_.command(name="primary")
-    async def spamchannel_primary(self, ctx, channel: nextcord.TextChannel):
+    async def spamchannel_primary(self, ctx, channel: discord.TextChannel):
         """Set channel as primary bot channel.
 
         When this is set, it will be used to direct users to it in an error

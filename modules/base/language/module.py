@@ -2,7 +2,7 @@ import operator
 from pathlib import Path
 from typing import Dict, Tuple
 
-from nextcord.ext import commands
+from discord.ext import commands
 
 import pie.database.config
 from pie import i18n, check, logger, utils

@@ -1,8 +1,8 @@
 import datetime
 from typing import Optional, Union
 
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 from pie.database.config import Config
 
@@ -11,13 +11,13 @@ config = Config.get()
 
 async def get_message(
     bot: commands.Bot, guild_or_user_id: int, channel_id: int, message_id: int
-) -> Optional[nextcord.Message]:
+) -> Optional[discord.Message]:
     """Get message.
 
     If the message is contained in bot cache, it is returned from it, to
     save API calls. Otherwise it is fetched.
 
-    :param bot: The :class:`~nextcord.ext.commands.Bot` object.
+    :param bot: The :class:`~discord.ext.commands.Bot` object.
     :param guild_or_user_id: Guild ID or User ID (if the message is in DMs).
     :param channel_id: Channel ID.
     :param message_id: Message ID.
@@ -33,7 +33,7 @@ async def get_message(
             channel = guild.get_channel(channel_id)
             if channel is None:
                 # The 'channel' may also be a thread
-                channel = nextcord.utils.get(guild.threads, id=channel_id)
+                channel = discord.utils.get(guild.threads, id=channel_id)
             if channel is None:
                 return None
         else:
@@ -42,11 +42,11 @@ async def get_message(
             if channel is None:
                 return
         return await channel.fetch_message(message_id)
-    except nextcord.errors.HTTPException:
+    except discord.errors.HTTPException:
         return None
 
 
-def message_url_from_reaction_payload(payload: nextcord.RawReactionActionEvent):
+def message_url_from_reaction_payload(payload: discord.RawReactionActionEvent):
     guild_id = payload.guild_id if payload.guild_id is not None else "@me"
     return f"https://discord.com/channels/{guild_id}/{payload.channel_id}/{payload.message_id}"
 
@@ -54,14 +54,14 @@ def message_url_from_reaction_payload(payload: nextcord.RawReactionActionEvent):
 def create_embed(
     *,
     error: bool = False,
-    author: Union[nextcord.Member, nextcord.User] = None,
-    title: Union[str, nextcord.embeds._EmptyEmbed] = nextcord.Embed.Empty,
-    description: Union[str, nextcord.embeds._EmptyEmbed] = nextcord.Embed.Empty,
+    author: Union[discord.Member, discord.User] = None,
+    title: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
+    description: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
     footer: Optional[str] = None,
-    color: Optional[Union[int, nextcord.Colour]] = None,
-    url: Union[str, nextcord.embeds._EmptyEmbed] = nextcord.Embed.Empty,
-) -> nextcord.Embed:
-    """Create nextcord embed.
+    color: Optional[Union[int, discord.Colour]] = None,
+    url: Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
+) -> discord.Embed:
+    """Create discord embed.
 
     :param error: Whether the embed reports an error.
     :param author: Event author.
@@ -76,9 +76,9 @@ def create_embed(
     will be included in the embed.
     """
     if color is None:
-        color = nextcord.Color.red() if error else nextcord.Color.green()
+        color = discord.Color.red() if error else discord.Color.green()
 
-    embed = nextcord.Embed(
+    embed = discord.Embed(
         title=title,
         description=description,
         color=color,
@@ -92,7 +92,7 @@ def create_embed(
     if footer is not None:
         base_footer += " | " + footer
     embed.set_footer(
-        icon_url=getattr(author, "avatar_url", nextcord.Embed.Empty),
+        icon_url=getattr(author, "avatar_url", discord.Embed.Empty),
         text=base_footer,
     )
     embed.timestamp = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -115,7 +115,7 @@ async def send_help(ctx: commands.Context) -> bool:
     return True
 
 
-async def delete_message(message: nextcord.Message, delay: float = 0.0) -> bool:
+async def delete_message(message: discord.Message, delay: float = 0.0) -> bool:
     """Try to remove message.
 
     :param message: The message to be deleted.
@@ -124,13 +124,13 @@ async def delete_message(message: nextcord.Message, delay: float = 0.0) -> bool:
     """
     try:
         await message.delete(delay=delay)
-    except nextcord.HTTPException:
+    except discord.HTTPException:
         return False
     return True
 
 
 async def remove_reaction(
-    message: nextcord.Message, emoji, member: nextcord.Member
+    message: discord.Message, emoji, member: discord.Member
 ) -> bool:
     """Try to remove reaction.
 
@@ -141,7 +141,7 @@ async def remove_reaction(
     """
     try:
         await message.remove_reaction(emoji, member)
-    except nextcord.HTTPException:
+    except discord.HTTPException:
         return False
     return True
 
@@ -155,8 +155,8 @@ async def update_presence(bot: commands.Bot, *, status: str = None) -> None:
     :param status: Overwrite presence status.
     """
     await bot.change_presence(
-        status=getattr(nextcord.Status, config.status if status is None else status),
-        activity=nextcord.Game(
+        status=getattr(discord.Status, config.status if status is None else status),
+        activity=discord.Game(
             start=datetime.datetime.utcnow(),
             name=config.prefix + "help",
         ),
@@ -164,15 +164,15 @@ async def update_presence(bot: commands.Bot, *, status: str = None) -> None:
 
 
 async def send_dm(
-    user: Union[nextcord.Member, nextcord.User],
+    user: Union[discord.Member, discord.User],
     text: Optional[str] = None,
     *,
-    embed: Optional[nextcord.Embed] = None,
+    embed: Optional[discord.Embed] = None,
 ) -> bool:
     if text is None and embed is None:
         raise ValueError("Could not send an empty message.")
     try:
         await user.send(text, embed=embed)
         return True
-    except nextcord.HTTPException:
+    except discord.HTTPException:
         return False

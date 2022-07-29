@@ -3,7 +3,7 @@ from __future__ import annotations
 from pydoc import locate
 from typing import Any
 
-from nextcord.ext import commands
+from discord.ext import commands
 
 from pie.storage.database import StorageData
 
@@ -16,7 +16,7 @@ def get(module: commands.Cog, guild_id: int, key: str, default_value=None) -> An
     it returns default_value, None by default.
 
     Args:
-        module (:class:`nextcord.ext.commands.Cog`): module connected with the value
+        module (:class:`discord.ext.commands.Cog`): module connected with the value
         guild_id (:class:'int'): ID of guild connected with the value (0 for global)
         key (:class:'str'): Value's key
         default_value: This argument is returned if value is not found in database
@@ -47,7 +47,7 @@ def exists(module: commands.Cog, guild_id: int, key: str) -> bool:
     are present in DB.
 
     Args:
-        module (:class:`nextcord.ext.commands.Cog`): module connected with the value
+        module (:class:`discord.ext.commands.Cog`): module connected with the value
         guild_id (:class:'int'): ID of guild connected with the value (0 for global)
         key (:class:'str'): Value's key
 
@@ -64,7 +64,7 @@ def get_type(module: commands.Cog, guild_id: int, key: str) -> type:
     """Get data type.
 
     Args:
-        module (:class:`nextcord.ext.commands.Cog`): module connected with the value
+        module (:class:`discord.ext.commands.Cog`): module connected with the value
         guild_id (:class:'int'): ID of guild connected with the value (0 for global)
         key (:class:'str'): Value's key
 
@@ -89,7 +89,7 @@ def set(module: commands.Cog, guild_id: int, key: str, value: object) -> bool:
     Using this for any other data types can cause problems!
 
     Args:
-        module (:class:`nextcord.ext.commands.Cog`): module connected with the value
+        module (:class:`discord.ext.commands.Cog`): module connected with the value
         guild_id (:class:'int'): ID of guild connected with the value (0 for global)
         key (:class:'str'): Value's key
         value (:class: `typing.Any`): Value to store in DB
@@ -108,7 +108,7 @@ def set_if_missing(module: commands.Cog, guild_id: int, key: str, value: Any) ->
     Using this for any other data types can cause problems!
 
     Args:
-        module (:class:`nextcord.ext.commands.Cog`): module connected with the value
+        module (:class:`discord.ext.commands.Cog`): module connected with the value
         guild_id (:class:'int'): ID of guild connected with the value (0 for global)
         key (:class:'str'): Value's key
         value (:class: `typing.Any`): Value to store in DB
@@ -129,7 +129,7 @@ def unset(module: commands.Cog, guild_id: int, key: str):
     """Delete module's stored data by guild and key.
 
     Args:
-        module (:class:`nextcord.ext.commands.Cog`): module connected with the value
+        module (:class:`discord.ext.commands.Cog`): module connected with the value
         guild_id (:class:'int'): ID of guild connected with the value (0 for global)
         key (:class:'str'): Value's key
 

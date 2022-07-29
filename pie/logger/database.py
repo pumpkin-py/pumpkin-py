@@ -21,8 +21,8 @@ class LogConf(database.base):
         configuration change.
 
     Each :class:`~database.logging.LogConf` object has attribute
-    :attr:`guild_id` representing :class:`nextcord.Guild` and :attr:`channel_id`
-    representing :class:`nextcord.TextChannel`. They determine where the log
+    :attr:`guild_id` representing :class:`discord.Guild` and :attr:`channel_id`
+    representing :class:`discord.TextChannel`. They determine where the log
     should be sent, when one is created.
 
     The :attr:`scope` may only have two values: ``bot`` or ``guild``, and it

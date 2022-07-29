@@ -2,8 +2,8 @@ import os
 import sys
 import sqlalchemy
 
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 from pie.cli import COLOR
 from pie import exceptions
@@ -46,15 +46,15 @@ database.init_modules()
 config = database.config.Config.get()
 
 
-# Setup nextcord
+# Setup discord
 
-intents = nextcord.Intents.all()
+intents = discord.Intents.all()
 
 from pie import utils
 from pie.help import Help
 
 bot = commands.Bot(
-    allowed_mentions=nextcord.AllowedMentions(roles=False, everyone=False, users=True),
+    allowed_mentions=discord.AllowedMentions(roles=False, everyone=False, users=True),
     command_prefix=config.prefix,
     help_command=Help(),
     intents=intents,
@@ -79,7 +79,7 @@ already_loaded: bool = False
 
 async def update_app_info(bot: commands.Bot):
     # Update bot information
-    app: nextcord.AppInfo = await bot.application_info()
+    app: discord.AppInfo = await bot.application_info()
     if app.team:
         bot.owner_ids = {m.id for m in app.team.members}
     else:

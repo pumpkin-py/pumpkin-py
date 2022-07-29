@@ -2,8 +2,8 @@ import contextlib
 import datetime
 from typing import Callable, Dict, Optional, List
 
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 import pie._tracing
 from pie.database.config import Config
@@ -42,7 +42,7 @@ class _SpamchannelManager:
                 new_cooldown.append(timestamp)
         self.cooldown[channel_id] = new_cooldown
 
-    def block_message(self, message: nextcord.Message) -> bool:
+    def block_message(self, message: discord.Message) -> bool:
         """Check if the message can be sent to given channel.
 
         The redirection message is always sent, this function
@@ -54,7 +54,7 @@ class _SpamchannelManager:
         Returns:
             If the command should be run or not.
         """
-        if type(message.channel) is not nextcord.TextChannel:
+        if type(message.channel) is not discord.TextChannel:
             _trace(f"Not TextChannel, but {type(message.channel).__name__}.")
             return False
 
