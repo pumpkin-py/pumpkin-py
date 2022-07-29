@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 import sqlalchemy
@@ -132,57 +133,55 @@ async def on_error(event, *args, **kwargs):
 commands.Bot.on_error = on_error
 
 
-# Add required modules
-
-
 from modules.base.admin.database import BaseAdminModule
 
 
-modules = {
-    "base.acl",
-    "base.admin",
-    "base.baseinfo",
-    "base.errors",
-    "base.language",
-    "base.logging",
-}
-db_modules = BaseAdminModule.get_all()
-db_module_names = [m.name for m in db_modules]
+async def load_modules():
+    modules = (
+        "base.acl",
+        "base.admin",
+        "base.baseinfo",
+        "base.errors",
+        "base.language",
+        "base.logging",
+    )
+    db_modules = BaseAdminModule.get_all()
+    db_module_names = [m.name for m in db_modules]
 
-for module in modules:
-    if module in db_module_names:
-        # This module is managed by database
-        continue
-    bot.load_extension(f"modules.{module}.module")
-    print(
-        f"Module {COLOR.green}{module}{COLOR.none} loaded.",
-        file=sys.stdout,
-    )  # noqa: T001
-
-for module in db_modules:
-    if not module.enabled:
+    for module in modules:
+        if module in db_module_names:
+            # This module is managed by database
+            continue
+        await bot.load_extension(f"modules.{module}.module")
         print(
-            f"Module {COLOR.yellow}{module.name}{COLOR.none} found, but is disabled.",
+            f"Module {COLOR.green}{module}{COLOR.none} loaded.",
             file=sys.stdout,
         )  # noqa: T001
-        continue
-    try:
-        bot.load_extension(f"modules.{module.name}.module")
-    except (ImportError, ModuleNotFoundError, commands.ExtensionNotFound):
+
+    for module in db_modules:
+        if not module.enabled:
+            print(
+                f"Module {COLOR.yellow}{module.name}{COLOR.none} found, but is disabled.",
+                file=sys.stdout,
+            )  # noqa: T001
+            continue
+        try:
+            await bot.load_extension(f"modules.{module.name}.module")
+        except (ImportError, ModuleNotFoundError, commands.ExtensionNotFound):
+            print(
+                f"Module {COLOR.red}{module.name}{COLOR.none} not found.",
+                file=sys.stdout,
+            )  # noqa: T001
+            continue
         print(
-            f"Module {COLOR.red}{module.name}{COLOR.none} not found.",
+            f"Module {COLOR.green}{module.name}{COLOR.none} loaded.",
             file=sys.stdout,
         )  # noqa: T001
-        continue
-    print(
-        f"Module {COLOR.green}{module.name}{COLOR.none} loaded.",
-        file=sys.stdout,
-    )  # noqa: T001
 
-for command in bot.walk_commands():
-    if type(command) is not commands.Group:
-        command.ignore_extra = False
+    for command in bot.walk_commands():
+        if type(command) is not commands.Group:
+            command.ignore_extra = False
 
-# Run the bot
 
+asyncio.run(load_modules())
 bot.run(os.getenv("TOKEN"))

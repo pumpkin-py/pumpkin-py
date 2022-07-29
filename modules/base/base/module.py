@@ -721,5 +721,5 @@ class Base(commands.Cog):
         await guild_log.warning(self.bot.user, guild, "Bot has left the server.")
 
 
-def setup(bot) -> None:
-    bot.add_cog(Base(bot))
+async def setup(bot) -> None:
+    await bot.add_cog(Base(bot))
