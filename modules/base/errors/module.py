@@ -18,13 +18,6 @@ bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
 
 
-# TODO Some errors are returning just generic answers,
-# even if the error object has some arguments. We may want to go through and
-# add them to the message strings.
-
-# TODO This is just a weird list of errors. Maybe we should make it somehow
-# simpler, e.g. split the "get translation" from "should we log this?".
-
 IGNORED_EXCEPTIONS = [
     commands.CommandNotFound,
     # See pie/spamchannel/
