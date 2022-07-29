@@ -568,8 +568,8 @@ msgstr Chyba prevodu na PartialEmoji
 msgid Bad bool argument
 msgstr Zlý True/False argument
 
-msgid Bad Union argument
-msgstr Zlý argument zjednotenia
+msgid Argument **{argument}** has must be {classes}
+msgstr
 
 msgid Argument parsing error
 msgstr Chyba čítania argumentu
