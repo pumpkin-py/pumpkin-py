@@ -448,6 +448,19 @@ class Admin(commands.Cog):
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
+    @pumpkin_.command(name="sync")
+    async def pumpkin_sync(self, ctx):
+        """Sync slash commands to current guild."""
+        async with ctx.typing():
+            # sync global commands
+            await ctx.bot.tree.sync()
+            # clear local guild
+            self.bot.tree.clear_commands(guild=ctx.guild)
+            # re-sync it
+            self.bot.tree.copy_global_to(guild=ctx.guild)
+        await ctx.reply(_(ctx, "Sync complete."))
+
+    @check.acl2(check.ACLevel.BOT_OWNER)
     @pumpkin_.command(name="restart")
     async def pumpkin_restart(self, ctx):
         """Restart bot instance with the help of host system."""
