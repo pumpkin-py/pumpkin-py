@@ -217,6 +217,9 @@ msgstr Nepodporovaný jazyk
 msgid Valid status values are: {states}
 msgstr Možné hodnoty pro status jsou: {states}
 
+msgid Sync complete.
+msgstr Synchronizace dokončena.
+
 msgid {channel} is already spam channel.
 msgstr {channel} už je spam kanál
 
