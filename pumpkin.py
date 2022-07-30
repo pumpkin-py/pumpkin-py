@@ -183,5 +183,9 @@ async def load_modules():
             command.ignore_extra = False
 
 
-asyncio.run(load_modules())
-bot.run(os.getenv("TOKEN"))
+async def main():
+    await load_modules()
+    await bot.start(os.getenv("TOKEN"))
+
+
+asyncio.run(main())
