@@ -7,8 +7,7 @@ Below are full exception lists as of `discord.py@c26473d`. Because it is hard to
 - https://discordpy.readthedocs.io/en/latest/api.html#exception-hierarchy
 - https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#exception-hierarchy
 
-To check if there were any changes, you can paste latest list and check the diff -- if there is
-none, everything is up to date.
+To check if there were any changes, you can paste latest list and check the diff -- if there is none, everything is up to date.
 
 ```
 Exception

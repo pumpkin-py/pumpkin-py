@@ -1,5 +1,4 @@
 import datetime
-import re
 from io import BytesIO
 from pathlib import Path
 from typing import List, Tuple
@@ -203,21 +202,24 @@ class Errors(commands.Cog):
             error: Detected exception.
 
         Returns:
-            Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
         """
-        # pumpkin.py own exceptions
         if isinstance(error, pie.exceptions.PumpkinException):
             return await Errors.handle_PumpkinException(ctx, error)
+
         # Discord errors
-        elif isinstance(error, discord.DiscordException):
+        if isinstance(error, discord.DiscordException):
             return await Errors.handle_DiscordException(ctx, error)
+
         # Other errors
-        else:
-            return (
-                type(error).__name__,
-                _(ctx, "An unexpected error occurred"),
-                False,
-            )
+        return (
+            type(error).__name__,
+            _(ctx, "An unexpected error occurred"),
+            False,
+        )
 
     @staticmethod
     async def handle_PumpkinException(ctx, error) -> Tuple[str, str, bool]:
@@ -228,7 +230,10 @@ class Errors(commands.Cog):
             error: Detected exception.
 
         Returns:
-            Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
         """
         error_messages = {
             "PumpkinException": _(ctx, "pumpkin.py exception"),
@@ -240,7 +245,11 @@ class Errors(commands.Cog):
             type(error).__name__,
             _(ctx, "An unexpected error occurred"),
         )
-        return (title, str(error), False)
+        return (
+            title,
+            str(error),
+            False,
+        )
 
     @staticmethod
     async def handle_DiscordException(ctx, error) -> Tuple[str, str, bool]:
@@ -251,44 +260,46 @@ class Errors(commands.Cog):
             error: Detected exception.
 
         Returns:
-            Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
         """
-        # Exception that's raised when an operation in the Client fails.
-        if isinstance(error, discord.ClientException):
-            return await Errors.handle_ClientException(ctx, error)
-        # An exception that is raised when the gateway for Discord could not be found.
-        elif isinstance(error, discord.GatewayNotFound):
+        if isinstance(error, discord.GatewayNotFound):
             return (
                 _(ctx, "Error"),
                 _(ctx, "Gateway not found"),
                 False,
             )
+
         # Exception raised when error 429 occurs and the timeout is greater than
         # configured maximum in `max_ratelimit_timeout`
-        elif isinstance(error, discord.RateLimited):
+        if isinstance(error, discord.RateLimited):
             return (
                 _(ctx, "Slow down"),
-                _(ctx, "Request has to be sent at least {delay} seconds later.").format(
+                _(ctx, "Request has to be sent at least {delay} seconds later").format(
                     delay=error.retry_after
                 ),
                 False,
             )
-        # Exception that's raised when an HTTP request operation fails.
-        elif isinstance(error, discord.HTTPException):
+
+        if isinstance(error, discord.ClientException):
+            return await Errors.handle_ClientException(ctx, error)
+
+        if isinstance(error, discord.HTTPException):
             return await Errors.handle_HTTPException(ctx, error)
-        # The base exception type for all command related errors.
-        elif isinstance(error, commands.CommandError):
+
+        if isinstance(error, commands.CommandError):
             return await Errors.handle_CommandError(ctx, error)
-        # Base exception for extension related errors.
-        elif isinstance(error, commands.ExtensionError):
+
+        if isinstance(error, commands.ExtensionError):
             return await Errors.handle_ExtensionError(ctx, error)
-        # Just in case we missed something
-        else:
-            return (
-                _(ctx, "Error"),
-                _(ctx, "Discord library error"),
-                False,
-            )
+
+        return (
+            _(ctx, "Error"),
+            _(ctx, "Internal error"),
+            False,
+        )
 
     @staticmethod
     async def handle_ClientException(ctx, error) -> Tuple[str, str, bool]:
@@ -299,64 +310,63 @@ class Errors(commands.Cog):
             error: Detected exception.
 
         Returns:
-            Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
         """
-        # FIXME: We have all these nice exceptions and yet we don't handle them. Is it intentional?
-        # I at least prepared this if-elif-else block if that is to change
-
-        # Exception that's raised when the library encounters unknown or invalid data from Discord.
         if isinstance(error, discord.InvalidData):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Invalid data"),
                 False,
             )
-        # Exception that's raised when the Client.login function fails to log you in from improper credentials or some other misc. failure.
-        elif isinstance(error, discord.LoginFailure):
+
+        if isinstance(error, discord.LoginFailure):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Login failure"),
                 False,
             )
-        # Exception that's raised when the gateway connection is closed for reasons that could not be handled internally.
-        elif isinstance(error, discord.ConnectionClosed):
+
+        if isinstance(error, discord.ConnectionClosed):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Connection closed"),
                 False,
             )
-        # Exception that's raised when the gateway is requesting privileged intents but they're not ticked in the developer page yet.
-        elif isinstance(error, discord.PrivilegedIntentsRequired):
+
+        if isinstance(error, discord.PrivilegedIntentsRequired):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Privileged intents required"),
                 False,
             )
+
         # Interaction sent multiple responses for one event
-        elif isinstance(error, discord.InteractionResponded):
+        if isinstance(error, discord.InteractionResponded):
             return (
                 _(ctx, "Client error"),
-                _(ctx, "Response from **{interaction}** was already received.").format(
+                _(ctx, "Response from **{interaction}** was already received").format(
                     interaction=error.command.name if error.command else "unknown"
                 ),
                 False,
             )
-        # An exception raised when the command can't be added because the name is already taken by a different command.
-        elif isinstance(error, commands.CommandRegistrationError):
+
+        if isinstance(error, commands.CommandRegistrationError):
             return (
                 _(ctx, "Client error"),
-                _(ctx, "Error on registering the command `{cmd}`").format(
+                _(ctx, "Error on registering the command **{cmd}**").format(
                     cmd=error.name
                 ),
                 True,
             )
-        # Just in case we missed something
-        else:
-            return (
-                _(ctx, "Error"),
-                _(ctx, "Client error"),
-                False,
-            )
+
+        return (
+            _(ctx, "Error"),
+            _(ctx, "Client error"),
+            False,
+        )
 
     @staticmethod
     async def handle_HTTPException(ctx, error) -> Tuple[str, str, bool]:
@@ -367,36 +377,38 @@ class Errors(commands.Cog):
             error: Detected exception.
 
         Returns:
-            Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
         """
-        # Exception that's raised for when status code 403 occurs.
+
         if isinstance(error, discord.Forbidden):
             return (
                 _(ctx, "HTTP Exception"),
                 _(ctx, "Forbidden"),
                 True,
             )
-        # Exception that's raised for when status code 404 occurs.
-        elif isinstance(error, discord.NotFound):
+
+        if isinstance(error, discord.NotFound):
             return (
                 _(ctx, "HTTP Exception"),
                 _(ctx, "NotFound"),
                 True,
             )
-        # Exception that's raised for when a 500 range status code occurs.
-        elif isinstance(error, discord.DiscordServerError):
+
+        if isinstance(error, discord.DiscordServerError):
             return (
                 _(ctx, "HTTP Exception"),
                 _(ctx, "Discord Server Error"),
                 True,
             )
-        # Just in case we missed something
-        else:
-            return (
-                _(ctx, "Discord library error"),
-                _(ctx, "HTTP Exception"),
-                False,
-            )
+
+        return (
+            _(ctx, "Internal error"),
+            _(ctx, "Network error"),
+            False,
+        )
 
     @staticmethod
     async def handle_ExtensionError(ctx, error) -> Tuple[str, str, bool]:
@@ -407,46 +419,41 @@ class Errors(commands.Cog):
             error: Detected exception.
 
         Returns:
-            Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
         """
-        # return friendly name, e.g. strip "modules.{module}.module"
-        name = error.name[8:-7]
-        # send helpful message if the requested module does not follow naming rules
-        if re.fullmatch(r"([a-z_]+)\.([a-z_]+)", name) is None:
-            description = _(
-                ctx,
-                "The extension **{extension}** could not be found. It should be in `repository.module` format",
-            ).format(
-                extension=name,
-            )
-        # An exception raised when an extension has already been loaded.
-        elif isinstance(error, commands.ExtensionAlreadyLoaded):
+        # return friendly name: strip "modules." prefix and ".module" suffix
+        extension_name = error.name.lstrip("modules.").rstrip(".module")
+
+        if isinstance(error, commands.ExtensionAlreadyLoaded):
             description = _(ctx, "Extension **{extension}** is already loaded").format(
-                extension=name,
+                extension=extension_name,
             )
-        # An exception raised when an extension was not loaded.
-        elif isinstance(error, commands.ExtensionNotLoaded):
+
+        if isinstance(error, commands.ExtensionNotLoaded):
             description = _(ctx, "The extension **{extension}** is not loaded").format(
-                extension=name,
+                extension=extension_name,
             )
-        # An exception raised when an extension does not have a setup entry point function.
-        elif isinstance(error, commands.NoEntryPointError):
+
+        if isinstance(error, commands.NoEntryPointError):
             description = _(
-                ctx, "Extension **{extension}** doesn't have a setup entry function"
-            ).format(
-                extension=name,
+                ctx, "Extension **{extension}** does not have an entry point"
+            ).format(extension=extension_name)
+
+        if isinstance(error, commands.ExtensionFailed):
+            description = _(ctx, "**{extension}** failed").format(
+                extension=extension_name
             )
-        # An exception raised when an extension failed to load during execution of the module or setup entry point.
-        elif isinstance(error, commands.ExtensionFailed):
-            description = _(ctx, "**{extension}** failed").format(extension=name)
-        # An exception raised when an extension is not found.
-        elif isinstance(error, commands.ExtensionNotFound):
+
+        if isinstance(error, commands.ExtensionNotFound):
             description = _(
                 ctx, "The extension **{extension}** could not be found"
             ).format(
-                extension=name,
+                extension=extension_name,
             )
-        # Just in case we missed something
+
         return (
             _(ctx, "Extension Error"),
             description,
@@ -455,62 +462,59 @@ class Errors(commands.Cog):
 
     @staticmethod
     async def handle_CommandError(ctx, error) -> Tuple[str, str, bool]:
-        """Handles exceptions raised by pumpkin-py commands
+        """Handles exceptions raised by commands
 
         Args:
             ctx: The invocation context.
             error: Detected exception.
 
         Returns:
-            Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
         """
 
-        # Exception raised when a Converter class raises non-CommandError.
         if isinstance(error, commands.ConversionError):
             return (
                 _(ctx, "Command error"),
-                _(ctx, "An error occurred in converter `{converter}`").format(
-                    converter=type(error.converter).__name__,
+                _(ctx, "Conversion to **{name}** resulted in **{exception}**").format(
+                    name=error.converter.__name__.rstrip("Converter"),
+                    exception=type(error.original).__name__,
                 ),
                 False,
             )
-        # The base exception type for errors that involve errors regarding user input.
-        elif isinstance(error, commands.UserInputError):
-            return await Errors.handle_UserInputError(ctx, error)
-        # Exception raised when a command is attempted to be invoked but no command under that name is found.
-        elif isinstance(error, commands.CommandNotFound):
+
+        if isinstance(error, commands.CommandNotFound):
             return (
                 _(ctx, "Command error"),
                 _(ctx, "Command not found"),
                 True,
             )
-        # Exception raised when the predicates in .Command.checks have failed.
-        elif isinstance(error, commands.CheckFailure):
-            return await Errors.handle_CheckFailure(ctx, error)
-        # Exception raised when the command being invoked is disabled.
-        elif isinstance(error, commands.DisabledCommand):
+
+        if isinstance(error, commands.DisabledCommand):
             return (
                 _(ctx, "Command error"),
-                _(ctx, "Disabled command"),
+                _(ctx, "The command is not available"),
                 True,
             )
-        # Exception raised when the command being invoked raised an exception.
-        elif isinstance(error, commands.CommandInvokeError):
+
+        if isinstance(error, commands.CommandInvokeError):
             return (
                 _(ctx, "Command error"),
                 _(ctx, "Command invoke error"),
                 False,
             )
-        # Exception raised when the command being invoked is on cooldown.
-        elif isinstance(error, commands.CommandOnCooldown):
-            time = utils.time.format_seconds(error.retry_after)
+
+        if isinstance(error, commands.CommandOnCooldown):
+            time: str = utils.time.format_seconds(error.retry_after)
             return (
                 _(ctx, "Command error"),
                 _(ctx, "Slow down. Wait **{time}**").format(time=time),
                 True,
             )
-        # Exception raised when the command being invoked has reached its maximum concurrency.
-        elif isinstance(error, commands.MaxConcurrencyReached):
+
+        if isinstance(error, commands.MaxConcurrencyReached):
             return (
                 _(ctx, "Command error"),
                 _(ctx, "This command is already running multiple times")
@@ -521,22 +525,27 @@ class Errors(commands.Cog):
                 ),
                 True,
             )
-        # Exception raised when HybridCommand raises an AppCommandError derived
-        # exception that could not be sufficiently converted to an equivalent
-        # CommandError exception.
-        elif isinstance(error, commands.HybridCommandError):
+
+        # HybridCommand raises an AppCommandError derived exception that could
+        # not be sufficiently converted to an equivalent CommandError exception.
+        if isinstance(error, commands.HybridCommandError):
             return (
-                _(ctx, "Discord library error"),
+                _(ctx, "Internal error"),
                 _(ctx, "Command structure error"),
                 False,
             )
-        # Just in case we missed something
-        else:
-            return (
-                _(ctx, "Discord library error"),
-                _(ctx, "Command error"),
-                False,
-            )
+
+        if isinstance(error, commands.UserInputError):
+            return await Errors.handle_UserInputError(ctx, error)
+
+        if isinstance(error, commands.CheckFailure):
+            return await Errors.handle_CheckFailure(ctx, error)
+
+        return (
+            _(ctx, "Internal error"),
+            _(ctx, "Command error"),
+            False,
+        )
 
     @staticmethod
     async def handle_CheckFailure(ctx, error) -> Tuple[str, str, bool]:
@@ -547,43 +556,46 @@ class Errors(commands.Cog):
             error: Detected exception.
 
         Returns:
-            Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
         """
-        # Exception raised by ACL's UserOverwrite
+
         if isinstance(error, pie.exceptions.NegativeUserOverwrite):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "You have been denied the invocation of this command."),
+                _(ctx, "You have been denied the invocation of this command"),
                 True,
             )
-        # Exception raised by ACL's ChannelOverwrite
+
         if isinstance(error, pie.exceptions.NegativeChannelOverwrite):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "This command cannot be used in this channel."),
+                _(ctx, "This command cannot be used in this channel"),
                 True,
             )
-        # Exception raised by ACL's RoleOverwrite
+
         if isinstance(error, pie.exceptions.NegativeRoleOverwrite):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "This command cannot be used by the role **{role}**.").format(
+                _(ctx, "This command cannot be used by the role **{role}**").format(
                     role=error.role.name
                 ),
                 True,
             )
-        # Exception raised when user does not have sufficient ACLevel
+
         if isinstance(error, pie.exceptions.InsufficientACLevel):
             return (
                 _(ctx, "Check failure"),
                 _(
                     ctx,
-                    "You need access permissions at least at level **{required}**. "
-                    "You only have **{actual}**.",
+                    "You need access permissions at least at level **{required}**, "
+                    "you only have **{actual}**",
                 ).format(required=error.required.name, actual=error.actual.name),
                 True,
             )
-        # Exception raised when all predicates in check_any fail.
+
         if isinstance(error, commands.CheckAnyFailure):
             return (
                 _(ctx, "Check failure"),
@@ -593,91 +605,94 @@ class Errors(commands.Cog):
                 ),
                 True,
             )
-        # Exception raised when an operation does not work outside of private message contexts.
-        elif isinstance(error, commands.PrivateMessageOnly):
+
+        if isinstance(error, commands.PrivateMessageOnly):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "This command can only be used in private messages."),
+                _(ctx, "This command can only be used in private messages"),
                 True,
             )
-        # Exception raised when an operation does not work in private message contexts.
-        elif isinstance(error, commands.NoPrivateMessage):
+
+        if isinstance(error, commands.NoPrivateMessage):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "This command cannot be used in private messages."),
+                _(ctx, "This command cannot be used in private messages"),
                 True,
             )
-        # Exception raised when the message author is not the owner of the bot.
-        elif isinstance(error, commands.NotOwner):
+
+        if isinstance(error, commands.NotOwner):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "You are not the bot owner"),
                 True,
             )
-        # Exception raised when the command invoker lacks permissions to run a command.
-        elif isinstance(error, commands.MissingPermissions):
-            perms = ", ".join(f"**{p}**" for p in error.missing_perms)
+
+        if isinstance(error, commands.MissingPermissions):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "You lack some of {perms} permissions").format(perms=perms),
-                True,
-            )
-        # Exception raised when the bot's member lacks permissions to run a command.
-        elif isinstance(error, commands.BotMissingPermissions):
-            perms = ", ".join(f"`{p}`" for p in error.missing_perms)
-            return (
-                _(ctx, "Check failure"),
-                _(ctx, "I lack the {perms} permission").format(perms=perms),
-                True,
-            )
-        # Exception raised when the command invoker lacks a role to run a command.
-        elif isinstance(error, commands.MissingRole):
-            return (
-                _(ctx, "Check failure"),
-                _(ctx, "You have to have a {role} role for that").format(
-                    role=f"`{error.missing_role!r}`",
+                _(ctx, "You need all of the following permissions: {perms}").format(
+                    perms=", ".join(f"**{p}**" for p in error.missing_perms)
                 ),
                 True,
             )
-        # Exception raised when the bot's member lacks a role to run a command.
-        elif isinstance(error, commands.BotMissingRole):
+
+        if isinstance(error, commands.BotMissingPermissions):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "I lack the role {role}").format(
-                    role=f"`{error.missing_role!r}`"
+                _(ctx, "I need all of the following permissions: {perms}").format(
+                    perms=", ".join(f"`{p}`" for p in error.missing_perms)
                 ),
                 True,
             )
-        # Exception raised when the command invoker lacks any of the roles specified to run a command.
-        elif isinstance(error, commands.MissingAnyRole):
-            roles = ", ".join(f"**{r!r}**" for r in error.missing_roles)
+
+        if isinstance(error, commands.MissingRole):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "You have to have one role of {roles}").format(roles=roles),
+                _(ctx, "You need to have role **{role}**").format(
+                    role=error.missing_role.name,
+                ),
                 True,
             )
-        # Exception raised when the bot's member lacks any of the roles specified to run a command.
-        elif isinstance(error, commands.BotMissingAnyRole):
-            roles = ", ".join(f"**{r!r}**" for r in error.missing_roles)
+
+        if isinstance(error, commands.BotMissingRole):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "I need one of roles {roles}").format(roles=roles),
+                _(ctx, "I need to have role **{role}**").format(
+                    role=error.missing_role.name,
+                ),
                 True,
             )
-        # Exception raised when a channel does not have the required NSFW setting.
-        elif isinstance(error, commands.NSFWChannelRequired):
+
+        if isinstance(error, commands.MissingAnyRole):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "This command can be used only in NSFW channels."),
+                _(ctx, "You need some of the following roles: {roles}").format(
+                    roles=", ".join(f"**{r.name}**" for r in error.missing_roles)
+                ),
                 True,
             )
-        # CheckFailure and possibly other check errors
-        else:
+
+        if isinstance(error, commands.BotMissingAnyRole):
             return (
                 _(ctx, "Check failure"),
-                _(ctx, "You don't have permission for this."),
+                _(ctx, "I need some of the following roles: {roles}").format(
+                    roles=", ".join(f"**{r.name}**" for r in error.missing_roles)
+                ),
                 True,
             )
+
+        if isinstance(error, commands.NSFWChannelRequired):
+            return (
+                _(ctx, "Check failure"),
+                _(ctx, "This command can be used only in NSFW channels"),
+                True,
+            )
+
+        return (
+            _(ctx, "Check failure"),
+            _(ctx, "You don't have permission for this"),
+            True,
+        )
 
     @staticmethod
     async def handle_UserInputError(ctx, error) -> Tuple[str, str, bool]:
@@ -688,209 +703,42 @@ class Errors(commands.Cog):
             error: Detected exception.
 
         Returns:
-            Tuple[str, str, bool]: Translated error name, Translated description, Whether to ignore traceback in the log
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
         """
-        # Exception raised when parsing a command and a parameter that is required is not encountered.
         if isinstance(error, commands.MissingRequiredArgument):
             return (
                 _(ctx, "User input error"),
-                _(ctx, "The command has to have an argument `{arg}`").format(
-                    arg=error.param.name,
+                _(ctx, "The command has to have an argument **{param}**").format(
+                    param=error.param.name,
                 ),
                 True,
             )
-        elif isinstance(error, commands.MissingRequiredAttachment):
+
+        if isinstance(error, commands.MissingRequiredAttachment):
             return (
                 _(ctx, "User input error"),
-                _(ctx, "Argument **{param}** must include an attachment.").format(
+                _(ctx, "Argument **{param}** must include an attachment").format(
                     param=error.param
                 ),
                 True,
             )
-        # Exception raised when the command was passed too many arguments and its .Command.ignore_extra attribute was not set to True.
-        elif isinstance(error, commands.TooManyArguments):
+
+        if isinstance(error, commands.TooManyArguments):
             return (
                 _(ctx, "User input error"),
-                _(ctx, "The command doesn't have that many arguments."),
+                _(ctx, "The command doesn't have that many arguments"),
                 True,
             )
-        # Exception raised when a parsing or conversion failure is encountered on an argument to pass into a command.
-        elif isinstance(error, commands.BadArgument):
-            # FIXME These errors have `argument` attribute, we may want to report it.
 
-            # Exception raised when the message provided was not found in the channel.
-            if isinstance(error, commands.MessageNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Message not found"),
-                    True,
-                )
-            if isinstance(error, commands.GuildNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Guild not found"),
-                    True,
-                )
-            # Exception raised when the member provided was not found in the bot's cache.
-            elif isinstance(error, commands.MemberNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Member not found"),
-                    True,
-                )
-            # Exception raised when the user provided was not found in the bot's cache.
-            elif isinstance(error, commands.UserNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "User not found"),
-                    True,
-                )
-            # Exception raised when the bot can not find the channel.
-            elif isinstance(error, commands.ChannelNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Channel not found"),
-                    True,
-                )
-            # Exception raised when the bot does not have permission to read messages in the channel.
-            elif isinstance(error, commands.ChannelNotReadable):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "I can't see the **{channel}** channel").format(
-                        channel=error.argument.name,
-                    ),
-                    True,
-                )
-            # Exception raised when the colour is not valid.
-            elif isinstance(error, commands.BadColourArgument):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Bad colour argument"),
-                    True,
-                )
-            # Exception raised when the bot can not find the role.
-            elif isinstance(error, commands.RoleNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Role not found"),
-                    True,
-                )
-            # Exception raised when the invite is invalid or expired.
-            elif isinstance(error, commands.BadInviteArgument):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Bad invite argument"),
-                    True,
-                )
-            # Exception raised when the bot can not find the emoji.
-            elif isinstance(error, commands.EmojiNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Emoji not found"),
-                    True,
-                )
-            # Exception raised when the emoji provided does not match the correct format.
-            elif isinstance(error, commands.PartialEmojiConversionFailure):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "PartialEmoji conversion failure"),
-                    True,
-                )
-            elif isinstance(error, commands.GuildStickerNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Sticker not found"),
-                    True,
-                )
-            elif isinstance(error, commands.ScheduledEventNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Scheduled event not found"),
-                    True,
-                )
-            # Exception raised when a boolean argument was not convertable.
-            elif isinstance(error, commands.BadBoolArgument):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Bad bool argument"),
-                    True,
-                )
-            # Exception raised when a number is not from allowed range
-            elif isinstance(error, commands.RangeError):
-                brackets: Tuple[str, str] = ("\u27e8", "\u27e9")
-                infinity: str = "\u221e"
-                return (
-                    _(ctx, "Bad argument"),
-                    _(
-                        ctx,
-                        "Range error, **{value}** is not from interval "
-                        "**{lbr}{minimum}, {maximum}{rbr}**.",
-                    ).format(
-                        value=error.value,  # FIXME This may need escaping
-                        lbr=brackets[0],
-                        minimum=error.minimum or infinity,
-                        maximum=error.maximum or infinity,
-                        rbr=brackets[1],
-                    ),
-                    True,
-                )
-            elif isinstance(error, commands.ThreadNotFound):
-                return (
-                    _(ctx, "Bad argument"),
-                    _(ctx, "Thread not found"),
-                    True,
-                )
-            elif isinstance(error, commands.FlagError):
-                if isinstance(error, commands.BadFlagArgument):
-                    return (
-                        _(ctx, "Bad argument"),
-                        _(ctx, "Argument **{flag}** couldn't be converted.").format(
-                            flag=error.flag,
-                        ),
-                        True,
-                    )
-                if isinstance(error, commands.MissingFlagArgument):
-                    return (
-                        _(ctx, "Bad argument"),
-                        _(ctx, "Argument **{flag}** must have value.").format(
-                            flag=error.flag,
-                        ),
-                        True,
-                    )
-                if isinstance(error, commands.TooManyFlags):
-                    return (
-                        _(ctx, "Bad argument"),
-                        _(
-                            ctx, "Argument **{flag}** cannot take that many values."
-                        ).format(flag=error.flag),
-                        True,
-                    )
-                if isinstance(error, commands.MissingRequiredFlag):
-                    return (
-                        _(ctx, "Bad argument"),
-                        _(ctx, "Argument **{flag}** must be specified.").format(
-                            flag=error.flag
-                        ),
-                        True,
-                    )
-                return (
-                    _(ctx, "User input error"),
-                    _(ctx, "Bad argument"),
-                    True,
-                )
-            # Just in case we missed something
-            else:
-                return (
-                    _(ctx, "User input error"),
-                    _(ctx, "Bad argument"),
-                    True,
-                )
         # Exception raised when a typing.Union converter fails for all its associated types.
         elif isinstance(error, commands.BadUnionArgument):
             classes: str = "/".join([f"**{cls.__name__}**" for cls in error.converters])
             return (
                 _(ctx, "User input error"),
-                _(ctx, "Argument **{argument}** has must be {classes}").format(
+                _(ctx, "Argument **{argument}** must be {classes}").format(
                     argument=error.param.name, classes=classes
                 ),
                 True,
@@ -903,8 +751,7 @@ class Errors(commands.Cog):
                     "Argument **{argument}** only takes one of the following values:",
                 ).format(argument=error.param)
                 + " "
-                + "/".join(f"**{literal}**" for literal in error.literals)
-                + ".",
+                + "/".join(f"**{literal}**" for literal in error.literals),
                 True,
             )
         # Exception raised when a parsing or conversion failure is encountered on an argument to pass into a command.
@@ -940,10 +787,223 @@ class Errors(commands.Cog):
         # Just in case we missed something
         else:
             return (
-                _(ctx, "Discord library error"),
+                _(ctx, "Internal error"),
                 _(ctx, "User input error"),
                 False,
             )
+
+    @staticmethod
+    async def handle_BadArgument(ctx, error) -> Tuple[str, str, bool]:
+        """Handles exceptions raised by bad user input.
+
+        Args:
+            ctx: The invocation context.
+            error: Detected exception.
+
+        Returns:
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
+        """
+        argument: str = getattr(error, "argument", "?")
+        argument = discord.utils.escape_markdown(argument)
+        # prevent attacker abuse
+        argument = argument[:256]
+
+        if isinstance(error, commands.MessageNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Message **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.MemberNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Member **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.GuildNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Server **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.UserNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "User **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.ChannelNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Channel **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.ChannelNotReadable):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Channel **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.BadColourArgument):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Color **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.RoleNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Role **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.BadInviteArgument):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Invitation **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.EmojiNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Emoji **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.PartialEmojiConversionFailure):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Emoji **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.GuildStickerNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Sticker **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.ScheduledEventNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Event **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.BadBoolArgument):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "**{argument}** is not boolean").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.RangeError):
+            brackets: Tuple[str, str] = ("\u27e8", "\u27e9")
+            infinity: str = "\u221e"
+            return (
+                _(ctx, "Bad argument"),
+                _(
+                    ctx,
+                    "**{value}** is not from interval "
+                    "**{lbr}{minimum}, {maximum}{rbr}**",
+                ).format(
+                    value=error.value,  # FIXME This may need escaping
+                    lbr=brackets[0],
+                    minimum=error.minimum or infinity,
+                    maximum=error.maximum or infinity,
+                    rbr=brackets[1],
+                ),
+                True,
+            )
+
+        if isinstance(error, commands.ThreadNotFound):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Thread **{argument}** not found").format(argument=argument),
+                True,
+            )
+
+        if isinstance(error, commands.FlagError):
+            return Errors.handle_FlagError(ctx, error)
+
+        return (
+            _(ctx, "User input error"),
+            _(ctx, "Bad argument"),
+            True,
+        )
+
+    @staticmethod
+    async def handle_FlagError(ctx, error) -> Tuple[str, str, bool]:
+        """Handles exceptions raised by bad user input.
+
+        Args:
+            ctx: The invocation context.
+            error: Detected exception.
+
+        Returns:
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
+        """
+        if isinstance(error, commands.BadFlagArgument):
+            return (
+                _(ctx, "Bad argument"),
+                _(
+                    ctx,
+                    "Argument **{argument}** could not be converted to **{flag}**: {exception}",
+                ).format(
+                    argument=error.argument,
+                    flag=error.flag.name,
+                    exception=type(error.original).__name__,
+                ),
+                True,
+            )
+
+        if isinstance(error, commands.MissingFlagArgument):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Argument **{flag}** must have value").format(
+                    flag=error.flag.name,
+                ),
+                True,
+            )
+
+        if isinstance(error, commands.TooManyFlags):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Argument **{flag}** cannot take that many values").format(
+                    flag=error.flag.name,
+                ),
+                True,
+            )
+
+        if isinstance(error, commands.MissingRequiredFlag):
+            return (
+                _(ctx, "Bad argument"),
+                _(ctx, "Argument **{flag}** must be specified").format(
+                    flag=error.flag.name,
+                ),
+                True,
+            )
+
+        return (
+            _(ctx, "User input error"),
+            _(ctx, "Bad argument"),
+            True,
+        )
 
     @staticmethod
     async def handle_log(
