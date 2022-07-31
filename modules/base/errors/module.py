@@ -29,6 +29,17 @@ IGNORED_EXCEPTIONS = [
 ]
 
 
+class ReportTraceback:
+    """Whether to send traceback to log channel or not.
+
+    The values are "flipped", because the boolean decides if the traceback
+    should be ignored or not.
+    """
+
+    YES = False
+    NO = True
+
+
 class Errors(commands.Cog):
     """Error handling module."""
 
@@ -218,7 +229,7 @@ class Errors(commands.Cog):
         return (
             type(error).__name__,
             _(ctx, "An unexpected error occurred"),
-            False,
+            ReportTraceback.YES,
         )
 
     @staticmethod
@@ -248,7 +259,7 @@ class Errors(commands.Cog):
         return (
             title,
             str(error),
-            False,
+            ReportTraceback.YES,
         )
 
     @staticmethod
@@ -269,7 +280,7 @@ class Errors(commands.Cog):
             return (
                 _(ctx, "Error"),
                 _(ctx, "Gateway not found"),
-                False,
+                ReportTraceback.YES,
             )
 
         # Exception raised when error 429 occurs and the timeout is greater than
@@ -280,7 +291,7 @@ class Errors(commands.Cog):
                 _(ctx, "Request has to be sent at least {delay} seconds later").format(
                     delay=error.retry_after
                 ),
-                False,
+                ReportTraceback.YES,
             )
 
         if isinstance(error, discord.ClientException):
@@ -298,7 +309,7 @@ class Errors(commands.Cog):
         return (
             _(ctx, "Error"),
             _(ctx, "Internal error"),
-            False,
+            ReportTraceback.YES,
         )
 
     @staticmethod
@@ -319,28 +330,28 @@ class Errors(commands.Cog):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Invalid data"),
-                False,
+                ReportTraceback.YES,
             )
 
         if isinstance(error, discord.LoginFailure):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Login failure"),
-                False,
+                ReportTraceback.YES,
             )
 
         if isinstance(error, discord.ConnectionClosed):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Connection closed"),
-                False,
+                ReportTraceback.YES,
             )
 
         if isinstance(error, discord.PrivilegedIntentsRequired):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Privileged intents required"),
-                False,
+                ReportTraceback.YES,
             )
 
         # Interaction sent multiple responses for one event
@@ -350,7 +361,7 @@ class Errors(commands.Cog):
                 _(ctx, "Response from **{interaction}** was already received").format(
                     interaction=error.command.name if error.command else "unknown"
                 ),
-                False,
+                ReportTraceback.YES,
             )
 
         if isinstance(error, commands.CommandRegistrationError):
@@ -359,13 +370,13 @@ class Errors(commands.Cog):
                 _(ctx, "Error on registering the command **{cmd}**").format(
                     cmd=error.name
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         return (
             _(ctx, "Error"),
             _(ctx, "Client error"),
-            False,
+            ReportTraceback.YES,
         )
 
     @staticmethod
@@ -387,27 +398,27 @@ class Errors(commands.Cog):
             return (
                 _(ctx, "HTTP Exception"),
                 _(ctx, "Forbidden"),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, discord.NotFound):
             return (
                 _(ctx, "HTTP Exception"),
                 _(ctx, "NotFound"),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, discord.DiscordServerError):
             return (
                 _(ctx, "HTTP Exception"),
                 _(ctx, "Discord Server Error"),
-                True,
+                ReportTraceback.NO,
             )
 
         return (
             _(ctx, "Internal error"),
             _(ctx, "Network error"),
-            False,
+            ReportTraceback.YES,
         )
 
     @staticmethod
@@ -457,7 +468,7 @@ class Errors(commands.Cog):
         return (
             _(ctx, "Extension Error"),
             description,
-            False,
+            ReportTraceback.YES,
         )
 
     @staticmethod
@@ -482,28 +493,28 @@ class Errors(commands.Cog):
                     name=error.converter.__name__.rstrip("Converter"),
                     exception=type(error.original).__name__,
                 ),
-                False,
+                ReportTraceback.YES,
             )
 
         if isinstance(error, commands.CommandNotFound):
             return (
                 _(ctx, "Command error"),
                 _(ctx, "Command not found"),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.DisabledCommand):
             return (
                 _(ctx, "Command error"),
                 _(ctx, "The command is not available"),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.CommandInvokeError):
             return (
                 _(ctx, "Command error"),
                 _(ctx, "Command invoke error"),
-                False,
+                ReportTraceback.YES,
             )
 
         if isinstance(error, commands.CommandOnCooldown):
@@ -511,7 +522,7 @@ class Errors(commands.Cog):
             return (
                 _(ctx, "Command error"),
                 _(ctx, "Slow down. Wait **{time}**").format(time=time),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.MaxConcurrencyReached):
@@ -523,7 +534,7 @@ class Errors(commands.Cog):
                     num=error.number,
                     per=error.per.name,
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         # HybridCommand raises an AppCommandError derived exception that could
@@ -532,7 +543,7 @@ class Errors(commands.Cog):
             return (
                 _(ctx, "Internal error"),
                 _(ctx, "Command structure error"),
-                False,
+                ReportTraceback.YES,
             )
 
         if isinstance(error, commands.UserInputError):
@@ -544,7 +555,7 @@ class Errors(commands.Cog):
         return (
             _(ctx, "Internal error"),
             _(ctx, "Command error"),
-            False,
+            ReportTraceback.YES,
         )
 
     @staticmethod
@@ -566,14 +577,14 @@ class Errors(commands.Cog):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "You have been denied the invocation of this command"),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, pie.exceptions.NegativeChannelOverwrite):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "This command cannot be used in this channel"),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, pie.exceptions.NegativeRoleOverwrite):
@@ -582,7 +593,7 @@ class Errors(commands.Cog):
                 _(ctx, "This command cannot be used by the role **{role}**").format(
                     role=error.role.name
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, pie.exceptions.InsufficientACLevel):
@@ -593,7 +604,7 @@ class Errors(commands.Cog):
                     "You need access permissions at least at level **{required}**, "
                     "you only have **{actual}**",
                 ).format(required=error.required.name, actual=error.actual.name),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.CheckAnyFailure):
@@ -603,28 +614,28 @@ class Errors(commands.Cog):
                     ctx,
                     "You do not have any of the possible permissions to access this command",
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.PrivateMessageOnly):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "This command can only be used in private messages"),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.NoPrivateMessage):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "This command cannot be used in private messages"),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.NotOwner):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "You are not the bot owner"),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.MissingPermissions):
@@ -633,7 +644,7 @@ class Errors(commands.Cog):
                 _(ctx, "You need all of the following permissions: {perms}").format(
                     perms=", ".join(f"**{p}**" for p in error.missing_perms)
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.BotMissingPermissions):
@@ -642,7 +653,7 @@ class Errors(commands.Cog):
                 _(ctx, "I need all of the following permissions: {perms}").format(
                     perms=", ".join(f"`{p}`" for p in error.missing_perms)
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.MissingRole):
@@ -651,7 +662,7 @@ class Errors(commands.Cog):
                 _(ctx, "You need to have role **{role}**").format(
                     role=error.missing_role.name,
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.BotMissingRole):
@@ -660,7 +671,7 @@ class Errors(commands.Cog):
                 _(ctx, "I need to have role **{role}**").format(
                     role=error.missing_role.name,
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.MissingAnyRole):
@@ -669,7 +680,7 @@ class Errors(commands.Cog):
                 _(ctx, "You need some of the following roles: {roles}").format(
                     roles=", ".join(f"**{r.name}**" for r in error.missing_roles)
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.BotMissingAnyRole):
@@ -678,20 +689,20 @@ class Errors(commands.Cog):
                 _(ctx, "I need some of the following roles: {roles}").format(
                     roles=", ".join(f"**{r.name}**" for r in error.missing_roles)
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.NSFWChannelRequired):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "This command can be used only in NSFW channels"),
-                True,
+                ReportTraceback.NO,
             )
 
         return (
             _(ctx, "Check failure"),
             _(ctx, "You don't have permission for this"),
-            True,
+            ReportTraceback.NO,
         )
 
     @staticmethod
@@ -714,7 +725,7 @@ class Errors(commands.Cog):
                 _(ctx, "The command has to have an argument **{param}**").format(
                     param=error.param.name,
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.MissingRequiredAttachment):
@@ -723,14 +734,14 @@ class Errors(commands.Cog):
                 _(ctx, "Argument **{param}** must include an attachment").format(
                     param=error.param
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.TooManyArguments):
             return (
                 _(ctx, "User input error"),
                 _(ctx, "The command doesn't have that many arguments"),
-                True,
+                ReportTraceback.NO,
             )
 
         # Exception raised when a typing.Union converter fails for all its associated types.
@@ -741,7 +752,7 @@ class Errors(commands.Cog):
                 _(ctx, "Argument **{argument}** must be {classes}").format(
                     argument=error.param.name, classes=classes
                 ),
-                True,
+                ReportTraceback.NO,
             )
         elif isinstance(error, commands.BadLiteralArgument):
             return (
@@ -752,7 +763,7 @@ class Errors(commands.Cog):
                 ).format(argument=error.param)
                 + " "
                 + "/".join(f"**{literal}**" for literal in error.literals),
-                True,
+                ReportTraceback.NO,
             )
         # Exception raised when a parsing or conversion failure is encountered on an argument to pass into a command.
         elif isinstance(error, commands.ArgumentParsingError):
@@ -761,35 +772,35 @@ class Errors(commands.Cog):
                 return (
                     _(ctx, "Argument parsing error"),
                     _(ctx, "Unexpected quote error"),
-                    True,
+                    ReportTraceback.NO,
                 )
             # An exception raised when a space is expected after the closing quote in a string but a different character is found.
             elif isinstance(error, commands.InvalidEndOfQuotedStringError):
                 return (
                     _(ctx, "Argument parsing error"),
                     _(ctx, "Invalid end of quoted string error"),
-                    True,
+                    ReportTraceback.NO,
                 )
             # An exception raised when a quote character is expected but not found.
             elif isinstance(error, commands.ExpectedClosingQuoteError):
                 return (
                     _(ctx, "Argument parsing error"),
                     _(ctx, "Unexpected quote error"),
-                    True,
+                    ReportTraceback.NO,
                 )
             # Just in case we missed something
             else:
                 return (
                     _(ctx, "User input error"),
                     _(ctx, "Argument parsing error"),
-                    False,
+                    ReportTraceback.YES,
                 )
         # Just in case we missed something
         else:
             return (
                 _(ctx, "Internal error"),
                 _(ctx, "User input error"),
-                False,
+                ReportTraceback.YES,
             )
 
     @staticmethod
@@ -815,98 +826,98 @@ class Errors(commands.Cog):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Message **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.MemberNotFound):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Member **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.GuildNotFound):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Server **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.UserNotFound):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "User **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.ChannelNotFound):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Channel **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.ChannelNotReadable):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Channel **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.BadColourArgument):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Color **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.RoleNotFound):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Role **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.BadInviteArgument):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Invitation **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.EmojiNotFound):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Emoji **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.PartialEmojiConversionFailure):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Emoji **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.GuildStickerNotFound):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Sticker **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.ScheduledEventNotFound):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Event **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.BadBoolArgument):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "**{argument}** is not boolean").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.RangeError):
@@ -925,14 +936,14 @@ class Errors(commands.Cog):
                     maximum=error.maximum or infinity,
                     rbr=brackets[1],
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.ThreadNotFound):
             return (
                 _(ctx, "Bad argument"),
                 _(ctx, "Thread **{argument}** not found").format(argument=argument),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.FlagError):
@@ -941,7 +952,7 @@ class Errors(commands.Cog):
         return (
             _(ctx, "User input error"),
             _(ctx, "Bad argument"),
-            True,
+            ReportTraceback.NO,
         )
 
     @staticmethod
@@ -969,7 +980,7 @@ class Errors(commands.Cog):
                     flag=error.flag.name,
                     exception=type(error.original).__name__,
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.MissingFlagArgument):
@@ -978,7 +989,7 @@ class Errors(commands.Cog):
                 _(ctx, "Argument **{flag}** must have value").format(
                     flag=error.flag.name,
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.TooManyFlags):
@@ -987,7 +998,7 @@ class Errors(commands.Cog):
                 _(ctx, "Argument **{flag}** cannot take that many values").format(
                     flag=error.flag.name,
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.MissingRequiredFlag):
@@ -996,13 +1007,13 @@ class Errors(commands.Cog):
                 _(ctx, "Argument **{flag}** must be specified").format(
                     flag=error.flag.name,
                 ),
-                True,
+                ReportTraceback.NO,
             )
 
         return (
             _(ctx, "User input error"),
             _(ctx, "Bad argument"),
-            True,
+            ReportTraceback.NO,
         )
 
     @staticmethod
