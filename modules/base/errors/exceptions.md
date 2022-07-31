@@ -11,81 +11,82 @@ To check if there were any changes, you can paste latest list and check the diff
 none, everything is up to date.
 
 ```
-ClientException
-ConnectionClosed
-DiscordException
-DiscordServerError
-Forbidden
-GatewayNotFound
-HTTPException
-InteractionResponded
-InvalidData
-LoginFailure
-NotFound
-PrivilegedIntentsRequired
-RateLimited
+Exception
+    DiscordException
+        ClientException
+            InvalidData
+            LoginFailure
+            ConnectionClosed
+            PrivilegedIntentsRequired
+            InteractionResponded
+        GatewayNotFound
+        HTTPException
+            Forbidden
+            NotFound
+            DiscordServerError
+        RateLimited
 ```
 
 ```
-ArgumentParsingError
-BadArgument
-BadBoolArgument
-BadColourArgument
-BadFlagArgument
-BadInviteArgument
-BadLiteralArgument
-BadUnionArgument
-BotMissingAnyRole
-BotMissingPermissions
-BotMissingRole
-ChannelNotFound
-ChannelNotReadable
-CheckAnyFailure
-CheckFailure
-ClientException
-CommandError
-CommandInvokeError
-CommandNotFound
-CommandOnCooldown
-CommandRegistrationError
-ConversionError
-DisabledCommand
 DiscordException
-EmojiNotFound
-ExpectedClosingQuoteError
-ExtensionAlreadyLoaded
-ExtensionError
-ExtensionFailed
-ExtensionNotFound
-ExtensionNotLoaded
-FlagError
-GuildNotFound
-GuildStickerNotFound
-HybridCommandError
-InvalidEndOfQuotedStringError
-MaxConcurrencyReached
-MemberNotFound
-MessageNotFound
-MissingAnyRole
-MissingFlagArgument
-MissingPermissions
-MissingRequiredArgument
-MissingRequiredAttachment
-MissingRequiredFlag
-MissingRole
-NoEntryPointError
-NoPrivateMessage
-NotOwner
-NSFWChannelRequired
-PartialEmojiConversionFailure
-PrivateMessageOnly
-RangeError
-RoleNotFound
-ScheduledEventNotFound
-ThreadNotFound
-TooManyArguments
-TooManyFlags
-UnexpectedQuoteError
-UserInputError
-UserNotFound
+    CommandError
+        ConversionError
+        UserInputError
+            MissingRequiredArgument
+            MissingRequiredAttachment
+            TooManyArguments
+            BadArgument
+                MessageNotFound
+                MemberNotFound
+                GuildNotFound
+                UserNotFound
+                ChannelNotFound
+                ChannelNotReadable
+                BadColourArgument
+                RoleNotFound
+                BadInviteArgument
+                EmojiNotFound
+                GuildStickerNotFound
+                ScheduledEventNotFound
+                PartialEmojiConversionFailure
+                BadBoolArgument
+                RangeError
+                ThreadNotFound
+                FlagError
+                    BadFlagArgument
+                    MissingFlagArgument
+                    TooManyFlags
+                    MissingRequiredFlag
+            BadUnionArgument
+            BadLiteralArgument
+            ArgumentParsingError
+                UnexpectedQuoteError
+                InvalidEndOfQuotedStringError
+                ExpectedClosingQuoteError
+        CommandNotFound
+        CheckFailure
+            CheckAnyFailure
+            PrivateMessageOnly
+            NoPrivateMessage
+            NotOwner
+            MissingPermissions
+            BotMissingPermissions
+            MissingRole
+            BotMissingRole
+            MissingAnyRole
+            BotMissingAnyRole
+            NSFWChannelRequired
+        DisabledCommand
+        CommandInvokeError
+        CommandOnCooldown
+        MaxConcurrencyReached
+        HybridCommandError
+    ExtensionError
+        ExtensionAlreadyLoaded
+        ExtensionNotLoaded
+        NoEntryPointError
+        ExtensionFailed
+        ExtensionNotFound
+ClientException
+    CommandRegistrationError
 ```
