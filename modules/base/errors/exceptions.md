@@ -2,11 +2,10 @@
 
 This document serves as a reference.
 
-Below are full exception lists as of `discord.py 1.6.0`. Because it is hard to track exception. TODO: UPDATE THIS TO NEXTCORD
-changes, it has been copypasted from the documentation:
+Below are full exception lists as of `discord.py@c26473d`. Because it is hard to track exception changes, it has been copypasted from the documentation:
 
-- https://discordpy.readthedocs.io/en/v1.6.0/api.html#exception-hierarchy
-- https://discordpy.readthedocs.io/en/v1.6.0/ext/commands/api.html#exception-hierarchy
+- https://discordpy.readthedocs.io/en/latest/api.html#exception-hierarchy
+- https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#exception-hierarchy
 
 To check if there were any changes, you can paste latest list and check the diff -- if there is
 none, everything is up to date.
@@ -19,12 +18,12 @@ DiscordServerError
 Forbidden
 GatewayNotFound
 HTTPException
-InvalidArgument
+InteractionResponded
 InvalidData
 LoginFailure
-NoMoreItems
 NotFound
 PrivilegedIntentsRequired
+RateLimited
 ```
 
 ```
@@ -32,7 +31,9 @@ ArgumentParsingError
 BadArgument
 BadBoolArgument
 BadColourArgument
+BadFlagArgument
 BadInviteArgument
+BadLiteralArgument
 BadUnionArgument
 BotMissingAnyRole
 BotMissingPermissions
@@ -57,13 +58,20 @@ ExtensionError
 ExtensionFailed
 ExtensionNotFound
 ExtensionNotLoaded
+FlagError
+GuildNotFound
+GuildStickerNotFound
+HybridCommandError
 InvalidEndOfQuotedStringError
 MaxConcurrencyReached
 MemberNotFound
 MessageNotFound
 MissingAnyRole
+MissingFlagArgument
 MissingPermissions
 MissingRequiredArgument
+MissingRequiredAttachment
+MissingRequiredFlag
 MissingRole
 NoEntryPointError
 NoPrivateMessage
@@ -71,8 +79,12 @@ NotOwner
 NSFWChannelRequired
 PartialEmojiConversionFailure
 PrivateMessageOnly
+RangeError
 RoleNotFound
+ScheduledEventNotFound
+ThreadNotFound
 TooManyArguments
+TooManyFlags
 UnexpectedQuoteError
 UserInputError
 UserNotFound

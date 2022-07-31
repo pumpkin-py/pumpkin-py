@@ -391,8 +391,14 @@ msgstr Chyba
 msgid Gateway not found
 msgstr Brána nebola nájdená
 
-msgid Nextcord library error
-msgstr Chyba nexcord knižnice
+msgid Slow down
+msgstr
+
+msgid Request has to be sent at least {delay} seconds later.
+msgstr
+
+msgid Discord library error
+msgstr
 
 msgid Client error
 msgstr Chyba klienta
@@ -408,6 +414,9 @@ msgstr Spojenie ukončené
 
 msgid Privileged intents required
 msgstr Požadované privilegované zámery
+
+msgid Response from **{interaction}** was already received.
+msgstr
 
 msgid Error on registering the command `{cmd}`
 msgstr Chyba pri registrácii príkazu `{cmd}`
@@ -442,9 +451,6 @@ msgstr **{extension}** zlyhalo
 msgid The extension **{extension}** could not be found
 msgstr Nebolo nájdené rozšírenie **{extension}**
 
-msgid Extension error
-msgstr Chyba rozšírenia
-
 msgid Extension Error
 msgstr Chyba rozšírenia
 
@@ -471,6 +477,9 @@ msgstr Tento príkaz už beží niekoľko krát
 
 msgid The limit is **{num}**/**{per}**
 msgstr Limit je **{num}**/**{per}**
+
+msgid Command structure error
+msgstr
 
 msgid Check failure
 msgstr Chyba kontroly
@@ -529,6 +538,9 @@ msgstr Chyba užívateľského vstupu
 msgid The command has to have an argument `{arg}`
 msgstr Príkaz musí mať argument `{arg}`
 
+msgid Argument **{param}** must include an attachment.
+msgstr
+
 msgid The command doesn't have that many arguments.
 msgstr Príkaz nemá toľko argumentov.
 
@@ -537,6 +549,9 @@ msgstr Zlý argument
 
 msgid Message not found
 msgstr Správa nenájdená
+
+msgid Guild not found
+msgstr
 
 msgid Member not found
 msgstr Člen nenájdený
@@ -565,10 +580,37 @@ msgstr Emoji nenájdený
 msgid PartialEmoji conversion failure
 msgstr Chyba prevodu na PartialEmoji
 
+msgid Sticker not found
+msgstr
+
+msgid Scheduled event not found
+msgstr
+
 msgid Bad bool argument
 msgstr Zlý True/False argument
 
+msgid Range error, **{value}** is not from interval **{lbr}{minimum}, {maximum}{rbr}**.
+msgstr
+
+msgid Thread not found
+msgstr
+
+msgid Argument **{flag}** couldn't be converted.
+msgstr
+
+msgid Argument **{flag}** must have value.
+msgstr
+
+msgid Argument **{flag}** cannot take that many values.
+msgstr
+
+msgid Argument **{flag}** must be specified.
+msgstr
+
 msgid Argument **{argument}** has must be {classes}
+msgstr
+
+msgid Argument **{argument}** only takes one of the following values:
 msgstr
 
 msgid Argument parsing error

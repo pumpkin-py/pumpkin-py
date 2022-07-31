@@ -391,8 +391,14 @@ msgstr Chyba
 msgid Gateway not found
 msgstr Brána nebyla nalezena
 
-msgid Nextcord library error
-msgstr Chyba nextcord knihovny
+msgid Slow down
+msgstr Zpomal
+
+msgid Request has to be sent at least {delay} seconds later.
+msgstr Dotaz může být odeslán nejdříve za {delay} vteřin.
+
+msgid Discord library error
+msgstr Chyba discord knihovny
 
 msgid Client error
 msgstr Chyba klienta
@@ -408,6 +414,9 @@ msgstr Spojení ukončeno
 
 msgid Privileged intents required
 msgstr Privilegované záměry požadovány
+
+msgid Response from **{interaction}** was already received.
+msgstr Odpověď od **{interaction}** již byla obdržena.
 
 msgid Error on registering the command `{cmd}`
 msgstr Chyba při registraci příkazu `{cmd}`
@@ -442,9 +451,6 @@ msgstr **{extension}** selhalo
 msgid The extension **{extension}** could not be found
 msgstr Nebylo nalezeno rozšíření **{extension}**
 
-msgid Extension error
-msgstr Chyba rozšíření
-
 msgid Extension Error
 msgstr Chyba rozšíření
 
@@ -471,6 +477,9 @@ msgstr Tento příkaz už několikrát běží.
 
 msgid The limit is **{num}**/**{per}**
 msgstr Limit je **{num}**/**{per}**
+
+msgid Command structure error
+msgstr Chyba struktury příkazu
 
 msgid Check failure
 msgstr Chyba kontroly
@@ -529,6 +538,9 @@ msgstr Chyba uživatelského vstupu
 msgid The command has to have an argument `{arg}`
 msgstr Příkaz musí mít argument `{arg}`
 
+msgid Argument **{param}** must include an attachment.
+msgstr Argument **{param}** musí mít přílohu.
+
 msgid The command doesn't have that many arguments.
 msgstr Příkaz nemá tolik argumentů
 
@@ -537,6 +549,9 @@ msgstr Špatný argument
 
 msgid Message not found
 msgstr Zpráva nenalezena
+
+msgid Guild not found
+msgstr Server nenalezen
 
 msgid Member not found
 msgstr Člen nenalezen
@@ -565,11 +580,38 @@ msgstr Emoji nenalezeno
 msgid PartialEmoji conversion failure
 msgstr Chyba převodu na PartialEmoji
 
+msgid Sticker not found
+msgstr Nálepka nenelazena
+
+msgid Scheduled event not found
+msgstr Událost nenalezena
+
 msgid Bad bool argument
 msgstr Špatný True/False argument
 
+msgid Range error, **{value}** is not from interval **{lbr}{minimum}, {maximum}{rbr}**.
+msgstr Špatný rozsah, **{value}** nepatří do intervalu **{lbr}{minimum}, {maximum}{rbr}**.
+
+msgid Thread not found
+msgstr Vlákno nenalezeno
+
+msgid Argument **{flag}** couldn't be converted.
+msgstr Argumentu **{flag}** nemohl být konvertován.
+
+msgid Argument **{flag}** must have value.
+msgstr Argument **{flag}** musí mít hodnotu.
+
+msgid Argument **{flag}** cannot take that many values.
+msgstr Argument **{flag}** nemůže mít tolik hodnot.
+
+msgid Argument **{flag}** must be specified.
+msgstr Argument **{flag}** je povinný.
+
 msgid Argument **{argument}** has must be {classes}
 msgstr Argument **{argument}** musí být jedno z {classes}
+
+msgid Argument **{argument}** only takes one of the following values:
+msgstr Argument **{argument}** může mít pouze jednu z těchto hodnot:
 
 msgid Argument parsing error
 msgstr Chyba čtení argumentu

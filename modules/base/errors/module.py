@@ -263,6 +263,16 @@ class Errors(commands.Cog):
                 _(ctx, "Gateway not found"),
                 False,
             )
+        # Exception raised when error 429 occurs and the timeout is greater than
+        # configured maximum in `max_ratelimit_timeout`
+        elif isinstance(error, discord.RateLimited):
+            return (
+                _(ctx, "Slow down"),
+                _(ctx, "Request has to be sent at least {delay} seconds later.").format(
+                    delay=error.retry_after
+                ),
+                False,
+            )
         # Exception that's raised when an HTTP request operation fails.
         elif isinstance(error, discord.HTTPException):
             return await Errors.handle_HTTPException(ctx, error)
@@ -276,7 +286,7 @@ class Errors(commands.Cog):
         else:
             return (
                 _(ctx, "Error"),
-                _(ctx, "Nextcord library error"),
+                _(ctx, "Discord library error"),
                 False,
             )
 
@@ -320,6 +330,15 @@ class Errors(commands.Cog):
             return (
                 _(ctx, "Client error"),
                 _(ctx, "Privileged intents required"),
+                False,
+            )
+        # Interaction sent multiple responses for one event
+        elif isinstance(error, discord.InteractionResponded):
+            return (
+                _(ctx, "Client error"),
+                _(ctx, "Response from **{interaction}** was already received.").format(
+                    interaction=error.command.name if error.command else "unknown"
+                ),
                 False,
             )
         # An exception raised when the command can't be added because the name is already taken by a different command.
@@ -374,7 +393,7 @@ class Errors(commands.Cog):
         # Just in case we missed something
         else:
             return (
-                _(ctx, "Nextcord library error"),
+                _(ctx, "Discord library error"),
                 _(ctx, "HTTP Exception"),
                 False,
             )
@@ -428,12 +447,6 @@ class Errors(commands.Cog):
                 extension=name,
             )
         # Just in case we missed something
-        else:
-            return (
-                _(ctx, "Nextcord library error"),
-                _(ctx, "Extension error"),
-                False,
-            )
         return (
             _(ctx, "Extension Error"),
             description,
@@ -508,10 +521,19 @@ class Errors(commands.Cog):
                 ),
                 True,
             )
+        # Exception raised when HybridCommand raises an AppCommandError derived
+        # exception that could not be sufficiently converted to an equivalent
+        # CommandError exception.
+        elif isinstance(error, commands.HybridCommandError):
+            return (
+                _(ctx, "Discord library error"),
+                _(ctx, "Command structure error"),
+                False,
+            )
         # Just in case we missed something
         else:
             return (
-                _(ctx, "Nextcord library error"),
+                _(ctx, "Discord library error"),
                 _(ctx, "Command error"),
                 False,
             )
@@ -677,6 +699,14 @@ class Errors(commands.Cog):
                 ),
                 True,
             )
+        elif isinstance(error, commands.MissingRequiredAttachment):
+            return (
+                _(ctx, "User input error"),
+                _(ctx, "Argument **{param}** must include an attachment.").format(
+                    param=error.param
+                ),
+                True,
+            )
         # Exception raised when the command was passed too many arguments and its .Command.ignore_extra attribute was not set to True.
         elif isinstance(error, commands.TooManyArguments):
             return (
@@ -686,11 +716,19 @@ class Errors(commands.Cog):
             )
         # Exception raised when a parsing or conversion failure is encountered on an argument to pass into a command.
         elif isinstance(error, commands.BadArgument):
+            # FIXME These errors have `argument` attribute, we may want to report it.
+
             # Exception raised when the message provided was not found in the channel.
             if isinstance(error, commands.MessageNotFound):
                 return (
                     _(ctx, "Bad argument"),
                     _(ctx, "Message not found"),
+                    True,
+                )
+            if isinstance(error, commands.GuildNotFound):
+                return (
+                    _(ctx, "Bad argument"),
+                    _(ctx, "Guild not found"),
                     True,
                 )
             # Exception raised when the member provided was not found in the bot's cache.
@@ -758,11 +796,86 @@ class Errors(commands.Cog):
                     _(ctx, "PartialEmoji conversion failure"),
                     True,
                 )
+            elif isinstance(error, commands.GuildStickerNotFound):
+                return (
+                    _(ctx, "Bad argument"),
+                    _(ctx, "Sticker not found"),
+                    True,
+                )
+            elif isinstance(error, commands.ScheduledEventNotFound):
+                return (
+                    _(ctx, "Bad argument"),
+                    _(ctx, "Scheduled event not found"),
+                    True,
+                )
             # Exception raised when a boolean argument was not convertable.
             elif isinstance(error, commands.BadBoolArgument):
                 return (
                     _(ctx, "Bad argument"),
                     _(ctx, "Bad bool argument"),
+                    True,
+                )
+            # Exception raised when a number is not from allowed range
+            elif isinstance(error, commands.RangeError):
+                brackets: Tuple[str, str] = ("\u27e8", "\u27e9")
+                infinity: str = "\u221e"
+                return (
+                    _(ctx, "Bad argument"),
+                    _(
+                        ctx,
+                        "Range error, **{value}** is not from interval "
+                        "**{lbr}{minimum}, {maximum}{rbr}**.",
+                    ).format(
+                        value=error.value,  # FIXME This may need escaping
+                        lbr=brackets[0],
+                        minimum=error.minimum or infinity,
+                        maximum=error.maximum or infinity,
+                        rbr=brackets[1],
+                    ),
+                    True,
+                )
+            elif isinstance(error, commands.ThreadNotFound):
+                return (
+                    _(ctx, "Bad argument"),
+                    _(ctx, "Thread not found"),
+                    True,
+                )
+            elif isinstance(error, commands.FlagError):
+                if isinstance(error, commands.BadFlagArgument):
+                    return (
+                        _(ctx, "Bad argument"),
+                        _(ctx, "Argument **{flag}** couldn't be converted.").format(
+                            flag=error.flag,
+                        ),
+                        True,
+                    )
+                if isinstance(error, commands.MissingFlagArgument):
+                    return (
+                        _(ctx, "Bad argument"),
+                        _(ctx, "Argument **{flag}** must have value.").format(
+                            flag=error.flag,
+                        ),
+                        True,
+                    )
+                if isinstance(error, commands.TooManyFlags):
+                    return (
+                        _(ctx, "Bad argument"),
+                        _(
+                            ctx, "Argument **{flag}** cannot take that many values."
+                        ).format(flag=error.flag),
+                        True,
+                    )
+                if isinstance(error, commands.MissingRequiredFlag):
+                    return (
+                        _(ctx, "Bad argument"),
+                        _(ctx, "Argument **{flag}** must be specified.").format(
+                            flag=error.flag
+                        ),
+                        True,
+                    )
+                return (
+                    _(ctx, "User input error"),
+                    _(ctx, "Bad argument"),
                     True,
                 )
             # Just in case we missed something
@@ -780,6 +893,18 @@ class Errors(commands.Cog):
                 _(ctx, "Argument **{argument}** has must be {classes}").format(
                     argument=error.param.name, classes=classes
                 ),
+                True,
+            )
+        elif isinstance(error, commands.BadLiteralArgument):
+            return (
+                _(ctx, "User input error"),
+                _(
+                    ctx,
+                    "Argument **{argument}** only takes one of the following values:",
+                ).format(argument=error.param)
+                + " "
+                + "/".join(f"**{literal}**" for literal in error.literals)
+                + ".",
                 True,
             )
         # Exception raised when a parsing or conversion failure is encountered on an argument to pass into a command.
@@ -815,7 +940,7 @@ class Errors(commands.Cog):
         # Just in case we missed something
         else:
             return (
-                _(ctx, "Nextcord library error"),
+                _(ctx, "Discord library error"),
                 _(ctx, "User input error"),
                 False,
             )
