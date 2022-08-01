@@ -391,8 +391,14 @@ msgstr Chyba
 msgid Gateway not found
 msgstr Brána nebyla nalezena
 
-msgid Nextcord library error
-msgstr Chyba nextcord knihovny
+msgid Slow down
+msgstr Zpomal
+
+msgid Request has to be sent at least {delay} seconds later
+msgstr Dotaz může být odeslán nejdříve za {delay} vteřin
+
+msgid Internal error
+msgstr Interní chyba
 
 msgid Client error
 msgstr Chyba klienta
@@ -409,8 +415,11 @@ msgstr Spojení ukončeno
 msgid Privileged intents required
 msgstr Privilegované záměry požadovány
 
-msgid Error on registering the command `{cmd}`
-msgstr Chyba při registraci příkazu `{cmd}`
+msgid Response from **{interaction}** was already received
+msgstr Odpověď od **{interaction}** již byla obdržena
+
+msgid Error on registering the command **{cmd}**
+msgstr Chyba při registraci příkazu **{cmd}**
 
 msgid HTTP Exception
 msgstr HTTP chyba
@@ -424,8 +433,8 @@ msgstr Nenalezeno
 msgid Discord Server Error
 msgstr Chyba Discord serveru
 
-msgid The extension **{extension}** could not be found. It should be in `repository.module` format
-msgstr Rozšíření **{extension}** nebylo nalezeno. Mělo by to být ve formátu `repository.module`
+msgid Network error
+msgstr Chyba sítě
 
 msgid Extension **{extension}** is already loaded
 msgstr Rozšíření **{extension}** je už načteno
@@ -433,8 +442,8 @@ msgstr Rozšíření **{extension}** je už načteno
 msgid The extension **{extension}** is not loaded
 msgstr Rozšíření **{extension}** není načteno
 
-msgid Extension **{extension}** doesn't have a setup entry function
-msgstr Rozšíření **{extension}** nemá vstupní setup funkci
+msgid Extension **{extension}** does not have an entry point
+msgstr Rozšíření **{extension}** nemá vstupní funkci
 
 msgid **{extension}** failed
 msgstr **{extension}** selhalo
@@ -442,23 +451,20 @@ msgstr **{extension}** selhalo
 msgid The extension **{extension}** could not be found
 msgstr Nebylo nalezeno rozšíření **{extension}**
 
-msgid Extension error
-msgstr Chyba rozšíření
-
 msgid Extension Error
 msgstr Chyba rozšíření
 
 msgid Command error
 msgstr Chyba příkazu
 
-msgid An error occurred in converter `{converter}`
-msgstr Stala se chyba v konvertoru `{converter}`
+msgid Conversion to **{name}** resulted in **{exception}**
+msgstr Konverze na **{name}** skončila s **{exception}**
 
 msgid Command not found
 msgstr Příkaz nenalezen
 
-msgid Disabled command
-msgstr Příkaz deaktivován
+msgid The command is not available
+msgstr Příkaz není dostupný
 
 msgid Command invoke error
 msgstr Chyba ve volání příkazy
@@ -472,104 +478,77 @@ msgstr Tento příkaz už několikrát běží.
 msgid The limit is **{num}**/**{per}**
 msgstr Limit je **{num}**/**{per}**
 
+msgid Command structure error
+msgstr Chyba struktury příkazu
+
 msgid Check failure
 msgstr Chyba kontroly
 
-msgid You have been denied the invocation of this command.
-msgstr Použití tohoto příkazu ti bylo zakázáno.
+msgid You have been denied the invocation of this command
+msgstr Použití tohoto příkazu ti bylo zakázáno
 
-msgid This command cannot be used in this channel.
-msgstr Tento příkaz nemůže být použitý v tomto kanálu.
+msgid This command cannot be used in this channel
+msgstr Tento příkaz nemůže být použitý v tomto kanálu
 
-msgid This command cannot be used by the role **{role}**.
-msgstr Tento příkaz nemůže být použitý rolí **{role}**.
+msgid This command cannot be used by the role **{role}**
+msgstr Tento příkaz nemůže být použitý rolí **{role}**
 
-msgid You need access permissions at least at level **{required}**. You only have **{actual}**.
-msgstr Na to potřebuješ úroveň přístupu alespoň **{required}**. Máš jen **{actual}**.
+msgid You need access permissions at least at level **{required}**, you only have **{actual}**
+msgstr Na to potřebuješ úroveň přístupu alespoň **{required}**, máš jen **{actual}**
 
 msgid You do not have any of the possible permissions to access this command
 msgstr Nemáš žádné z možných oprávnění k tomuto příkazu
 
-msgid This command can only be used in private messages.
+msgid This command can only be used in private messages
 msgstr Tento příkaz lze pouze použít v privátních zprávách
 
-msgid This command cannot be used in private messages.
+msgid This command cannot be used in private messages
 msgstr Tento příkaz nelze pouze použít v privátních zprávách
 
 msgid You are not the bot owner
 msgstr Nejsi vlastník bota
 
-msgid You lack some of {perms} permissions
-msgstr Chybí ti některé z {perms} oprávnění
+msgid You need all of the following permissions: {perms}
+msgstr Chybí ti některé z následujících oprávnění: {perms}
 
-msgid I lack the {perms} permission
-msgstr Chybí mi  {perms} oprávnění
+msgid I need all of the following permissions: {perms}
+msgstr Chybí mi některé z následujících oprávnění: {perms}
 
-msgid You have to have a {role} role for that
-msgstr K tomuto potřebuješ roli {role}
+msgid You need to have role **{role}**
+msgstr Musíš mít roli **{role}**
 
-msgid I lack the role {role}
-msgstr Chybí mi role {role}
+msgid I need to have role **{role}**
+msgstr Musím mít roli **{role}**
 
-msgid You have to have one role of {roles}
-msgstr K tomuto potřebuješ některou roli z {roles}
+msgid You need some of the following roles: {roles}
+msgstr Musíš mít některou z následujících rolí: {roles}
 
-msgid I need one of roles {roles}
-msgstr Potřebuji některou roli z {roles}
+msgid I need some of the following roles: {roles}
+msgstr Musím mít některou z následujících rolí: {roles}
 
-msgid This command can be used only in NSFW channels.
+msgid This command can be used only in NSFW channels
 msgstr Tento příkaz nelze pouze použít v NSFW kanálech
 
-msgid You don't have permission for this.
-msgstr Na to nemáš oprávnění.
+msgid You don't have permission for this
+msgstr Na to nemáš oprávnění
 
 msgid User input error
 msgstr Chyba uživatelského vstupu
 
-msgid The command has to have an argument `{arg}`
-msgstr Příkaz musí mít argument `{arg}`
+msgid The command has to have an argument **{param}**
+msgstr Příkaz musí mít argument **{param}**
 
-msgid The command doesn't have that many arguments.
+msgid Argument **{param}** must include an attachment
+msgstr Argument **{param}** musí mít přílohu.
+
+msgid The command doesn't have that many arguments
 msgstr Příkaz nemá tolik argumentů
 
-msgid Bad argument
-msgstr Špatný argument
-
-msgid Message not found
-msgstr Zpráva nenalezena
-
-msgid Member not found
-msgstr Člen nenalezen
-
-msgid User not found
-msgstr Uživatel nenalezen
-
-msgid Channel not found
-msgstr Kanál nenalezen
-
-msgid I can't see the **{channel}** channel
-msgstr Nevidím kanál **{channel}**
-
-msgid Bad colour argument
-msgstr Špatný argument barvy
-
-msgid Role not found
-msgstr Role nenalezena
-
-msgid Bad invite argument
-msgstr Špatný argument pozvánky
-
-msgid Emoji not found
-msgstr Emoji nenalezeno
-
-msgid PartialEmoji conversion failure
-msgstr Chyba převodu na PartialEmoji
-
-msgid Bad bool argument
-msgstr Špatný True/False argument
-
-msgid Argument **{argument}** has must be {classes}
+msgid Argument **{argument}** must be {classes}
 msgstr Argument **{argument}** musí být jedno z {classes}
+
+msgid Argument **{argument}** only takes one of the following values:
+msgstr Argument **{argument}** může mít pouze jednu z těchto hodnot:
 
 msgid Argument parsing error
 msgstr Chyba čtení argumentu
@@ -579,6 +558,63 @@ msgstr Neočekávané uvozovky
 
 msgid Invalid end of quoted string error
 msgstr Chybný konec textu v uvozovkách
+
+msgid Bad argument
+msgstr Špatný argument
+
+msgid Message **{argument}** not found
+msgstr Zpráva **{argument}** nenalezena
+
+msgid Member **{argument}** not found
+msgstr Člen **{argument}** nenalezen
+
+msgid Server **{argument}** not found
+msgstr Server **{argument}** nenalezen
+
+msgid User **{argument}** not found
+msgstr Uživatel **{argument}** nenalezen
+
+msgid Channel **{argument}** not found
+msgstr Kanál **{argument}** nenalezen
+
+msgid Color **{argument}** not found
+msgstr Barva **{argument}** nenalezena
+
+msgid Role **{argument}** not found
+msgstr Role **{argument}** nenalezena
+
+msgid Invitation **{argument}** not found
+msgstr Pozvánka **{argument}** nenalezena
+
+msgid Emoji **{argument}** not found
+msgstr Emoji **{argument}** nenalezeno
+
+msgid Sticker **{argument}** not found
+msgstr Nálepka **{argument}** nenalezena
+
+msgid Event **{argument}** not found
+msgstr Událost **{argument}** nenalezena
+
+msgid **{argument}** is not boolean
+msgstr **{argument}** není binární
+
+msgid **{value}** is not from interval **{lbr}{minimum}, {maximum}{rbr}**
+msgstr **{value}** neleží v intervalu **{lbr}{minimum}, {maximum}{rbr}**
+
+msgid Thread **{argument}** not found
+msgstr Vlákno **{argument}** nenalezeno
+
+msgid Argument **{argument}** could not be converted to **{flag}**: {exception}
+msgstr Argument **{argument}** nemohl být převeden na **{flag}**: {exception}
+
+msgid Argument **{flag}** must have value
+msgstr Argument **{flag}** musí mít hodnotu
+
+msgid Argument **{flag}** cannot take that many values
+msgstr Argument **{flag}** nemůže mít tolik hodnot
+
+msgid Argument **{flag}** must be specified
+msgstr Argument **{flag}** je povinný
 
 msgid Error content
 msgstr Obsah chyby
