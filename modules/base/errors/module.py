@@ -744,8 +744,7 @@ class Errors(commands.Cog):
                 ReportTraceback.NO,
             )
 
-        # Exception raised when a typing.Union converter fails for all its associated types.
-        elif isinstance(error, commands.BadUnionArgument):
+        if isinstance(error, commands.BadUnionArgument):
             classes: str = "/".join([f"**{cls.__name__}**" for cls in error.converters])
             return (
                 _(ctx, "User input error"),
@@ -754,7 +753,8 @@ class Errors(commands.Cog):
                 ),
                 ReportTraceback.NO,
             )
-        elif isinstance(error, commands.BadLiteralArgument):
+
+        if isinstance(error, commands.BadLiteralArgument):
             return (
                 _(ctx, "User input error"),
                 _(
@@ -765,43 +765,18 @@ class Errors(commands.Cog):
                 + "/".join(f"**{literal}**" for literal in error.literals),
                 ReportTraceback.NO,
             )
-        # Exception raised when a parsing or conversion failure is encountered on an argument to pass into a command.
-        elif isinstance(error, commands.ArgumentParsingError):
-            # An exception raised when the parser encounters a quote mark inside a non-quoted string
-            if isinstance(error, commands.UnexpectedQuoteError):
-                return (
-                    _(ctx, "Argument parsing error"),
-                    _(ctx, "Unexpected quote error"),
-                    ReportTraceback.NO,
-                )
-            # An exception raised when a space is expected after the closing quote in a string but a different character is found.
-            elif isinstance(error, commands.InvalidEndOfQuotedStringError):
-                return (
-                    _(ctx, "Argument parsing error"),
-                    _(ctx, "Invalid end of quoted string error"),
-                    ReportTraceback.NO,
-                )
-            # An exception raised when a quote character is expected but not found.
-            elif isinstance(error, commands.ExpectedClosingQuoteError):
-                return (
-                    _(ctx, "Argument parsing error"),
-                    _(ctx, "Unexpected quote error"),
-                    ReportTraceback.NO,
-                )
-            # Just in case we missed something
-            else:
-                return (
-                    _(ctx, "User input error"),
-                    _(ctx, "Argument parsing error"),
-                    ReportTraceback.YES,
-                )
-        # Just in case we missed something
-        else:
-            return (
-                _(ctx, "Internal error"),
-                _(ctx, "User input error"),
-                ReportTraceback.YES,
-            )
+
+        if isinstance(error, commands.BadArgument):
+            return await Errors.handle_BadArgument(ctx, error)
+
+        if isinstance(error, commands.ArgumentParsingError):
+            return await Errors.handle_ArgumentParsingError(ctx, error)
+
+        return (
+            _(ctx, "Internal error"),
+            _(ctx, "User input error"),
+            ReportTraceback.YES,
+        )
 
     @staticmethod
     async def handle_BadArgument(ctx, error) -> Tuple[str, str, bool]:
@@ -952,6 +927,47 @@ class Errors(commands.Cog):
         return (
             _(ctx, "User input error"),
             _(ctx, "Bad argument"),
+            ReportTraceback.NO,
+        )
+
+    @staticmethod
+    async def handle_ArgumentParsingError(ctx, error) -> Tuple[str, str, bool]:
+        """Handles exceptions raised by bad user input.
+
+        Args:
+            ctx: The invocation context.
+            error: Detected exception.
+
+        Returns:
+            Tuple[str, str, bool]:
+                Translated error name,
+                Translated description,
+                Whether to ignore traceback in the log.
+        """
+        if isinstance(error, commands.UnexpectedQuoteError):
+            return (
+                _(ctx, "Argument parsing error"),
+                _(ctx, "Unexpected quote error"),
+                ReportTraceback.NO,
+            )
+
+        if isinstance(error, commands.InvalidEndOfQuotedStringError):
+            return (
+                _(ctx, "Argument parsing error"),
+                _(ctx, "Invalid end of quoted string error"),
+                ReportTraceback.NO,
+            )
+
+        if isinstance(error, commands.ExpectedClosingQuoteError):
+            return (
+                _(ctx, "Argument parsing error"),
+                _(ctx, "Unexpected quote error"),
+                ReportTraceback.NO,
+            )
+
+        return (
+            _(ctx, "User input error"),
+            _(ctx, "Argument parsing error"),
             ReportTraceback.NO,
         )
 

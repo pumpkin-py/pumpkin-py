@@ -550,15 +550,6 @@ msgstr Argument **{argument}** musí být jedno z {classes}
 msgid Argument **{argument}** only takes one of the following values:
 msgstr Argument **{argument}** může mít pouze jednu z těchto hodnot:
 
-msgid Argument parsing error
-msgstr Chyba čtení argumentu
-
-msgid Unexpected quote error
-msgstr Neočekávané uvozovky
-
-msgid Invalid end of quoted string error
-msgstr Chybný konec textu v uvozovkách
-
 msgid Bad argument
 msgstr Špatný argument
 
@@ -603,6 +594,15 @@ msgstr **{value}** neleží v intervalu **{lbr}{minimum}, {maximum}{rbr}**
 
 msgid Thread **{argument}** not found
 msgstr Vlákno **{argument}** nenalezeno
+
+msgid Argument parsing error
+msgstr Chyba čtení argumentu
+
+msgid Unexpected quote error
+msgstr Neočekávané uvozovky
+
+msgid Invalid end of quoted string error
+msgstr Chybný konec textu v uvozovkách
 
 msgid Argument **{argument}** could not be converted to **{flag}**: {exception}
 msgstr Argument **{argument}** nemohl být převeden na **{flag}**: {exception}
