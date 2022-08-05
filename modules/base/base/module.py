@@ -440,7 +440,7 @@ class Base(commands.Cog):
         threads = channel.threads
         for thread in threads:
             if thread.id == payload.message_id:
-                messages = await thread.history(limit=2).flatten()
+                messages = [message async for message in thread.history(limit=2)]
                 if len(messages) > 1:  # the parental message counts too, apparently
                     await thread.edit(archived=True)
                     await guild_log.info(
@@ -546,7 +546,7 @@ class Base(commands.Cog):
                 return
 
             try:
-                users = await reaction.users().flatten()
+                users = [user async for user in reaction.users()]
                 await message.pin()
                 await guild_log.info(
                     payload.member,
@@ -691,7 +691,7 @@ class Base(commands.Cog):
                 return
             # create a new thread
             try:
-                users = await reaction.users().flatten()
+                users = [user async for user in reaction.users()]
                 thread_name = _(utx, "Thread by {author}").format(
                     author=message.author.name
                 )
