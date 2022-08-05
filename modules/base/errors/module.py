@@ -439,35 +439,51 @@ class Errors(commands.Cog):
         extension_name = error.name.lstrip("modules.").rstrip(".module")
 
         if isinstance(error, commands.ExtensionAlreadyLoaded):
-            description = _(ctx, "Extension **{extension}** is already loaded").format(
-                extension=extension_name,
+            return (
+                _(ctx, "User input error"),
+                _(ctx, "Extension **{extension}** is already loaded").format(
+                    extension=extension_name,
+                ),
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.ExtensionNotLoaded):
-            description = _(ctx, "The extension **{extension}** is not loaded").format(
-                extension=extension_name,
+            return (
+                _(ctx, "User input error"),
+                _(ctx, "The extension **{extension}** is not loaded").format(
+                    extension=extension_name,
+                ),
+                ReportTraceback.NO,
             )
 
         if isinstance(error, commands.NoEntryPointError):
-            description = _(
-                ctx, "Extension **{extension}** does not have an entry point"
-            ).format(extension=extension_name)
+            return (
+                _(ctx, "Extension error"),
+                _(ctx, "Extension **{extension}** does not have an entry point").format(
+                    extension=extension_name
+                ),
+                ReportTraceback.YES,
+            )
 
         if isinstance(error, commands.ExtensionFailed):
-            description = _(ctx, "**{extension}** failed").format(
-                extension=extension_name
+            return (
+                _(ctx, "Extension error"),
+                _(ctx, "**{extension}** failed").format(extension=extension_name),
+                ReportTraceback.YES,
             )
 
         if isinstance(error, commands.ExtensionNotFound):
-            description = _(
-                ctx, "The extension **{extension}** could not be found"
-            ).format(
-                extension=extension_name,
+            return (
+                _(ctx, "User input error"),
+                _(ctx, "The extension **{extension}** could not be found").format(
+                    extension=extension_name,
+                ),
+                ReportTraceback.NO,
             )
 
         return (
-            _(ctx, "Extension Error"),
-            description,
+            _(ctx, "Internal error"),
+            _(ctx, "Extension error"),
             ReportTraceback.YES,
         )
 

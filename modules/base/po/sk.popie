@@ -436,11 +436,17 @@ msgstr Chyba Discord servera
 msgid Network error
 msgstr Chyba sítě
 
+msgid User input error
+msgstr Chyba užívateľského vstupu
+
 msgid Extension **{extension}** is already loaded
 msgstr Rozšírenie **{extension}** je už načítané
 
 msgid The extension **{extension}** is not loaded
 msgstr Rozšírenie **{extension}** nie je načítané
+
+msgid Extension error
+msgstr Chyba rozšírenia
 
 msgid Extension **{extension}** does not have an entry point
 msgstr Rozšírenie **{extension}** nemá vstupnú funkciu
@@ -450,9 +456,6 @@ msgstr **{extension}** zlyhalo
 
 msgid The extension **{extension}** could not be found
 msgstr Nebolo nájdené rozšírenie **{extension}**
-
-msgid Extension Error
-msgstr Chyba rozšírenia
 
 msgid Command error
 msgstr Chyba príkazu
@@ -531,9 +534,6 @@ msgstr Tento príkaz môže byť použitý len v NSFW kanáloch
 
 msgid You don't have permission for this
 msgstr Na to nemáš oprávnenie
-
-msgid User input error
-msgstr Chyba užívateľského vstupu
 
 msgid The command has to have an argument **{param}**
 msgstr Príkaz musí mať argument **{param}**
