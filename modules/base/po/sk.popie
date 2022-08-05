@@ -137,7 +137,7 @@ msgid Overwrite for this command and channel does not exist.
 msgstr Overwrite pre tento príkaz a kanál neexistuje.
 
 msgid Overwrite for command **{command}** and channel **#{channel}** sucessfully removed.
-msgstr Overwrite pre príkaz **{command}** a kanál **#{command}** bol úspešne odobraný.
+msgstr Overwrite pre príkaz **{command}** a kanál **#{channel}** bol úspešne odobraný.
 
 msgid No channel overwrites have been set.
 msgstr Neboli nastavené žiadne overwrites pre kanály.
