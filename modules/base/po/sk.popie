@@ -1,149 +1,149 @@
 msgid No mappings have been set.
-msgstr
+msgstr Žiadne mapovanie nebolo nastavené.
 
 msgid Role
-msgstr
+msgstr Rola
 
 msgid Level
-msgstr
+msgstr Úroveň
 
 msgid Invalid level. Possible options are: {keys}.
-msgstr
+msgstr Neplatná úroveň. Možnosti sú: {keys}.
 
 msgid You can't assign OWNER levels.
-msgstr
+msgstr OWNER úrovne nie je možné priradiť.
 
 msgid Your ACLevel has to be higher than **{level}**.
-msgstr
+msgstr Tvoj ACLevel musí byť vyšší ako **{level}**.
 
 msgid That role is already mapped to some level.
-msgstr
+msgstr Táto rola je už na nejakú úroveň mapovaná.
 
 msgid Role **{role}** will be mapped to **{level}**.
-msgstr
+msgstr Rola **{role}** bude mapovaná na **{level}**.
 
 msgid That role is not mapped to any level.
-msgstr
+msgstr Táto rola nie je mapovaná na žiadnu úroveň.
 
 msgid Role mapping was sucessfully removed.
-msgstr
+msgstr Mapovanie role bolo úspešne zrušené.
 
 msgid No defaults have been set.
-msgstr
+msgstr Žiadne predvolené hodnoty neboli nastavené.
 
 msgid Command
-msgstr
+msgstr Príkaz
 
 msgid Default level
-msgstr
+msgstr Predvolená úroveň
 
 msgid Custom level
-msgstr
+msgstr Vlastná úroveň
 
 msgid I don't know this command.
-msgstr
+msgstr Takýto príkaz nepoznám.
 
 msgid This command can't be controlled by ACL.
-msgstr
+msgstr Tento príkaz nemôže byť kontrolovaný pomocou ACL.
 
 msgid You don't have permission to run this command, you can't alter its permissions.
-msgstr
+msgstr Pre spustenie tohto príkazu nemáš právo, preto jeho oprávnenie meniť nemôžeš.
 
 msgid Command's ACLevel is higher than your current ACLevel.
-msgstr
+msgstr ACLevel príkazu je vyšší ako tvoj aktuálny ACLevel.
 
 msgid Custom default for **{command}** already exists.
-msgstr
+msgstr Vlastná predvolená úroveň pre **{command}** už existuje.
 
 msgid Custom default for **{command}** set.
-msgstr
+msgstr Vlastná predvolená úroveň pre **{command}** bola nastavená.
 
 msgid Command **{command}** does not have custom default.
-msgstr
+msgstr Príkaz **{command}** nemá vlastnú predvolenú hodnotu.
 
 msgid Custom default for **{command}** removed.
-msgstr
+msgstr Vlastná predvolená úroveň pre **{command}** bola zrušená.
 
 msgid role
-msgstr
+msgstr rola
 
 msgid channel
-msgstr
+msgstr kanál
 
 msgid user
-msgstr
+msgstr používateľ
 
 msgid unsupported
-msgstr
+msgstr nepodporované
 
 msgid yes
-msgstr
+msgstr áno
 
 msgid no
-msgstr
+msgstr nie
 
 msgid No ACL overwrites have been set.
-msgstr
+msgstr Neboli nastavené ACL overwrites.
 
 msgid Overwrite type
-msgstr
+msgstr Typ overwrite
 
 msgid Value
-msgstr
+msgstr Hodnota
 
 msgid Allow
-msgstr
+msgstr Povolené
 
 msgid Overwrite for command **{command}** and role **{role}** already exists.
-msgstr
+msgstr Overwrite pre príkaz **{command}** a rolu **{role}** už existuje.
 
 msgid Overwrite for command **{command}** and role **{role}** sucessfully created.
-msgstr
+msgstr Overwrite pre príkaz **{command}** a rolu **{role}** bol úspešne vytvorený.
 
 msgid Overwrite for this command and role does not exist.
-msgstr
+msgstr Overwrite pre tento príkaz a rolu neexistuje.
 
 msgid Overwrite for command **{command}** and role **{role}** sucessfully removed.
-msgstr
+msgstr Overwrite pre príkaz **{command}** a rolu **{role}** bol úspešne odobraný.
 
 msgid No role overwrites have been set.
-msgstr
+msgstr Neboli nastavené žiadne overwrites pre role.
 
 msgid Overwrite for command **{command}** and user **{user}** already exists.
-msgstr
+msgstr Overwrite pre príkaz **{command}** a používateľa **{user}** už existuje.
 
 msgid Overwrite for command **{command}** and user **{user}** sucessfully created.
-msgstr
+msgstr Overwrite pre príkaz **{command}** a používateľa **{user}** bol úspešne vytvorený.
 
 msgid Overwrite for this command and user does not exist.
-msgstr
+msgstr Overwrite pre tento príkaz a používateľa neexistuje.
 
 msgid Overwrite for command **{command}** and user **{user}** sucessfully removed.
-msgstr
+msgstr Overwrite pre príkaz **{command}** a používateľa **{user}** bol úspešne odobraný.
 
 msgid No user overwrites have been set.
-msgstr
+msgstr Neboli nastavené žiadne overwrites pre používateľa.
 
 msgid User
-msgstr
+msgstr Používateľ
 
 msgid Overwrite for command **{command}** and channel **#{channel}** already exists.
-msgstr
+msgstr Overwrite pre príkaz **{command}** a kanál **#{channel}** už existuje.
 
 msgid Overwrite for command **{command}** and channel **#{channel}** sucessfully created.
-msgstr
+msgstr Overwrite pre príkaz **{command}** a kanál **#{channel}** bol úspešne vytvorený.
 
 msgid Overwrite for this command and channel does not exist.
-msgstr
+msgstr Overwrite pre tento príkaz a kanál neexistuje.
 
 msgid Overwrite for command **{command}** and channel **#{channel}** sucessfully removed.
-msgstr
+msgstr Overwrite pre príkaz **{command}** a kanál **#{channel}** bol úspešne odobraný.
 
 msgid No channel overwrites have been set.
-msgstr
+msgstr Neboli nastavené žiadne overwrites pre kanály.
 
 msgid Channel
-msgstr
+msgstr Kanál
 
 msgid Repository initialization aborted: {exc}
 msgstr Inicializácia repozitáru sa nepodarila: {exc}
@@ -347,28 +347,28 @@ msgid Run time
 msgstr Doba od spustenia
 
 msgid This channel is already subscribed.
-msgstr
+msgstr Tento kanál je už prihlásený.
 
 msgid Channel subscribed.
-msgstr
+msgstr Kanál prihlásený.
 
 msgid This channel is not subscribed.
-msgstr
+msgstr Tento kanál nie je prihlásený.
 
 msgid Channel unsubscribed.
-msgstr
+msgstr Kanál odhlásený.
 
 msgid No channel is subscribed.
-msgstr
+msgstr Žiadny kanál nie je prihlásený.
 
 msgid {count} days without an accident.
-msgstr
+msgstr {count} dňov od poslednej chyby.
 
 msgid Previous error occured on **{date}**. Resetting counter...
-msgstr
+msgstr Predchádzajúca chyba nastala **{date}**. Resetujem počítadlo...
 
 msgid *This is a test embed, no error has occured yet.*
-msgstr
+msgstr *Toto je skúšobná správa, k žiadnej chybe zatiaľ nedošlo.*
 
 msgid An unexpected error occurred
 msgstr Nastala nečakaná chyba
@@ -395,7 +395,7 @@ msgid Slow down
 msgstr Spomaľ
 
 msgid Request has to be sent at least {delay} seconds later
-msgstr
+msgstr Požiadavka môže byť odoslaná najskôr za {delay} sekúnd
 
 msgid Internal error
 msgstr Interná chyba
@@ -416,7 +416,7 @@ msgid Privileged intents required
 msgstr Požadované privilegované zámery
 
 msgid Response from **{interaction}** was already received
-msgstr
+msgstr Odpoveď od **{interaction}** už bola obdržaná.
 
 msgid Error on registering the command **{cmd}**
 msgstr Chyba pri registrácii príkazu **{cmd}**
@@ -479,22 +479,22 @@ msgid The limit is **{num}**/**{per}**
 msgstr Limit je **{num}**/**{per}**
 
 msgid Command structure error
-msgstr
+msgstr Chyba štruktúry príkazu
 
 msgid Check failure
 msgstr Chyba kontroly
 
 msgid You have been denied the invocation of this command
-msgstr
+msgstr Použitie tohto príkazu ti bolo zakázané
 
 msgid This command cannot be used in this channel
-msgstr
+msgstr Tento príkaz nemôže byť použitý v tomto kanále
 
 msgid This command cannot be used by the role **{role}**
-msgstr
+msgstr Tento príkaz nemôže byť použitý rolou **{role}**
 
 msgid You need access permissions at least at level **{required}**, you only have **{actual}**
-msgstr
+msgstr Na to potrebuješ úroveň prístupu aspoň **{required}**, ty máš iba **{actual}**
 
 msgid You do not have any of the possible permissions to access this command
 msgstr Nemáš žiadne z možných oprávnení k tomuto príkazu
@@ -539,16 +539,16 @@ msgid The command has to have an argument **{param}**
 msgstr Príkaz musí mať argument **{param}**
 
 msgid Argument **{param}** must include an attachment
-msgstr
+msgstr Argument **{param}** musí mať prílohu
 
 msgid The command doesn't have that many arguments
 msgstr Príkaz nemá toľko argumentov.
 
 msgid Argument **{argument}** must be {classes}
-msgstr
+msgstr Argument **{argument}** musí byť jedno z {classes}
 
 msgid Argument **{argument}** only takes one of the following values:
-msgstr
+msgstr Arguement **{argument}** môže mať iba jednu z týhto hodnôt:
 
 msgid Bad argument
 msgstr Zlý argument
