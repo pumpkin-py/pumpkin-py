@@ -119,7 +119,7 @@ msgid Overwrite for this command and user does not exist.
 msgstr Overwrite pre tento príkaz a používateľa neexistuje.
 
 msgid Overwrite for command **{command}** and user **{user}** sucessfully removed.
-msgstr Overwrite pre príkaz **{command}** a používateľa **{user}** bol úspešne odobraný. 
+msgstr Overwrite pre príkaz **{command}** a používateľa **{user}** bol úspešne odobraný.
 
 msgid No user overwrites have been set.
 msgstr Neboli nastavené žiadne overwrites pre používateľa.
