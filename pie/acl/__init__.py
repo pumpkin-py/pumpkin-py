@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import inspect
+import re
 from typing import Callable, Set, Optional, TypeVar
 
 import ring
@@ -12,6 +14,7 @@ from pie import i18n
 
 from pie.acl.database import ACDefault, ACLevel, ACLevelMappping
 from pie.exceptions import (
+    ACLFailure,
     NegativeUserOverwrite,
     NegativeChannelOverwrite,
     NegativeRoleOverwrite,
@@ -165,3 +168,50 @@ def acl2_function(
         f"Member's level '{member_level.name}' lower than required '{level.name}'."
     )
     raise InsufficientACLevel(required=level, actual=member_level)
+
+
+# Utility functions
+
+
+def get_hardcoded_ACLevel(command: Callable) -> Optional[ACLevel]:
+    """Inspect the source code and extract ACLevel from the decorator."""
+    source = inspect.getsource(command)
+    match = re.search(r"acl2\(check\.ACLevel\.(.*)\)", source)
+    if not match:
+        return None
+    level = match.group(1)
+    return ACLevel[level]
+
+
+def get_true_ACLevel(
+    bot: commands.Bot, guild_id: int, command: str
+) -> Optional[ACLevel]:
+    """Get command's ACLevel from database or from the source code."""
+    default_overwrite = ACDefault.get(guild_id, command)
+    if default_overwrite:
+        level = default_overwrite.level
+    else:
+        command_obj = bot.get_command(command)
+        level = get_hardcoded_ACLevel(command_obj.callback)
+    return level
+
+
+def can_invoke_command(
+    bot: commands.Bot, ctx: commands.Context, command: str
+) -> Optional[bool]:
+    """Check if the command is invokable in supplied context.
+
+    Returns `None` for direct message contexts.
+    """
+    if not ctx.guild:
+        return None
+
+    command_level = get_true_ACLevel(bot, ctx.guild.id, command)
+    if command_level is None:
+        return False
+
+    try:
+        acl2_function(ctx, command_level, for_command=command)
+        return True
+    except ACLFailure:
+        return False
