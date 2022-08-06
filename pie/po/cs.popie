@@ -1,11 +1,14 @@
-msgid I don't know the **{name}** command
-msgstr Neznám příkaz **{name}**
+msgid Help for command **{command}** is not available.
+msgstr Nápověda pro příkaz **{command}** není dostupná.
 
-msgid Command **{name}** does not have subcommand **{subcommand}**
-msgstr Příkaz **{name}** nemá podpříkaz **{subcommand}**
+msgid I don't know command **{name}**.
+msgstr Neznám příkaz **{name}**.
 
-msgid Command **{name}** has no subcommand
-msgstr Příkaz **{name}** nemá žádný podpříkaz
+msgid Command **{name}** does not have subcommand **{subcommand}**.
+msgstr Příkaz **{name}** nemá podpříkaz **{subcommand}**.
+
+msgid Command **{name}** has no subcommand.
+msgstr Příkaz **{name}** nemá žádný podpříkaz.
 
 msgid Page
 msgstr Strana

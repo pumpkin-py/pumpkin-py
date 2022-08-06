@@ -1,7 +1,5 @@
-import inspect
-import re
 from operator import attrgetter
-from typing import Callable, List, Optional
+from typing import List
 
 import discord
 from discord.ext import commands
@@ -149,11 +147,11 @@ class ACL(commands.Cog):
         """List currently applied default overwrites."""
 
         class Item:
-            def __init__(self, parent: commands.Cog, default: ACDefault):
+            def __init__(self, bot: commands.Bot, default: ACDefault):
                 self.command = default.command
                 self.level = default.level.name
-                command_fn = parent.bot.get_command(self.command).callback
-                level = parent.get_hardcoded_ACLevel(command_fn)
+                command_fn = bot.get_command(self.command).callback
+                level = pie.acl.get_hardcoded_ACLevel(command_fn)
                 self.default: str = getattr(level, "name", "?")
 
         defaults = ACDefault.get_all(ctx.guild.id)
@@ -163,7 +161,7 @@ class ACL(commands.Cog):
             return
 
         defaults = sorted(defaults, key=lambda d: d.command)[::-1]
-        items = [Item(self, default) for default in defaults]
+        items = [Item(self.bot, default) for default in defaults]
 
         table: List[str] = utils.text.create_table(
             items,
@@ -180,7 +178,10 @@ class ACL(commands.Cog):
     @check.acl2(check.ACLevel.GUILD_OWNER)
     @acl_default_.command("add")
     async def acl_default_add(self, ctx, command: str, level: str):
-        """Add custom ACLevel for a command."""
+        """Add custom ACLevel for a command.
+
+        You can only constraint commands that you are currently able to invoke.
+        """
         try:
             level: ACLevel = ACLevel[level]
         except KeyError:
@@ -194,12 +195,12 @@ class ACL(commands.Cog):
             await ctx.reply(_(ctx, "I don't know this command."))
             return
 
-        command_level = self.get_true_ACLevel(ctx.guild.id, command)
+        command_level = pie.acl.get_true_ACLevel(self.bot, ctx.guild.id, command)
         if command_level is None:
             await ctx.reply(_(ctx, "This command can't be controlled by ACL."))
             return
 
-        if not self.can_invoke_command(ctx, command):
+        if not pie.acl.can_invoke_command(self.bot, ctx, command):
             await ctx.reply(
                 _(
                     ctx,
@@ -245,7 +246,7 @@ class ACL(commands.Cog):
             await ctx.reply(_(ctx, "I don't know this command."))
             return
 
-        if not self.can_invoke_command(ctx, command):
+        if not pie.acl.can_invoke_command(self.bot, ctx, command):
             await ctx.reply(
                 _(
                     ctx,
@@ -285,19 +286,19 @@ class ACL(commands.Cog):
             default_overwrites[default_overwrite.command] = default_overwrite.level
 
         class Item:
-            def __init__(self, parent: commands.Cog, command: commands.Command):
+            def __init__(self, bot: commands.Bot, command: commands.Command):
                 self.command = command.qualified_name
-                command_fn = parent.bot.get_command(self.command).callback
-                level = parent.get_hardcoded_ACLevel(command_fn)
+                command_fn = bot.get_command(self.command).callback
+                level = pie.acl.get_hardcoded_ACLevel(command_fn)
                 self.level: str = getattr(level, "name", "?")
                 try:
                     self.db_level = default_overwrites[self.command].name
                 except KeyError:
                     self.db_level = ""
 
-        items = [Item(self, c) for c in bot_commands]
+        items = [Item(self.bot, command) for command in bot_commands]
         # put commands with overwrites first
-        items = sorted(items, key=lambda i: i.db_level, reverse=True)
+        items = sorted(items, key=lambda item: item.db_level, reverse=True)
 
         table: List[str] = utils.text.create_table(
             items,
@@ -394,7 +395,7 @@ class ACL(commands.Cog):
             await ctx.reply(_(ctx, "I don't know this command."))
             return
 
-        if not self.can_invoke_command(ctx, command):
+        if not pie.acl.can_invoke_command(self.bot, ctx, command):
             await ctx.reply(
                 _(
                     ctx,
@@ -440,7 +441,7 @@ class ACL(commands.Cog):
             )
             return
 
-        if not self.can_invoke_command(ctx, command):
+        if not pie.acl.can_invoke_command(self.bot, ctx, command):
             await ctx.reply(
                 _(
                     ctx,
@@ -513,7 +514,7 @@ class ACL(commands.Cog):
             await ctx.reply(_(ctx, "I don't know this command."))
             return
 
-        if not self.can_invoke_command(ctx, command):
+        if not pie.acl.can_invoke_command(self.bot, ctx, command):
             await ctx.reply(
                 _(
                     ctx,
@@ -559,7 +560,7 @@ class ACL(commands.Cog):
             )
             return
 
-        if not self.can_invoke_command(ctx, command):
+        if not pie.acl.can_invoke_command(self.bot, ctx, command):
             await ctx.reply(
                 _(
                     ctx,
@@ -637,7 +638,7 @@ class ACL(commands.Cog):
             await ctx.reply(_(ctx, "I don't know this command."))
             return
 
-        if not self.can_invoke_command(ctx, command):
+        if not pie.acl.can_invoke_command(self.bot, ctx, command):
             await ctx.reply(
                 _(
                     ctx,
@@ -685,7 +686,7 @@ class ACL(commands.Cog):
             )
             return
 
-        if not self.can_invoke_command(ctx, command):
+        if not pie.acl.can_invoke_command(self.bot, ctx, command):
             await ctx.reply(
                 _(
                     ctx,
@@ -751,37 +752,6 @@ class ACL(commands.Cog):
         for command in self.bot.walk_commands():
             result.append(command.qualified_name)
         return result
-
-    def get_hardcoded_ACLevel(self, command_function: Callable) -> Optional[ACLevel]:
-        """Return the ACLevel name of function's acl2 decorator."""
-        source = inspect.getsource(command_function)
-        match = re.search(r"acl2\(check\.ACLevel\.(.*)\)", source)
-        if not match:
-            return None
-        level = match.group(1)
-        return ACLevel[level]
-
-    # TODO Make cachable
-    def get_true_ACLevel(self, guild_id: int, command: str) -> Optional[ACLevel]:
-        default_overwrite = ACDefault.get(guild_id, command)
-        if default_overwrite:
-            level = default_overwrite.level
-        else:
-            command_obj = self.bot.get_command(command)
-            level = self.get_hardcoded_ACLevel(command_obj.callback)
-        return level
-
-    def can_invoke_command(self, ctx: commands.Context, command: str) -> bool:
-        """Check if given command is invokable by the user."""
-        command_level = self.get_true_ACLevel(ctx.guild.id, command)
-        if command_level is None:
-            return False
-
-        try:
-            pie.acl.acl2_function(ctx, command_level, for_command=command)
-            return True
-        except pie.exceptions.ACLFailure:
-            return False
 
 
 async def setup(bot) -> None:
