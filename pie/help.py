@@ -1,8 +1,8 @@
-from typing import Sequence
+from typing import Optional, Sequence, Union
 
 from discord.ext import commands
 
-from pie import i18n
+from pie import acl, i18n
 
 _ = i18n.Translator("pie").translate
 
@@ -28,13 +28,29 @@ class Help(commands.MinimalHelpCommand):
             **options,
         )
 
-    def command_not_found(self, string: str) -> str:
+    async def acl_check(self, cmd: Union[commands.Group, commands.Command]) -> bool:
+        """Return True if the command is allowed to run."""
+        bot = cmd._cog.bot
         ctx = self.context
+        command = cmd.qualified_name
+        allow_invoke: Optional[bool] = acl.can_invoke_command(bot, ctx, command)
+
+        if allow_invoke is not True:
+            await ctx.reply(
+                _(ctx, "Help for command **{command}** is not available.").format(
+                    command=command
+                )
+            )
+            return False
+        return True
+
+    def command_not_found(self, string: str) -> str:
         """Command does not exist.
 
         This override changes the language from english to l10n version.
         """
-        return _(ctx, "I don't know the **{name}** command").format(name=string)
+        ctx = self.context
+        return _(ctx, "I don't know command **{name}**.").format(name=string)
 
     def subcommand_not_found(self, command: commands.Command, string: str) -> str:
         ctx = self.context
@@ -44,12 +60,12 @@ class Help(commands.MinimalHelpCommand):
         """
         if type(command) == commands.Group and len(command.all_commands) > 0:
             return _(
-                ctx, "Command **{name}** does not have subcommand **{subcommand}**"
+                ctx, "Command **{name}** does not have subcommand **{subcommand}**."
             ).format(
                 name=command.qualified_name,
                 subcommand=string,
             )
-        return _(ctx, "Command **{name}** has no subcommand").format(
+        return _(ctx, "Command **{name}** has no subcommand.").format(
             name=command.qualified_name
         )
 
@@ -142,8 +158,18 @@ class Help(commands.MinimalHelpCommand):
         finals = [c for c in cmds if c not in groups]
         return groups, finals
 
+    async def send_command_help(self, command: commands.Command) -> None:
+        """Format command output."""
+        if not await self.acl_check(command):
+            return
+
+        await super().send_command_help(command)
+
     async def send_group_help(self, group: commands.Group) -> None:
         """Format command group output."""
+        if not await self.acl_check(group):
+            return
+
         self.add_command_formatting(group)
 
         groups, finals = await self.order_subcommands(group.commands)
