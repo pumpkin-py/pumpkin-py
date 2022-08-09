@@ -13,13 +13,17 @@ _ = i18n.Translator("pie").translate
 
 
 class ScrollableEmbed(discord.ui.View):
-    """Class for making scrollable embeds easy.
+    """Button-controllable scrolling embed.
 
-    Args:
-        ctx (:class:`discord.ext.commands.Context`): The context for translational purposes.
-        iterable (:class:`Iterable[discord.Embed]`): Iterable which to build the ScrollableEmbed from.
-        timeout (:class:'int'): Timeout (in seconds, default 300) from last interaction with the UI before no longer accepting input. If None then there is no timeout.
-        delete_message (:class:'bool'): True - remove message after timeout. False - remove only View controls.
+    :param ctx: Command context for translation purposes.
+    :param iterable: List of embeds to show.
+    :param timeout:
+        How long to wait after last interaction to disable scrolling,
+        in seconds.
+    :param delete_message:
+        Whether to remove full message after timeout,
+        or just remove the buttons.
+    :param as_reply: Whether to send the message as reply.
     """
 
     def __init__(
@@ -29,13 +33,15 @@ class ScrollableEmbed(discord.ui.View):
         timeout: int = 300,
         delete_message: bool = False,
         locked: bool = False,
+        as_reply: bool = True,
     ) -> ScrollableEmbed:
         super().__init__(timeout=timeout)
-        self.pages = self._pages_from_iter(ctx, iterable)
-        self.ctx = ctx
-        self.pagenum = 0
-        self.delete_message = delete_message
-        self.locked = locked
+        self.pages: Iterable[discord.Embed] = self._pages_from_iter(ctx, iterable)
+        self.ctx: commands.Context = ctx
+        self.pagenum: int = 0
+        self.delete_message: bool = delete_message
+        self.locked: bool = locked
+        self.as_reply: bool = as_reply
 
         self.add_item(
             discord.ui.Button(
@@ -128,7 +134,8 @@ class ScrollableEmbed(discord.ui.View):
             self.stop()
             return
 
-        self.message = await ctx.send(embed=self.pages[0], view=self)
+        send = ctx.reply if self.as_reply else ctx.send
+        self.message = await send(embed=self.pages[0], view=self)
 
     async def interaction_check(self, interaction: discord.Interaction) -> None:
         """Gets called when interaction with any of the Views buttons happens."""
