@@ -418,7 +418,7 @@ class Errors(commands.Cog):
         return (
             _(ctx, "Internal error"),
             _(ctx, "Network error"),
-            ReportTraceback.YES,
+            ReportTraceback.NO,
         )
 
     @staticmethod
