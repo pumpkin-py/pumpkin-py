@@ -135,7 +135,7 @@ class ScrollableEmbed(discord.ui.View):
             return
 
         send = ctx.reply if self.as_reply else ctx.send
-        self.message = await send(embed=self.pages[0], view=self)
+        self.message = await send(embed=self.pages[0], view=self, mention_author=False)
 
     async def interaction_check(self, interaction: discord.Interaction) -> None:
         """Gets called when interaction with any of the Views buttons happens."""
@@ -384,7 +384,8 @@ class ScrollableVotingEmbed(ScrollableEmbed):
             self.stop()
             return
 
-        self.message = await ctx.send(embed=self.pages[0], view=self)
+        send = ctx.reply if self.as_reply else ctx.send
+        self.message = await send(embed=self.pages[0], view=self, mention_author=False)
 
     async def interaction_check(self, interaction: discord.Interaction) -> None:
         """
