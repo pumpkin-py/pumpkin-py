@@ -27,6 +27,7 @@ pumpkin.py's developer documentation
    :caption: Development section
 
    development/installation
+   development/developing_modules
    development/code_quality
    development/imports
    development/logging
