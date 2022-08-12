@@ -436,7 +436,7 @@ class Errors(commands.Cog):
                 Whether to ignore traceback in the log.
         """
         # return friendly name: strip "modules." prefix and ".module" suffix
-        extension_name = error.name.lstrip("modules.").rstrip(".module")
+        extension_name = error.name[8:-7]
 
         if isinstance(error, commands.ExtensionAlreadyLoaded):
             return (
