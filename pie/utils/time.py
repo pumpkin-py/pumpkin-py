@@ -1,6 +1,6 @@
 import re
 import datetime
-import dateutil.parser as dparser
+import dateutil.parser
 
 
 def id_to_datetime(snowflake_id: int) -> datetime.datetime:
@@ -39,7 +39,18 @@ def format_seconds(time: int) -> str:
     return f"{m}:{s:02}"
 
 
-def parse_datetime(datetime_str: str) -> datetime:
+def parse_iso8601_datetime(string: str) -> datetime.datetime:
+    """Prase ISO 8601 time string.
+
+    Raises:
+        ValueError: When the supplied string cannot be converted to datetime.
+    """
+    return dateutil.parser.isoparse(string)
+
+
+def parse_fuzzy_datetime(
+    string: str, *, relative_to: datetime.datetime = None
+) -> datetime.datetime:
     """Parses datetime string and returns a datetime.
 
     Takes either a relative string in the #w#d#h#m format (weeks, days, hours, minutes)
@@ -51,10 +62,11 @@ def parse_datetime(datetime_str: str) -> datetime:
 
     If the resulting datetime is today but the time already happened,
     it automatically adds 1 day to the datetime.
-    This usually happens if `datetime_str` contains only time.
+    This usually happens if `string` contains only time.
 
     Args:
-        datetime_str: String to parse
+        string: String to parse
+        relative_to: Timestamp to compare relative time against
 
     Returns:
         datetime: resulting datetime
@@ -66,15 +78,20 @@ def parse_datetime(datetime_str: str) -> datetime:
         OverflowError: Raised if the parsed date exceeds the largest valid C
             integer on your system.
     """
+    has_relative_to: bool = True
+    if relative_to is None:
+        relative_to = datetime.datetime.now()
+        has_relative_to = False
+
     regex = re.compile(
         r"(?!\s*$)(?:(?P<weeks>\d+)(?: )?(?:w)(?:\D)*)?(?:(?P<days>\d+)(?: )"
         r"?(?:d)(?:\D)*)?(?:(?P<hours>\d+)(?: )?(?:h)(?:\D)*)?(?:(?P<minutes>\d+)(?: )"
         r"?(?:m)(?:\D)*)?"
     )
-    result = re.fullmatch(regex, datetime_str)
+    result = re.fullmatch(regex, string)
     if result is not None:
         match_dict = result.groupdict(default=0)
-        end_time = datetime.datetime.now() + datetime.timedelta(
+        end_time = relative_to + datetime.timedelta(
             weeks=int(match_dict["weeks"]),
             days=int(match_dict["days"]),
             hours=int(match_dict["hours"]),
@@ -82,12 +99,24 @@ def parse_datetime(datetime_str: str) -> datetime:
         )
         return end_time
 
-    end_time = dparser.parse(timestr=datetime_str, dayfirst=True, yearfirst=False)
+    end_time = dateutil.parser.parse(timestr=string, dayfirst=True, yearfirst=False)
 
-    if (
-        end_time.date() == datetime.datetime.today().date()
-        and end_time < datetime.datetime.now()
-    ):
+    # Fix the date if `relative_to` is set; it is most likely not today
+    if has_relative_to:
+        end_time = end_time.replace(
+            year=relative_to.year, month=relative_to.month, day=relative_to.day
+        )
+
+    # Fix the date by a day if the requested time already passed
+    if end_time.date() == relative_to.date() and end_time < relative_to:
         end_time = end_time + datetime.timedelta(days=1)
 
     return end_time
+
+
+def parse_datetime(string: str) -> datetime.datetime:
+    """Attempt to parse both ISO 8601 and fuzzy formats of date."""
+    try:
+        return parse_iso8601_datetime(string)
+    except ValueError:
+        return parse_fuzzy_datetime(string)
