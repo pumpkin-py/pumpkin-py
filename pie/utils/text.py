@@ -79,7 +79,7 @@ def parse_bool(string: str) -> Optional[bool]:
 
 
 def create_table(
-    iterable: Iterable, header: Dict[str, str], *, limit: int = 1990, rich: bool = False
+    iterable: Iterable, header: Dict[str, str], *, limit: int = 1990, rich: bool = True
 ) -> List[str]:
     """Create table from any iterable.
 
@@ -111,15 +111,15 @@ def create_table(
 
         matrix.append(line)
 
+    P: str = ""
     H: str = ""
     A: str = ""
     R: str = ""
-    P: str = ""
     if rich:
+        P = "ansi\n"
         H = "\u001b[1;34m"  # bold blue
         A = "\u001b[36m"  # cyan
         R = "\u001b[0m"  # reset
-        P = "ansi\n"
 
     page: str = P
     for i, matrix_line in enumerate(matrix):
@@ -136,7 +136,11 @@ def create_table(
             line += matrix_line[column_no].ljust(column_width + 2)
 
         # End line
-        line = line.rstrip() + R + "\n"
+        line = line.rstrip()
+        if i % 2 == 0:
+            line += R + "\n"
+        else:
+            line += "\n"
 
         # Add line
         if len(page) + len(line) > limit:
