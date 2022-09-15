@@ -20,7 +20,14 @@ services:
       - db
     depends_on:
       - db
-    env_file: .env
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
+      - POSTGRES_HOST=db
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - SCHEDULE=@every 3h00m00s
   bot:
     build:
       context: .
