@@ -40,7 +40,7 @@ def test_text_create_table():
         "123456789  b\n"
         "3          abcdefghijk\n"
     )
-    table: str = utils.text.create_table(iterable, header)
+    table: str = utils.text.create_table(iterable, header, rich=False)
     assert [expected] == table
 
 
@@ -60,7 +60,7 @@ def test_text_create_table_noattr():
         "b": "str",
     }
     expected = "int  str\n" "1    a\n" "2\n" "3    c\n"
-    table: str = utils.text.create_table(iterable, header)
+    table: str = utils.text.create_table(iterable, header, rich=False)
     assert [expected] == table
 
 
@@ -80,5 +80,31 @@ def test_text_create_table_wrapped():
     }
     page_1 = "Integer  String\n" "1111     aaaa\n"
     page_2 = "2222     bbbb\n"
-    table: List[str] = utils.text.create_table(iterable, header, limit=32)
+    table: List[str] = utils.text.create_table(iterable, header, limit=32, rich=False)
     assert [page_1, page_2] == table
+
+
+def test_text_create_table_colors():
+    class Item:
+        a: int
+        b: str
+
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+    iterable = [Item(1, "a"), Item(123456789, "b"), Item(3, "abcdefghijk")]
+    header = {
+        "a": "Integer",
+        "b": "String",
+    }
+    expected = (
+        "ansi\n"
+        "\x1b[1;34mInteger    String\x1b[0m\n"
+        "1          a\n"
+        "\x1b[36m123456789  b\x1b[0m\n"
+        "3          abcdefghijk\n"
+    )
+
+    table: str = utils.text.create_table(iterable, header)
+    assert [expected] == table
