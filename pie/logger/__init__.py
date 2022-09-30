@@ -264,7 +264,7 @@ class AbstractLogger:
         )
 
         stdout: str = entry.format_to_console()
-        print(stdout)
+        print(stdout, flush=True)
 
         filename: str = f"log_{entry.timestamp.strftime('%Y-%m-%d')}.log"
         if not os.path.isdir("logs"):
