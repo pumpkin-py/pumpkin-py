@@ -1,6 +1,10 @@
 import asyncio
 import os
 import sys
+import platform
+from pathlib import Path
+from typing import Dict
+
 import sqlalchemy
 
 import discord
@@ -21,6 +25,45 @@ def test_dotenv() -> None:
 
 
 test_dotenv()
+
+
+def print_versions():
+    python_version: str = "{0.major}.{0.minor}.{0.micro}".format(sys.version_info)
+    python_release: str = f"{platform.machine()} {platform.version()}"
+    dpy_version: str = "{0.major}.{0.minor}.{0.micro}".format(discord.version_info)
+
+    print("Starting with:")
+    print(f"- Python version {COLOR.green}{python_version}{COLOR.none}")
+    print(f"- Python release {python_release}")
+    print(f"- discord.py {COLOR.green}{dpy_version}{COLOR.none}")
+
+    print("Using repositories:")
+
+    init = Path(__file__).resolve()
+    module_dirs: Path = sorted((init.parent / "modules").glob("*"))
+
+    dot_git_paths: Dict[str, Path] = {}
+    dot_git_paths["base"] = init.parent / ".git"
+
+    for module_dir in module_dirs:
+        if (module_dir / ".git").is_dir():
+            dot_git_paths[module_dir.name] = module_dir / ".git"
+
+    longest_repo_name: int = max([len(name) for name in dot_git_paths.keys()])
+
+    for repo_name, dot_git_dir in dot_git_paths.items():
+        with open(dot_git_dir / "HEAD") as handle:
+            ref: str = handle.readline().strip().split(" ")[1]
+        with open(dot_git_dir / ref) as handle:
+            commit: str = handle.readline().strip()
+        print(
+            "- "
+            f"{repo_name.ljust(longest_repo_name)} "
+            f"{COLOR.green}{commit}{COLOR.none}"
+        )
+
+
+print_versions()
 
 
 # Move to the script's home directory
