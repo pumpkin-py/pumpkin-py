@@ -1,6 +1,5 @@
 import shutil
 import tempfile
-import itertools
 from pathlib import Path
 from typing import List, Optional, Set
 
@@ -113,31 +112,48 @@ class Admin(commands.Cog):
         )
 
         class Item:
-            def __init__(self, repository: Repository, when_loaded: bool = True):
-                modules: List[str] = []
-                for module_name in repository.module_names:
-                    full_module_name: str = f"{repository.name}.{module_name}"
-                    if when_loaded and full_module_name in loaded_modules:
-                        modules.append(module_name)
-                    if not when_loaded and full_module_name not in loaded_modules:
-                        modules.append(module_name)
+            def __init__(self, repository: Repository, line: int):
+                if line == 0:
+                    self.name = repository.name
+                else:
+                    self.name = ""
 
-                self.name: str = repository.name if when_loaded else ""
-                self.status: str = (
-                    _(ctx, "loaded") if when_loaded else _(ctx, "not loaded")
-                )
-                self.modules: str = ", ".join(modules) if modules else "--"
+                if line == 0 or line == 1:
+                    modules: List[str] = []
+                    for module_name in repository.module_names:
+                        full_module_name: str = f"{repository.name}.{module_name}"
+                        if line == 0 and full_module_name in loaded_modules:
+                            modules.append(module_name)
+                        if line == 1 and full_module_name not in loaded_modules:
+                            modules.append(module_name)
 
-        loaded = [Item(repository, when_loaded=True) for repository in repositories]
-        unloaded = [Item(repository, when_loaded=False) for repository in repositories]
-        items = list(itertools.chain.from_iterable(zip(loaded, unloaded)))
+                    self.key = (
+                        _(ctx, "loaded modules")
+                        if line == 0
+                        else _(ctx, "unloaded modules")
+                    )
+                    self.values = ", ".join(modules) if modules else "--"
+
+                commit = repository.head_commit
+                if line == 2:
+                    self.key = _(ctx, "commit hash")
+                    self.values = str(commit)[:7]
+
+                if line == 3:
+                    self.key = _(ctx, "commit text")
+                    self.values = commit.summary
+
+        items: List[Item] = []
+        for repository in repositories:
+            for line in range(4):
+                items.append(Item(repository, line))
 
         table: List[str] = utils.text.create_table(
             items,
             header={
                 "name": _(ctx, "Repository"),
-                "status": _(ctx, "Status"),
-                "modules": _(ctx, "Modules"),
+                "key": _(ctx, "Key"),
+                "values": _(ctx, "Values"),
             },
         )
 
