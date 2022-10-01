@@ -145,6 +145,21 @@ msgstr Neboli nastavené žiadne overwrites pre kanály.
 msgid Channel
 msgstr Kanál
 
+msgid loaded
+msgstr
+
+msgid not loaded
+msgstr
+
+msgid Repository
+msgstr
+
+msgid Status
+msgstr Stav
+
+msgid Modules
+msgstr
+
 msgid Repository initialization aborted: {exc}
 msgstr Inicializácia repozitáru sa nepodarila: {exc}
 
@@ -204,9 +219,6 @@ msgstr Bot prefix
 
 msgid Language
 msgstr Jazyk
-
-msgid Status
-msgstr Stav
 
 msgid Key has to be one of: {keys}
 msgstr Kľúč musí byť jeden z: {keys}
