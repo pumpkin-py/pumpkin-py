@@ -340,6 +340,9 @@ msgstr Emoji 📍 používam ja na označenie pripnutých správ, použi 📌.
 msgid 🔖 Bookmark created
 msgstr 🔖 Záložka vytvorená
 
+msgid Author ID
+msgstr ID autora
+
 msgid [Server {guild}, channel #{channel}]({link})
 msgstr [Server {guild}, kanál #{channel}]({link})
 
