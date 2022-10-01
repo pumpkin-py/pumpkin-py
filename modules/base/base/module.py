@@ -598,6 +598,10 @@ class Base(commands.Cog):
             icon_url=message.author.display_avatar.replace(size=64).url,
         )
 
+        embed.add_field(
+            name=_(utx, "Author ID"),
+            value=message.author.id,
+        )
         timestamp = utils.time.format_datetime(message.created_at)
         embed.add_field(
             name=f"{timestamp} UTC",
