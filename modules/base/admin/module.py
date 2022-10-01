@@ -1,7 +1,8 @@
 import shutil
 import tempfile
+import itertools
 from pathlib import Path
-from typing import Optional, List
+from typing import List, Optional, Set
 
 import discord
 from discord.ext import commands, tasks
@@ -100,27 +101,48 @@ class Admin(commands.Cog):
     @repository_.command(name="list")
     async def repository_list(self, ctx):
         """List module repositories."""
-        repositories = manager.repositories
+        repositories: List[Repository] = manager.repositories
 
-        result = ">>> "
         # This allows us to print non-loaded modules in *italics* and loaded
         # (and thus available) in regular font.
-        loaded_cogs = [
-            cog.__module__[8:-7]  # strip 'modules.' & '.module' from the name
-            for cog in sorted(self.bot.cogs.values(), key=lambda m: m.__module__)
-        ]
-        for repository in repositories:
-            result += f"**{repository.name}**\n"
-            module_names: List[str] = []
-            for module_name in repository.module_names:
-                full_module_name: str = f"{repository.name}.{module_name}"
-                module_names.append(
-                    module_name
-                    if full_module_name in loaded_cogs
-                    else f"*{module_name}*"
+        loaded_modules: Set[str] = set(
+            [
+                cog.__module__[8:-7]  # strip 'modules.' & '.module' from the name
+                for cog in sorted(self.bot.cogs.values(), key=lambda m: m.__module__)
+            ]
+        )
+
+        class Item:
+            def __init__(self, repository: Repository, when_loaded: bool = True):
+                modules: List[str] = []
+                for module_name in repository.module_names:
+                    full_module_name: str = f"{repository.name}.{module_name}"
+                    if when_loaded and full_module_name in loaded_modules:
+                        modules.append(module_name)
+                    if not when_loaded and full_module_name not in loaded_modules:
+                        modules.append(module_name)
+
+                self.name: str = repository.name if when_loaded else ""
+                self.status: str = (
+                    _(ctx, "loaded") if when_loaded else _(ctx, "not loaded")
                 )
-            result += ", ".join(module_names) + "\n"
-        await ctx.send(result)
+                self.modules: str = ", ".join(modules) if modules else "--"
+
+        loaded = [Item(repository, when_loaded=True) for repository in repositories]
+        unloaded = [Item(repository, when_loaded=False) for repository in repositories]
+        items = list(itertools.chain.from_iterable(zip(loaded, unloaded)))
+
+        table: List[str] = utils.text.create_table(
+            items,
+            header={
+                "name": _(ctx, "Repository"),
+                "status": _(ctx, "Status"),
+                "modules": _(ctx, "Modules"),
+            },
+        )
+
+        for page in table:
+            await ctx.send("```" + page + "```")
 
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @check.acl2(check.ACLevel.BOT_OWNER)
