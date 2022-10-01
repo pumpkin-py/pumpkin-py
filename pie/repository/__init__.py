@@ -86,7 +86,7 @@ class Repository:
     path: Path
     branch: str
     name: str
-    module_names: Tuple[str]
+    module_names: List[str]
 
     def __init__(self, path: Path, branch: Optional[str] = None):
         self.path: Path = path
@@ -99,6 +99,13 @@ class Repository:
             f"<{self.__class__.__name__} path={self.path!s} "
             f"name='{self.name}' modules='{', '.join(self.module_names)}'>"
         )
+
+    @property
+    def head_commit(self) -> git.objects.commit.Commit:
+        """Get the last commit."""
+        is_base: bool = self.name == "base"
+        repo = git.repo.base.Repo(str(self.path), search_parent_directories=is_base)
+        return repo.head.commit
 
     def change_branch(self, branch: str) -> None:
         """Change the git branch of the repository.
