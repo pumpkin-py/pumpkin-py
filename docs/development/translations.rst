@@ -25,8 +25,8 @@ All modules define the translation function on top:
 
 	from core import i18n
 
-	_ = i18n.Translator("repo/module").translate
-	# Set the "repo/module" to match the name of your repository and module
+	_ = i18n.Translator("modules/repo").translate
+	# Set the "repo" to match the name of your repository and module
 
 	...
 
