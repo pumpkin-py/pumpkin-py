@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import contextlib
 from abc import ABCMeta, abstractmethod
 from typing import Iterable, Optional, Union
@@ -515,3 +516,32 @@ class VoteEmbed(discord.ui.View):
         """Gets called when the view timeouts."""
         self.value = None
         self.stop()
+
+
+class CommandParser(argparse.ArgumentParser):
+    """Patch ArgumentParser.
+
+    ArgumentParser calls sys.exit(2) on incorrect command,
+    which would take down the bot. This subclass catches the errors
+    and saves them in 'error_message' attribute.
+    """
+
+    error_message: Optional[str] = None
+
+    def error(self, message: str):
+        """Save the error message."""
+        self.error_message = message
+
+    def exit(self):
+        """Make sure the program _does not_ exit."""
+        pass
+
+    def parse_args(self, args: Iterable):
+        """Catch exceptions that do not occur when CLI program exits."""
+        returned = self.parse_known_args(args)
+        try:
+            args, argv = returned
+        except TypeError:
+            # There was an error and it is saved in 'error_message'
+            return None
+        return args
