@@ -75,8 +75,8 @@ In our case, we only have one module specified, so we have to create a file ``bi
 
         ...
 
-    def setup(bot) -> None:
-        bot.add_cog(Bistro(bot))
+    async def setup(bot) -> None:
+        await bot.add_cog(Bistro(bot))
 
 .. note::
 
