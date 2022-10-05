@@ -17,6 +17,9 @@ modules/*
 *.db
 *.db-journal
 
+# Backups
+backups/*
+
 # Docs
 docs/_build
 docs/build
