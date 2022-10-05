@@ -51,16 +51,44 @@ def print_versions():
 
     longest_repo_name: int = max([len(name) for name in dot_git_paths.keys()])
 
-    for repo_name, dot_git_dir in dot_git_paths.items():
-        with open(dot_git_dir / "HEAD") as handle:
-            ref: str = handle.readline().strip().split(" ")[1]
-        with open(dot_git_dir / ref) as handle:
-            commit: str = handle.readline().strip()
+    def print_repository_version(
+        repository_name: str,
+        repository_version: str,
+        *,
+        color: str = COLOR.green,
+    ):
         print(
             "- "
             f"{repo_name.ljust(longest_repo_name)} "
-            f"{COLOR.green}{commit}{COLOR.none}"
+            f"{color}{repository_version}{COLOR.none}"
         )
+
+    for repo_name, dot_git_dir in dot_git_paths.items():
+        head: Path = dot_git_dir / "HEAD"
+        if not head.is_file():
+            print_repository_version(
+                repo_name,
+                "none, .git/HEAD is missing",
+                color=COLOR.yellow,
+            )
+            continue
+
+        with head.open("r") as handle:
+            ref_path: str = handle.readline().strip().split(" ")[1]
+
+        ref: Path = dot_git_dir / ref_path
+        if not ref.is_file():
+            print_repository_version(
+                repo_name,
+                "none, .git/HEAD points to invalid location",
+                color=COLOR.yellow,
+            )
+            continue
+
+        with ref.open("r") as handle:
+            commit: str = handle.readline().strip()
+
+        print_repository_version(repo_name, commit)
 
 
 print_versions()
