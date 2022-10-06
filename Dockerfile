@@ -21,10 +21,10 @@ WORKDIR /pumpkin-py
 
 RUN /usr/local/bin/python -m pip install --upgrade pip
 COPY requirements.txt requirements.txt
-RUN python3 -m pip install -r requirements.txt --user --no-warn-script-location
+RUN python3 -m pip install -r requirements.txt --user --no-warn-script-location --no-cache-dir
 
 COPY --from=builder /temp/requirements.txt /temp/requirements.txt
-RUN python3 -m pip install -r /temp/requirements.txt --user --no-warn-script-location
+RUN python3 -m pip install -r /temp/requirements.txt --user --no-warn-script-location --no-cache-dir
 
 RUN apt-get -y remove make automake gcc g++ \
     && apt-get clean \
