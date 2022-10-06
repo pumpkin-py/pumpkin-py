@@ -1,4 +1,4 @@
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, Set
 
 from discord.ext import commands
 
@@ -33,7 +33,11 @@ class Help(commands.MinimalHelpCommand):
         bot = cmd._cog.bot
         ctx = self.context
         command = cmd.qualified_name
-        allow_invoke: Optional[bool] = acl.can_invoke_command(bot, ctx, command)
+        bot_owner_ids: Set = getattr(bot, "owner_ids", {*()})
+
+        allow_invoke: Optional[bool] = ctx.author.id in bot_owner_ids or (
+            acl.can_invoke_command(bot, ctx, command)
+        )
 
         if allow_invoke is not True:
             await ctx.reply(
