@@ -20,15 +20,22 @@ services:
       - db
     depends_on:
       - db
-    env_file: .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_EXTRA_OPTS=${POSTGRES_EXTRA_OPTS}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - SCHEDULE=${SCHEDULE}
   bot:
     build:
       context: .
       dockerfile: Dockerfile
       args: ["TZ=Europe/Prague"]
-    
+
     env_file: .env
-    
+
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - ./:/pumpkin-py/:z
