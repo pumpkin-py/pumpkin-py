@@ -217,7 +217,8 @@ class Admin(commands.Cog):
         await ctx.send(
             _(
                 ctx,
-                "Repository has been installed to `{path}`. It includes the following modules: {modules}.",
+                "Repository has been installed to `{path}`. "
+                "It includes the following modules: {modules}.",
             ).format(
                 path="modules/" + repository.name,
                 modules=", ".join(f"**{m}**" for m in repository.module_names),
@@ -286,9 +287,17 @@ class Admin(commands.Cog):
                     for output in utils.text.split(install):
                         await ctx.send("```" + output + "```")
 
-        log_message: str = f"Repository {name} updated."
+        if output == "Already up to date.":
+            log_message: str = (
+                f"Repository {name} already up to date: "
+                + str(repository.head_commit)[:7]
+            )
+        else:
+            log_message: str = f"Repository {name} updated: " + output[10:25]
+
         if requirements_txt_updated:
             log_message += " requirements.txt differed, pip was run."
+
         await bot_log.info(ctx.author, ctx.channel, log_message)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
