@@ -67,6 +67,9 @@ If it is the first day of the month, it compresses the previous month, making it
 	exit 0
 
 
+If you want to skip backups of some database tables (e.g., Fun's DHash database, that can be rebuilt every time), pass a ``-T`` to the ``pg_dump`` command: ``... -T 'public.fun_dhash_images'``. The argument can be repeated.
+
+
 Then you can set up a cron job to run the script every day.
 
 .. code-block::
