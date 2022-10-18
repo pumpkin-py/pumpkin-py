@@ -116,9 +116,9 @@ An example database file ``bistro/database.py`` may look like this:
         name = Column(String)
         description = Column(String)
 
-        @staticmethod
-        def add(guild_id: int, name: str, description: str) -> Item:
-            query = Item(
+        @classmethod
+        def add(cls, guild_id: int, name: str, description: str) -> Item:
+            query = cls(
                 guild_id=guild_id,
                 name=name,
                 description=description
@@ -127,17 +127,17 @@ An example database file ``bistro/database.py`` may look like this:
             session.commit()
             return query
 
-        @staticmethod
-        def get(guild_id: int, name: str) -> Optional[Item]:
-            query = session.query(Item).filter_by(
+        @classmethod
+        def get(cls, guild_id: int, name: str) -> Optional[Item]:
+            query = session.query(cls).filter_by(
                 guild_id=guild_id,
                 name=name,
             ).one_or_none()
             return query
 
-        @staticmethod
-        def remove(guild_id: int, name: str) -> int:
-            query = session.query(Item).filter_by(
+        @classmethod
+        def remocls, ve(guild_id: int, name: str) -> int:
+            query = session.query(cls).filter_by(
                 guild_id=guild_id,
                 name=name,
             ).delete()
