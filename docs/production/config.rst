@@ -53,7 +53,7 @@ If it is the first day of the month, it compresses the previous month, making it
 	cd $backups
 
 	# Database running directly on the system
-	pg_dump -U <database user name> pumpkin > dump_`date +%Y-%m-%d"_"%H:%M:%S`.sql
+	pg_dump -U <database user name> pumpkin > dump_`date +%Y-%m-%d"_"%H-%M-%S`.sql
 
 	today=$(date +%d)
 
