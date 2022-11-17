@@ -521,8 +521,8 @@ class Base(commands.Cog):
         utx = i18n.TranslationContext(payload.guild_id, payload.user_id)
 
         if emoji == "📍" and not payload.member.bot:
-            await payload.member.send(
-                _(utx, "I'm using 📍 to mark the pinned message, use 📌.")
+            await utils.discord.send_dm(
+                payload.member, _(utx, "I'm using 📍 to mark the pinned message, use 📌.")
             )
             await utils.discord.remove_reaction(message, emoji, payload.member)
             return
