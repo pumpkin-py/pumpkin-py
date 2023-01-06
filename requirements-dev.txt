@@ -1,21 +1,21 @@
 pre-commit
 
 # static analysis
-black==22.8.0
-flake8==5.0.4
-flake8-print==5.0.0
-flake8-todo==0.7
+black==22.12.0
+flake8==6.0.0
+flake8-print
+flake8-todo
 
 # safety checking
-bandit>=1.7.4,<2.0.0
+bandit
 
 # type checking
-mypy==0.982
+mypy
 sqlalchemy-stubs
 types-requests
 
 # tests
-pytest>=7.1.3,<8.0.0
+pytest
 
 # pumpkin.py tools
 git+https://github.com/pumpkin-py/pumpkin-tools.git
