@@ -19,12 +19,12 @@ class Pie:
 
     def print_image(self) -> None:
         print(
-            "\n"
+            f"\n{COLOR.blue}"
             "     (     \n"
             "  (   )  ) \n"
-            "   )  ( )  \n"
+            f"   )  ( )  {COLOR.yellow}\n"
             "   .....   \n"
-            ".:::::::::.\n"
+            f".:::::::::.{COLOR.none}\n"
             "~\\_______/~\n"
         )
 
@@ -58,9 +58,9 @@ class Pie:
         print("Checking configuration:")
         try:
             self.load_environment_variable("DB_STRING", required=True)
-            print("- Variable DB_STRING set.")
+            print(f"- Variable {COLOR.green}DB_STRING{COLOR.none} set.")
             self.load_environment_variable("TOKEN", required=True)
-            print("- Variable TOKEN set.")
+            print(f"- Variable {COLOR.green}TOKEN{COLOR.none} set.")
         except RuntimeError as exc:
             print(f"{COLOR.red}{exc}{COLOR.none}")
             sys.exit(1)

@@ -17,7 +17,8 @@ class _Color:
     yellow: str = ""
     none: str = ""
 
-    cursive: str = ""
+    bold: str = ""
+    italic: str = ""
 
     def __init__(self):
         if is_windows():
@@ -34,7 +35,8 @@ class _Color:
         self.yellow = "\033[0;33m"
         self.none = "\033[0m"
 
-        self.bold = "\033[2m"
+        self.bold = "\033[1m"
+        self.italic = "\033[3m"
 
 
 COLOR = _Color()
