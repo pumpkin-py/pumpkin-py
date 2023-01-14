@@ -34,4 +34,4 @@ class BaseAdminModule(database.base):
         return query
 
     def __repr__(self) -> str:
-        return f'<BaseAdminModules name="{self.name}" enabled="{self.enabled}">'
+        return f"{self.__class__.__name__}(name='{self.name}', enabled={self.enabled})"

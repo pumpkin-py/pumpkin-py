@@ -1,20 +1,20 @@
 import asyncio
+import importlib
 import os
 import platform
 import sys
-from importlib.metadata import EntryPoint, entry_points
-from typing import Dict, Optional, List, Set, Tuple
+from typing import Dict, List, Optional, Set
 
 import sqlalchemy
 import discord.ext.commands
 
+import pumpkin.repository
 from pumpkin import database, logger, utils
 from pumpkin.cli import COLOR
 
-ENTRYPOINT_REPOS = "pumpkin.repos"
-
 
 class Pie:
+    ENTRYPOINT_REPOS = "pumpkin.repos"
     _already_loaded: bool = False
 
     def print_image(self) -> None:
@@ -49,54 +49,35 @@ class Pie:
         dpy_version: str = "{0.major}.{0.minor}.{0.micro}".format(discord.version_info)
 
         print("Starting with:")
-        print(f"- Python version {COLOR.green}{python_version}{COLOR.none}")
+        print(f"- Python version {COLOR.yellow}{python_version}{COLOR.none}")
         print(f"- Python release {python_release}")
-        print(f"- discord.py {COLOR.green}{dpy_version}{COLOR.none}")
+        print(f"- discord.py {COLOR.yellow}{dpy_version}{COLOR.none}")
 
     def check_configuration(self) -> None:
         """Check that the required environment variables are set."""
         print("Checking configuration:")
         try:
             self.load_environment_variable("DB_STRING", required=True)
-            print(f"- Variable {COLOR.green}DB_STRING{COLOR.none} set.")
+            print(f"- Variable {COLOR.yellow}DB_STRING{COLOR.none} set.")
             self.load_environment_variable("TOKEN", required=True)
-            print(f"- Variable {COLOR.green}TOKEN{COLOR.none} set.")
+            print(f"- Variable {COLOR.yellow}TOKEN{COLOR.none} set.")
         except RuntimeError as exc:
             print(f"{COLOR.red}{exc}{COLOR.none}")
             sys.exit(1)
 
-    def load_entry_points(self, group: str) -> Dict[str, Dict[str, Optional[list]]]:
-        """Dynamically find pumpkin extensions.
-
-        :param group: Setuptools group name.
-        :returns:
-            Mapping of repository names to tuple of Cog FQNs
-            and module of database tables.
-        """
-        # Type hints claim to load dictionary with keys as strings, but when
-        # the group= argument is used, just the list is returned.
-        # The list also contains duplicate entries for pumpkin modules for some
-        # reason, so here we're making a set to get rid of them.
-        points: Set[EntryPoint] = set(entry_points(group=group))  # type: ignore
-        result: Dict[str, Dict[str, Optional[list]]] = {}
-        for point in points:
-            result[point.name] = point.load()()
-        return result
-
     def print_repositories(self) -> None:
         """Print found repositories."""
         print("Detecting repositories:")
-        repos = self.load_entry_points(ENTRYPOINT_REPOS)
-        for name, repo_data in repos.items():
+        for repository in pumpkin.repository.load():
             modules: List[str] = []
-
-            for module_name, module_data in repo_data.items():
-                module_fqdn, module_db = module_data
-                module = module_name
-                if module_db:
-                    module += f"{COLOR.yellow}*{COLOR.none}"
-                modules.append(module)
-            print(f"- {COLOR.green}{name}{COLOR.none}: {', '.join(modules)}")
+            for module in repository.modules:
+                modules.append(
+                    module.name
+                    + (f"{COLOR.yellow}*{COLOR.none}" if module.database else "")
+                )
+            print(
+                f"- {COLOR.yellow}{repository.name}{COLOR.none}: {', '.join(modules)}"
+            )
 
     def create_bot_object(self) -> discord.ext.commands.Bot:
         from pumpkin.help import Help
@@ -117,12 +98,10 @@ class Pie:
 
         return bot
 
-    def create_loggers(self) -> Tuple[logger.Bot, logger.Guild]:
+    def create_loggers(self) -> None:
         """Initiate logger instances."""
-        bot_log = logger.Bot.logger(self.bot)
-        guild_log = logger.Guild.logger(self.bot)
-
-        return bot_log, guild_log
+        logger.Bot.logger(self.bot)
+        logger.Guild.logger(self.bot)
 
     async def update_app_info(self) -> None:
         """Update owner information."""
@@ -135,7 +114,7 @@ class Pie:
     async def on_ready_listener(self):
         """Run when the connection resets."""
         # Update information on owners
-        await self.update_app_info(self.bot)
+        await self.update_app_info()
 
         # If the status is set to 'auto', let the loop in Admin module take care of it
         config = database.config.Config.get()
@@ -146,7 +125,7 @@ class Pie:
             await self.bot_log.info(None, None, "Reconnected.")
         else:
             self.print_image()
-            await self.bot_log.critial(None, None, "The pie is ready.")
+            await self.bot_log.critical(None, None, "The pie is ready.")
             self._already_loaded = True
 
     async def on_error_listener(self):
@@ -163,7 +142,7 @@ class Pie:
         if isinstance(error, sqlalchemy.exc.SQLAlchemyError):
             database.session.rollback()
             database.session.commit()
-            await self.bot_log.critial(None, None, message)
+            await self.bot_log.critical(None, None, message)
 
     def __init__(self):
         self.print_system_information()
@@ -172,36 +151,103 @@ class Pie:
 
         self.bot: discord.ext.commands.Bot = self.create_bot_object()
 
-        self.bot_log, _ = self.create_loggers()
+        self.create_loggers()
+        self.bot_log = logger.Bot.logger()
         self.bot.add_listener(self.on_ready_listener, "on_ready")
         self.bot.add_listener(self.on_ready_listener, "on_error")
 
-    async def prepare(self) -> None:
-        """Load modules and their databases."""
+    def select_modules(self) -> List[pumpkin.repository.Module]:
+        """Select modules to be loaded."""
         from pumpkin_base.admin.database import BaseAdminModule
 
-        default_modules: List[str] = [
-            "base.acl",
-            "base.admin",
-            "base.baseinfo",
-            "base.errors",
-            "base.language",
-            "base.logging",
-        ]
-        dynamic_modules = BaseAdminModule.get_all()
-        print(f"{default_modules=} {dynamic_modules=}")
+        available_modules: Set[pumpkin.repository.Module] = {*()}
+        for repository in pumpkin.repository.load():
+            for module in repository.modules:
+                available_modules.add(module)
 
-        # TODO Ensure databases
-        # TODO Load modules
-        return
+        default_modules: Set[pumpkin.repository.Module] = set(
+            [
+                m
+                for m in available_modules
+                if m.repository.package == "pumpkin_base"
+                and m.name in {"info", "errors"}
+            ]
+        )
+
+        preference: Dict[str, bool] = {
+            module.name: module.enabled for module in BaseAdminModule.get_all()
+        }
+
+        print("Selecting modules:")
+        selected_modules: List[pumpkin.repository.Module] = []
+        for module in sorted(available_modules, key=lambda m: m.qualified_name):
+            qname: str = module.qualified_name
+
+            selected: bool = False
+            reason: str = "is not tracked"
+
+            if module in default_modules:
+                selected, reason = True, "is default"
+            if qname in preference.keys():
+                module_preference = preference[module.qualified_name]
+                if module_preference:
+                    selected, reason = True, "is tracked in database"
+                else:
+                    selected, reason = False, "is tracked in database"
+
+            # TODO Check for environment variables
+            # TODO Check for database dialect
+
+            print(f"- {COLOR.yellow}{qname}{COLOR.none}:", end=" ")
+            if selected:
+                print(f"{COLOR.green}selecting{COLOR.none} ({reason})")
+                selected_modules.append(module)
+            else:
+                print(f"{COLOR.red}ignoring{COLOR.none} ({reason})")
+
+        return selected_modules
+
+    def ensure_core_tables(self) -> None:
+        """Ensure database tables for the bot core exist."""
+        print("Ensuring core database tables:")
+        services = ("acl", "i18n", "logger", "storage", "spamchannel")
+        for service in services:
+            statement: str = f"pumpkin.{service}.database"
+            importlib.import_module(statement)
+            print(f"- {COLOR.yellow}{service}{COLOR.none} imported")
+
+        pumpkin.database.database.base.metadata.create_all(pumpkin.database.database.db)
+        pumpkin.database.session.commit()
+
+    def ensure_module_tables(self, modules: List[pumpkin.repository.Module]) -> None:
+        """Ensure database tables for the modules exist."""
+        print("Ensuring module database tables:")
+        for module in modules:
+            if not module.database:
+                continue
+
+            importlib.import_module(module.database)
+            print(f"- {COLOR.yellow}{module.qualified_name}{COLOR.none} imported")
+
+        pumpkin.database.database.base.metadata.create_all(pumpkin.database.database.db)
+        pumpkin.database.session.commit()
+
+    async def prepare(self):
+        """Load modules and their databases."""
+        modules = self.select_modules()
+        self.ensure_core_tables()
+        self.ensure_module_tables(modules)
 
 
 async def start():
     pie = Pie()
     await pie.prepare()
-    pie.print_image()
     await pie.bot.start(os.getenv("TOKEN"))
 
 
 def main():
     asyncio.run(start())
+
+
+if __name__ == "__main__":
+    main()
