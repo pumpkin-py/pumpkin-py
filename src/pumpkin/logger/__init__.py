@@ -232,13 +232,30 @@ class AbstractLogger:
     scope = NotImplemented
 
     def __init__(self, bot: discord.ext.commands.bot):
-        raise NotImplementedError(
-            f"Class {self.__class__.__name__} cannot be instantiated."
+        if (
+            self.__class__._instance is not None
+            and self.__class__._instance.bot is not None
+        ):
+            raise Exception("Logger has to be a singleton, use '.logger()' instead.")
+
+        self.__class__._instance = self
+        self.__class__._instance.bot = bot
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.mro()[1].__name__}:{self.__class__.__name__}("
+            + ("bot=..." if self.bot else "bot=None")
+            + ")"
         )
 
-    @staticmethod
-    def logger(bot: discord.ext.commands.bot):
-        raise NotImplementedError("This function has to be subclassed.")
+    @classmethod
+    def logger(cls, bot: discord.ext.commands.bot = None):
+        if cls._instance is None:
+            instance = cls(bot)
+            cls._instance = instance
+        if cls._instance.bot is None:
+            raise Exception("logger is missing 'bot' attribute.")
+        return cls._instance
 
     async def _log(
         self,
@@ -387,46 +404,14 @@ class AbstractLogger:
 class Bot(AbstractLogger):
     """Logger for bot-wide events."""
 
-    __instance = None
+    _instance = None
     bot = None
     scope = LogScope.BOT
-
-    def __init__(self, bot: Optional[discord.ext.commands.bot] = None):
-        if Bot.__instance is not None:
-            raise Exception("Logger has to be a singleton, use '.logger()' instead.")
-
-        Bot.__instance = self
-        if bot is not None:
-            self.bot = bot
-
-    @staticmethod
-    def logger(bot: Optional[discord.ext.commands.bot] = None):
-        if Bot.__instance is None:
-            Bot(bot)
-        if Bot.__instance.bot is None:
-            raise Exception("Bot logger is missing 'bot' attribute.")
-        return Bot.__instance
 
 
 class Guild(AbstractLogger):
     """Logger for guild-wide events."""
 
-    __instance = None
+    _instance = None
     bot = None
     scope = LogScope.GUILD
-
-    def __init__(self, bot: Optional[discord.ext.commands.bot] = None):
-        if Guild.__instance is not None:
-            raise Exception("Logger has to be a singleton, use '.logger()' instead.")
-
-        Guild.__instance = self
-        if bot is not None:
-            self.bot = bot
-
-    @staticmethod
-    def logger(bot: Optional[discord.ext.commands.bot] = None):
-        if Guild.__instance is None:
-            Guild(bot)
-        if Guild.__instance.bot is None:
-            raise Exception("Guild logger is missing 'bot' attribute.")
-        return Guild.__instance
