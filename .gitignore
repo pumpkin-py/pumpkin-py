@@ -5,6 +5,7 @@
 # Development
 .venv*/
 *.env*
+*.egg-info
 __pycache__
 .cache/
 .mypy_cache/

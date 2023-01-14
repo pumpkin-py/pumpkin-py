@@ -1,13 +1,14 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools", "setuptools-scm", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pumpkin.py"
 description = "Modular discord bot"
+version = "0.0.0"
 dynamic = ["readme"]
+license = {file = "LICENSE"}
 requires-python = ">=3.8"
-license = {test = "GNU GPL v3"}
 keywords = ["discord", "bot"]
 authors = []
 classifiers = [
@@ -31,11 +32,20 @@ dependencies = [
 [tool.setuptools.dynamic]
 readme = {file = ["README.md"]}
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [project.optional-dependencies]
 dev = [
 	"pre-commit",
 	"black==22.12.0", "flake8", "flake8-print", "flake8-todo",
 	"bandit",
 	"pytest",
-	"git+https://github.com/pumpkin-py/pumpkin-tools.git"
+	"pumpkin-tools @ git+https://github.com/pumpkin-py/pumpkin-tools.git"
 ]
+
+[project.scripts]
+pumpkin = "pumpkin:main"
+
+[project.entry-points."pumpkin.repos"]
+base = "pumpkin_base:repo"
