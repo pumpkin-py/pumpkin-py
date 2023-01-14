@@ -4,7 +4,7 @@ from typing import List, Tuple, Dict, Set
 import discord
 from discord.ext import commands, tasks
 
-from pie import check, i18n, logger, utils
+from pumpkin import check, i18n, logger, utils
 
 from .database import AutoThread, UserPin, UserThread, Bookmark
 

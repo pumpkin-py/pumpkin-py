@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from discord.ext import commands
 
-from pie import check, logger, utils, i18n
-from pie.logger.database import LogConf
+from pumpkin import check, logger, utils, i18n
+from pumpkin.logger.database import LogConf
 
 _ = i18n.Translator(__file__).translate
 bot_log = logger.Bot.logger()

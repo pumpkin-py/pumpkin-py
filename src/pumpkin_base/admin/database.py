@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 from typing import Optional, List
 
 from sqlalchemy import Column, String, Boolean
 
-from pie.database import database, session
+from pumpkin.database import database, session
 
 
 class BaseAdminModule(database.base):

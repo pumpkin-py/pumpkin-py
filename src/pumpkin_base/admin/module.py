@@ -6,16 +6,16 @@ from typing import List, Optional, Set
 import discord
 from discord.ext import commands, tasks
 
-import pie.database.config
-from pie import check, i18n, logger, utils
-from pie.repository import RepositoryManager, Repository
-from pie.spamchannel.database import SpamChannel
+import pumpkin.database.config
+from pumpkin import check, i18n, logger, utils
+from pumpkin.repository import RepositoryManager, Repository
+from pumpkin.spamchannel.database import SpamChannel
 from .database import BaseAdminModule as Module
 
 _ = i18n.Translator("modules/base").translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
-config = pie.database.config.Config.get()
+config = pumpkin.database.config.Config.get()
 
 LANGUAGES = ("en",) + i18n.LANGUAGES
 

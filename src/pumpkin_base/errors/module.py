@@ -6,8 +6,8 @@ from typing import List, Tuple
 import discord
 from discord.ext import commands
 
-import pie.exceptions
-from pie import check, i18n, logger, utils
+import pumpkin.exceptions
+from pumpkin import check, i18n, logger, utils
 
 from .database import LastError, Subscription
 
@@ -25,7 +25,7 @@ IGNORED_EXCEPTIONS = [
     # They most likely do, but they have exceeded the limit for spam channel controlled
     # commands (soft version), or are not allowed to run this kind of command in general
     # (hard version).
-    pie.exceptions.SpamChannelException,
+    pumpkin.exceptions.SpamChannelException,
 ]
 
 
@@ -218,7 +218,7 @@ class Errors(commands.Cog):
                 Translated description,
                 Whether to ignore traceback in the log.
         """
-        if isinstance(error, pie.exceptions.PumpkinException):
+        if isinstance(error, pumpkin.exceptions.PumpkinException):
             return await Errors.handle_PumpkinException(ctx, error)
 
         # Discord errors
@@ -589,21 +589,21 @@ class Errors(commands.Cog):
                 Whether to ignore traceback in the log.
         """
 
-        if isinstance(error, pie.exceptions.NegativeUserOverwrite):
+        if isinstance(error, pumpkin.exceptions.NegativeUserOverwrite):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "You have been denied the invocation of this command"),
                 ReportTraceback.NO,
             )
 
-        if isinstance(error, pie.exceptions.NegativeChannelOverwrite):
+        if isinstance(error, pumpkin.exceptions.NegativeChannelOverwrite):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "This command cannot be used in this channel"),
                 ReportTraceback.NO,
             )
 
-        if isinstance(error, pie.exceptions.NegativeRoleOverwrite):
+        if isinstance(error, pumpkin.exceptions.NegativeRoleOverwrite):
             return (
                 _(ctx, "Check failure"),
                 _(ctx, "This command cannot be used by the role **{role}**").format(
@@ -612,7 +612,7 @@ class Errors(commands.Cog):
                 ReportTraceback.NO,
             )
 
-        if isinstance(error, pie.exceptions.InsufficientACLevel):
+        if isinstance(error, pumpkin.exceptions.InsufficientACLevel):
             return (
                 _(ctx, "Check failure"),
                 _(

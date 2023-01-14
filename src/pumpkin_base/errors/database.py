@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from sqlalchemy import BigInteger, Column, Date, Integer, UniqueConstraint
 
-from pie.database import database, session
+from pumpkin.database import database, session
 
 
 class Subscription(database.base):

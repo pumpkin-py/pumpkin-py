@@ -4,13 +4,13 @@ from typing import Dict, Tuple
 
 from discord.ext import commands
 
-import pie.database.config
-from pie import i18n, check, logger, utils
-from pie.i18n.database import GuildLanguage, MemberLanguage
+import pumpkin.database.config
+from pumpkin import i18n, check, logger, utils
+from pumpkin.i18n.database import GuildLanguage, MemberLanguage
 
 _ = i18n.Translator("modules/base").translate
 guild_log = logger.Guild.logger()
-config = pie.database.config.Config.get()
+config = pumpkin.database.config.Config.get()
 
 LANGUAGES = ("en",) + i18n.LANGUAGES
 
