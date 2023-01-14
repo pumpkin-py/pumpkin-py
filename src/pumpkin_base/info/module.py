@@ -7,7 +7,7 @@ from pumpkin import check, i18n, utils
 _ = i18n.Translator("modules/base").translate
 
 
-class BaseInfo(commands.Cog):
+class Info(commands.Cog):
     """Basic bot information."""
 
     def __init__(self, bot):
@@ -47,4 +47,4 @@ class BaseInfo(commands.Cog):
 
 
 async def setup(bot) -> None:
-    await bot.add_cog(BaseInfo(bot))
+    await bot.add_cog(Info(bot))
