@@ -167,12 +167,7 @@ class Pie:
                 available_modules.add(module)
 
         default_modules: Set[pumpkin.repository.Module] = set(
-            [
-                m
-                for m in available_modules
-                if m.repository.package == "pumpkin_base"
-                and m.name in {"info", "errors"}
-            ]
+            [m for m in available_modules if m.repository.package == "pumpkin_base"]
         )
 
         preference: Dict[str, bool] = {
@@ -233,11 +228,20 @@ class Pie:
         pumpkin.database.database.base.metadata.create_all(pumpkin.database.database.db)
         pumpkin.database.session.commit()
 
+    async def load_modules(self, modules: List[pumpkin.repository.Module]) -> None:
+        """Load modules."""
+        print("Loading modules:")
+        for module in modules:
+            cog: discord.ext.commands.Cog = module.cog_class(self.bot)
+            await self.bot.add_cog(cog)
+            print(f"- {COLOR.yellow}{module.qualified_name}{COLOR.none} loaded")
+
     async def prepare(self):
         """Load modules and their databases."""
         modules = self.select_modules()
         self.ensure_core_tables()
         self.ensure_module_tables(modules)
+        await self.load_modules(modules)
 
 
 async def start():
