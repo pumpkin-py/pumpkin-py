@@ -28,8 +28,15 @@ class Help(commands.MinimalHelpCommand):
             **options,
         )
 
-    async def acl_check(self, cmd: Union[commands.Group, commands.Command]) -> bool:
-        """Return True if the command is allowed to run."""
+    async def acl_check(
+        self, cmd: Union[commands.Group, commands.Command]
+    ) -> Optional[bool]:
+        """Return True if the command is allowed to run.
+
+        Returns None if the command is not from any cog (e.g., 'help').
+        """
+        if cmd._cog is None:
+            return None
         bot = cmd._cog.bot
         ctx = self.context
         command = cmd.qualified_name
@@ -164,7 +171,12 @@ class Help(commands.MinimalHelpCommand):
 
     async def send_command_help(self, command: commands.Command) -> None:
         """Format command output."""
-        if not await self.acl_check(command):
+        acl_check_result: Optional[bool] = await self.acl_check(command)
+        if acl_check_result is None:
+            destination = self.get_destination()
+            await destination.send(r"¯\_(ツ)_/¯")
+            return
+        if acl_check_result is False:
             return
 
         await super().send_command_help(command)
