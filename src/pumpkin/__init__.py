@@ -191,7 +191,12 @@ class Pie:
                 else:
                     selected, reason = False, "is tracked in database"
 
-            # TODO Check for environment variables
+            if module.env_vars:
+                for env_var in module.env_vars:
+                    if os.getenv(env_var) is None:
+                        selected = False
+                        reason = f"is missing environemt variable '{env_var}'"
+
             # TODO Check for database dialect
 
             print(f"- {COLOR.yellow}{qname}{COLOR.none}:", end=" ")

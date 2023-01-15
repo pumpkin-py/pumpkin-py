@@ -75,6 +75,7 @@ class Module:
         self.database_dialects: Set[DefaultDialect] = database_dialects or {*()}
         self.needs_installed: Set[str] = needs_installed or {*()}
         self.needs_enabled: Set[str] = needs_enabled or {*()}
+        self.env_vars: Set[str] = env_vars or {*()}
 
         repository.modules.append(self)
 
