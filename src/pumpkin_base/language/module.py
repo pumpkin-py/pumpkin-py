@@ -8,7 +8,9 @@ import pumpkin.database.config
 from pumpkin import i18n, check, logger, utils
 from pumpkin.i18n.database import GuildLanguage, MemberLanguage
 
-_ = i18n.Translator("modules/base").translate
+import pumpkin_base
+
+_ = i18n.Translator(pumpkin_base.l10n).translate
 guild_log = logger.Guild.logger()
 config = pumpkin.database.config.Config.get()
 

@@ -9,6 +9,7 @@ import ring
 import discord
 from discord.ext import commands
 
+import pumpkin
 import pumpkin._tracing
 from pumpkin import i18n
 
@@ -24,7 +25,7 @@ from pumpkin.acl.database import UserOverwrite, ChannelOverwrite, RoleOverwrite
 
 _trace: Callable = pumpkin._tracing.register("pie_acl")
 
-_ = i18n.Translator(__file__).translate
+_ = i18n.Translator(pumpkin.l10n).translate
 T = TypeVar("T")
 
 

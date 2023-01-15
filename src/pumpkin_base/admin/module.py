@@ -7,7 +7,9 @@ import pumpkin.database.config
 from pumpkin import check, i18n, logger, utils
 from pumpkin.spamchannel.database import SpamChannel
 
-_ = i18n.Translator("modules/base").translate
+import pumpkin_base
+
+_ = i18n.Translator(pumpkin_base.l10n).translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
 config = pumpkin.database.config.Config.get()

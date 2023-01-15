@@ -4,7 +4,9 @@ from discord.ext import commands
 
 from pumpkin import check, i18n, utils
 
-_ = i18n.Translator("modules/base").translate
+import pumpkin_base
+
+_ = i18n.Translator(pumpkin_base.l10n).translate
 
 
 class Info(commands.Cog):

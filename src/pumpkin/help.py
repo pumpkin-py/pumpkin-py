@@ -2,9 +2,10 @@ from typing import Optional, Sequence, Union, Set
 
 from discord.ext import commands
 
+import pumpkin
 from pumpkin import acl, i18n
 
-_ = i18n.Translator("pie").translate
+_ = i18n.Translator(pumpkin.l10n).translate
 
 
 class Help(commands.MinimalHelpCommand):

@@ -8,9 +8,10 @@ from typing import Iterable, Optional, Union
 import discord
 from discord.ext import commands
 
+import pumpkin
 from pumpkin import i18n
 
-_ = i18n.Translator("pie").translate
+_ = i18n.Translator(pumpkin.l10n).translate
 
 
 class ScrollableEmbed(discord.ui.View):

@@ -5,7 +5,9 @@ from discord.ext import commands
 from pumpkin import check, logger, utils, i18n
 from pumpkin.logger.database import LogConf
 
-_ = i18n.Translator(__file__).translate
+import pumpkin_base
+
+_ = i18n.Translator(pumpkin_base.l10n).translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
 

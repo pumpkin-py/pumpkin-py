@@ -10,7 +10,9 @@ import pumpkin.acl
 from pumpkin.acl.database import ACDefault, ACLevel, ACLevelMappping
 from pumpkin.acl.database import UserOverwrite, ChannelOverwrite, RoleOverwrite
 
-_ = i18n.Translator("modules/base").translate
+import pumpkin_base
+
+_ = i18n.Translator(pumpkin_base.l10n).translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
 

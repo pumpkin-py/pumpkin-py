@@ -61,9 +61,9 @@ class Module:
             Empty set implies full support on all dialects supported
             by SQLAlchemy and pumpkin.py.
         :param needs_installed: Set of qualified names of modules that must be
-            installed (e.g., 'pumpkin_base.admin.module.Admin').
+            installed (e.g., 'pumpkin_base.admin').
         :param needs_enabled: Set of qualified names of modules that must be
-            active (e.g., 'pumpkin_base.admin.module.Admin').
+            active (e.g., 'pumpkin_base.admin').
         :param env_vars: Set of environment variables required by the module
             (e.g., 'SMTP_ADDRESS').
         """

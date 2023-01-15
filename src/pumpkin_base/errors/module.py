@@ -11,8 +11,9 @@ from pumpkin import check, i18n, logger, utils
 
 from .database import LastError, Subscription
 
+import pumpkin_base
 
-_ = i18n.Translator("modules/base").translate
+_ = i18n.Translator(pumpkin_base.l10n).translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
 

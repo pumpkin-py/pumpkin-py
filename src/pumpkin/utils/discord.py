@@ -6,8 +6,6 @@ from discord.ext import commands
 
 from pumpkin.database.config import Config
 
-config = Config.get()
-
 
 async def get_message(
     bot: commands.Bot, guild_or_user_id: int, channel_id: int, message_id: int
@@ -154,6 +152,8 @@ async def update_presence(bot: commands.Bot, *, status: str = None) -> None:
 
     :param status: Overwrite presence status.
     """
+    config = Config.get()
+
     await bot.change_presence(
         status=getattr(discord.Status, config.status if status is None else status),
         activity=discord.Game(

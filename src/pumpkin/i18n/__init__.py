@@ -7,8 +7,6 @@ import discord
 from pumpkin.database.config import Config
 from pumpkin.i18n.database import GuildLanguage, MemberLanguage
 
-config = Config.get()
-
 LANGUAGES = ("cs", "sk")
 
 
@@ -41,17 +39,17 @@ class Translator:
     .. code-block:: python
         :linenos:
 
-        from pie import i18n
+        import pumpkin_module
 
-        _ = i18n.Translator("modules/base").translate
+        _ = i18n.Translator(pumpkin_module.l10n).translate
     """
 
-    def __init__(self, dirname: str):
-        self._dir = Path(dirname)
+    def __init__(self, dirname: Path):
+        self._dir = dirname.absolute()
 
         self.strings: Dict[str, Dict[str, Optional[str]]] = {}
         for language in LANGUAGES:
-            pofile: Path = self._dir / "po" / f"{language}.popie"
+            pofile: Path = self._dir / f"src/{language}.popie"
             if not pofile.exists():
                 continue
             self.strings[language] = self.parse_po_file(pofile)
