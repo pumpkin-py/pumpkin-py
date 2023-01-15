@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import importlib
 import os
@@ -246,6 +247,39 @@ async def start():
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--development",
+        action="store_true",
+        help="Enable debug output to stderr",
+    )
+    args = parser.parse_args()
+    if args.development:
+        import logging
+        import logging.handlers
+
+        logger = logging.getLogger("discord")
+        logger.setLevel(logging.DEBUG)
+        handler = logging.StreamHandler(stream=sys.stderr)
+        formatter = logging.Formatter(
+            "{asctime} "
+            + COLOR.yellow
+            + "{levelname}"
+            + COLOR.none
+            + " "
+            + COLOR.underline
+            + "{name}"
+            + COLOR.reset
+            + " "
+            + COLOR.grey
+            + "{message}"
+            + COLOR.reset,
+            "%Y-%m-%d %H:%M:%S",
+            style="{",
+        )
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
     asyncio.run(start())
 
 
