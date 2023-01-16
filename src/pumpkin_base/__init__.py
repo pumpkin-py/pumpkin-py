@@ -1,8 +1,4 @@
-import pathlib
-
 from pumpkin.repository import Repository, Module
-
-l10n = pathlib.Path(__file__).parent / "po"
 
 
 def repo() -> Repository:

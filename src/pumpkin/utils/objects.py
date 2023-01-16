@@ -11,7 +11,7 @@ from discord.ext import commands
 import pumpkin
 from pumpkin import i18n
 
-_ = i18n.Translator(pumpkin.l10n).translate
+_ = i18n.Translator(pumpkin).translate
 
 
 class ScrollableEmbed(discord.ui.View):

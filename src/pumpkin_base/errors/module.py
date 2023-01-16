@@ -13,7 +13,7 @@ from .database import LastError, Subscription
 
 import pumpkin_base
 
-_ = i18n.Translator(pumpkin_base.l10n).translate
+_ = i18n.Translator(pumpkin_base).translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
 

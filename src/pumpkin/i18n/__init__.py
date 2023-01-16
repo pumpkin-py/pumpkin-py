@@ -1,6 +1,7 @@
 import ring
 from pathlib import Path
 from typing import Dict, Optional, Union
+from types import ModuleType
 
 import discord
 
@@ -34,22 +35,29 @@ class TranslationContext:
 
 
 class Translator:
-    """Class for getting translations from PoPie text files.
+    """Class for getting translations from .po files.
 
     .. code-block:: python
         :linenos:
 
         import pumpkin_module
 
-        _ = i18n.Translator(pumpkin_module.l10n).translate
+        _ = i18n.Translator(pumpkin_module).translate
     """
 
-    def __init__(self, dirname: Path):
-        self._dir = dirname.absolute()
+    def __init__(self, package_root: ModuleType):
+        # .../src/pumpkin_foo/__init__.py
+        package_root_file = Path(package_root.__file__).absolute()
+        # .../src/pumpkin_foo/
+        package_root_dir = package_root_file.parent
+        # .../src/
+        src_dir = package_root_dir.parent
+        # .../src/po/
+        self.po_root = src_dir / "po"
 
         self.strings: Dict[str, Dict[str, Optional[str]]] = {}
         for language in LANGUAGES:
-            pofile: Path = self._dir / f"src/{language}.popie"
+            pofile: Path = self.po_root / f"{language}.po"
             if not pofile.exists():
                 continue
             self.strings[language] = self.parse_po_file(pofile)
@@ -62,17 +70,21 @@ class Translator:
                 line = line.strip()
 
                 if line.startswith("msgid"):
-                    msgid: str = line[len("msgid") :].strip()
+                    msgid: str = line[len("msgid") :].strip('" ')
                 if line.startswith("msgstr"):
-                    msgstr: str = line[len("msgstr") :].strip()
+                    msgstr: str = line[len("msgstr") :].strip('" ')
                     if len(msgstr):
                         data[msgid] = msgstr
         return data
 
     def __repr__(self) -> str:
         """Return representation of the class."""
-        languages: str = ", ".join(self.strings.keys())
-        return f"<Translator _dir='{self._dir!s}' languages='{languages}'>"
+        return (
+            f"{self.__class__.__name__}("
+            + f"po_root='{self.po_root!s}', languages=["
+            + ", ".join(f"'{lang}'" for lang in self.strings.keys())
+            + "])"
+        )
 
     def __str__(self) -> str:
         """Return human-friendly representation of the class."""
@@ -100,8 +112,10 @@ class Translator:
         langcode: str = self.get_language_preference(ctx)
 
         if langcode not in self.strings.keys():
+            print(f"{langcode=} not found")
             return string
         if string not in self.strings[langcode].keys():
+            print(f"{langcode=} translation not found")
             return string
         return self.strings[langcode][string]
 

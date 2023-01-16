@@ -301,7 +301,7 @@ class Pie:
 async def start():
     pie = Pie()
     await pie.prepare()
-    # await pie.bot.start(os.getenv("TOKEN"))
+    await pie.bot.start(os.getenv("TOKEN"))
 
 
 def main():

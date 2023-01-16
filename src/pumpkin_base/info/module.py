@@ -6,7 +6,7 @@ from pumpkin import check, i18n, utils
 
 import pumpkin_base
 
-_ = i18n.Translator(pumpkin_base.l10n).translate
+_ = i18n.Translator(pumpkin_base).translate
 
 
 class Info(commands.Cog):

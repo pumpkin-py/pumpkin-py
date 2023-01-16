@@ -25,7 +25,7 @@ from pumpkin.acl.database import UserOverwrite, ChannelOverwrite, RoleOverwrite
 
 _trace: Callable = pumpkin._tracing.register("pie_acl")
 
-_ = i18n.Translator(pumpkin.l10n).translate
+_ = i18n.Translator(pumpkin).translate
 T = TypeVar("T")
 
 

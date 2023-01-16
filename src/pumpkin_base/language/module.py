@@ -10,7 +10,7 @@ from pumpkin.i18n.database import GuildLanguage, MemberLanguage
 
 import pumpkin_base
 
-_ = i18n.Translator(pumpkin_base.l10n).translate
+_ = i18n.Translator(pumpkin_base).translate
 guild_log = logger.Guild.logger()
 config = pumpkin.database.config.Config.get()
 
