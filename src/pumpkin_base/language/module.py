@@ -197,7 +197,3 @@ class Language(commands.Cog):
                 value=value,
             )
         await ctx.reply(embed=embed)
-
-
-async def setup(bot) -> None:
-    await bot.add_cog(Language(bot))

@@ -1,0 +1,772 @@
+msgid "Page"
+msgstr ""
+
+msgid "No results were found."
+msgstr ""
+
+msgid "Only command issuer can toggle the lock."
+msgstr ""
+
+msgid "Only command issuer can scroll."
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+msgid "Only the author can confirm the action."
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "You have already voted!"
+msgstr ""
+
+msgid "Your vote has been casted."
+msgstr ""
+
+#, python-brace-format
+msgid "Help for command **{command}** is not available."
+msgstr ""
+
+#, python-brace-format
+msgid "I don't know command **{name}**."
+msgstr ""
+
+#, python-brace-format
+msgid "Command **{name}** does not have subcommand **{subcommand}**."
+msgstr ""
+
+#, python-brace-format
+msgid "Command **{name}** has no subcommand."
+msgstr ""
+
+msgid "Logging is not enabled on this server."
+msgstr ""
+
+msgid "Log level"
+msgstr ""
+
+msgid "Scope"
+msgstr ""
+
+msgid "Log channel"
+msgstr ""
+
+msgid "Module"
+msgstr ""
+
+msgid "Invalid scope."
+msgstr ""
+
+msgid "Invalid level."
+msgstr ""
+
+msgid "Logging settings succesfully updated."
+msgstr ""
+
+msgid "Logging target unset."
+msgstr ""
+
+msgid "Supplied arguments didn't match any entries."
+msgstr ""
+
+msgid "User pinning is not enabled on this server."
+msgstr ""
+
+msgid "(server)"
+msgstr ""
+
+msgid "Channel name"
+msgstr ""
+
+msgid "Reaction limit"
+msgstr ""
+
+msgid "Limit has to be positive integer or zero (if you want the feature disabled)."
+msgstr ""
+
+msgid "Pinning was disabled."
+msgstr ""
+
+msgid "Pinning preferences have been updated."
+msgstr ""
+
+msgid "The preference was unset."
+msgstr ""
+
+msgid "Bookmarks are not enabled on this server."
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "Enabled"
+msgstr ""
+
+msgid "Bookmarks enabled."
+msgstr ""
+
+msgid "Bookmarks disabled."
+msgstr ""
+
+msgid "User threads are not enabled on this server."
+msgstr ""
+
+msgid "Thread creation was disabled."
+msgstr ""
+
+msgid "Thread preference has been updated."
+msgstr ""
+
+msgid "No channel has autothread enabled."
+msgstr ""
+
+#, python-brace-format
+msgid "Autothread {icon}"
+msgstr ""
+
+msgid "Channels"
+msgstr ""
+
+msgid "Argument *duration* must be one of these values: '1h', '1d', '3d', '7d'."
+msgstr ""
+
+msgid "Threads will be automatically created in that channel."
+msgstr ""
+
+msgid "I'm not creating new threads in that channel."
+msgstr ""
+
+msgid "Threads will no longer be automatically created in that channel."
+msgstr ""
+
+msgid "Automatic thread"
+msgstr ""
+
+#, python-brace-format
+msgid "I'm using {pin} to mark the pinned message, use {pushpin}."
+msgstr ""
+
+#, python-brace-format
+msgid "{icon} Bookmark created"
+msgstr ""
+
+msgid "Author ID"
+msgstr ""
+
+#, python-brace-format
+msgid "[Server {guild}, channel #{channel}]({link})"
+msgstr ""
+
+msgid "Files"
+msgstr ""
+
+#, python-brace-format
+msgid "Total {count}"
+msgstr ""
+
+msgid "Embeds"
+msgstr ""
+
+#, python-brace-format
+msgid "Thread by {author}"
+msgstr ""
+
+#, python-brace-format
+msgid "Pong: **{delay}** {icon}"
+msgstr ""
+
+msgid "Uptime"
+msgstr ""
+
+msgid "Boot time"
+msgstr ""
+
+msgid "Run time"
+msgstr ""
+
+msgid "This channel is already subscribed."
+msgstr ""
+
+msgid "Channel subscribed."
+msgstr ""
+
+msgid "This channel is not subscribed."
+msgstr ""
+
+msgid "Channel unsubscribed."
+msgstr ""
+
+msgid "No channel is subscribed."
+msgstr ""
+
+msgid "Channel"
+msgstr ""
+
+#, python-brace-format
+msgid "{count} days without an accident."
+msgstr ""
+
+#, python-brace-format
+msgid "Previous error occured on **{date}**. Resetting counter..."
+msgstr ""
+
+msgid "*This is a test embed, no error has occured yet.*"
+msgstr ""
+
+msgid "An unexpected error occurred"
+msgstr ""
+
+msgid "pumpkin.py exception"
+msgstr ""
+
+msgid "An environment variable is missing"
+msgstr ""
+
+msgid "Module exception"
+msgstr ""
+
+msgid "Translation error"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Gateway not found"
+msgstr ""
+
+msgid "Slow down"
+msgstr ""
+
+#, python-brace-format
+msgid "Request has to be sent at least {delay} seconds later"
+msgstr ""
+
+msgid "Internal error"
+msgstr ""
+
+msgid "Client error"
+msgstr ""
+
+msgid "Invalid data"
+msgstr ""
+
+msgid "Login failure"
+msgstr ""
+
+msgid "Connection closed"
+msgstr ""
+
+msgid "Privileged intents required"
+msgstr ""
+
+#, python-brace-format
+msgid "Response from **{interaction}** was already received"
+msgstr ""
+
+#, python-brace-format
+msgid "Error on registering the command **{cmd}**"
+msgstr ""
+
+msgid "HTTP Exception"
+msgstr ""
+
+msgid "Forbidden"
+msgstr ""
+
+msgid "NotFound"
+msgstr ""
+
+msgid "Discord Server Error"
+msgstr ""
+
+msgid "Network error"
+msgstr ""
+
+msgid "User input error"
+msgstr ""
+
+#, python-brace-format
+msgid "Extension **{extension}** is already loaded"
+msgstr ""
+
+#, python-brace-format
+msgid "The extension **{extension}** is not loaded"
+msgstr ""
+
+msgid "Extension error"
+msgstr ""
+
+#, python-brace-format
+msgid "Extension **{extension}** does not have an entry point"
+msgstr ""
+
+#, python-brace-format
+msgid "**{extension}** failed"
+msgstr ""
+
+#, python-brace-format
+msgid "The extension **{extension}** could not be found"
+msgstr ""
+
+msgid "Command error"
+msgstr ""
+
+#, python-brace-format
+msgid "Conversion to **{name}** resulted in **{exception}**"
+msgstr ""
+
+msgid "Command not found"
+msgstr ""
+
+msgid "The command is not available"
+msgstr ""
+
+msgid "Command invoke error"
+msgstr ""
+
+#, python-brace-format
+msgid "Slow down. Wait **{time}**"
+msgstr ""
+
+msgid "This command is already running multiple times"
+msgstr ""
+
+#, python-brace-format
+msgid "The limit is **{num}**/**{per}**"
+msgstr ""
+
+msgid "Command structure error"
+msgstr ""
+
+msgid "Check failure"
+msgstr ""
+
+msgid "You have been denied the invocation of this command"
+msgstr ""
+
+msgid "This command cannot be used in this channel"
+msgstr ""
+
+#, python-brace-format
+msgid "This command cannot be used by the role **{role}**"
+msgstr ""
+
+#, python-brace-format
+msgid "You need access permissions at least at level **{required}**, you only have **{actual}**"
+msgstr ""
+
+msgid "You do not have any of the possible permissions to access this command"
+msgstr ""
+
+msgid "This command can only be used in private messages"
+msgstr ""
+
+msgid "This command cannot be used in private messages"
+msgstr ""
+
+msgid "You are not the bot owner"
+msgstr ""
+
+#, python-brace-format
+msgid "You need all of the following permissions: {perms}"
+msgstr ""
+
+#, python-brace-format
+msgid "I need all of the following permissions: {perms}"
+msgstr ""
+
+#, python-brace-format
+msgid "You need to have role **{role}**"
+msgstr ""
+
+#, python-brace-format
+msgid "I need to have role **{role}**"
+msgstr ""
+
+#, python-brace-format
+msgid "You need some of the following roles: {roles}"
+msgstr ""
+
+#, python-brace-format
+msgid "I need some of the following roles: {roles}"
+msgstr ""
+
+msgid "This command can be used only in NSFW channels"
+msgstr ""
+
+msgid "You don't have permission for this"
+msgstr ""
+
+#, python-brace-format
+msgid "The command has to have an argument **{param}**"
+msgstr ""
+
+#, python-brace-format
+msgid "Argument **{param}** must include an attachment"
+msgstr ""
+
+msgid "The command doesn't have that many arguments"
+msgstr ""
+
+#, python-brace-format
+msgid "Argument **{argument}** must be {classes}"
+msgstr ""
+
+#, python-brace-format
+msgid "Argument **{argument}** only takes one of the following values:"
+msgstr ""
+
+msgid "Bad argument"
+msgstr ""
+
+#, python-brace-format
+msgid "Message **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "Member **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "Server **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "User **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "Channel **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "Color **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "Role **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "Invitation **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "Emoji **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "Sticker **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "Event **{argument}** not found"
+msgstr ""
+
+#, python-brace-format
+msgid "**{argument}** is not boolean"
+msgstr ""
+
+#, python-brace-format
+msgid "**{value}** is not from interval **{lbr}{minimum}, {maximum}{rbr}**"
+msgstr ""
+
+#, python-brace-format
+msgid "Thread **{argument}** not found"
+msgstr ""
+
+msgid "Argument parsing error"
+msgstr ""
+
+msgid "Unexpected quote error"
+msgstr ""
+
+msgid "Invalid end of quoted string error"
+msgstr ""
+
+#, python-brace-format
+msgid "Argument **{argument}** could not be converted to **{flag}**: {exception}"
+msgstr ""
+
+#, python-brace-format
+msgid "Argument **{flag}** must have value"
+msgstr ""
+
+#, python-brace-format
+msgid "Argument **{flag}** cannot take that many values"
+msgstr ""
+
+#, python-brace-format
+msgid "Argument **{flag}** must be specified"
+msgstr ""
+
+msgid "Error content"
+msgstr ""
+
+msgid "Global configuration"
+msgstr ""
+
+msgid "Bot prefix"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+#, python-brace-format
+msgid "Key has to be one of: {keys}"
+msgstr ""
+
+msgid "Unsupported language"
+msgstr ""
+
+#, python-brace-format
+msgid "Valid status values are: {states}"
+msgstr ""
+
+msgid "Sync complete."
+msgstr ""
+
+#, python-brace-format
+msgid "{channel} is already spam channel."
+msgstr ""
+
+#, python-brace-format
+msgid "Channel {channel} added as spam channel."
+msgstr ""
+
+msgid "This server has no spam channels."
+msgstr ""
+
+msgid "Primary"
+msgstr ""
+
+#, python-brace-format
+msgid "Spam channel {channel} removed."
+msgstr ""
+
+#, python-brace-format
+msgid "{channel} is not spam channel."
+msgstr ""
+
+#, python-brace-format
+msgid "Channel {channel} is not marked as spam channel, it cannot be made primary."
+msgstr ""
+
+#, python-brace-format
+msgid "Channel {channel} set as primary."
+msgstr ""
+
+msgid "No mappings have been set."
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "Level"
+msgstr ""
+
+#, python-brace-format
+msgid "Invalid level. Possible options are: {keys}."
+msgstr ""
+
+msgid "You can't assign OWNER levels."
+msgstr ""
+
+#, python-brace-format
+msgid "Your ACLevel has to be higher than **{level}**."
+msgstr ""
+
+msgid "That role is already mapped to some level."
+msgstr ""
+
+#, python-brace-format
+msgid "Role **{role}** will be mapped to **{level}**."
+msgstr ""
+
+msgid "That role is not mapped to any level."
+msgstr ""
+
+msgid "Role mapping was sucessfully removed."
+msgstr ""
+
+msgid "No defaults have been set."
+msgstr ""
+
+msgid "Command"
+msgstr ""
+
+msgid "Default level"
+msgstr ""
+
+msgid "Custom level"
+msgstr ""
+
+msgid "I don't know this command."
+msgstr ""
+
+msgid "This command can't be controlled by ACL."
+msgstr ""
+
+msgid "You don't have permission to run this command, you can't alter its permissions."
+msgstr ""
+
+msgid "Command's ACLevel is higher than your current ACLevel."
+msgstr ""
+
+#, python-brace-format
+msgid "Custom default for **{command}** already exists."
+msgstr ""
+
+#, python-brace-format
+msgid "Custom default for **{command}** set."
+msgstr ""
+
+#, python-brace-format
+msgid "Command **{command}** does not have custom default."
+msgstr ""
+
+#, python-brace-format
+msgid "Custom default for **{command}** removed."
+msgstr ""
+
+msgid "role"
+msgstr ""
+
+msgid "channel"
+msgstr ""
+
+msgid "user"
+msgstr ""
+
+msgid "unsupported"
+msgstr ""
+
+msgid "yes"
+msgstr ""
+
+msgid "no"
+msgstr ""
+
+msgid "No ACL overwrites have been set."
+msgstr ""
+
+msgid "Overwrite type"
+msgstr ""
+
+msgid "Value"
+msgstr ""
+
+msgid "Allow"
+msgstr ""
+
+#, python-brace-format
+msgid "Overwrite for command **{command}** and role **{role}** already exists."
+msgstr ""
+
+#, python-brace-format
+msgid "Overwrite for command **{command}** and role **{role}** sucessfully created."
+msgstr ""
+
+msgid "Overwrite for this command and role does not exist."
+msgstr ""
+
+#, python-brace-format
+msgid "Overwrite for command **{command}** and role **{role}** sucessfully removed."
+msgstr ""
+
+msgid "No role overwrites have been set."
+msgstr ""
+
+#, python-brace-format
+msgid "Overwrite for command **{command}** and user **{user}** already exists."
+msgstr ""
+
+#, python-brace-format
+msgid "Overwrite for command **{command}** and user **{user}** sucessfully created."
+msgstr ""
+
+msgid "Overwrite for this command and user does not exist."
+msgstr ""
+
+#, python-brace-format
+msgid "Overwrite for command **{command}** and user **{user}** sucessfully removed."
+msgstr ""
+
+msgid "No user overwrites have been set."
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+#, python-brace-format
+msgid "Overwrite for command **{command}** and channel **#{channel}** already exists."
+msgstr ""
+
+#, python-brace-format
+msgid "Overwrite for command **{command}** and channel **#{channel}** sucessfully created."
+msgstr ""
+
+msgid "Overwrite for this command and channel does not exist."
+msgstr ""
+
+#, python-brace-format
+msgid "Overwrite for command **{command}** and channel **#{channel}** sucessfully removed."
+msgstr ""
+
+msgid "No channel overwrites have been set."
+msgstr ""
+
+msgid "Localization"
+msgstr ""
+
+msgid "Available languages:"
+msgstr ""
+
+msgid "User settings"
+msgstr ""
+
+msgid "Not set"
+msgstr ""
+
+msgid "Server settings"
+msgstr ""
+
+msgid "Global settings"
+msgstr ""
+
+msgid "I can't speak that language."
+msgstr ""
+
+#, python-brace-format
+msgid "I'll remember the preference of **{language}**."
+msgstr ""
+
+msgid "You may need to wait two minutes for the change to take effect."
+msgstr ""
+
+msgid "You don't have any language preference."
+msgstr ""
+
+#, python-brace-format
+msgid "I'll be using **{language}** on this server now."
+msgstr ""
+
+msgid "This server doesn't have any language preference."
+msgstr ""
+
+msgid "I'll be using the global settings from now on."
+msgstr ""
+
+msgid "Localization statistics"
+msgstr ""
+
+msgid "You can improve them by opening a PR!"
+msgstr ""

@@ -754,7 +754,3 @@ class ACL(commands.Cog):
         for command in self.bot.walk_commands():
             result.append(command.qualified_name)
         return result
-
-
-async def setup(bot) -> None:
-    await bot.add_cog(ACL(bot))

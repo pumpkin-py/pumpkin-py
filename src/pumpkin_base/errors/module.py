@@ -1087,7 +1087,3 @@ class Errors(commands.Cog):
                 content=ctx.message.content,
                 exception=error,
             )
-
-
-async def setup(bot) -> None:
-    await bot.add_cog(Errors(bot))

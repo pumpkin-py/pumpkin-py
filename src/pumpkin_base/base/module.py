@@ -334,7 +334,7 @@ class Base(commands.Cog):
 
         inverse_durations = {v: k for k, v in self.durations.items()}
         embed = utils.discord.create_embed(
-            author=ctx.author, title=_(ctx, "Autothread 🧵")
+            author=ctx.author, title=_(ctx, "Autothread {icon}").format(icon="🧵")
         )
         embed.add_field(
             name=_(ctx, "Channels"),
@@ -524,7 +524,10 @@ class Base(commands.Cog):
 
         if emoji == "📍" and not payload.member.bot:
             await utils.discord.send_dm(
-                payload.member, _(utx, "I'm using 📍 to mark the pinned message, use 📌.")
+                payload.member,
+                _(
+                    utx, "I'm using {pin} to mark the pinned message, use {pushpin}."
+                ).format(pin="📍", pushpin="📌"),
             )
             await utils.discord.remove_reaction(message, emoji, payload.member)
             return
@@ -592,7 +595,7 @@ class Base(commands.Cog):
 
         embed = utils.discord.create_embed(
             author=payload.member,
-            title=_(utx, "🔖 Bookmark created"),
+            title=_(utx, "{icon} Bookmark created").format(icon="🔖"),
             description=message.content[:2000],
         )
         embed.set_author(
@@ -725,7 +728,3 @@ class Base(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
         await guild_log.warning(self.bot.user, guild, "Bot has left the server.")
-
-
-async def setup(bot) -> None:
-    await bot.add_cog(Base(bot))

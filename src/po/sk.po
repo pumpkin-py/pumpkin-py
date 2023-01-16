@@ -1,0 +1,699 @@
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-15 19:03+0100\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Page"
+msgstr "Strana"
+
+msgid "No results were found."
+msgstr "Nenašiel sa žiaden výsledok."
+
+msgid "Only command issuer can toggle the lock."
+msgstr "Iba odosielateľ príkazu môže použiť zámok."
+
+msgid "Only command issuer can scroll."
+msgstr "Iba odosielateľ príkazu môže posúvať stránky."
+
+msgid "Confirm"
+msgstr "Potvrdiť"
+
+msgid "Reject"
+msgstr "Zrušiť"
+
+msgid "Only the author can confirm the action."
+msgstr "Iba autor môže túto akciu potvrdiť."
+
+msgid "Yes"
+msgstr "Ano"
+
+msgid "You have already voted!"
+msgstr "Už si hlasoval!"
+
+msgid "Your vote has been casted."
+msgstr "Tvoj hlas bol započítaný."
+
+msgid "Help for command **{command}** is not available."
+msgstr "Pomoc pre príkaz **{command}** nie je dostupná."
+
+msgid "I don't know command **{name}**."
+msgstr "Nepoznám príkaz **{name}**."
+
+msgid "Command **{name}** does not have subcommand **{subcommand}**."
+msgstr "Príkaz **{name}** nemá podpríkaz **{subcommand}**."
+
+msgid "Command **{name}** has no subcommand."
+msgstr "Príkaz **{name}** nemá žiaden podpríkaz."
+
+msgid "Logging is not enabled on this server."
+msgstr "Logovanie nie je na tomto serveri zapnuté."
+
+msgid "Log level"
+msgstr "Úroveň"
+
+msgid "Scope"
+msgstr "Oblasť"
+
+msgid "Log channel"
+msgstr "Log kanál"
+
+msgid "Module"
+msgstr "Modul"
+
+msgid "Invalid scope."
+msgstr "Neplatný rozsah."
+
+msgid "Invalid level."
+msgstr "Neplatná úroveň."
+
+msgid "Logging settings succesfully updated."
+msgstr "Nastavenie logovania bolo úspešne aktualizované."
+
+msgid "Logging target unset."
+msgstr "Nie je určený cieľ logovania."
+
+msgid "Supplied arguments didn't match any entries."
+msgstr "Dodané argumenty sa nezhodujú so žiadnymi vstupmi."
+
+msgid "User pinning is not enabled on this server."
+msgstr "Pripínanie správ uživateľmi na tomto serveri nie je povolené."
+
+msgid "(server)"
+msgstr "(server)"
+
+msgid "Channel name"
+msgstr "Názov kanálu"
+
+msgid "Reaction limit"
+msgstr "Limit reakcií"
+
+msgid "Limit has to be positive integer or zero (if you want the feature disabled)."
+msgstr "Limit musí byť kladné celé číslo alebo nula (pokiaľ má byť funkcia vypnutá)."
+
+msgid "Pinning was disabled."
+msgstr "Pripínanie bolo vypnuté."
+
+msgid "Pinning preferences have been updated."
+msgstr "Preferencie pripínania boli aktualizované."
+
+msgid "The preference was unset."
+msgstr "Preferencie boli zrušené."
+
+msgid "Bookmarks are not enabled on this server."
+msgstr "Záložky nie sú na tomto serveri povolené."
+
+msgid "No"
+msgstr "Nie"
+
+msgid "Enabled"
+msgstr "Zapnuté"
+
+msgid "Bookmarks enabled."
+msgstr "Záložky boli povolené."
+
+msgid "Bookmarks disabled."
+msgstr "Záložky boli zakázané."
+
+msgid "User threads are not enabled on this server."
+msgstr "Otváranie vlákien uživateľmi nie je na tomto serveri povolené."
+
+msgid "Thread creation was disabled."
+msgstr "Vytváranie vlákien bolo vypnuté."
+
+msgid "Thread preference has been updated."
+msgstr "Preferencie vytvárania vlákien boli aktualizované."
+
+msgid "No channel has autothread enabled."
+msgstr "Automatická vlákna nie sú povolené v žiadnom kanáli."
+
+msgid "Autothread {icon}"
+msgstr "Automatické vlákna {icon}"
+
+msgid "Channels"
+msgstr "Kanály"
+
+msgid "Argument *duration* must be one of these values: '1h', '1d', '3d', '7d'."
+msgstr "Argument *duration* musí byť jedna z týchto hodnôt: '1h', '1d', '3d', '7d'."
+
+msgid "Threads will be automatically created in that channel."
+msgstr "V zadanom kanáli budú vlákna automaticky otvárané."
+
+msgid "I'm not creating new threads in that channel."
+msgstr "V tom kanáli nové vlákna automaticky neotváram."
+
+msgid "Threads will no longer be automatically created in that channel."
+msgstr "V tom kanáli už nové vlákna automaticky otvárať nebudem."
+
+msgid "Automatic thread"
+msgstr "Automatické vlákno"
+
+msgid "I'm using {pin} to mark the pinned message, use {pushpin}."
+msgstr "Emoji {pin} používam ja na označenie pripnutých správ, použi {pushpin}."
+
+msgid "{icon} Bookmark created"
+msgstr "{icon} Záložka vytvorená"
+
+msgid "Author ID"
+msgstr "ID autora"
+
+msgid "[Server {guild}, channel #{channel}]({link})"
+msgstr "[Server {guild}, kanál #{channel}]({link})"
+
+msgid "Files"
+msgstr "Súbory"
+
+msgid "Total {count}"
+msgstr "Celkom {count}"
+
+msgid "Embeds"
+msgstr "Tabuľky"
+
+msgid "Thread by {author}"
+msgstr "Vlákno od {author}"
+
+msgid "Pong: **{delay}** {icon}"
+msgstr "Pong: **{delay}** {icon}"
+
+msgid "Uptime"
+msgstr "Uptime"
+
+msgid "Boot time"
+msgstr "Čas spustenia"
+
+msgid "Run time"
+msgstr "Doba od spustenia"
+
+msgid "This channel is already subscribed."
+msgstr "Tento kanál je už prihlásený."
+
+msgid "Channel subscribed."
+msgstr "Kanál prihlásený."
+
+msgid "This channel is not subscribed."
+msgstr "Tento kanál nie je prihlásený."
+
+msgid "Channel unsubscribed."
+msgstr "Kanál odhlásený."
+
+msgid "No channel is subscribed."
+msgstr "Žiadny kanál nie je prihlásený."
+
+msgid "Channel"
+msgstr "Kanál"
+
+msgid "{count} days without an accident."
+msgstr "{count} dňov od poslednej chyby."
+
+msgid "Previous error occured on **{date}**. Resetting counter..."
+msgstr "Predchádzajúca chyba nastala **{date}**. Resetujem počítadlo..."
+
+msgid "*This is a test embed, no error has occured yet.*"
+msgstr "*Toto je skúšobná správa, k žiadnej chybe zatiaľ nedošlo.*"
+
+msgid "An unexpected error occurred"
+msgstr "Nastala nečakaná chyba"
+
+msgid "pumpkin.py exception"
+msgstr "Výnimka pumpkin.py"
+
+msgid "An environment variable is missing"
+msgstr "Chýba premenná prostredia"
+
+msgid "Module exception"
+msgstr "Výnimka modulu"
+
+msgid "Translation error"
+msgstr "Chyba prekladu"
+
+msgid "Error"
+msgstr "Chyba"
+
+msgid "Gateway not found"
+msgstr "Brána nebola nájdená"
+
+msgid "Slow down"
+msgstr "Spomaľ"
+
+msgid "Request has to be sent at least {delay} seconds later"
+msgstr "Požiadavka môže byť odoslaná najskôr za {delay} sekúnd"
+
+msgid "Internal error"
+msgstr "Interná chyba"
+
+msgid "Client error"
+msgstr "Chyba klienta"
+
+msgid "Invalid data"
+msgstr "Chybné dáta"
+
+msgid "Login failure"
+msgstr "Prihlasovacia chyba"
+
+msgid "Connection closed"
+msgstr "Spojenie ukončené"
+
+msgid "Privileged intents required"
+msgstr "Požadované privilegované zámery"
+
+msgid "Response from **{interaction}** was already received"
+msgstr "Odpoveď od **{interaction}** už bola obdržaná."
+
+msgid "Error on registering the command **{cmd}**"
+msgstr "Chyba pri registrácii príkazu **{cmd}**"
+
+msgid "HTTP Exception"
+msgstr "HTTP chyba"
+
+msgid "Forbidden"
+msgstr "Zakázané"
+
+msgid "NotFound"
+msgstr "Nenájdené"
+
+msgid "Discord Server Error"
+msgstr "Chyba Discord servera"
+
+msgid "Network error"
+msgstr "Chyba sítě"
+
+msgid "User input error"
+msgstr "Chyba užívateľského vstupu"
+
+msgid "Extension **{extension}** is already loaded"
+msgstr "Rozšírenie **{extension}** je už načítané"
+
+msgid "The extension **{extension}** is not loaded"
+msgstr "Rozšírenie **{extension}** nie je načítané"
+
+msgid "Extension error"
+msgstr "Chyba rozšírenia"
+
+msgid "Extension **{extension}** does not have an entry point"
+msgstr "Rozšírenie **{extension}** nemá vstupnú funkciu"
+
+msgid "**{extension}** failed"
+msgstr "**{extension}** zlyhalo"
+
+msgid "The extension **{extension}** could not be found"
+msgstr "Nebolo nájdené rozšírenie **{extension}**"
+
+msgid "Command error"
+msgstr "Chyba príkazu"
+
+msgid "Conversion to **{name}** resulted in **{exception}**"
+msgstr "Konverzia na **{name}** skončila s **{exception}**"
+
+msgid "Command not found"
+msgstr "Príkaz nenájdený"
+
+msgid "The command is not available"
+msgstr "Príkaz není dostupný"
+
+msgid "Command invoke error"
+msgstr "Chyba pri volaní príkazu"
+
+msgid "Slow down. Wait **{time}**"
+msgstr "Spomal. Počkaj **{time}**"
+
+msgid "This command is already running multiple times"
+msgstr "Tento príkaz už beží niekoľko krát"
+
+msgid "The limit is **{num}**/**{per}**"
+msgstr "Limit je **{num}**/**{per}**"
+
+msgid "Command structure error"
+msgstr "Chyba štruktúry príkazu"
+
+msgid "Check failure"
+msgstr "Chyba kontroly"
+
+msgid "You have been denied the invocation of this command"
+msgstr "Použitie tohto príkazu ti bolo zakázané"
+
+msgid "This command cannot be used in this channel"
+msgstr "Tento príkaz nemôže byť použitý v tomto kanále"
+
+msgid "This command cannot be used by the role **{role}**"
+msgstr "Tento príkaz nemôže byť použitý rolou **{role}**"
+
+msgid "You need access permissions at least at level **{required}**, you only have **{actual}**"
+msgstr "Na to potrebuješ úroveň prístupu aspoň **{required}**, ty máš iba **{actual}**"
+
+msgid "You do not have any of the possible permissions to access this command"
+msgstr "Nemáš žiadne z možných oprávnení k tomuto príkazu"
+
+msgid "This command can only be used in private messages"
+msgstr "Tento príkaz je možné použiť len v súkromých správach"
+
+msgid "This command cannot be used in private messages"
+msgstr "Tento príkaz nie je možné použiť v súkromných správach"
+
+msgid "You are not the bot owner"
+msgstr "Nie si vlastník bota"
+
+msgid "You need all of the following permissions: {perms}"
+msgstr "Chýba ti niektoré z následujúcich oprávnení: {perms}"
+
+msgid "I need all of the following permissions: {perms}"
+msgstr "Chýba mi niektoré z následujúcich oprávnení: {perms}"
+
+msgid "You need to have role **{role}**"
+msgstr "Potrebuješ rolu **{role}**"
+
+msgid "I need to have role **{role}**"
+msgstr "Potrebujem rolu **{role}**"
+
+msgid "You need some of the following roles: {roles}"
+msgstr "Potrebuješ niktorú z následujúcich rolí: {roles}"
+
+msgid "I need some of the following roles: {roles}"
+msgstr "Potrebujem niktorú z následujúcich rolí: {roles}"
+
+msgid "This command can be used only in NSFW channels"
+msgstr "Tento príkaz môže byť použitý len v NSFW kanáloch"
+
+msgid "You don't have permission for this"
+msgstr "Na to nemáš oprávnenie"
+
+msgid "The command has to have an argument **{param}**"
+msgstr "Príkaz musí mať argument **{param}**"
+
+msgid "Argument **{param}** must include an attachment"
+msgstr "Argument **{param}** musí mať prílohu"
+
+msgid "The command doesn't have that many arguments"
+msgstr "Príkaz nemá toľko argumentov."
+
+msgid "Argument **{argument}** must be {classes}"
+msgstr "Argument **{argument}** musí byť jedno z {classes}"
+
+msgid "Argument **{argument}** only takes one of the following values:"
+msgstr "Arguement **{argument}** môže mať iba jednu z týhto hodnôt:"
+
+msgid "Bad argument"
+msgstr "Zlý argument"
+
+msgid "Message **{argument}** not found"
+msgstr "Správa **{argument}** nenájdená"
+
+msgid "Member **{argument}** not found"
+msgstr "Člen **{argument}** nenájdený"
+
+msgid "Server **{argument}** not found"
+msgstr "Server **{argument}** nenájdený"
+
+msgid "User **{argument}** not found"
+msgstr "Užívateľ **{argument}** nenájdený"
+
+msgid "Channel **{argument}** not found"
+msgstr "Kanál **{argument}** nenájdený"
+
+msgid "Color **{argument}** not found"
+msgstr "Farba **{argument}** nenájdená"
+
+msgid "Role **{argument}** not found"
+msgstr "Rola **{argument}** nenájdená"
+
+msgid "Invitation **{argument}** not found"
+msgstr "Pozvánka **{argument}** nenájdená"
+
+msgid "Emoji **{argument}** not found"
+msgstr "Emoji **{argument}** nenájdený"
+
+msgid "Sticker **{argument}** not found"
+msgstr "Nálepka **{argument}** nenájdená"
+
+msgid "Event **{argument}** not found"
+msgstr "Událosť **{argument}** nenájdená"
+
+msgid "**{argument}** is not boolean"
+msgstr "**{argument}** není binárný"
+
+msgid "**{value}** is not from interval **{lbr}{minimum}, {maximum}{rbr}**"
+msgstr "**{value}** není z intervalu **{lbr}{minimum}, {maximum}{rbr}**"
+
+msgid "Thread **{argument}** not found"
+msgstr "Vlákno **{argument}** nenájdené"
+
+msgid "Argument parsing error"
+msgstr "Chyba čítania argumentu"
+
+msgid "Unexpected quote error"
+msgstr "Neočakávané úvodzovky"
+
+msgid "Invalid end of quoted string error"
+msgstr "Chybný koniec textu v úvodzovkách"
+
+msgid "Argument **{argument}** could not be converted to **{flag}**: {exception}"
+msgstr "Argument **{argument}** nebolo možné previesť na **{flag}**: {exception}"
+
+msgid "Argument **{flag}** must have value"
+msgstr "Argument **{flag}** musí mít hodnotu"
+
+msgid "Argument **{flag}** cannot take that many values"
+msgstr "Argument **{flag}** nemôže mať toľko hodnôt"
+
+msgid "Argument **{flag}** must be specified"
+msgstr "Argument **{flag}** je povinný"
+
+msgid "Error content"
+msgstr "Obsah chyby"
+
+msgid "Global configuration"
+msgstr "Globálna konfigurácia"
+
+msgid "Bot prefix"
+msgstr "Bot prefix"
+
+msgid "Language"
+msgstr "Jazyk"
+
+msgid "Status"
+msgstr "Stav"
+
+msgid "Key has to be one of: {keys}"
+msgstr "Kľúč musí byť jeden z: {keys}"
+
+msgid "Unsupported language"
+msgstr "Nepodporovaný jazyk"
+
+msgid "Valid status values are: {states}"
+msgstr "Možné hodnoty statusu sú: {states}"
+
+msgid "Sync complete."
+msgstr "Synchronizácia dokončena."
+
+msgid "{channel} is already spam channel."
+msgstr "{channel} už je spam kanál"
+
+msgid "Channel {channel} added as spam channel."
+msgstr "Kanál {channel} bol označený ako spam kanál"
+
+msgid "This server has no spam channels."
+msgstr "Tento server nemá žiadne spam kanály."
+
+msgid "Primary"
+msgstr "Primárný"
+
+msgid "Spam channel {channel} removed."
+msgstr "Spam kanál {channel} bol odobraný."
+
+msgid "{channel} is not spam channel."
+msgstr "{channel} nie je spam kanál."
+
+msgid "Channel {channel} is not marked as spam channel, it cannot be made primary."
+msgstr "Kanál {channel} nie je označený ako spam kanál, nemôže být označený ako primárny."
+
+msgid "Channel {channel} set as primary."
+msgstr "Kanál {channel} bol označený ako primárny."
+
+msgid "No mappings have been set."
+msgstr "Žiadne mapovanie nebolo nastavené."
+
+msgid "Role"
+msgstr "Rola"
+
+msgid "Level"
+msgstr "Úroveň"
+
+msgid "Invalid level. Possible options are: {keys}."
+msgstr "Neplatná úroveň. Možnosti sú: {keys}."
+
+msgid "You can't assign OWNER levels."
+msgstr "OWNER úrovne nie je možné priradiť."
+
+msgid "Your ACLevel has to be higher than **{level}**."
+msgstr "Tvoj ACLevel musí byť vyšší ako **{level}**."
+
+msgid "That role is already mapped to some level."
+msgstr "Táto rola je už na nejakú úroveň mapovaná."
+
+msgid "Role **{role}** will be mapped to **{level}**."
+msgstr "Rola **{role}** bude mapovaná na **{level}**."
+
+msgid "That role is not mapped to any level."
+msgstr "Táto rola nie je mapovaná na žiadnu úroveň."
+
+msgid "Role mapping was sucessfully removed."
+msgstr "Mapovanie role bolo úspešne zrušené."
+
+msgid "No defaults have been set."
+msgstr "Žiadne predvolené hodnoty neboli nastavené."
+
+msgid "Command"
+msgstr "Príkaz"
+
+msgid "Default level"
+msgstr "Predvolená úroveň"
+
+msgid "Custom level"
+msgstr "Vlastná úroveň"
+
+msgid "I don't know this command."
+msgstr "Takýto príkaz nepoznám."
+
+msgid "This command can't be controlled by ACL."
+msgstr "Tento príkaz nemôže byť kontrolovaný pomocou ACL."
+
+msgid "You don't have permission to run this command, you can't alter its permissions."
+msgstr "Pre spustenie tohto príkazu nemáš právo, preto jeho oprávnenie meniť nemôžeš."
+
+msgid "Command's ACLevel is higher than your current ACLevel."
+msgstr "ACLevel príkazu je vyšší ako tvoj aktuálny ACLevel."
+
+msgid "Custom default for **{command}** already exists."
+msgstr "Vlastná predvolená úroveň pre **{command}** už existuje."
+
+msgid "Custom default for **{command}** set."
+msgstr "Vlastná predvolená úroveň pre **{command}** bola nastavená."
+
+msgid "Command **{command}** does not have custom default."
+msgstr "Príkaz **{command}** nemá vlastnú predvolenú hodnotu."
+
+msgid "Custom default for **{command}** removed."
+msgstr "Vlastná predvolená úroveň pre **{command}** bola zrušená."
+
+msgid "role"
+msgstr "rola"
+
+msgid "channel"
+msgstr "kanál"
+
+msgid "user"
+msgstr "používateľ"
+
+msgid "unsupported"
+msgstr "nepodporované"
+
+msgid "yes"
+msgstr "áno"
+
+msgid "no"
+msgstr "nie"
+
+msgid "No ACL overwrites have been set."
+msgstr "Neboli nastavené ACL overwrites."
+
+msgid "Overwrite type"
+msgstr "Typ overwrite"
+
+msgid "Value"
+msgstr "Hodnota"
+
+msgid "Allow"
+msgstr "Povolené"
+
+msgid "Overwrite for command **{command}** and role **{role}** already exists."
+msgstr "Overwrite pre príkaz **{command}** a rolu **{role}** už existuje."
+
+msgid "Overwrite for command **{command}** and role **{role}** sucessfully created."
+msgstr "Overwrite pre príkaz **{command}** a rolu **{role}** bol úspešne vytvorený."
+
+msgid "Overwrite for this command and role does not exist."
+msgstr "Overwrite pre tento príkaz a rolu neexistuje."
+
+msgid "Overwrite for command **{command}** and role **{role}** sucessfully removed."
+msgstr "Overwrite pre príkaz **{command}** a rolu **{role}** bol úspešne odobraný."
+
+msgid "No role overwrites have been set."
+msgstr "Neboli nastavené žiadne overwrites pre role."
+
+msgid "Overwrite for command **{command}** and user **{user}** already exists."
+msgstr "Overwrite pre príkaz **{command}** a používateľa **{user}** už existuje."
+
+msgid "Overwrite for command **{command}** and user **{user}** sucessfully created."
+msgstr "Overwrite pre príkaz **{command}** a používateľa **{user}** bol úspešne vytvorený."
+
+msgid "Overwrite for this command and user does not exist."
+msgstr "Overwrite pre tento príkaz a používateľa neexistuje."
+
+msgid "Overwrite for command **{command}** and user **{user}** sucessfully removed."
+msgstr "Overwrite pre príkaz **{command}** a používateľa **{user}** bol úspešne odobraný."
+
+msgid "No user overwrites have been set."
+msgstr "Neboli nastavené žiadne overwrites pre používateľa."
+
+msgid "User"
+msgstr "Používateľ"
+
+msgid "Overwrite for command **{command}** and channel **#{channel}** already exists."
+msgstr "Overwrite pre príkaz **{command}** a kanál **#{channel}** už existuje."
+
+msgid "Overwrite for command **{command}** and channel **#{channel}** sucessfully created."
+msgstr "Overwrite pre príkaz **{command}** a kanál **#{channel}** bol úspešne vytvorený."
+
+msgid "Overwrite for this command and channel does not exist."
+msgstr "Overwrite pre tento príkaz a kanál neexistuje."
+
+msgid "Overwrite for command **{command}** and channel **#{channel}** sucessfully removed."
+msgstr "Overwrite pre príkaz **{command}** a kanál **#{channel}** bol úspešne odobraný."
+
+msgid "No channel overwrites have been set."
+msgstr "Neboli nastavené žiadne overwrites pre kanály."
+
+msgid "Localization"
+msgstr "Lokalizácia"
+
+msgid "Available languages:"
+msgstr "Dostupné jazyky:"
+
+msgid "User settings"
+msgstr "Užívateľské nastavenia"
+
+msgid "Not set"
+msgstr "Nenastavené"
+
+msgid "Server settings"
+msgstr "Nastavenie serveru"
+
+msgid "Global settings"
+msgstr "Globálne nastavenie"
+
+msgid "I can't speak that language."
+msgstr "Nepoznám tento jazyk."
+
+msgid "I'll remember the preference of **{language}**."
+msgstr "Zapamätám si preferenciu **{language}**."
+
+msgid "You may need to wait two minutes for the change to take effect."
+msgstr "Je možné, že budeš musieť počkať dve minúty, aby se zmena prejavila."
+
+msgid "You don't have any language preference."
+msgstr "Nemáš žiadnu preferenciu jazyka."
+
+msgid "I'll be using **{language}** on this server now."
+msgstr "Odteraz budem na tomto serveri používať **{language}**."
+
+msgid "This server doesn't have any language preference."
+msgstr "Tento server nemá žiadne jazykové preferencie."
+
+msgid "I'll be using the global settings from now on."
+msgstr "Odteraz budem používať globálne nastavenia."
+
+msgid "Localization statistics"
+msgstr "Štatistiky lokalizácie"
+
+msgid "You can improve them by opening a PR!"
+msgstr "Môžete ich zlepšiť otvorením PR!"

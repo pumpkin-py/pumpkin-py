@@ -24,7 +24,9 @@ class Info(commands.Cog):
     async def ping(self, ctx):
         """Return latency information."""
         delay: str = "{:.2f}".format(self.bot.latency)
-        await ctx.reply(_(ctx, "Pong: **{delay}** 🏓").format(delay=delay))
+        await ctx.reply(
+            _(ctx, "Pong: **{delay}** {icon}").format(delay=delay, icon="🏓")
+        )
 
     @check.acl2(check.ACLevel.EVERYONE)
     @commands.command()
@@ -46,7 +48,3 @@ class Info(commands.Cog):
         )
 
         await ctx.send(embed=embed)
-
-
-async def setup(bot) -> None:
-    await bot.add_cog(Info(bot))

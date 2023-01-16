@@ -293,7 +293,3 @@ class Admin(commands.Cog):
             ctx.channel,
             f"Channel #{channel.name} set as primary spam channel.",
         )
-
-
-async def setup(bot) -> None:
-    await bot.add_cog(Admin(bot))
