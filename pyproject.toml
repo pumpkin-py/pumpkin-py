@@ -41,7 +41,6 @@ dev = [
 	"black==22.12.0", "flake8", "flake8-print", "flake8-todo",
 	"bandit",
 	"pytest",
-	"pumpkin-tools @ git+https://github.com/pumpkin-py/pumpkin-tools.git"
 ]
 
 [project.scripts]
