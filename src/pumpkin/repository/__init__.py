@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import importlib
 from importlib.metadata import EntryPoint, entry_points
 from typing import TYPE_CHECKING, List, Optional, Set
 
 
 if TYPE_CHECKING:
-    import discord.ext.commands
     from sqlalchemy.engine.default import DefaultDialect
 
 
@@ -39,7 +37,6 @@ class Module:
         name: str,
         repository: Repository,
         package: str,
-        cog: str,
         *,
         database: Optional[str] = None,
         database_dialects: Set["DefaultDialect"] = None,
@@ -53,7 +50,6 @@ class Module:
         :param repository: Repository object.
         :param package: Qualified name to the object's package
             (e.g., 'pumpkin_base.admin.module').
-        :param cog: Name of the cog object (e.g., 'Admin').
         :param database: Optional qualified name of the module
             (e.g., 'pumpkin_base.admin.database').
         :param database_dialects: Subset of dialects supported by the database
@@ -70,7 +66,6 @@ class Module:
         self.name: str = name
         self.repository: Repository = repository
         self.package: str = package
-        self.cog: str = cog
         self.database: Optional[str] = database
         self.database_dialects: Set[DefaultDialect] = database_dialects or {*()}
         self.needs_installed: Set[str] = needs_installed or {*()}
@@ -82,12 +77,6 @@ class Module:
     @property
     def qualified_name(self) -> str:
         return self.repository.package + "." + self.name
-
-    @property
-    def cog_class(self) -> "discord.ext.commands.Cog":
-        package = importlib.import_module(self.package)
-        cog = getattr(package, self.cog)
-        return cog
 
     def __repr__(self) -> str:
         result: str = (

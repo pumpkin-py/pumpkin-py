@@ -296,8 +296,7 @@ class Pie:
         """Load modules."""
         print("Loading modules:")
         for module in modules:
-            cog: discord.ext.commands.Cog = module.cog_class(self.bot)
-            await self.bot.add_cog(cog)
+            await self.bot.load_extension(module.package)
             print(f"- {COLOR.yellow}{module.qualified_name}{COLOR.none} loaded")
 
     async def prepare(self):

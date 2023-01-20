@@ -436,8 +436,7 @@ class Errors(commands.Cog):
                 Translated description,
                 Whether to ignore traceback in the log.
         """
-        # return friendly name: strip "modules." prefix and ".module" suffix
-        extension_name = error.name[8:-7]
+        extension_name = error.name
 
         if isinstance(error, commands.ExtensionAlreadyLoaded):
             return (
@@ -943,7 +942,7 @@ class Errors(commands.Cog):
 
         return (
             _(ctx, "User input error"),
-            _(ctx, "Bad argument"),
+            _(ctx, "Bad argument: {reason}").format(reason=str(error)),
             ReportTraceback.NO,
         )
 
@@ -1087,3 +1086,7 @@ class Errors(commands.Cog):
                 content=ctx.message.content,
                 exception=error,
             )
+
+
+async def setup(bot) -> None:
+    await bot.add_cog(Errors(bot))

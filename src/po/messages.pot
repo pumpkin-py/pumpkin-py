@@ -480,6 +480,10 @@ msgstr ""
 msgid "Thread **{argument}** not found"
 msgstr ""
 
+#, python-brace-format
+msgid "Bad argument: {reason}"
+msgstr ""
+
 msgid "Argument parsing error"
 msgstr ""
 
@@ -506,6 +510,46 @@ msgid "Argument **{flag}** must be specified"
 msgstr ""
 
 msgid "Error content"
+msgstr ""
+
+#, python-brace-format
+msgid "The format of qualified module name is `{name}`."
+msgstr ""
+
+msgid "No such repository."
+msgstr ""
+
+msgid "No such module."
+msgstr ""
+
+msgid "enabled by default"
+msgstr ""
+
+msgid "not tracked"
+msgstr ""
+
+msgid "enabled in database"
+msgstr ""
+
+msgid "disabled in database"
+msgstr ""
+
+msgid "Repository modules"
+msgstr ""
+
+#, python-brace-format
+msgid "Enabled module **{name}** from **{repo}**."
+msgstr ""
+
+msgid "This module cannot be disabled to prevent lockouts."
+msgstr ""
+
+#, python-brace-format
+msgid "Disabled module **{name}** from **{repo}**."
+msgstr ""
+
+#, python-brace-format
+msgid "Reloaded module **{name}** from **{repo}**."
 msgstr ""
 
 msgid "Global configuration"

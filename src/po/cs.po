@@ -437,6 +437,9 @@ msgstr "**{value}** neleží v intervalu **{lbr}{minimum}, {maximum}{rbr}**"
 msgid "Thread **{argument}** not found"
 msgstr "Vlákno **{argument}** nenalezeno"
 
+msgid "Bad argument: {reason}"
+msgstr "Špatný argument: {reason}"
+
 msgid "Argument parsing error"
 msgstr "Chyba čtení argumentu"
 
@@ -460,6 +463,42 @@ msgstr "Argument **{flag}** je povinný"
 
 msgid "Error content"
 msgstr "Obsah chyby"
+
+msgid "The format of qualified module name is `{name}`."
+msgstr "Formát kvalifikovaného názvu modulu je `{name}`."
+
+msgid "No such repository."
+msgstr "Neexistující repozitář."
+
+msgid "No such module."
+msgstr "Neexistující modul."
+
+msgid "enabled by default"
+msgstr "standartně zapnutý"
+
+msgid "not tracked"
+msgstr "nesledovaný"
+
+msgid "enabled in database"
+msgstr "zapnutý v databázi"
+
+msgid "disabled in database"
+msgstr "vypnutý v databázi"
+
+msgid "Repository modules"
+msgstr "Moduly repozitářů"
+
+msgid "Enabled module **{name}** from **{repo}**."
+msgstr "Modul **{name}** z **{repo}** byl zapnutý."
+
+msgid "This module cannot be disabled to prevent lockouts."
+msgstr "Tento modul nemůže být vypnutý, znemožnil by další práci."
+
+msgid "Disabled module **{name}** from **{repo}**."
+msgstr "Modul **{name}** z **{repo}** byl vypnutý."
+
+msgid "Reloaded module **{name}** from **{repo}**."
+msgstr "Modul **{name}** z **{repo}** byl aktualizovaný."
 
 msgid "Global configuration"
 msgstr "Globální konfigurace"

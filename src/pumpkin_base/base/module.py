@@ -728,3 +728,7 @@ class Base(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
         await guild_log.warning(self.bot.user, guild, "Bot has left the server.")
+
+
+async def setup(bot) -> None:
+    await bot.add_cog(Base(bot))

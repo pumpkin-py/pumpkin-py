@@ -1,11 +1,18 @@
-from typing import List
+import importlib
+from typing import TYPE_CHECKING, List, Tuple, Optional
 
 import discord
 from discord.ext import commands, tasks
 
 import pumpkin.config.database
 from pumpkin import check, i18n, logger, utils
+import pumpkin.repository
+from pumpkin.repository.database import Module as DBModule
 from pumpkin.spamchannel.database import SpamChannel
+
+if TYPE_CHECKING:
+    from pumpkin.repository import Module, Repository
+
 
 import pumpkin_base
 
@@ -62,6 +69,38 @@ class Admin(commands.Cog):
         if not self.bot.is_ready():
             await self.bot.wait_until_ready()
 
+    # Helpers
+
+    async def _find_module(self, ctx, qualified_name: str) -> "Module":
+        """Get Module object from its qualified name.
+
+        :raises:
+            :class:`commands.BadArgument` when the qualified name does not
+            match any known module.
+        """
+        if qualified_name.count(".") != 1:
+            raise commands.BadArgument(
+                _(ctx, "The format of qualified module name is `{name}`.").format(
+                    name="repository.module"
+                )
+            )
+
+        repository_name, module_name = qualified_name.split(".")
+        repository: Repository
+        for repository in pumpkin.repository.load():
+            if repository.name == repository_name:
+                break
+        else:
+            raise commands.BadArgument(_(ctx, "No such repository."))
+        module: Module
+        for module in repository.modules:
+            if module.name == module_name:
+                break
+        else:
+            raise commands.BadArgument(_(ctx, "No such module."))
+
+        return module
+
     # Commands
 
     @commands.guild_only()
@@ -77,6 +116,111 @@ class Admin(commands.Cog):
     async def module_(self, ctx):
         """Manage modules."""
         await utils.discord.send_help(ctx)
+
+    @check.acl2(check.ACLevel.BOT_OWNER)
+    @module_.command(name="list")
+    async def module_list(self, ctx):
+        """List available modules."""
+
+        def get_status(module: "Module") -> Tuple[bool, str]:
+            db_module: Optional[DBModule] = DBModule.get(module.qualified_name)
+
+            if db_module is None:
+                if module.qualified_name.startswith("pumpkin_base"):
+                    return True, _(ctx, "enabled by default")
+                return False, _(ctx, "not tracked")
+
+            if db_module.enabled:
+                return True, _(ctx, "enabled in database")
+            else:
+                return False, _(ctx, "disabled in database")
+
+        content: List[str] = ["**__" + _(ctx, "Repository modules") + "__**"]
+        for repository in sorted(pumpkin.repository.load(), key=lambda r: r.name):
+            content.append(f"**{repository.name}** (`{repository.package}`)")
+            for module in repository.modules:
+                loaded, status = get_status(module)
+                bold = "**" if loaded else ""
+
+                string: str = f"\N{EM DASH} {bold}{module.name}{bold}"
+                string += f" ({status})"
+                content.append(string)
+        await ctx.reply("\n".join(content))
+
+    @check.acl2(check.ACLevel.BOT_OWNER)
+    @module_.command(name="enable", aliases=["load"])
+    async def module_enable(self, ctx, qualified_name: str):
+        """Enable module."""
+        module = await self._find_module(ctx, qualified_name)
+
+        if module.database:
+            # Try to update the database
+            importlib.import_module(module.database)
+            pumpkin.database.database.base.metadata.create_all(
+                pumpkin.database.database.db
+            )
+            pumpkin.database.session.commit()
+
+        # TODO Check for needs_installed and needs_enabled
+
+        await self.bot.load_extension(module.package)
+        DBModule.update(module.qualified_name, enabled=True)
+
+        await bot_log.warning(
+            ctx.author,
+            ctx.channel,
+            f"Enabled module '{module.qualified_name}'.",
+        )
+        await ctx.reply(
+            _(ctx, "Enabled module **{name}** from **{repo}**.").format(
+                name=module.name, repo=module.repository.name
+            )
+        )
+
+    @check.acl2(check.ACLevel.BOT_OWNER)
+    @module_.command(name="disable", aliases=["unload"])
+    async def module_disable(self, ctx, qualified_name: str):
+        """Disable module."""
+        if qualified_name == "pumpkin_base.admin":
+            raise commands.BadArgument(
+                _(ctx, "This module cannot be disabled to prevent lockouts.")
+            )
+        module = await self._find_module(ctx, qualified_name)
+
+        # TODO Check for needs_enabled of other modules
+
+        await self.bot.unload_extension(module.package)
+        DBModule.update(module.qualified_name, enabled=False)
+
+        await bot_log.warning(
+            ctx.author,
+            ctx.channel,
+            f"Disabled module '{module.qualified_name}'.",
+        )
+        await ctx.reply(
+            _(ctx, "Disabled module **{name}** from **{repo}**.").format(
+                name=module.name, repo=module.repository.name
+            )
+        )
+
+    @check.acl2(check.ACLevel.BOT_OWNER)
+    @module_.command(name="reload")
+    async def module_reload(self, ctx, qualified_name: str):
+        """Reload module."""
+        module = await self._find_module(ctx, qualified_name)
+
+        await self.bot.reload_extension(module.package)
+
+        await bot_log.warning(
+            ctx.author,
+            ctx.channel,
+            f"Reloaded module '{module.qualified_name}'.",
+        )
+        await ctx.reply(
+            _(ctx, "Reloaded module **{name}** from **{repo}**.").format(
+                name=module.name, repo=module.repository.name
+            )
+        )
 
     @check.acl2(check.ACLevel.BOT_OWNER)
     @commands.group(name="config")
@@ -114,17 +258,17 @@ class Admin(commands.Cog):
         """Alter core bot configuration."""
         keys = ("prefix", "language", "status")
         if key not in keys:
-            return await ctx.send(
+            return await ctx.reply(
                 _(ctx, "Key has to be one of: {keys}").format(
                     keys=", ".join(f"`{k}`" for k in keys),
                 )
             )
 
         if key == "language" and value not in LANGUAGES:
-            return await ctx.send(_(ctx, "Unsupported language"))
+            return await ctx.reply(_(ctx, "Unsupported language"))
         states = ("online", "idle", "dnd", "invisible", "auto")
         if key == "status" and value not in states:
-            return await ctx.send(
+            return await ctx.reply(
                 _(ctx, "Valid status values are: {states}").format(
                     states=", ".join(f"`{s}`" for s in states),
                 )
@@ -293,3 +437,7 @@ class Admin(commands.Cog):
             ctx.channel,
             f"Channel #{channel.name} set as primary spam channel.",
         )
+
+
+async def setup(bot) -> None:
+    await bot.add_cog(Admin(bot))

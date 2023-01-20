@@ -48,3 +48,7 @@ class Info(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+
+
+async def setup(bot) -> None:
+    await bot.add_cog(Info(bot))

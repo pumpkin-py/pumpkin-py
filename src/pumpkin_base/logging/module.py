@@ -133,3 +133,7 @@ class Logging(commands.Cog):
             await guild_log.info(ctx.author, ctx.channel, log_message)
         else:
             await ctx.reply(_(ctx, "Supplied arguments didn't match any entries."))
+
+
+async def setup(bot) -> None:
+    await bot.add_cog(Logging(bot))
