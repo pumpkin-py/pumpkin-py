@@ -102,6 +102,7 @@ class Pie:
         print(f"- Python version {COLOR.yellow}{python_version}{COLOR.none}")
         print(f"- Python release {python_release}")
         print(f"- discord.py {COLOR.yellow}{dpy_version}{COLOR.none}")
+        print(f"- sqlalchemy {COLOR.yellow}{sqlalchemy.__version__}{COLOR.none}")
 
     def check_configuration(self) -> None:
         """Check that the required environment variables are set."""
