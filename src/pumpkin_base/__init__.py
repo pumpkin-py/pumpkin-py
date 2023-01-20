@@ -15,7 +15,6 @@ def repo() -> Repository:
         r_base,
         "pumpkin_base.admin.module",
         "Admin",
-        database="pumpkin_base.admin.database",
     )
     Module(
         "base",

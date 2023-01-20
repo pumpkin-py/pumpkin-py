@@ -5,7 +5,7 @@ from types import ModuleType
 
 import discord
 
-from pumpkin.database.config import Config
+from pumpkin.config.database import Config
 from pumpkin.i18n.database import GuildLanguage, MemberLanguage
 
 LANGUAGES = ("cs", "sk")
@@ -112,10 +112,8 @@ class Translator:
         langcode: str = self.get_language_preference(ctx)
 
         if langcode not in self.strings.keys():
-            print(f"{langcode=} not found")
             return string
         if string not in self.strings[langcode].keys():
-            print(f"{langcode=} translation not found")
             return string
         return self.strings[langcode][string]
 

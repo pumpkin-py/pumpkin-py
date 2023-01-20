@@ -133,7 +133,7 @@ class Pie:
     def create_bot_object(self) -> discord.ext.commands.Bot:
         from pumpkin.help import Help
 
-        config = database.config.Config.get()
+        config = pumpkin.config.database.Config.get()
 
         bot = discord.ext.commands.Bot(
             allowed_mentions=discord.AllowedMentions(
@@ -168,7 +168,7 @@ class Pie:
         await self.update_app_info()
 
         # If the status is set to 'auto', let the loop in Admin module take care of it
-        config = database.config.Config.get()
+        config = pumpkin.config.database.Config.get()
         status = "invisible" if config.status == "auto" else config.status
         await utils.discord.update_presence(self.bot, status=status)
 
@@ -200,6 +200,8 @@ class Pie:
         self.check_configuration()
         self.print_repositories()
 
+        self.ensure_core_tables()
+
         self.bot: discord.ext.commands.Bot = self.create_bot_object()
 
         self.create_loggers()
@@ -209,8 +211,6 @@ class Pie:
 
     def select_modules(self) -> List[pumpkin.repository.Module]:
         """Select modules to be loaded."""
-        from pumpkin_base.admin.database import BaseAdminModule
-
         available_modules: Set[pumpkin.repository.Module] = {*()}
         for repository in pumpkin.repository.load():
             for module in repository.modules:
@@ -221,7 +221,8 @@ class Pie:
         )
 
         preference: Dict[str, bool] = {
-            module.name: module.enabled for module in BaseAdminModule.get_all()
+            module.qualified_name: module.enabled
+            for module in pumpkin.repository.database.Module.get_all()
         }
 
         print("Selecting modules:")
@@ -261,7 +262,15 @@ class Pie:
     def ensure_core_tables(self) -> None:
         """Ensure database tables for the bot core exist."""
         print("Ensuring core database tables:")
-        services = ("acl", "i18n", "logger", "storage", "spamchannel")
+        services = (
+            "acl",
+            "config",
+            "i18n",
+            "logger",
+            "repository",
+            "storage",
+            "spamchannel",
+        )
         for service in services:
             statement: str = f"pumpkin.{service}.database"
             importlib.import_module(statement)
@@ -294,7 +303,6 @@ class Pie:
     async def prepare(self):
         """Load modules and their databases."""
         modules = self.select_modules()
-        self.ensure_core_tables()
         self.ensure_module_tables(modules)
         await self.load_modules(modules)
 

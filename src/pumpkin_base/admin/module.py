@@ -3,7 +3,7 @@ from typing import List
 import discord
 from discord.ext import commands, tasks
 
-import pumpkin.database.config
+import pumpkin.config.database
 from pumpkin import check, i18n, logger, utils
 from pumpkin.spamchannel.database import SpamChannel
 
@@ -12,7 +12,7 @@ import pumpkin_base
 _ = i18n.Translator(pumpkin_base).translate
 bot_log = logger.Bot.logger()
 guild_log = logger.Guild.logger()
-config = pumpkin.database.config.Config.get()
+config = pumpkin.config.database.Config.get()
 
 LANGUAGES = ("en",) + i18n.LANGUAGES
 

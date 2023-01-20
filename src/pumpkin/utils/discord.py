@@ -4,7 +4,7 @@ from typing import Optional, Union
 import discord
 from discord.ext import commands
 
-from pumpkin.database.config import Config
+from pumpkin.config.database import Config
 
 
 async def get_message(

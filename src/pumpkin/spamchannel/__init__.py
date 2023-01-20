@@ -6,12 +6,10 @@ import discord
 from discord.ext import commands
 
 import pumpkin._tracing
-from pumpkin.database.config import Config
 from pumpkin.spamchannel.database import SpamChannel
 from pumpkin.exceptions import SpamChannelException
 
 
-config = Config.get()
 _trace: Callable = pumpkin._tracing.register("pie_spamchannel")
 
 
