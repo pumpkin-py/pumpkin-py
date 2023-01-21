@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pumpkin.py"
+name = "pumpkin"
 description = "Modular discord bot"
 version = "0.0.0"
 dynamic = ["readme"]

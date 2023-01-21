@@ -1,5 +1,7 @@
 import importlib
-from typing import TYPE_CHECKING, List, Tuple, Optional
+import json
+import subprocess  # nosec
+from typing import TYPE_CHECKING, Dict, List, Tuple, Optional, Union
 
 import discord
 from discord.ext import commands, tasks
@@ -7,7 +9,7 @@ from discord.ext import commands, tasks
 import pumpkin.config.database
 from pumpkin import check, i18n, logger, utils
 import pumpkin.repository
-from pumpkin.repository.database import Module as DBModule
+from pumpkin.repository.database import Repository as DBRepository, Module as DBModule
 from pumpkin.spamchannel.database import SpamChannel
 
 if TYPE_CHECKING:
@@ -110,6 +112,112 @@ class Admin(commands.Cog):
         """Manage repositories."""
         await utils.discord.send_help(ctx)
 
+    @repository_.command(name="list")
+    async def repository_list(self, ctx):
+        """List available repositories."""
+        pip_versions: Dict[str, Dict[str, Union[str, bool]]] = {}
+        try:
+            output = subprocess.run(  # nosec
+                ["python3", "-m", "pip", "list", "--format=json"],
+                stdout=subprocess.PIPE,
+            )
+            for package in json.loads(output.stdout.decode("utf-8")):
+                name: str = package["name"]
+                version: str = package["version"]
+                editable: bool = "editable_project_location" in package.keys()
+                pip_versions[name] = {"version": version, "editable": editable}
+        except Exception as exc:
+            await bot_log.error(
+                ctx.author,
+                ctx.channel,
+                "Could not obtain pip package versions.",
+                exception=exc,
+            )
+
+        content: List[str] = ["**__" + _(ctx, "Repositories") + "__**"]
+        for repository in sorted(pumpkin.repository.load(), key=lambda r: r.name):
+            pip_pkg: Dict = pip_versions.get(repository.pip_name, {})
+            if not pip_pkg:
+                version = _(ctx, "unknown version")
+            else:
+                if pip_pkg["editable"]:
+                    version = _(ctx, "version **{version}** in editable mode").format(
+                        version=pip_pkg["version"]
+                    )
+                else:
+                    version = _(ctx, "version **{version}**").format(
+                        version=pip_pkg["version"]
+                    )
+            metadata = [version]
+
+            db_repo = DBRepository.get(repository.package)
+            if db_repo:
+                metadata.append(f"<{db_repo.url}>")
+
+            content.append(f"**{repository.name}** (`{repository.package}`)")
+            content.append(f"\N{EM DASH} {', '.join(metadata)}")
+
+        await ctx.reply("\n".join(content))
+
+    @repository_.command(name="install")
+    async def repository_install(self, ctx, name: str, url: str):
+        """Install repository.
+
+        'name' is the package name, under which the modules are available.
+        'url' is the Pip package name or Git URL.
+        """
+        # FIXME Could this be used to get access to the server?
+        #  Even though only the bot owner has access.
+        #  Opening a shell may be possible. Probably.
+        async with ctx.typing():
+            try:
+                subprocess.run(["python3", "-m", "pip", "install", url])  # nosec
+            except Exception as exc:
+                await bot_log.error(
+                    ctx.author,
+                    ctx.channel,
+                    f"Could not install pip package '{url}'.",
+                    exception=exc,
+                )
+                await ctx.reply(_(ctx, "Package could not be installed."))
+                return
+
+        try:
+            module = importlib.import_module(name)
+        except Exception as exc:
+            await bot_log.error(
+                ctx.author,
+                ctx.channel,
+                f"Could not load installed module '{name}'.",
+                exception=exc,
+            )
+            await ctx.reply(_(ctx, "Package could not be loaded."))
+            return
+
+        module_repo: Repository = module.repo()
+        DBRepository.add(module_repo.package, url)
+
+        await bot_log.warning(
+            ctx.author, ctx.channel, f"Installed repository '{name}': '{url}'."
+        )
+
+        if name != module_repo.package:
+            await bot_log.warning(
+                ctx.author,
+                ctx.channel,
+                f"Repository's requested name does not match: '{module_repo.package}' "
+                f"is claimed by the repository instead of '{name}'.",
+            )
+
+        await ctx.reply(
+            _(ctx, "Repository **{name}** (`{package}`) has been installed.").format(
+                name=module_repo.name, package=module_repo.package
+            )
+        )
+
+    # TODO repository update
+    # TODO repository uninstall
+
     @commands.guild_only()
     @check.acl2(check.ACLevel.BOT_OWNER)
     @commands.group(name="module")
@@ -121,6 +229,10 @@ class Admin(commands.Cog):
     @module_.command(name="list")
     async def module_list(self, ctx):
         """List available modules."""
+
+        # FIXME Split into messages, this will break when more modules are found
+        # Also, maybe the modules should be listed next to each other, they take
+        # quite a lot vertical space.
 
         def get_status(module: "Module") -> Tuple[bool, str]:
             db_module: Optional[DBModule] = DBModule.get(module.qualified_name)

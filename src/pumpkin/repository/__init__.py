@@ -14,11 +14,13 @@ ENTRYPOINT_REPOS = "pumpkin.repos"
 class Repository:
     package: str
     name: str
+    pip_name: str
     modules: List[Module]
 
-    def __init__(self, name: str, package: str):
+    def __init__(self, name: str, package: str, pip_name: str):
         self.name = name
         self.package = package
+        self.pip_name = pip_name
         self.modules = []
 
     def __repr__(self) -> str:
@@ -26,6 +28,7 @@ class Repository:
             f"{self.__class__.__name__}("
             f"name='{self.name}', "
             f"package='{self.package}', "
+            f"pip_name='{self.pip_name}', "
             f"modules~[{', '.join(m.name for m in self.modules)}]"
             ")"
         )

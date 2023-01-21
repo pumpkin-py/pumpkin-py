@@ -2,7 +2,7 @@ from pumpkin.repository import Repository, Module
 
 
 def repo() -> Repository:
-    r_base = Repository(name="base", package="pumpkin_base")
+    r_base = Repository(name="base", package="pumpkin_base", pip_name="pumpkin")
 
     Module(
         "acl",
