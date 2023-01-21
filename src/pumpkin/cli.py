@@ -39,11 +39,9 @@ class _Color:
 
     def __init__(self):
         if is_windows():
-            print("IS WINDOWS")
             return
 
         if not is_tty():
-            print("IS NOT TTY")
             return
 
         self.red = "\033[31m"

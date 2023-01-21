@@ -3,6 +3,7 @@
 Docker installation
 ===================
 
+.. include:: ../_snippets/_outdated.rst
 
 .. _docker_download:
 

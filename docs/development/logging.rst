@@ -9,7 +9,7 @@ The logger targets are usually defined on top of the file:
 
 .. code-block:: python3
 
-	from pie import logger
+	from pumpkin import logger
 
 	bot_log = logger.Bot.logger()
 	guild_log = logger.Guild.logger()

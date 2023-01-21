@@ -3,6 +3,8 @@
 Direct installation
 ===================
 
+.. include:: ../_snippets/_outdated.rst
+
 If you can't/don't want to install Docker on your system, you can run the bot directly.
 This may be helpful if you want to run the bot on Raspberry Pi or other low-powered hardware.
 

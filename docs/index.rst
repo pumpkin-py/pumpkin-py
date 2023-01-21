@@ -32,7 +32,6 @@ pumpkin.py's developer documentation
    development/imports
    development/logging
    development/translations
-   development/repository
    development/git_branch_workflow
 
 .. toctree::

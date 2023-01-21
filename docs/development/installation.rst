@@ -103,9 +103,8 @@ Once you are in virtual environment, you can install required libraries:
 
 .. code-block:: bash
 
-	python3 -m pip install wheel
-	python3 -m pip install -r requirements.txt
-	python3 -m pip install -r requirements-dev.txt
+	python3 -m pip install --upgrade pip wheel
+	python3 -m pip install -e .[dev]
 
 Before the bot can start, you have to load the contents of ``.env`` file into your working environment. After any changes to ``.env``, this process must be performed for the changes to take place.
 This can be done by running
@@ -123,24 +122,53 @@ Running the bot
 
 .. code-block:: bash
 
-	python3 pumpkin.py
+	pumpkin
 
 If you have done everything correctly (you are in ``venv``, you have all libraries installed), the script will print startup information and a welcome message, something like this:
 
 .. code-block::
 
-	Imported database models in modules.base.base.database.
-	Imported database models in modules.base.admin.database.
-	Loaded module base.acl
-	Loaded module base.admin
-	Loaded module base.base
-	Loaded module base.logging
-	Loaded module base.errors
-	Loaded module base.language
+	Starting with:
+	- Python version 3.10
+	- discord.py 2.1.0
+	- sqlalchemy 2.0.0rc3
+	Checking configuration:
+	- Variable DB_STRING set.
+	- Variable TOKEN set.
+	Detecting repositories:
+	- base: acl, admin, base*, errors*, info, language, logging
+	Ensuring core database tables:
+	- acl imported
+	- config imported
+	- i18n imported
+	- logger imported
+	- repository imported
+	- storage imported
+	- spamchannel imported
+	Selecting modules:
+	- pumpkin_base.acl: selecting (is default)
+	- pumpkin_base.admin: selecting (is default)
+	- pumpkin_base.base: selecting (is default)
+	- pumpkin_base.errors: selecting (is default)
+	- pumpkin_base.info: selecting (is default)
+	- pumpkin_base.language: selecting (is default)
+	- pumpkin_base.logging: selecting (is default)
+	Ensuring module database tables:
+	- pumpkin_base.base imported
+	- pumpkin_base.errors imported
+	Loading modules:
+	- pumpkin_base.admin loaded
+	- pumpkin_base.base loaded
+	- pumpkin_base.errors loaded
+	- pumpkin_base.info loaded
+	- pumpkin_base.language loaded
+	- pumpkin_base.logging loaded
+
 	     (
 	  (   )  )
 	   )  ( )
 	   .....
 	.:::::::::.
 	~\_______/~
-	2022-02-18 08:18:02 CRITICAL: The pie is ready.
+
+	2023-01-21 15:28:09 CRITICAL: The pie is ready.

@@ -9,7 +9,7 @@
 
 ## About
 
-pumpkin.py is a Discord bot framework written in nextcord.
+pumpkin.py is a Discord bot framework written in Discord.py.
 
 This code is just the core -- see other [repositories](https://github.com/orgs/pumpkin-py/repositories) to add more functions to your bot!
 

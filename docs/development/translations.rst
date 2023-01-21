@@ -5,28 +5,25 @@ Translations
 
 There are four **if**\ s of the text format:
 
-- If the string represents bot's reply, it should end with a period.
-- If the string is part of embed content, it should not end with a period.
-- If it is command help, it should not end with a period.
-- If the embed content or help is one or more sentences, it should end with a period.
+#. If the string represents bot's reply, it should end with a period.
+#. If the string is part of embed content, it should not end with a period.
+#. If it is command help, it should not end with a period.
+#. If the embed content or help is one or more sentences, it should end with a period.
 
-Translated strings are stored in ``po``-like files (with extension ``.popie``.
-
-They should be updated automatically by pre-commit when you change the English text. However, if you want to trigger it manually, install the ``pumpkin-tools`` package and run the tool ``popie``:
+Translated strings are stored in gettext ``.po`` files.
+To trigger a string extraction, run
 
 .. code-block:: bash
 
-	python3 -m pip install git+https://github.com/pumpkin-py/pumpkin-tools.git
-	popie <list of directories or files>
+	make localize
 
 All modules define the translation function on top:
 
 .. code-block:: python3
 
-	from core import i18n
+	from pumpkin import i18n
 
-	_ = i18n.Translator("modules/repo").translate
-	# Set the "repo" to match the name of your repository and module
+	_ = i18n.Translator(pumpkin_repo).translate
 
 	...
 
@@ -45,13 +42,13 @@ Sometimes context isn't available, though -- e.g. in raw reaction. These times y
 
 .. code-block:: python
 
-	from core import TranslationContext
+	from pumpkin.i18n import TranslationContext
 
 	...
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
-	    utx = TranslationContext(payload.guild_id, payload.user_id)
+	    tc = TranslationContext(payload.guild_id, payload.user_id)
 
 	    message = await utils.discord.get_message(
 	        self.bot,
@@ -59,4 +56,4 @@ Sometimes context isn't available, though -- e.g. in raw reaction. These times y
 	        payload.channel_id,
 	        payload.message_id,
 	    )
-	    await message.reply(_(utx, "Reaction detected!"))
+	    await message.reply(_(tc, "Reaction detected!"))

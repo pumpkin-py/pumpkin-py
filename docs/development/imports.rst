@@ -25,10 +25,11 @@ All the imports MUST be at the top of the file (flake8 won't let you). For the s
 	import discord
 	from discord.ext import commands
 
-	from pie import i18n, text, utils
-	from .database import RepoModuleTable as Table
+	from pumpkin import i18n, text, utils
+	import pumpkin_repo
+	from pumpkin_repo.mymodule.database import MyTable
 
-	_ = i18n.Translator(__file__).translate
+	_ = i18n.Translator(pumpkin_repo).translate
 
 	class MyModule(commands.Cog):
 	    ...
