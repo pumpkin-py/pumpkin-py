@@ -13,7 +13,7 @@ class Repository(database.base):
     __tablename__ = "core_repositories"
 
     name: Mapped[str] = mapped_column(primary_key=True, unique=True)
-    url: Mapped[str] = mapped_column(unique=True)
+    url: Mapped[Optional[str]] = mapped_column(unique=True)
     modules: Mapped[List["Module"]] = relationship(
         back_populates="repository", cascade="all, delete"
     )

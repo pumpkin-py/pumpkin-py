@@ -327,7 +327,9 @@ def main():
     if args.add_local_repository is not None:
         import pumpkin.repository.database
 
-        repo = pumpkin.repository.database.Repository.add(args.add_local_repository, "")
+        repo = pumpkin.repository.database.Repository.add(
+            args.add_local_repository, None
+        )
         print(f"Repository added: {repo!r}.")
         return
 
