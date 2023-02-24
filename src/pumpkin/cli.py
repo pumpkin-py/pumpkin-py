@@ -312,12 +312,25 @@ async def start():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
+    cmds = parser.add_mutually_exclusive_group()
+    cmds.add_argument(
         "--development",
         action="store_true",
         help="Enable debug output to stderr",
     )
+    cmds.add_argument(
+        "--add-local-repository",
+        help="Add locally installed repository "
+        "(argument should be the Python-importable module name)",
+    )
     args = parser.parse_args()
+    if args.add_local_repository is not None:
+        import pumpkin.repository.database
+
+        repo = pumpkin.repository.database.Repository.add(args.add_local_repository, "")
+        print(f"Repository added: {repo!r}.")
+        return
+
     if args.development:
         import logging
         import logging.handlers
