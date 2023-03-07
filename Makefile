@@ -1,6 +1,7 @@
 .PHONY: help
 help:
 	@echo "localize ... Update translation files"
+	@echo "docs ....... Generate documentation"
 
 .PHONY: localize
 localize:
@@ -8,3 +9,7 @@ localize:
 	msgmerge --previous -o src/po/cs.po src/po/cs.po src/po/messages.pot --force-po --no-wrap
 	msgmerge --previous -o src/po/sk.po src/po/sk.po src/po/messages.pot --force-po --no-wrap
 	sed -r '/^#(,|)(.*)/d' -i -s src/po/*.po
+
+.PHONY: docs
+docs:
+	cd docs/ && SPHINXOPTS=-n make html

@@ -2,44 +2,44 @@ from pumpkin.repository import Repository, Module
 
 
 def repo() -> Repository:
-    r_base = Repository(name="base", package="pumpkin_base", pip_name="pumpkin")
+    repo = Repository(name="base", package="pumpkin_base", pip_name="pumpkin")
 
     Module(
         "acl",
-        r_base,
+        repo,
         "pumpkin_base.acl.module",
     )
     Module(
         "admin",
-        r_base,
+        repo,
         "pumpkin_base.admin.module",
     )
     Module(
         "base",
-        r_base,
+        repo,
         "pumpkin_base.base.module",
         database="pumpkin_base.base.database",
     )
     Module(
         "errors",
-        r_base,
+        repo,
         "pumpkin_base.errors.module",
         database="pumpkin_base.errors.database",
     )
     Module(
         "info",
-        r_base,
+        repo,
         "pumpkin_base.info.module",
     )
     Module(
         "language",
-        r_base,
+        repo,
         "pumpkin_base.language.module",
     )
     Module(
         "logging",
-        r_base,
+        repo,
         "pumpkin_base.logging.module",
     )
 
-    return r_base
+    return repo
