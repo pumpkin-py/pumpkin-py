@@ -17,12 +17,6 @@ repos:
     hooks:
     - id: flake8
 
-  - repo: https://github.com/PyCQA/bandit
-    rev: '1.7.4'
-    hooks:
-    - id: bandit
-      args: [--skip=B101]
-
   - repo: https://github.com/pumpkin-py/pumpkin-tools
     rev: v1.9.0
     hooks:

@@ -179,7 +179,7 @@ class Admin(commands.Cog):
                     f"Could not install pip package '{url}'.",
                     exception=exc,
                 )
-                await ctx.reply(_(ctx, "Package could not be installed."))
+                await ctx.reply(_(ctx, "Pip package could not be installed."))
                 return
 
         try:
@@ -191,7 +191,7 @@ class Admin(commands.Cog):
                 f"Could not load installed module '{name}'.",
                 exception=exc,
             )
-            await ctx.reply(_(ctx, "Package could not be loaded."))
+            await ctx.reply(_(ctx, "Pip package could not be loaded."))
             return
 
         module_repo: Repository = module.repo()
@@ -215,8 +215,47 @@ class Admin(commands.Cog):
             )
         )
 
-    # TODO repository update
-    # TODO repository uninstall
+    @repository_.command(name="update")
+    async def repository_update(self, ctx, name: str):
+        """Update repository."""
+        async with ctx.typing():
+            try:
+                subprocess.run(
+                    ["python3", "-m", "pip", "install", "--upgrade", name],  # nosec
+                )
+            except Exception as exc:
+                await bot_log.error(
+                    ctx.author,
+                    ctx.channel,
+                    f"Could not install pip package '{name}'.",
+                    exception=exc,
+                )
+                await ctx.reply(_(ctx, "Pip package could not be updated."))
+                return
+
+        await ctx.reply(_(ctx, "Pip package updated."))
+
+    @repository_.command(name="uninstall")
+    async def repository_uninstall(self, ctx, name: str):
+        """Uninstall repository."""
+        async with ctx.typing():
+            try:
+                proc = subprocess.Popen(
+                    ["python3", "-m", "pip", "uninstall", name],  # nosec
+                    stdin=subprocess.PIPE,
+                )
+                proc.communicate(b"y\n")
+            except Exception as exc:
+                await bot_log.error(
+                    ctx.author,
+                    ctx.channel,
+                    f"Could not uninstall pip package '{name}'.",
+                    exception=exc,
+                )
+                await ctx.reply(_(ctx, "Pip package could not be uninstalled."))
+                return
+
+        await ctx.reply(_(ctx, "Pip package uninstalled."))
 
     @commands.guild_only()
     @check.acl2(check.ACLevel.BOT_OWNER)

@@ -522,6 +522,42 @@ msgstr ""
 msgid "No such module."
 msgstr ""
 
+msgid "Repositories"
+msgstr ""
+
+msgid "unknown version"
+msgstr ""
+
+#, python-brace-format
+msgid "version **{version}** in editable mode"
+msgstr ""
+
+#, python-brace-format
+msgid "version **{version}**"
+msgstr ""
+
+msgid "Pip package could not be installed."
+msgstr ""
+
+msgid "Pip package could not be loaded."
+msgstr ""
+
+#, python-brace-format
+msgid "Repository **{name}** (`{package}`) has been installed."
+msgstr ""
+
+msgid "Pip package could not be updated."
+msgstr ""
+
+msgid "Pip package updated."
+msgstr ""
+
+msgid "Pip package could not be uninstalled."
+msgstr ""
+
+msgid "Pip package uninstalled."
+msgstr ""
+
 msgid "enabled by default"
 msgstr ""
 

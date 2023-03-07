@@ -473,6 +473,39 @@ msgstr "Neexistující repozitář."
 msgid "No such module."
 msgstr "Neexistující modul."
 
+msgid "Repositories"
+msgstr "Moduly repozitářů"
+
+msgid "unknown version"
+msgstr "neznámá verze"
+
+msgid "version **{version}** in editable mode"
+msgstr "Rozšíření **{extension}** je už načteno"
+
+msgid "version **{version}**"
+msgstr "verze **{version}**"
+
+msgid "Pip package could not be installed."
+msgstr "Balík nemohl být nainstalován."
+
+msgid "Pip package could not be loaded."
+msgstr "Balík nemhl být načten."
+
+msgid "Repository **{name}** (`{package}`) has been installed."
+msgstr "Repozitář **{name}** (`{package}`) byl nainstalován."
+
+msgid "Pip package could not be updated."
+msgstr "Balík nemohl být aktualizován."
+
+msgid "Pip package updated."
+msgstr "Balík nemohl být aktualizován."
+
+msgid "Pip package could not be uninstalled."
+msgstr "Balík nemohl být nainstalován."
+
+msgid "Pip package uninstalled."
+msgstr "Balík nemohl být nainstalován."
+
 msgid "enabled by default"
 msgstr "standartně zapnutý"
 
