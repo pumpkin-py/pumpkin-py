@@ -271,6 +271,24 @@ msgstr Kanál {channel} nie je označený ako spam kanál, nemôže být označe
 msgid Channel {channel} set as primary.
 msgstr Kanál {channel} bol označený ako primárny.
 
+msgid No emoji to export on this server.
+msgstr
+
+msgid Fetching emotes...
+msgstr
+
+msgid Compressing...
+msgstr
+
+msgid Uploading...
+msgstr
+
+msgid ERROR: Encountered an error uploading the emoji archive
+msgstr
+
+msgid ERROR: Couldn't delete progress message
+msgstr
+
 msgid User pinning is not enabled on this server.
 msgstr Pripínanie správ uživateľmi na tomto serveri nie je povolené.
 
