@@ -40,6 +40,9 @@ class Backup(commands.Cog):
     )
     async def emojipack(self, ctx: commands.Context):
         """Download guild's emoji pack."""
+        if not ctx.guild.emojis:
+            await ctx.reply(_(ctx, "No emoji to export on this server."))
+            return
 
         if not os.path.exists("emojis/"):
             os.mkdir("emojis/")
@@ -53,7 +56,7 @@ class Backup(commands.Cog):
             msg = await ctx.reply(msg_str)
 
             for idx, emoji in enumerate(ctx.guild.emojis):
-                int_percentage = int(100 * (idx / (len(ctx.guild.emojis) - 1)))
+                int_percentage = int(100 * ((idx + 1) / len(ctx.guild.emojis)))
                 if int_percentage % 5 == 0:
                     bar = (
                         "["
@@ -85,6 +88,7 @@ class Backup(commands.Cog):
                     zipf.write(entry.path)
                     os.remove(entry.path)
         current_msg_str = current_msg_str + "\n" + _(ctx, "Uploading...")
+        await msg.edit(content=current_msg_str)
 
         try:
             await ctx.reply(file=discord.File(filepath))

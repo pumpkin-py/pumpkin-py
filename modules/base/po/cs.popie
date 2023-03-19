@@ -271,6 +271,9 @@ msgstr Kanál {channel} není spam kanál, nemůže být označen jako primárn�
 msgid Channel {channel} set as primary.
 msgstr Kanál {channel} byl označen jako primární.
 
+msgid No emoji to export on this server.
+msgstr Na serveru nejsou žádné emoji k exportu.
+
 msgid Fetching emotes...
 msgstr Stahuji emoty...
 
