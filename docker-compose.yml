@@ -2,7 +2,8 @@ version: "3.6"
 
 services:
   db:
-    image: postgres:13-alpine
+    image: docker.io/postgres:13-alpine
+    container_name: pumpkin-db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -11,37 +12,31 @@ services:
     command: ["postgres", "-c", "log_min_messages=fatal"]
     restart: unless-stopped
   backup:
-    image: prodrigestivill/postgres-backup-local:13-alpine
+    image: docker.io/prodrigestivill/postgres-backup-local:13-alpine
+    container_name: pumpkin-backup
     restart: unless-stopped
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
       - ${DOCKER_DB_BACKUP_PATH}:/backups/:z
     links:
-      - db
+      - pumpkin-db
     depends_on:
-      - db
+      - pumpkin-db
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_EXTRA_OPTS=${POSTGRES_EXTRA_OPTS}
       - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
       - SCHEDULE=${SCHEDULE}
   bot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args: ["TZ=Europe/Prague"]
-
+    image: docker.io/czechbol/pumpkin-py
+    container_name: pumpkin-bot
     env_file: .env
-
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
       - ./:/pumpkin-py/:z
-    command: python pumpkin.py
     depends_on:
-      - db
+      - pumpkin-db
     restart: unless-stopped
 
 volumes:
