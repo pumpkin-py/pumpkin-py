@@ -2,44 +2,37 @@ version: "3.6"
 
 services:
   db:
-    image: postgres:13-alpine
+    image: docker.io/postgres:13-alpine
+    container_name: pumpkin-db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      POSTGRES_HOST_AUTH_METHOD: "trust"
-      POSTGRES_LOG_MIN_LEVEL: "fatal"
-    command: ["postgres", "-c", "log_min_messages=fatal"]
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     restart: unless-stopped
   backup:
-    image: prodrigestivill/postgres-backup-local:13-alpine
+    image: docker.io/prodrigestivill/postgres-backup-local:13-alpine
+    container_name: pumpkin-backup
     restart: unless-stopped
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - ${DOCKER_DB_BACKUP_PATH}:/backups/:z
-    links:
-      - db
+      - ${BACKUP_PATH}:/backups/:z
     depends_on:
       - db
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_EXTRA_OPTS=${POSTGRES_EXTRA_OPTS}
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - SCHEDULE=${SCHEDULE}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_EXTRA_OPTS=${BACKUP_EXTRA_OPTS}
+      - POSTGRES_HOST=${BACKUP_DB_HOST}
+      - POSTGRES_PORT=${BACKUP_DB_PORT}
+      - SCHEDULE=${BACKUP_SCHEDULE}
   bot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args: ["TZ=Europe/Prague"]
-
+    image: docker.io/czechbol/pumpkin-py:latest
+    container_name: pumpkin-bot
     env_file: .env
-
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
       - ./:/pumpkin-py/:z
-    command: python pumpkin.py
     depends_on:
       - db
     restart: unless-stopped

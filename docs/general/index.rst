@@ -7,7 +7,7 @@ I'm new to Discord bots
 
 	If you are a developer, the :ref:`devel` page may be more suitable for you.
 
-	If you want to deploy your bot instance, take a look at :ref:`docker` or :ref:`direct`.
+	If you want to deploy your bot instance, take a look at :ref:`containers`, :ref:`direct` or :ref:`k8s`.
 
 
 .. _general_download:

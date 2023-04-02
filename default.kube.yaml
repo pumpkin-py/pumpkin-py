@@ -1,0 +1,142 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pumpkin-db-volume-claim
+spec:
+  accessModes: 
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pumpkin
+spec:
+  restartPolicy: Always
+  containers:
+    - name: db
+      image: docker.io/postgres:13-alpine
+      env:
+        - name: POSTGRES_HOST_AUTH_METHOD
+          value: "trust"
+        - name: POSTGRES_LOG_MIN_LEVEL
+          value: "fatal"
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: db-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: db-password
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: db-name
+      resources:
+        limits:
+          memory: 512Mi
+          cpu: "1"
+        requests:
+          memory: 32Mi
+          cpu: "0.2"
+      volumeMounts:
+        - mountPath: "/var/lib/postgresql/data/"
+          name: pumpkin-db-volume
+    - name: backup
+      image: docker.io/prodrigestivill/postgres-backup-local:13-alpine
+      env:
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: backup-db-host
+        - name: POSTGRES_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: backup-db-port
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: db-name
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: db-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: db-password
+        - name: POSTGRES_EXTRA_OPTS
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: backup-extra-opts
+        - name: SCHEDULE
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: backup-schedule
+      resources:
+        limits:
+          memory: 256Mi
+          cpu: "1"
+        requests:
+          memory: 8Mi
+          cpu: "0.2"
+      volumeMounts:
+        - mountPath: "/backups"
+          name: backup-volume
+    - name: bot
+      image: docker.io/czechbol/pumpkin-py:latest
+      env:
+        - name: DB_STRING
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: db-string
+        - name: TOKEN
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: token
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: bot-timezone
+        - name: EXTRA_PKGS
+          valueFrom:
+            configMapKeyRef:
+              name: pumpkin-py
+              key: bot-extra-packages
+      resources:
+        limits:
+          memory: 512Mi
+          cpu: "1"
+        requests:
+          memory: 8Mi
+          cpu: "0.2"
+      volumeMounts:
+        - mountPath: "/pumpkin-py"
+          name: pumpkin-volume
+  volumes:
+    - name: pumpkin-db-volume
+      persistentVolumeClaim:
+        claimName: pumpkin-db-volume-claim
+    - name: backup-volume
+      hostPath:
+        path: ./backups
+    - name: pumpkin-volume
+      hostPath:
+        path: ./
