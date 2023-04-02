@@ -18,8 +18,9 @@ pumpkin.py's developer documentation
    :maxdepth: 1
    :caption: Production section
 
-   production/docker
+   production/containers
    production/direct
+   production/k8s
    production/config
 
 .. toctree::
@@ -34,6 +35,7 @@ pumpkin.py's developer documentation
    development/translations
    development/repository
    development/git_branch_workflow
+   development/access_tokens
 
 .. toctree::
    :maxdepth: 1
