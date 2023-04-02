@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pumpkin-py
+data:
+  token: ""
+  db-string: postgresql://postgres:postgres@localhost:5432/postgres
+  bot-extra-packages: ""
+  bot-timezone: Europe/Prague
+  db-user: postgres
+  db-password: postgres
+  db-name: postgres
+  backup-path: ./backups
+  backup-db-host: localhost
+  backup-db-port: "5432"
+  backup-extra-opts: -Z9 --schema=public --blobs
+  backup-schedule: "@every 0h30m00s"
