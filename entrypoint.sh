@@ -34,4 +34,4 @@ python3 -m pip install -q -r /tempdir/requirements.txt --user --no-warn-script-l
 
 echo "Starting pumpkin-py"
 echo ""
-python3 /pumpkin-py/pumpkin.py
+cd /pumpkin-py && python3 pumpkin.py

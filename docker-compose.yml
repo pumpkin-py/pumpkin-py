@@ -7,9 +7,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      POSTGRES_HOST_AUTH_METHOD: "trust"
-      POSTGRES_LOG_MIN_LEVEL: "fatal"
-    command: ["postgres", "-c", "log_min_messages=fatal"]
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     restart: unless-stopped
   backup:
     image: docker.io/prodrigestivill/postgres-backup-local:13-alpine
@@ -17,10 +17,8 @@ services:
     restart: unless-stopped
     volumes:
       - ${BACKUP_PATH}:/backups/:z
-    links:
-      - pumpkin-db
     depends_on:
-      - pumpkin-db
+      - db
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
@@ -36,7 +34,7 @@ services:
     volumes:
       - ./:/pumpkin-py/:z
     depends_on:
-      - pumpkin-db
+      - db
     restart: unless-stopped
 
 volumes:
