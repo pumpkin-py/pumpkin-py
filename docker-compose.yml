@@ -16,21 +16,21 @@ services:
     container_name: pumpkin-backup
     restart: unless-stopped
     volumes:
-      - ${DOCKER_DB_BACKUP_PATH}:/backups/:z
+      - ${BACKUP_PATH}:/backups/:z
     links:
       - pumpkin-db
     depends_on:
       - pumpkin-db
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_EXTRA_OPTS=${POSTGRES_EXTRA_OPTS}
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - SCHEDULE=${SCHEDULE}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_EXTRA_OPTS=${BACKUP_EXTRA_OPTS}
+      - POSTGRES_HOST=${BACKUP_DB_HOST}
+      - POSTGRES_PORT=${BACKUP_DB_PORT}
+      - SCHEDULE=${BACKUP_SCHEDULE}
   bot:
-    image: docker.io/czechbol/pumpkin-py
+    image: docker.io/czechbol/pumpkin-py:latest
     container_name: pumpkin-bot
     env_file: .env
     volumes:
