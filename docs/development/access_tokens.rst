@@ -16,7 +16,7 @@ Set a desired token name and expiration date (maximum is 1 year from the day you
 
 In the *Repository access* section, it is recommended to set *Only select repositories* 
 and select the repositories that you want to expose using this token. It is recommended
-to expose as few as possible, preferably one per repository.
+to expose as few as possible, preferably one per token.
 
 In the *Permissions* section, click on *Repository permissions* and set the *Contents* key to *Read-only*.
 This will also set the Metadata key to *Read-only* automatically.
