@@ -86,7 +86,8 @@ def parse_fuzzy_datetime(
     regex = re.compile(
         r"(?!\s*$)(?:(?P<weeks>\d+)(?: )?(?:w)(?:\D)*)?(?:(?P<days>\d+)(?: )"
         r"?(?:d)(?:\D)*)?(?:(?P<hours>\d+)(?: )?(?:h)(?:\D)*)?(?:(?P<minutes>\d+)(?: )"
-        r"?(?:m)(?:\D)*)?"
+        r"?(?:m)(?:\D)*)?",
+        re.IGNORECASE
     )
     result = re.fullmatch(regex, string)
     if result is not None:
