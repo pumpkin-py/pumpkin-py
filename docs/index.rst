@@ -19,6 +19,7 @@ pumpkin.py's developer documentation
    :caption: Production section
 
    production/containers
+   production/podman
    production/direct
    production/k8s
    production/config
