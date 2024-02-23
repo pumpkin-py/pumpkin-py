@@ -45,9 +45,7 @@ class Help(commands.MinimalHelpCommand):
 
         if allow_invoke is not True:
             await ctx.reply(
-                _(ctx, "Help for command **{command}** is not available.").format(
-                    command=command
-                )
+                _(ctx, "I don't know command **{name}**.").format(name=command)
             )
             return False
         return True
