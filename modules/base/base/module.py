@@ -522,7 +522,8 @@ class Base(commands.Cog):
 
         if emoji == "📍" and not payload.member.bot:
             await utils.discord.send_dm(
-                payload.member, _(utx, "I'm using 📍 to mark the pinned message, use 📌.")
+                payload.member,
+                _(utx, "I'm using 📍 to mark the pinned message, use 📌."),
             )
             await utils.discord.remove_reaction(message, emoji, payload.member)
             return
