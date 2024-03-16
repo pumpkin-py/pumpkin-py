@@ -138,8 +138,16 @@ def acl2_function(
 ) -> bool:
     """Check function based on Access Control.
 
-    Set `for_command` to perform the check for other command
-    then the one being invoked.
+    Args:
+        level: ACLevel of the command.
+        bot: Bot instance.
+        invoker: Invoker of the command.
+        command: Command qualified name.
+        guild: Guild the command was run at.
+        channel: Channel the command was run in.
+
+    Returns:
+        True if command can be run, False otherwise.
     """
     _acl_trace = lambda message: _trace(f"[{command}] {message}")  # noqa: E731
 
