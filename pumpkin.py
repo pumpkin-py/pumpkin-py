@@ -170,6 +170,8 @@ async def on_ready():
     status = "invisible" if config.status == "auto" else config.status
     await utils.discord.update_presence(bot, status=status)
 
+    await bot.tree.sync()
+
     if already_loaded:
         await bot_log.info(None, None, "Reconnected")
     else:

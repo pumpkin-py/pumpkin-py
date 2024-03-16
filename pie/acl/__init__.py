@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 import re
-from typing import Callable, Set, Optional, TypeVar
+from typing import Callable, Optional, Set, TypeVar, Union
 
 import ring
 
@@ -97,60 +97,93 @@ def acl2(level: ACLevel) -> Callable[[T], T]:
             await ctx.reply(utils.text.sanitise(input, escape=False))
     """
 
-    def predicate(ctx: commands.Context) -> bool:
-        return acl2_function(ctx, level)
+    def predicate(action: Union[commands.Context, discord.Interaction]) -> bool:
+        if type(action) is commands.Context:
+            ctx: commands.Context = action
+            return acl2_function(
+                level=level,
+                bot=ctx.bot,
+                invoker=ctx.author,
+                command=ctx.command.qualified_name,
+                guild=ctx.guild,
+                channel=ctx.channel,
+            )
+
+        bot: Union[commands.Bot, commands.AutoShardedBot] = action.client
+        invoker: Union[discord.User, discord.Member] = action.user
+        guild: discord.Guild = action.guild
+        channel: discord.abc.Messageable = action.channel
+        command: str = action.command.qualified_name
+
+        return acl2_function(
+            level=level,
+            bot=bot,
+            invoker=invoker,
+            command=command,
+            guild=guild,
+            channel=channel,
+        )
 
     return commands.check(predicate)
 
 
 # TODO Make cachable as well?
 def acl2_function(
-    ctx: commands.Context, level: ACLevel, *, for_command: Optional[str] = None
+    level: ACLevel,
+    bot: Union[commands.Bot, commands.AutoShardedBot],
+    invoker: Union[discord.User, discord.Member],
+    command: str,
+    guild: discord.Guild = None,
+    channel: discord.abc.Messageable = None,
 ) -> bool:
     """Check function based on Access Control.
 
-    Set `for_command` to perform the check for other command
-    then the one being invoked.
+    Args:
+        level: ACLevel of the command.
+        bot: Bot instance.
+        invoker: Invoker of the command.
+        command: Command qualified name.
+        guild: Guild the command was run at.
+        channel: Channel the command was run in.
+
+    Returns:
+        True if command can be run, False otherwise.
     """
-    if for_command:
-        command = for_command
-    else:
-        command: str = ctx.command.qualified_name
     _acl_trace = lambda message: _trace(f"[{command}] {message}")  # noqa: E731
 
     # Allow invocations in DM.
     # Wrap the function in `@commands.guild_only()` to change this behavior.
-    if ctx.guild is None:
+    if guild is None:
         _acl_trace("Non-guild context is always allowed.")
         return True
 
-    member_level = map_member_to_ACLevel(bot=ctx.bot, member=ctx.author)
+    member_level = map_member_to_ACLevel(bot=bot, member=invoker)
     if member_level == ACLevel.BOT_OWNER:
         _acl_trace("Bot owner is always allowed.")
         return True
 
-    custom_level = ACDefault.get(ctx.guild.id, command)
+    custom_level = ACDefault.get(guild.id, command)
     if custom_level:
         level = custom_level.level
 
     _acl_trace(f"Required level '{level.name}'.")
 
-    uo = UserOverwrite.get(ctx.guild.id, ctx.author.id, command)
+    uo = UserOverwrite.get(guild.id, invoker.id, command)
     if uo is not None:
-        _acl_trace(f"User overwrite for '{ctx.author}' exists: '{uo.allow}'.")
+        _acl_trace(f"User overwrite for '{invoker}' exists: '{uo.allow}'.")
         if uo.allow:
             return True
         raise NegativeUserOverwrite()
 
-    co = ChannelOverwrite.get(ctx.guild.id, ctx.channel.id, command)
+    co = ChannelOverwrite.get(guild.id, channel.id, command)
     if co is not None:
-        _acl_trace(f"Channel overwrite for '#{ctx.channel.name}' exists: '{co.allow}'.")
+        _acl_trace(f"Channel overwrite for '#{channel.name}' exists: '{co.allow}'.")
         if co.allow:
             return True
-        raise NegativeChannelOverwrite(channel=ctx.channel)
+        raise NegativeChannelOverwrite(channel=channel)
 
-    for role in ctx.author.roles:
-        ro = RoleOverwrite.get(ctx.guild.id, role.id, command)
+    for role in invoker.roles:
+        ro = RoleOverwrite.get(guild.id, role.id, command)
         if ro is not None:
             _acl_trace(f"Role overwrite for '{role.name}' exists: '{ro.allow}'.")
             if ro.allow:
@@ -211,7 +244,14 @@ def can_invoke_command(
         return False
 
     try:
-        acl2_function(ctx, command_level, for_command=command)
+        acl2_function(
+            level=command_level,
+            bot=ctx.bot,
+            invoker=ctx.author,
+            command=command,
+            guild=ctx.guild,
+            channel=ctx.channel,
+        )
         return True
     except ACLFailure:
         return False

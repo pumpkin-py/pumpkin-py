@@ -389,6 +389,7 @@ class Admin(commands.Cog):
     async def module_load(self, ctx, name: str):
         """Load module. Use format <repository>.<module>."""
         await self.bot.load_extension("modules." + name + ".module")
+        await self.bot.tree.sync()
         await ctx.send(_(ctx, "Module **{name}** has been loaded.").format(name=name))
         Module.add(name, enabled=True)
         await bot_log.info(ctx.author, ctx.channel, "Loaded " + name)
@@ -403,6 +404,7 @@ class Admin(commands.Cog):
             )
             return
         await self.bot.unload_extension("modules." + name + ".module")
+        await self.bot.tree.sync()
         await ctx.send(_(ctx, "Module **{name}** has been unloaded.").format(name=name))
         Module.add(name, enabled=False)
         await bot_log.info(ctx.author, ctx.channel, "Unloaded " + name)
@@ -412,6 +414,7 @@ class Admin(commands.Cog):
     async def module_reload(self, ctx, name: str):
         """Reload bot module. Use format <repository>.<module>."""
         await self.bot.reload_extension("modules." + name + ".module")
+        await self.bot.tree.sync()
         await ctx.send(_(ctx, "Module **{name}** has been reloaded.").format(name=name))
         await bot_log.info(ctx.author, ctx.channel, "Reloaded " + name)
 

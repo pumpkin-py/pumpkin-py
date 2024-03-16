@@ -28,7 +28,7 @@ class GuildLanguage(database.base):
         )
 
     def __eq__(self, obj) -> bool:
-        return type(self) == type(obj) and self.guild_id == obj.guild_id
+        return type(self) is type(obj) and self.guild_id == obj.guild_id
 
     def dump(self) -> Dict[str, Union[int, str]]:
         return {
@@ -101,7 +101,7 @@ class MemberLanguage(database.base):
 
     def __eq__(self, obj) -> bool:
         return (
-            type(self) == type(obj)
+            type(self) is type(obj)
             and self.guild_id == obj.guild_id
             and self.member_id == obj.member_id
         )

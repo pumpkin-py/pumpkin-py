@@ -62,7 +62,7 @@ class Help(commands.MinimalHelpCommand):
 
         This override changes the language from english to l10n version.
         """
-        if type(command) == commands.Group and len(command.all_commands) > 0:
+        if type(command) is commands.Group and len(command.all_commands) > 0:
             return _(
                 ctx, "Command **{name}** does not have subcommand **{subcommand}**."
             ).format(
@@ -158,7 +158,7 @@ class Help(commands.MinimalHelpCommand):
     async def order_subcommands(self, cmds: Sequence[commands.Command]):
         """Order commands: first groups, then finals."""
         cmds = await self.filter_commands(cmds, sort=self.sort_commands)
-        groups = [c for c in cmds if type(c) == commands.Group]
+        groups = [c for c in cmds if type(c) is commands.Group]
         finals = [c for c in cmds if c not in groups]
         return groups, finals
 
