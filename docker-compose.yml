@@ -3,7 +3,7 @@ version: "3.6"
 services:
   db:
     image: docker.io/postgres:13-alpine
-    container_name: pumpkin-db
+    container_name: ${INSTANCE_NAME}-db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
   backup:
     image: docker.io/prodrigestivill/postgres-backup-local:13-alpine
-    container_name: pumpkin-backup
+    container_name: ${INSTANCE_NAME}-backup
     restart: unless-stopped
     volumes:
       - ${BACKUP_PATH}:/backups/:z
@@ -29,7 +29,7 @@ services:
       - SCHEDULE=${BACKUP_SCHEDULE}
   bot:
     image: docker.io/czechbol/pumpkin-py:latest
-    container_name: pumpkin-bot
+    container_name: ${INSTANCE_NAME}-bot
     env_file: .env
     volumes:
       - ./:/pumpkin-py/:z
