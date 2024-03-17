@@ -30,6 +30,10 @@ class Help(commands.MinimalHelpCommand):
 
     async def acl_check(self, cmd: Union[commands.Group, commands.Command]) -> bool:
         """Return True if the command is allowed to run."""
+        # FIXME Is there more built-in commands?
+        if cmd.qualified_name == "help":
+            return True
+
         bot = cmd._cog.bot
         ctx = self.context
         command = cmd.qualified_name
@@ -41,9 +45,7 @@ class Help(commands.MinimalHelpCommand):
 
         if allow_invoke is not True:
             await ctx.reply(
-                _(ctx, "Help for command **{command}** is not available.").format(
-                    command=command
-                )
+                _(ctx, "I don't know command **{name}**.").format(name=command)
             )
             return False
         return True
