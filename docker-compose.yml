@@ -28,7 +28,7 @@ services:
       - POSTGRES_PORT=${BACKUP_DB_PORT}
       - SCHEDULE=${BACKUP_SCHEDULE}
   bot:
-    image: docker.io/czechbol/pumpkin-py:latest
+    image: ghcr.io/pumpkin-py/pumpkin-py:latest
     container_name: ${INSTANCE_NAME}-bot
     env_file: .env
     volumes:
