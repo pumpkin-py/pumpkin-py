@@ -1,5 +1,5 @@
 # Dockerfile
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 # Avoid cache busting
 ENV PYTHONDONTWRITEBYTECODE 1
