@@ -40,7 +40,7 @@ def map_member_to_ACLevel(
 
     # Gather information
 
-    # NOTE This relies on pumpkin.py:update_app_info()
+    # NOTE This relies on strawberry.py:update_app_info()
     bot_owner_ids: Set = getattr(bot, "owner_ids", {*()})
     guild_owner_id: int = member.guild.owner.id
 

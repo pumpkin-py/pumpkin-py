@@ -1,11 +1,11 @@
 #!/bin/bash
 
-if [ -f "/pumpkin-py/pumpkin.py" ];
+if [ -f "/strawberry-py/strawberry.py" ];
 then
-    echo "/pumpkin-py already contains the entry script."
+    echo "/strawberry-py already contains the entry script."
 else
-    echo "Pulling https://github.com/pumpkin-py/pumpkin-py.git"
-    git clone https://github.com/pumpkin-py/pumpkin-py.git /pumpkin-py || (echo "Couldn't clone pumpkin-py repository. Volume /pumpkin-py doesn't contain the core pumpkin-py repository." && exit 1)
+    echo "Pulling https://github.com/strawberry-py/strawberry-py.git"
+    git clone https://github.com/strawberry-py/strawberry-py.git /strawberry-py || (echo "Couldn't clone strawberry-py repository. Volume /strawberry-py doesn't contain the core strawberry-py repository." && exit 1)
 fi
 
 if [ -z "${BOT_TIMEZONE}" ]; then
@@ -22,14 +22,14 @@ if [ -n "${BOT_EXTRA_PACKAGES}" ]; then
 fi
 
 mkdir -p /tempdir
-find /pumpkin-py/modules/*/ -type f -name requirements.txt -exec grep -h "" {} \; | sort | uniq > /tempdir/requirements.txt
+find /strawberry-py/modules/*/ -type f -name requirements.txt -exec grep -h "" {} \; | sort | uniq > /tempdir/requirements.txt
 
 echo "Upgrading pip"
 pip install -q --upgrade pip --root-user-action=ignore
 echo "Installing default requirements"
-python3 -m pip install -q -r /pumpkin-py/requirements.txt --user --no-warn-script-location --no-cache-dir --root-user-action=ignore
+python3 -m pip install -q -r /strawberry-py/requirements.txt --user --no-warn-script-location --no-cache-dir --root-user-action=ignore
 echo "Installing module requirements"
 python3 -m pip install -q -r /tempdir/requirements.txt --user --no-warn-script-location --no-cache-dir --root-user-action=ignore
 
-echo "Starting pumpkin-py"
-cd /pumpkin-py && python3 pumpkin.py
+echo "Starting strawberry-py"
+cd /strawberry-py && python3 strawberry.py

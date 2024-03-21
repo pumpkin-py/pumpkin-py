@@ -1,27 +1,27 @@
 from discord.ext.commands import CheckFailure
 
 
-class PumpkinException(Exception):
-    """Common base for all pumpkin.py exceptions."""
+class StrawberryException(Exception):
+    """Common base for all strawberry.py exceptions."""
 
     def __str__(self):
         """Text representation of the exception."""
         return super().__str__()
 
 
-class RepositoryMetadataError(PumpkinException):
+class RepositoryMetadataError(StrawberryException):
     """Raised when module repository file contains errors."""
 
     pass
 
 
-class DotEnvException(PumpkinException):
+class DotEnvException(StrawberryException):
     """Raised when some module requires missing ``.env`` variable."""
 
     pass
 
 
-class ModuleException(PumpkinException):
+class ModuleException(StrawberryException):
     """Raised when module-related error occurs.
 
     :param repository: Repository name.
@@ -38,7 +38,7 @@ class ModuleException(PumpkinException):
         return f"Error in module {self.repository}.{self.module}: {self.message}"
 
 
-class SpamChannelException(PumpkinException):
+class SpamChannelException(StrawberryException):
     def __init__(self, message):
         self.message = message
 
@@ -46,7 +46,7 @@ class SpamChannelException(PumpkinException):
         return "SpamChannel limit reached."
 
 
-class BadTranslation(PumpkinException):
+class BadTranslation(StrawberryException):
     """Raised when translation file is not valid or contains errors.
 
     Four different states may occur:

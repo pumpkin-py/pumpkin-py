@@ -17,5 +17,5 @@ types-requests
 # tests
 pytest
 
-# pumpkin.py tools
-git+https://github.com/pumpkin-py/pumpkin-tools.git
+# strawberry.py tools
+git+https://github.com/strawberry-py/strawberry-tools.git

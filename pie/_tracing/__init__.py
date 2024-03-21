@@ -3,7 +3,7 @@ from typing import Callable
 
 
 def register(name: str) -> Callable:
-    """Register pumpkin.py tracing function.
+    """Register strawberry.py tracing function.
 
     This is 'the last resort' option when debugging entangled code.
 
@@ -24,7 +24,7 @@ def register(name: str) -> Callable:
 
     .. code-block:
 
-        trace_pie_spamchannel=1 python3 pumpkin.py
+        trace_pie_spamchannel=1 python3 strawberry.py
 
     The registration name MUST follow the directory structure:
     'pie_spamchannel', 'modules_base_errors', ...

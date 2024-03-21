@@ -19,8 +19,8 @@ Use ``git`` to download the source code:
 
 .. code-block:: bash
 
-	git clone git@github.com:pumpkin-py/pumpkin-py.git pumpkin
-	cd pumpkin
+	git clone git@github.com:strawberry-py/strawberry-py.git strawberry
+	cd strawberry
 
 To update the bot later, run
 
@@ -34,7 +34,7 @@ To update the bot later, run
 Environment file
 ----------------
 
-The file called ``.env`` (that's right, just these four characters, nothing more) holds information pumpkin.py needs in order to start.
+The file called ``.env`` (that's right, just these four characters, nothing more) holds information strawberry.py needs in order to start.
 
 When you clone your repository, this file does not exist, you have to copy the example file first:
 
@@ -86,12 +86,12 @@ Virtual environment
 .. note::
    This section does not apply to Docker users, as their Docker container itself is virtual environment separated from the rest of the system.
 
-pumpkin.py is Python application.
+strawberry.py is Python application.
 That means that it is not compiled and run from machine code, but it's being interpreted by the Python language running on your computer.
 
-pumpkin.py uses some libraries.
+strawberry.py uses some libraries.
 Library is a piece of code made by another developer, specialized for doing certain tasks.
-Nearly every Linux machine contains Python as part of the system, and that means that you'll have some Python libraries installed before you start doing anything with pumpkin.py.
+Nearly every Linux machine contains Python as part of the system, and that means that you'll have some Python libraries installed before you start doing anything with strawberry.py.
 
 To prevent clashes with those libraries, or to prevent clashes with another Python applications on your system, it is recommended to use virtual environment, which locks all the application dependencies (the libraries) inside of your project directory, keeping the rest of your system free.
 

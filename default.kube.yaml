@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pumpkin-db-volume-claim
+  name: strawberry-db-volume-claim
 spec:
   accessModes:
     - ReadWriteOnce
@@ -13,7 +13,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: pumpkin
+  name: strawberry
 spec:
   restartPolicy: Always
   containers:
@@ -27,17 +27,17 @@ spec:
         - name: POSTGRES_USER
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: db-user
         - name: POSTGRES_PASSWORD
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: db-password
         - name: POSTGRES_DB
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: db-name
       resources:
         limits:
@@ -48,44 +48,44 @@ spec:
           cpu: "0.2"
       volumeMounts:
         - mountPath: "/var/lib/postgresql/data/"
-          name: pumpkin-db-volume
+          name: strawberry-db-volume
     - name: backup
       image: docker.io/prodrigestivill/postgres-backup-local:13-alpine
       env:
         - name: POSTGRES_HOST
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: backup-db-host
         - name: POSTGRES_PORT
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: backup-db-port
         - name: POSTGRES_DB
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: db-name
         - name: POSTGRES_USER
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: db-user
         - name: POSTGRES_PASSWORD
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: db-password
         - name: POSTGRES_EXTRA_OPTS
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: backup-extra-opts
         - name: SCHEDULE
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: backup-schedule
       resources:
         limits:
@@ -98,27 +98,27 @@ spec:
         - mountPath: "/backups"
           name: backup-volume
     - name: bot
-      image: ghcr.io/pumpkin-py/pumpkin-py:latest
+      image: ghcr.io/strawberry-py/strawberry-py:latest
       env:
         - name: DB_STRING
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: db-string
         - name: TOKEN
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: token
         - name: TZ
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: bot-timezone
         - name: EXTRA_PKGS
           valueFrom:
             configMapKeyRef:
-              name: pumpkin-py
+              name: strawberry-py
               key: bot-extra-packages
       resources:
         limits:
@@ -128,15 +128,15 @@ spec:
           memory: 8Mi
           cpu: "0.2"
       volumeMounts:
-        - mountPath: "/pumpkin-py"
-          name: pumpkin-volume
+        - mountPath: "/strawberry-py"
+          name: strawberry-volume
   volumes:
-    - name: pumpkin-db-volume
+    - name: strawberry-db-volume
       persistentVolumeClaim:
-        claimName: pumpkin-db-volume-claim
+        claimName: strawberry-db-volume-claim
     - name: backup-volume
       hostPath:
         path: ./backups
-    - name: pumpkin-volume
+    - name: strawberry-volume
       hostPath:
         path: ./

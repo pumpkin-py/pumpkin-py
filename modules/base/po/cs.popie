@@ -415,8 +415,8 @@ msgstr *Toto je testovací zpráva, k žádné chybě zatím nedošlo.*
 msgid An unexpected error occurred
 msgstr Nastala nečekaná chyba
 
-msgid pumpkin.py exception
-msgstr Výjimka pumpkin.py
+msgid strawberry.py exception
+msgstr Výjimka strawberry.py
 
 msgid An environment variable is missing
 msgstr Chybí proměnná prostředí

@@ -9,4 +9,4 @@ __all__ = (
     "logging",
 )
 __name__ = "base"
-__version__ = "pumpkin.py"
+__version__ = "strawberry.py"

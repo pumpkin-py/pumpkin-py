@@ -99,7 +99,7 @@ To make the changes persistent, use the following package:
 Dependency setup
 ----------------
 
-Besides ``git``, pumpkin.py has additional system dependencies which have to be installed.
+Besides ``git``, strawberry.py has additional system dependencies which have to be installed.
 
 .. include:: ../_snippets/_apt_dependencies.rst
 
@@ -133,8 +133,8 @@ If you want to follow the least-privilege rule, you can allow the ``discord`` us
 
 .. code-block::
 
-	Cmnd_Alias PIE_CTRL = /bin/systemctl start pumpkin, /bin/systemctl stop pumpkin, /bin/systemctl restart pumpkin
-	Cmnd_Alias PIE_STAT = /bin/systemctl status pumpkin, /bin/journalctl -u pumpkin, /bin/journalctl -f -u pumpkin
+	Cmnd_Alias PIE_CTRL = /bin/systemctl start strawberry, /bin/systemctl stop strawberry, /bin/systemctl restart strawberry
+	Cmnd_Alias PIE_STAT = /bin/systemctl status strawberry, /bin/journalctl -u strawberry, /bin/journalctl -f -u strawberry
 
 	discord ALL=(ALL) NOPASSWD: PIE_CTRL, PIE_STAT
 
@@ -144,7 +144,7 @@ If you want to follow the least-privilege rule, you can allow the ``discord`` us
 Database setup
 --------------
 
-pumpkin.py officialy supports two database engines: PostgreSQL and SQLite.
+strawberry.py officialy supports two database engines: PostgreSQL and SQLite.
 We strongly recommend using PostgreSQL for production use, as it is fast and reliable.
 
 .. note::
@@ -153,13 +153,13 @@ We strongly recommend using PostgreSQL for production use, as it is fast and rel
 	See :ref:`devel_database` in Development Section to learn how to use it as database engine.
 
 You can choose whatever names you want.
-We will use ``pumpkin`` for both the database user and the database name.
+We will use ``strawberry`` for both the database user and the database name.
 
 .. code-block:: bash
 
 	apt install postgresql postgresql-contrib libpq-dev
 	su - postgres
-	createuser --pwprompt pumpkin # set strong password
+	createuser --pwprompt strawberry # set strong password
 	psql -c "CREATE DATABASE <database>;"
 	exit
 
@@ -169,14 +169,14 @@ The user, its password and database will be your connection string:
 
 	postgresql://<username>:<password>@localhost:5432/<database>
 	# so, in our case
-	postgresql://pumpkin:<password>@localhost:5432/pumpkin
+	postgresql://strawberry:<password>@localhost:5432/strawberry
 
 To allow access to the database to newly created user, alter your ``/etc/postgresql/<version>/main/pg_hba.conf``:
 
 .. code-block::
 
 	# TYPE  DATABASE        USER            ADDRESS                 METHOD
-	local   all             pumpkin                                 md5
+	local   all             strawberry                                 md5
 
 And restart the database:
 
@@ -190,7 +190,7 @@ To allow passwordless access to the database, create file ``~/.pgpass`` with the
 
 	<hostname>:<port>:<database>:<username>:<password>
 	# so, in our case
-	localhost:*:pumpkin:pumpkin:<password>
+	localhost:*:strawberry:strawberry:<password>
 
 The file has to be readable only by the owner:
 
@@ -202,7 +202,7 @@ You can verify that everything has been set up correctly by running
 
 .. code-block::
 
-	psql -U pumpkin
+	psql -U strawberry
 
 You should not be asked for password.
 It will open an interactive console; you can run ``exit`` to quit.
@@ -252,7 +252,7 @@ The service file may look like this:
 .. code-block:: ini
 
 	[Unit]
-	Description = pumpkin.py bot
+	Description = strawberry.py bot
 
 	Requires = postgresql.service
 	After = postgresql.service
@@ -265,14 +265,14 @@ The service file may look like this:
 	User = discord
 	StandardOutput = journal+console
 
-	EnvironmentFile = /home/discord/pumpkin/.env
-	WorkingDirectory = /home/discord/pumpkin
-	ExecStart = /home/discord/pumpkin/.venv/bin/python3 pumpkin.py
+	EnvironmentFile = /home/discord/strawberry/.env
+	WorkingDirectory = /home/discord/strawberry
+	ExecStart = /home/discord/strawberry/.venv/bin/python3 strawberry.py
 
 	[Install]
 	WantedBy = multi-user.target
 
-Create the file and copy it to ``/etc/systemd/system/pumpkin.service``.
+Create the file and copy it to ``/etc/systemd/system/strawberry.service``.
 Refresh the systemd with ``systemctl daemon-reload``.
 
 
@@ -283,10 +283,10 @@ Running the bot
 
 .. code-block:: bash
 
-	systemctl start pumpkin.service
+	systemctl start strawberry.service
 
 To start the bot automatically when system starts, run
 
 .. code-block:: bash
 
-	systemctl enable pumpkin.service
+	systemctl enable strawberry.service

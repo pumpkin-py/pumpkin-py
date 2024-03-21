@@ -9,7 +9,7 @@ It uses SQLite as a database and locally cloned source repository.
 .. note::
 
 	This tutorial supports multiple bot instances running under the same system account.
-	When following it, replace $BOTNAME with the name of your bot (or use generic ``pumpkin`` name, just be consistent).
+	When following it, replace $BOTNAME with the name of your bot (or use generic ``strawberry`` name, just be consistent).
 	Make sure it does not contain spaces, slashes or other funny characters.
 
 
@@ -26,7 +26,7 @@ Use ``git`` to download the source code.
 
 .. code-block:: bash
 
-	git clone https://github.com/pumpkin-py/pumpkin-py.git $BOTNAME
+	git clone https://github.com/strawberry-py/strawberry-py.git $BOTNAME
 	cd $BOTNAME
 
 To update the bot later, run
@@ -47,14 +47,14 @@ See :ref:`general_token` in chapter General Bot Information.
 
 .. _podman_image:
 
-Creating Pumpkin image
+Creating Strawberry image
 ----------------------
 
 .. code-block:: bash
 
-    podman build --file Dockerfile --tag pumpkin-py
+    podman build --file Dockerfile --tag strawberry-py
     # and do the following for all the bots you host like this
-    podman tag pumpkin-py:latest $BOTNAME
+    podman tag strawberry-py:latest $BOTNAME
 
 .. _podman_env_file:
 
@@ -66,7 +66,7 @@ The environment file contains variables necessary for the bot to function.
 .. code-block:: bash
 
     # A string passed to SQLAlchemy
-    DB_STRING=sqlite:////pumpkin-py/pumpkin.db
+    DB_STRING=sqlite:////strawberry-py/strawberry.db
     # A string used to authenticate to the Discord API
     TOKEN=0123456789-abcdefghijk-lmopqrstuv-wxyz
     # Space separated list of apt packages to be installed before the bot starts
@@ -80,13 +80,13 @@ The environment file contains variables necessary for the bot to function.
 Downloading extension modules
 -----------------------------
 
-``pumpkin.py`` is modular, which means that the core only provides basic functionality.
-To get more, browse either `the official sources <https://github.com/pumpkin-py>`_ or even your own repository with more.
+``strawberry.py`` is modular, which means that the core only provides basic functionality.
+To get more, browse either `the official sources <https://github.com/strawberry-py>`_ or even your own repository with more.
 
 .. code-block:: bash
 
     cd modules/
-    git clone https://github.com/pumpkin-py/pumpkin-fun fun
+    git clone https://github.com/strawberry-py/strawberry-fun fun
     cd ..
 
 
@@ -100,7 +100,7 @@ This step is used to verify our local setup works.
 .. code-block:: bash
 
     podman run --name=$BOTNAME \
-      --env-file $HOME/$BOTNAME/.env -v $HOME/$BOTNAME:/pumpkin-py:z \
+      --env-file $HOME/$BOTNAME/.env -v $HOME/$BOTNAME:/strawberry-py:z \
       $BOTNAME:latest
     # To destroy the container (if you either want to clean up or want to run the command again):
     podman conatainer rm $BOTNAME
@@ -114,14 +114,14 @@ Start the bot automatically with systemd
 To let the bot start and recover automatically, we have to generate a systemd unit file.
 
 As you may have noticed, the previous command is still in the foreground, and blocking the shell.
-You may either kill it via ``Ctrl+C`` command, or run **pumpkin shutdown** via Discord.
+You may either kill it via ``Ctrl+C`` command, or run **strawberry shutdown** via Discord.
 
 Create a ``.container`` file. For example, ``$HOME/.config/containers/systemd/$BOTNAME.container``:
 
 .. code-block:: ini
 
     [Unit]
-    Description=$BOTNAME, a pumpkin.py Discord bot
+    Description=$BOTNAME, a strawberry.py Discord bot
     After=local-fs.target
 
     [Container]

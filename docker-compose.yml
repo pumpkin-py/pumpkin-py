@@ -28,11 +28,11 @@ services:
       - POSTGRES_PORT=${BACKUP_DB_PORT}
       - SCHEDULE=${BACKUP_SCHEDULE}
   bot:
-    image: ghcr.io/pumpkin-py/pumpkin-py:latest
+    image: ghcr.io/strawberry-py/strawberry-py:latest
     container_name: ${INSTANCE_NAME}-bot
     env_file: .env
     volumes:
-      - ./:/pumpkin-py/:z
+      - ./:/strawberry-py/:z
     depends_on:
       - db
     restart: unless-stopped

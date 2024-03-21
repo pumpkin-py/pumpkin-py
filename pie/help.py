@@ -24,7 +24,7 @@ class Help(commands.MinimalHelpCommand):
 
         super().__init__(
             no_category="",
-            commands_heading="PUMPKIN_COMMANDS_HEADING",
+            commands_heading="STRAWBERRY_COMMANDS_HEADING",
             **options,
         )
 

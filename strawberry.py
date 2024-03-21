@@ -198,7 +198,7 @@ async def on_error(event, *args, **kwargs):
         await bot_log.critical(
             None,
             None,
-            "pumpkin.py database session rolled back. The bubbled-up cause is:\n"
+            "strawberry.py database session rolled back. The bubbled-up cause is:\n"
             + "\n".join([f"| {line}" for line in str(error).split("\n")]),
         )
 

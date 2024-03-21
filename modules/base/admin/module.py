@@ -166,7 +166,7 @@ class Admin(commands.Cog):
     async def repository_install(self, ctx, url: str, branch: Optional[str] = None):
         """Install module repository."""
         tempdir = tempfile.TemporaryDirectory()
-        workdir = Path(tempdir.name) / "pumpkin-module"
+        workdir = Path(tempdir.name) / "strawberry-module"
 
         # download to temporary directory
         async with ctx.typing():
@@ -492,14 +492,14 @@ class Admin(commands.Cog):
 
     @commands.guild_only()
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @commands.group(name="pumpkin")
-    async def pumpkin_(self, ctx):
+    @commands.group(name="strawberry")
+    async def strawberry_(self, ctx):
         """Manage bot instance."""
         await utils.discord.send_help(ctx)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @pumpkin_.command(name="sync")
-    async def pumpkin_sync(self, ctx):
+    @strawberry_.command(name="sync")
+    async def strawberry_sync(self, ctx):
         """Sync slash commands to current guild."""
         async with ctx.typing():
             # sync global commands
@@ -511,15 +511,15 @@ class Admin(commands.Cog):
         await ctx.reply(_(ctx, "Sync complete."))
 
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @pumpkin_.command(name="restart")
-    async def pumpkin_restart(self, ctx):
+    @strawberry_.command(name="restart")
+    async def strawberry_restart(self, ctx):
         """Restart bot instance with the help of host system."""
         await bot_log.critical(ctx.author, ctx.channel, "Restarting.")
         exit(1)
 
     @check.acl2(check.ACLevel.BOT_OWNER)
-    @pumpkin_.command(name="shutdown")
-    async def pumpkin_shutdown(self, ctx):
+    @strawberry_.command(name="shutdown")
+    async def strawberry_shutdown(self, ctx):
         """Shutdown bot instance."""
         await bot_log.critical(ctx.author, ctx.channel, "Shutting down.")
         exit(0)

@@ -1,12 +1,12 @@
-pumpkin.py's developer documentation
+strawberry.py's developer documentation
 ====================================
 
-`pumpkin.py <https://github.com/pumpkin-py/pumpkin-py>`_ is universal and modular discord bot.
+`strawberry.py <https://github.com/strawberry-py/strawberry-py>`_ is universal and modular discord bot.
 
 .. note::
    This documentation is focused on getting the bot running.
    Information on how to work with the bot once it's set up can be found on
-   `GitHub Pages <https://pumpkin-py.github.io/docs/>`_.
+   `GitHub Pages <https://strawberry-py.github.io/docs/>`_.
 
 .. toctree::
    :maxdepth: 1

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pumpkin-py
+  name: strawberry-py
 data:
   token: ""
   db-string: postgresql://postgres:postgres@localhost:5432/postgres

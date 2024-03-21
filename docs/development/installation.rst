@@ -17,10 +17,10 @@ The fork is also used for opening Pull Requests back to our repository.
 
 .. note::
 
-	This section also applies to pumpkin.py module repositories, not just main repository.
+	This section also applies to strawberry.py module repositories, not just main repository.
 	Just change the URLs.
 
-Open `our official GitHub page <https://github.com/pumpkin-py/pumpkin-py>`_.
+Open `our official GitHub page <https://github.com/strawberry-py/strawberry-py>`_.
 Assuming you are logged in, you should see a button named **Fork** (at the top right).
 Click it.
 
@@ -47,7 +47,7 @@ It may be on your system already.
 
 	apt install git
 
-Besides ``git``, pumpkin.py has additional system dependencies which have to be installed.
+Besides ``git``, strawberry.py has additional system dependencies which have to be installed.
 
 .. include:: ../_snippets/_apt_dependencies.rst
 
@@ -61,14 +61,14 @@ Clone your fork:
 
 .. code-block:: bash
 
-	git clone git@github.com:<your username>/pumpkin-py.git pumpkin
-	cd pumpkin
+	git clone git@github.com:<your username>/strawberry-py.git strawberry
+	cd strawberry
 
 Then you have to setup a link back to our main repository, which is usually called upstream:
 
 .. code-block:: bash
 
-	git remote add upstream https://github.com/pumpkin-py/pumpkin-py.git
+	git remote add upstream https://github.com/strawberry-py/strawberry-py.git
 
 
 
@@ -79,9 +79,9 @@ Database
 
 Instead of high-performance PostgreSQL we are going to be using SQLite3, which has giant advantage: it requires zero setup.
 
-Open file ``.env`` (see :ref:`general_env` for more details) and paste the following connection string into the ``DB_STRING`` variable: ``sqlite:///pumpkin.db``.
+Open file ``.env`` (see :ref:`general_env` for more details) and paste the following connection string into the ``DB_STRING`` variable: ``sqlite:///strawberry.db``.
 
-If you ever need to wipe the database, just delete the ``pumpkin.db`` file. The bot will create a new one when it starts again.
+If you ever need to wipe the database, just delete the ``strawberry.db`` file. The bot will create a new one when it starts again.
 
 
 .. _devel_token:
@@ -123,7 +123,7 @@ Running the bot
 
 .. code-block:: bash
 
-	python3 pumpkin.py
+	python3 strawberry.py
 
 If you have done everything correctly (you are in ``venv``, you have all libraries installed), the script will print startup information and a welcome message, something like this:
 

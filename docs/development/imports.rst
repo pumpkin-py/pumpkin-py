@@ -33,7 +33,7 @@ All the imports MUST be at the top of the file (flake8 won't let you). For the s
 	class MyModule(commands.Cog):
 	    ...
 
-E.g. ``__future__``, Python libraries, 3rd party libraries, discord imports, pumpkin.py imports; all separated with one empty line.
+E.g. ``__future__``, Python libraries, 3rd party libraries, discord imports, strawberry.py imports; all separated with one empty line.
 
 The individual items declared on one line SHOULD be alphabetically sorted, as well as the import lines themselves.
 

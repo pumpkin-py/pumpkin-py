@@ -218,8 +218,8 @@ class Errors(commands.Cog):
                 Translated description,
                 Whether to ignore traceback in the log.
         """
-        if isinstance(error, pie.exceptions.PumpkinException):
-            return await Errors.handle_PumpkinException(ctx, error)
+        if isinstance(error, pie.exceptions.StrawberryException):
+            return await Errors.handle_StrawberryException(ctx, error)
 
         # Discord errors
         if isinstance(error, discord.DiscordException):
@@ -233,8 +233,8 @@ class Errors(commands.Cog):
         )
 
     @staticmethod
-    async def handle_PumpkinException(ctx, error) -> Tuple[str, str, bool]:
-        """Handles exceptions raised by pumpkin-py
+    async def handle_StrawberryException(ctx, error) -> Tuple[str, str, bool]:
+        """Handles exceptions raised by strawberry-py
 
         Args:
             ctx: The invocation context.
@@ -247,7 +247,7 @@ class Errors(commands.Cog):
                 Whether to ignore traceback in the log.
         """
         error_messages = {
-            "PumpkinException": _(ctx, "pumpkin.py exception"),
+            "StrawberryException": _(ctx, "strawberry.py exception"),
             "DotEnvException": _(ctx, "An environment variable is missing"),
             "ModuleException": _(ctx, "Module exception"),
             "BadTranslation": _(ctx, "Translation error"),
@@ -423,7 +423,7 @@ class Errors(commands.Cog):
 
     @staticmethod
     async def handle_ExtensionError(ctx, error) -> Tuple[str, str, bool]:
-        """Handles exceptions raised by pumpkin-py extensions
+        """Handles exceptions raised by strawberry-py extensions
 
         Args:
             ctx: The invocation context.

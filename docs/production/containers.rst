@@ -27,8 +27,8 @@ Use ``git`` to download the source code.
 
 .. code-block:: bash
 
-	git clone https://github.com/pumpkin-py/pumpkin-py.git pumpkin
-	cd pumpkin
+	git clone https://github.com/strawberry-py/strawberry-py.git strawberry
+	cd strawberry
 
 To update the bot later, run
 
@@ -54,7 +54,7 @@ You will need to edit the volumes of the bot service in ``docker-compose.yml`` f
 .. code-block:: yaml
 
 	volumes:
-	  - pumpkin_data:/pumpkin-py
+	  - strawberry_data:/strawberry-py
 
 And add a new volume to end of the file:
 
@@ -62,7 +62,7 @@ And add a new volume to end of the file:
 
 	volumes:
 	  postgres_data:
-	  pumpkin_data:
+	  strawberry_data:
 
 .. _containers_database:
 

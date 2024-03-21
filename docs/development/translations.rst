@@ -12,11 +12,11 @@ There are four **if**\ s of the text format:
 
 Translated strings are stored in ``po``-like files (with extension ``.popie``.
 
-They should be updated automatically by pre-commit when you change the English text. However, if you want to trigger it manually, install the ``pumpkin-tools`` package and run the tool ``popie``:
+They should be updated automatically by pre-commit when you change the English text. However, if you want to trigger it manually, install the ``strawberry-tools`` package and run the tool ``popie``:
 
 .. code-block:: bash
 
-	python3 -m pip install git+https://github.com/pumpkin-py/pumpkin-tools.git
+	python3 -m pip install git+https://github.com/strawberry-py/strawberry-tools.git
 	popie <list of directories or files>
 
 All modules define the translation function on top:

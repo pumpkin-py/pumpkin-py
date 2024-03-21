@@ -7,12 +7,12 @@ How to create a repository
 
 Let's write a simple repository with just one module. We're gonna name it ``bistro``, because we'll gonna be making some delicious snacks.
 
-You can start with an empty directory (named ``pumpkin-bistro``, for example).
+You can start with an empty directory (named ``strawberry-bistro``, for example).
 
 Repository metadata
 -------------------
 
-The first file we're gonna create will be ``repo.conf``. This file MUST be present in your repository, because pumpkin.py reads its information in order to work with it. It has to contain two variables described below:
+The first file we're gonna create will be ``repo.conf``. This file MUST be present in your repository, because strawberry.py reads its information in order to work with it. It has to contain two variables described below:
 
 - ``name`` is a string representing name of the repository. It must be instance-unique and can only contain lowercase ASCII letters and a dash (``[a-z_]+``) and MUST NOT be ``core`` or ``base``. Moderators can run the **repository list** command to show installed repositories to prevent name clashes.
 - ``modules`` is a list of strings that mentions all modules included in the repository.
@@ -29,7 +29,7 @@ In our case, the file might look like this:
 Because we're using Python, we have to tell it that this directory will contain runnable code.
 This can be achieved by creatin empty ``__init__.py`` file.
 
-Next file that SHOULD be present in your repository is ``README.md`` or ``README.rst``. This file should contain the information about the repository and its modules. It should also link to the pumpkin.py project, so the visitors aren't confused about the meaning of it.
+Next file that SHOULD be present in your repository is ``README.md`` or ``README.rst``. This file should contain the information about the repository and its modules. It should also link to the strawberry.py project, so the visitors aren't confused about the meaning of it.
 
 Our README may start like this:
 
@@ -37,14 +37,14 @@ Our README may start like this:
 
     # Bistro
 
-    An unofficial [pumpkin.py](https://github.com/pumpkin-py) extension.
+    An unofficial [strawberry.py](https://github.com/strawberry-py) extension.
 
     The module allows you to ...
 
 Resource files
 --------------
 
-``requiremens.txt`` MAY be present in the repository. If found, the pumpkin.py instance will use standard tools to install packages from this file. You MUST NOT add packages your modules do not require.
+``requiremens.txt`` MAY be present in the repository. If found, the strawberry.py instance will use standard tools to install packages from this file. You MUST NOT add packages your modules do not require.
 
 .. note::
 
@@ -163,11 +163,11 @@ An example database file ``bistro/database.py`` may look like this:
 Testing
 -------
 
-You MAY include a directory called `tests/` in the root of the repository (e.g. between the module directories). This directory will be ignored by pumpkin.py module checks and won't emit "Invalid module" warnings.
+You MAY include a directory called `tests/` in the root of the repository (e.g. between the module directories). This directory will be ignored by strawberry.py module checks and won't emit "Invalid module" warnings.
 
-Please note that this may be changed in the future and some pumpkin.py versions may require the modules to be subclassed in `modules/` directory, if this proves to be confusing.
+Please note that this may be changed in the future and some strawberry.py versions may require the modules to be subclassed in `modules/` directory, if this proves to be confusing.
 
 Load module
 -----------
 
-For import and load of the custom modules follow `User documentation <https://pumpkin-py.github.io/docs/en/module-installation.html>`_. The user documentation expected that module is available as git repository and everything required in :ref:`how_to_create_repo` is fulfilled.
+For import and load of the custom modules follow `User documentation <https://strawberry-py.github.io/docs/en/module-installation.html>`_. The user documentation expected that module is available as git repository and everything required in :ref:`how_to_create_repo` is fulfilled.
