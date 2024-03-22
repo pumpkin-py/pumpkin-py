@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: pumpkin-db-volume-claim
 spec:
-  accessModes: 
+  accessModes:
     - ReadWriteOnce
   resources:
     requests:
@@ -98,7 +98,7 @@ spec:
         - mountPath: "/backups"
           name: backup-volume
     - name: bot
-      image: docker.io/czechbol/pumpkin-py:latest
+      image: ghcr.io/pumpkin-py/pumpkin-py:latest
       env:
         - name: DB_STRING
           valueFrom:
