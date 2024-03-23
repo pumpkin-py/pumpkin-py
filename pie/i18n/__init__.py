@@ -82,12 +82,14 @@ class Translator:
 
     def translate(
         self,
-        ctx: Union[discord.ext.commands.Context, TranslationContext],
+        utx: Union[
+            discord.ext.commands.Context, TranslationContext, discord.Interaction
+        ],
         string: str,
     ) -> str:
         """Get translation for requested key.
 
-        :param ctx: Translation context. Used to determine preferred language.
+        :param utx: Translation context or interaction. Used to determine preferred language.
         :param string: String to be translated.
         :return: Translated string.
 
@@ -96,10 +98,14 @@ class Translator:
         .. code-block:: python
             :linenos:
 
+            # Standard commands
             await ctx.reply(_(ctx, "You are {name}".format(user=ctx.author.name)))
+
+            # Slash commands / interactionsy
+            await itx.response.send_message(_(itx, "You are {name}".format(user=itx.user.name)))
         """
         # get language preference
-        langcode: str = self.get_language_preference(ctx)
+        langcode: str = self.get_language_preference(utx)
 
         if langcode not in self.strings.keys():
             return string
@@ -108,7 +114,10 @@ class Translator:
         return self.strings[langcode][string]
 
     def get_language_preference(
-        self, ctx: Union[discord.ext.commands.Context, TranslationContext]
+        self,
+        utx: Union[
+            discord.ext.commands.Context, discord.Interaction, TranslationContext
+        ],
     ) -> str:
         """Get language for the string.
 
@@ -118,20 +127,27 @@ class Translator:
         * Try to get guild information: if it has language preference, return it.
         * Return the bot default.
         """
-        guild_id: Optional[int]
-        user_id: Optional[int]
-        if ctx.__class__ == TranslationContext:
-            guild_id, user_id = ctx.guild_id, ctx.user_id
-        elif ctx.__class__ == discord.ext.commands.Context and isinstance(
-            ctx.channel, discord.abc.PrivateChannel
-        ):
-            guild_id, user_id = None, ctx.author.id
-        elif ctx.__class__ == discord.ext.commands.Context and not isinstance(
-            ctx.channel, discord.abc.PrivateChannel
-        ):
-            guild_id, user_id = ctx.guild.id, ctx.author.id
-        else:
-            guild_id, user_id = None, None
+        # Default value = None
+        guild_id: Optional[int] = None
+        user_id: Optional[int] = None
+
+        # Fake class for translation
+        if isinstance(utx, TranslationContext):
+            guild_id, user_id = utx.guild_id, utx.user_id
+        # Private chat (DMs)
+        elif isinstance(utx.channel, discord.abc.PrivateChannel):
+            # Interaction vs Context - different user variable
+            if isinstance(utx, discord.Interaction):
+                guild_id, user_id = None, utx.user.id
+            else:
+                guild_id, user_id = None, utx.author.id
+        # Servers
+        elif not isinstance(utx.channel, discord.abc.PrivateChannel):
+            # Interaction vs Context - different user variable
+            if isinstance(utx, discord.Interaction):
+                guild_id, user_id = utx.guild.id, utx.user.id
+            else:
+                guild_id, user_id = utx.guild.id, utx.author.id
 
         if guild_id is not None and user_id is not None:
             user_language: Optional[str] = self._get_user_language(guild_id, user_id)
