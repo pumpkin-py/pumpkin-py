@@ -1,13 +1,13 @@
 # strawberry.py
 
 <p align="center">
-  <a href="https://github.com/strawberry-py/strawberry.py/graphs/commit-activity"><img src="https://img.shields.io/github/last-commit/strawberry-py/strawberry-py?style=for-the-badge" alt="Maintenance" /></a>
+  <a href="https://github.com/strawberry-py/strawberry-py/graphs/commit-activity"><img src="https://img.shields.io/github/last-commit/strawberry-py/strawberry-py?style=for-the-badge" alt="Maintenance" /></a>
   <a href="https://github.com/strawberry-py/strawberry-py/actions"><img src="https://img.shields.io/github/actions/workflow/status/strawberry-py/strawberry-py/build.yml?style=for-the-badge" /></a>
   <a href="https://github.com/strawberry-py/strawberry-py/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-brightgreen?style=for-the-badge" alt="GPLv3 license" /></a>
   <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge" alt="Formatted with Black" /></a>
  <br/>
-  <a href="https://hub.docker.com/r/czechbol/strawberry-py"><img src="https://img.shields.io/docker/pulls/czechbol/strawberry-py?style=for-the-badge" /></a>
-  <a href="https://hub.docker.com/r/czechbol/strawberry-py"><img src="https://img.shields.io/docker/image-size/czechbol/strawberry-py?sort=date&style=for-the-badge" /></a>
+  <a href="https://ghcr.io/strawberry-py/strawberry-py"><img src="https://github.com/strawberry-py/strawberry-py/actions/workflows/build-image.yml/badge.svg" /></a>
+  <a href="https://ghcr.io/strawberry-py/strawberry-py"><img src="https://ghcr-badge.egpl.dev/strawberry-py/strawberry-py/size" /></a>
 </p>
 
 ## About
