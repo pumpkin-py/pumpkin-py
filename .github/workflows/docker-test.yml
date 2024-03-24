@@ -1,0 +1,22 @@
+# .github/workflows/docker_build.yml
+name: Docker Validator
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "**/Dockerfile"
+      - "**/docker-test.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v1
+    - name: Dockerfile validator
+      uses: ghe-actions/dockerfile-validator@v2
+      with:
+        dockerfile: 'Dockerfile'
+        lint: 'hadolint'
