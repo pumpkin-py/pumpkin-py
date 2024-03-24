@@ -20,7 +20,7 @@ This code is just the core -- see other [repositories](https://github.com/orgs/s
 
 ### Installation, development
 
-We keep the technical documentation on [ReadTheDocs.io](https://strawberrypy.readthedocs.io/en/latest/).
+We keep the technical documentation on [ReadTheDocs.io](https://strawberry-py.readthedocs.io/en/latest/).
 There you can find information on how to set up production instance or how to start with the development.
 
 ### User guide
@@ -38,4 +38,4 @@ We also have several amazing contributors -- see them at the **Contributors** se
 
 This project is licensed under the [GNU GPL v3](LICENSE) license.
 
-See [Legal](https://strawberrypy.readthedocs.io/en/latest/about/legal.html) page on ReadTheDocs.io for more information.
+See [Legal](https://strawberry-py.readthedocs.io/en/latest/about/legal.html) page on ReadTheDocs.io for more information.
