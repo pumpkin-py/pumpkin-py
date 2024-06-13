@@ -295,11 +295,11 @@ class ConfirmView(discord.ui.View):
 
 class VotableEmbed(discord.Embed, metaclass=ABCMeta):
     """
-    Abrstract class extendindg Embed functionality
-    so it can be used in ScollableVotingEmbed.
+    Abstract class extending Embed functionality
+    so it can be used in ScrollableVotingEmbed.
 
     Functions `vote_up`, `vote_neutral` and `vote_down`
-    must be overriden. Init takes same arguments,
+    must be overridden. Init takes same arguments,
     as :class:`discord.Embed`.
 
     Example of usage can be found in School.Review module.
@@ -309,21 +309,21 @@ class VotableEmbed(discord.Embed, metaclass=ABCMeta):
         super(VotableEmbed, self).__init__(*args, **kwargs)
 
     @abstractmethod
-    async def vote_up(interaction: discord.Interaction):
+    async def vote_up(self, interaction: discord.Interaction):
         """
         Callback when user votes UP. Must be overriden.
         """
         pass
 
     @abstractmethod
-    async def vote_neutral(interaction: discord.Interaction):
+    async def vote_neutral(self, interaction: discord.Interaction):
         """
         Callback when user votes NEUTRAL. Must be overriden.
         """
         pass
 
     @abstractmethod
-    async def vote_down(interaction: discord.Interaction):
+    async def vote_down(self, interaction: discord.Interaction):
         """
         Callback when user votes DOWNs. Must be overriden.
         """
